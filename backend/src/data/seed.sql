@@ -150,20 +150,18 @@ INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, descri
 );
 
 -- Add more sites to reach a meaningful sample size
-INSERT OR IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region) 
-SELECT site_code, name, city, state, latitude, longitude, region 
-FROM (VALUES
-    ('5221', 'San Juan Testing Center', 'San Juan', 'PR', 18.41632, -66.10629, 'Caribbean'),
-    ('3106', 'Honolulu Testing Center', 'Honolulu', 'HI', 21.3084, -157.86056, 'Pacific'),
-    ('0054', 'Denver Testing Center', 'Denver', 'CO', 39.60901, -104.90466, 'Mountain'),
-    ('0074', 'Phoenix Testing Center', 'Phoenix', 'AZ', 33.50962, -112.10114, 'Southwest'),
-    ('0020', 'Philadelphia Testing Center', 'Philadelphia', 'PA', 39.94816, -75.15174, 'Mid-Atlantic'),
-    ('0901', 'Oklahoma City Testing Center', 'Oklahoma City', 'OK', 35.53053, -97.58133, 'South Central'),
-    ('1015', 'Nashville Testing Center', 'Nashville', 'TN', 36.09784, -86.67748, 'Southeast'),
-    ('0064', 'Minneapolis Testing Center', 'Minneapolis', 'MN', 44.85662, -93.32535, 'Midwest'),
-    ('0116', 'Portland Testing Center', 'Portland', 'OR', 45.5259, -122.83252, 'West'),
-    ('2703', 'Anchorage Testing Center', 'Anchorage', 'AK', 61.14568, -149.87072, 'Alaska')
-) WHERE true;
+-- Note: sites.json already loaded 219 sites during init, these are just examples
+INSERT OR IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region) VALUES
+('5221', 'San Juan Testing Center', 'San Juan', 'PR', 18.41632, -66.10629, 'Caribbean'),
+('3106', 'Honolulu Testing Center', 'Honolulu', 'HI', 21.3084, -157.86056, 'Pacific'),
+('0054', 'Denver Testing Center', 'Denver', 'CO', 39.60901, -104.90466, 'Mountain'),
+('0074', 'Phoenix Testing Center', 'Phoenix', 'AZ', 33.50962, -112.10114, 'Southwest'),
+('0020', 'Philadelphia Testing Center', 'Philadelphia', 'PA', 39.94816, -75.15174, 'Mid-Atlantic'),
+('0901', 'Oklahoma City Testing Center', 'Oklahoma City', 'OK', 35.53053, -97.58133, 'South Central'),
+('1015', 'Nashville Testing Center', 'Nashville', 'TN', 36.09784, -86.67748, 'Southeast'),
+('0064', 'Minneapolis Testing Center', 'Minneapolis', 'MN', 44.85662, -93.32535, 'Midwest'),
+('0116', 'Portland Testing Center', 'Portland', 'OR', 45.5259, -122.83252, 'West'),
+('2703', 'Anchorage Testing Center', 'Anchorage', 'AK', 61.14568, -149.87072, 'Alaska');
 
 -- Set default status for new sites
 INSERT OR IGNORE INTO site_status (site_id, operational_status, reason) 
