@@ -16,13 +16,19 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 20 LTS (recommended) or 18+
+- npm
+- Python 3 (for frontend dev server)
 - Git
 
 ### 1. Backend Setup
 
 ```bash
 cd backend
+
+# If using Node 20 LTS via Homebrew:
+export PATH="/opt/homebrew/opt/node@20/bin:$PATH"
+
 npm install
 
 # Configure environment
@@ -41,10 +47,12 @@ npm start
 
 Backend runs at: **http://localhost:3000**
 
+**Keep this terminal running!**
+
 ### 2. Frontend Setup
 
 ```bash
-# In a new terminal
+# In a NEW terminal window/tab
 cd frontend
 
 # Serve with any static file server:

@@ -2,12 +2,23 @@
 
 Get Storm Scout up and running in 5 minutes!
 
+## Prerequisites
+
+- Node.js 20 LTS (recommended) - Install via: `brew install node@20`
+- Python 3 (for frontend dev server)
+
 ## Step 1: Install Backend Dependencies
 
 ```bash
-cd /Users/mmurphy/strom-scout/backend
+cd backend
+
+# If using Node 20 LTS via Homebrew, add to PATH:
+export PATH="/opt/homebrew/opt/node@20/bin:$PATH"
+
 npm install
 ```
+
+> **Note:** Node 20 LTS is recommended for native module compatibility (better-sqlite3)
 
 ## Step 2: Configure Environment
 
@@ -55,14 +66,14 @@ You should see:
 ✓ Weather data ingestion enabled (every 15 minutes)
 ```
 
-Backend is now running! Keep this terminal open.
+Backend is now running! **Keep this terminal open.**
 
 ## Step 6: Start Frontend
 
-Open a **new terminal**:
+Open a **NEW terminal window/tab**:
 
 ```bash
-cd /Users/mmurphy/strom-scout/frontend
+cd frontend
 
 # Choose one:
 python3 -m http.server 8080
@@ -77,6 +88,10 @@ Open your browser to:
 **http://localhost:8080**
 
 You should see the Storm Scout dashboard!
+
+> **Important:** Both servers must be running simultaneously:
+> - Backend (port 3000) - Provides API data
+> - Frontend (port 8080) - Serves web interface
 
 ## What You'll See
 
