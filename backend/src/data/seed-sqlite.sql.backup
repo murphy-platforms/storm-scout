@@ -1,11 +1,8 @@
 -- Storm Scout Seed Data
--- MySQL/MariaDB compatible
-
--- Storm Scout Seed Data
 -- Sample data for development and testing
 
 -- Sample site data (first 10 sites from our list)
-INSERT IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region) VALUES
+INSERT OR IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region) VALUES
 ('0382', 'Miami Beach Testing Center', 'Miami Beach', 'FL', 25.87724, -80.24573, 'Southeast'),
 ('0610', 'Fort Lauderdale Testing Center', 'Fort Lauderdale', 'FL', 26.05184, -80.16929, 'Southeast'),
 ('0080', 'Orlando Testing Center', 'Orlando', 'FL', 28.68538, -81.39514, 'Southeast'),
@@ -28,9 +25,9 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
     'NOAA/NWS Miami',
     'Hurricane Warning in effect for Miami-Dade County',
     'A Hurricane Warning means that hurricane conditions are expected somewhere within the warning area. Preparations to protect life and property should be rushed to completion.',
-    NOW(),
-    DATE_ADD(NOW(), INTERVAL 48 HOUR),
-    DATE_SUB(NOW(), INTERVAL 2 HOUR)
+    datetime('now'),
+    datetime('now', '+48 hours'),
+    datetime('now', '-2 hours')
 ),
 (
     (SELECT id FROM sites WHERE site_code = '0610'),
@@ -40,9 +37,9 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
     'NOAA/NWS Miami',
     'Hurricane Warning in effect for Broward County',
     'A Hurricane Warning means that hurricane conditions are expected somewhere within the warning area. Preparations to protect life and property should be rushed to completion.',
-    NOW(),
-    DATE_ADD(NOW(), INTERVAL 48 HOUR),
-    DATE_SUB(NOW(), INTERVAL 2 HOUR)
+    datetime('now'),
+    datetime('now', '+48 hours'),
+    datetime('now', '-2 hours')
 );
 
 -- Winter weather advisory for northern sites
@@ -55,9 +52,9 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
     'NOAA/NWS Chicago',
     'Winter Storm Warning for Cook County',
     'Heavy snow expected. Total snow accumulations of 6 to 10 inches. Winds gusting as high as 40 mph.',
-    DATE_ADD(NOW(), INTERVAL 6 HOUR),
-    DATE_ADD(NOW(), INTERVAL 24 HOUR),
-    DATE_SUB(NOW(), INTERVAL 1 HOUR)
+    datetime('now', '+6 hours'),
+    datetime('now', '+24 hours'),
+    datetime('now', '-1 hour')
 ),
 (
     (SELECT id FROM sites WHERE site_code = '5194'),
@@ -67,9 +64,9 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
     'NOAA/NWS Boston',
     'Winter Weather Advisory for Suffolk County',
     'Snow expected. Total snow accumulations of 2 to 4 inches. Plan on slippery road conditions.',
-    DATE_ADD(NOW(), INTERVAL 3 HOUR),
-    DATE_ADD(NOW(), INTERVAL 18 HOUR),
-    DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+    datetime('now', '+3 hours'),
+    datetime('now', '+18 hours'),
+    datetime('now', '-30 minutes')
 );
 
 -- Severe thunderstorm watch for central US
@@ -82,9 +79,9 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
     'NOAA/NWS Fort Worth',
     'Severe Thunderstorm Watch for Dallas County',
     'Conditions are favorable for the development of severe thunderstorms capable of producing damaging winds and large hail.',
-    NOW(),
-    DATE_ADD(NOW(), INTERVAL 8 HOUR),
-    DATE_SUB(NOW(), INTERVAL 45 MINUTE)
+    datetime('now'),
+    datetime('now', '+8 hours'),
+    datetime('now', '-45 minutes')
 );
 
 -- Expired advisory example
@@ -97,24 +94,24 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
     'NOAA/NWS Los Angeles',
     'Wind Advisory expired for Los Angeles County',
     'Northeast winds 20 to 30 mph with gusts to 45 mph.',
-    DATE_SUB(NOW(), INTERVAL 24 HOUR),
-    DATE_SUB(NOW(), INTERVAL 2 HOUR),
-    DATE_SUB(NOW(), INTERVAL 26 HOUR)
+    datetime('now', '-24 hours'),
+    datetime('now', '-2 hours'),
+    datetime('now', '-26 hours')
 );
 
 -- Sample site status data
 -- Sites with active high-severity advisories should be marked accordingly
-REPLACE INTO site_status (site_id, operational_status, reason, last_updated) VALUES
-((SELECT id FROM sites WHERE site_code = '0382'), 'Closed', 'Hurricane Warning - Site evacuated', NOW()),
-((SELECT id FROM sites WHERE site_code = '0610'), 'Closed', 'Hurricane Warning - Site evacuated', NOW()),
-((SELECT id FROM sites WHERE site_code = '3251'), 'At Risk', 'Winter Storm Warning - Monitoring conditions', NOW()),
-((SELECT id FROM sites WHERE site_code = '5194'), 'At Risk', 'Winter Weather Advisory - Reduced operations', NOW()),
-((SELECT id FROM sites WHERE site_code = '0051'), 'Open', 'Severe Thunderstorm Watch - Operations normal with precautions', NOW()),
-((SELECT id FROM sites WHERE site_code = '0024'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0001'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0062'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0015'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0080'), 'Open', 'No active advisories', NOW());
+INSERT OR REPLACE INTO site_status (site_id, operational_status, reason, last_updated) VALUES
+((SELECT id FROM sites WHERE site_code = '0382'), 'Closed', 'Hurricane Warning - Site evacuated', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0610'), 'Closed', 'Hurricane Warning - Site evacuated', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '3251'), 'At Risk', 'Winter Storm Warning - Monitoring conditions', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '5194'), 'At Risk', 'Winter Weather Advisory - Reduced operations', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0051'), 'Open', 'Severe Thunderstorm Watch - Operations normal with precautions', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0024'), 'Open', 'No active advisories', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0001'), 'Open', 'No active advisories', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0062'), 'Open', 'No active advisories', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0015'), 'Open', 'No active advisories', datetime('now')),
+((SELECT id FROM sites WHERE site_code = '0080'), 'Open', 'No active advisories', datetime('now'));
 
 -- Sample government/emergency notices
 INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, description, affected_states, effective_time, expiration_time, source_url) VALUES
@@ -125,8 +122,8 @@ INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, descri
     'Governor declares State of Emergency for Hurricane',
     'The Governor has declared a state of emergency for all counties in the state of Florida due to the approaching hurricane. Residents are urged to prepare and follow evacuation orders from local officials.',
     'FL',
-    DATE_SUB(NOW(), INTERVAL 6 HOUR),
-    DATE_ADD(NOW(), INTERVAL 72 HOUR),
+    datetime('now', '-6 hours'),
+    datetime('now', '+72 hours'),
     'https://www.floridadisaster.org'
 ),
 (
@@ -136,8 +133,8 @@ INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, descri
     'Snow Emergency declared for Cook County',
     'A snow emergency has been declared. All vehicles must be off snow routes within 3 hours. Public transportation may be delayed.',
     'IL',
-    NOW(),
-    DATE_ADD(NOW(), INTERVAL 48 HOUR),
+    datetime('now'),
+    datetime('now', '+48 hours'),
     'https://www.cookcountyil.gov'
 ),
 (
@@ -147,14 +144,14 @@ INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, descri
     'Presidential Emergency Declaration for Southeast States',
     'The President has declared an emergency for states affected by Hurricane. Federal assistance is available to supplement state and local response efforts.',
     'FL,GA,SC,NC',
-    DATE_SUB(NOW(), INTERVAL 12 HOUR),
+    datetime('now', '-12 hours'),
     NULL,
     'https://www.fema.gov'
 );
 
 -- Add more sites to reach a meaningful sample size
 -- Note: sites.json already loaded 219 sites during init, these are just examples
-INSERT IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region) VALUES
+INSERT OR IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region) VALUES
 ('5221', 'San Juan Testing Center', 'San Juan', 'PR', 18.41632, -66.10629, 'Caribbean'),
 ('3106', 'Honolulu Testing Center', 'Honolulu', 'HI', 21.3084, -157.86056, 'Pacific'),
 ('0054', 'Denver Testing Center', 'Denver', 'CO', 39.60901, -104.90466, 'Mountain'),
@@ -167,6 +164,6 @@ INSERT IGNORE INTO sites (site_code, name, city, state, latitude, longitude, reg
 ('2703', 'Anchorage Testing Center', 'Anchorage', 'AK', 61.14568, -149.87072, 'Alaska');
 
 -- Set default status for new sites
-INSERT IGNORE INTO site_status (site_id, operational_status, reason) 
+INSERT OR IGNORE INTO site_status (site_id, operational_status, reason) 
 SELECT id, 'Open', 'No active advisories' FROM sites 
 WHERE id NOT IN (SELECT site_id FROM site_status);
