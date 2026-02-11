@@ -13,27 +13,27 @@ const SiteStatusModel = require('../models/siteStatus');
  * GET /api/status/overview
  * Get dashboard overview statistics
  */
-router.get('/overview', (req, res) => {
+router.get('/overview', async (req, res) => {
   try {
     // Total sites
-    const allSites = SiteModel.getAll();
+    const allSites = await SiteModel.getAll();
     const totalSites = allSites.length;
     
     // Active advisories
-    const activeAdvisories = AdvisoryModel.getActive();
+    const activeAdvisories = await AdvisoryModel.getActive();
     const totalActiveAdvisories = activeAdvisories.length;
     
     // Sites with active advisories
     const sitesWithAdvisories = new Set(activeAdvisories.map(a => a.site_id)).size;
     
     // Advisory count by severity
-    const advisoriesBySeverity = AdvisoryModel.getCountBySeverity(true);
+    const advisoriesBySeverity = await AdvisoryModel.getCountBySeverity(true);
     
     // Site status counts
-    const statusCounts = SiteStatusModel.getCountByStatus();
+    const statusCounts = await SiteStatusModel.getCountByStatus();
     
     // Recently updated sites
-    const recentlyUpdated = SiteStatusModel.getRecentlyUpdated(10);
+    const recentlyUpdated = await SiteStatusModel.getRecentlyUpdated(10);
     
     res.json({
       success: true,
@@ -56,9 +56,9 @@ router.get('/overview', (req, res) => {
  * GET /api/status/sites-impacted
  * Get all impacted sites (Closed or At Risk)
  */
-router.get('/sites-impacted', (req, res) => {
+router.get('/sites-impacted', async (req, res) => {
   try {
-    const impactedSites = SiteStatusModel.getImpacted();
+    const impactedSites = await SiteStatusModel.getImpacted();
     res.json({ success: true, data: impactedSites, count: impactedSites.length });
   } catch (error) {
     console.error('Error fetching impacted sites:', error);
@@ -71,10 +71,10 @@ router.get('/sites-impacted', (req, res) => {
  * Get all site statuses with optional filters
  * Query params: operational_status, state
  */
-router.get('/sites', (req, res) => {
+router.get('/sites', async (req, res) => {
   try {
     const { operational_status, state } = req.query;
-    const statuses = SiteStatusModel.getAll({ operational_status, state });
+    const statuses = await SiteStatusModel.getAll({ operational_status, state });
     res.json({ success: true, data: statuses, count: statuses.length });
   } catch (error) {
     console.error('Error fetching site statuses:', error);

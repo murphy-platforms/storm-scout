@@ -10,9 +10,9 @@ const { getDatabase } = require('./config/database');
 
 // Import routes
 const sitesRouter = require('./routes/sites');
-const advisoriesRouter = require('./routes/advisories');
+// const advisoriesRouter = require('./routes/advisories');
 const statusRouter = require('./routes/status');
-const noticesRouter = require('./routes/notices');
+// const noticesRouter = require('./routes/notices');
 
 // Create Express app
 const app = express();
@@ -41,9 +41,10 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/sites', sitesRouter);
-app.use('/api/advisories', advisoriesRouter);
+// Temporarily disabled until MySQL conversion complete:
+// app.use('/api/advisories', advisoriesRouter);
 app.use('/api/status', statusRouter);
-app.use('/api/notices', noticesRouter);
+// app.use('/api/notices', noticesRouter);
 
 // Root endpoint
 app.get('/', (req, res) => {
