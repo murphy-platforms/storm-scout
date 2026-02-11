@@ -1,5 +1,5 @@
 /**
- * Advisory Model
+ * Advisory Model - MySQL/MariaDB
  * Data access layer for advisories table
  */
 
@@ -9,10 +9,10 @@ const AdvisoryModel = {
   /**
    * Get all advisories with optional filters
    * @param {Object} filters - Optional filters (status, severity, state, site_id)
-   * @returns {Array} Array of advisory objects with site data
+   * @returns {Promise<Array>} Array of advisory objects with site data
    */
-  getAll(filters = {}) {
-    const db = getDatabase();
+  async getAll(filters = {}) {
+    const db = await getDatabase();
     let query = `
       SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
       FROM advisories a
@@ -43,88 +43,114 @@ const AdvisoryModel = {
 
     query += ' ORDER BY a.severity DESC, a.last_updated DESC';
 
-    return db.prepare(query).all(...params);
+    try {
+      const [rows] = await db.query(query, params);
+      return rows;
+    } catch (error) {
+      console.error('Error fetching advisories:', error);
+      return [];
+    }
   },
 
   /**
    * Get active advisories only
    * @param {Object} filters - Optional filters
-   * @returns {Array} Array of active advisory objects
+   * @returns {Promise<Array>} Array of active advisory objects
    */
-  getActive(filters = {}) {
+  async getActive(filters = {}) {
     return this.getAll({ ...filters, status: 'active' });
   },
 
   /**
    * Get advisory by ID
    * @param {number} id - Advisory ID
-   * @returns {Object|null} Advisory object or null
+   * @returns {Promise<Object|null>} Advisory object or null
    */
-  getById(id) {
-    const db = getDatabase();
-    return db.prepare(`
-      SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
-      FROM advisories a
-      JOIN sites s ON a.site_id = s.id
-      WHERE a.id = ?
-    `).get(id);
+  async getById(id) {
+    const db = await getDatabase();
+    try {
+      const [rows] = await db.query(`
+        SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
+        FROM advisories a
+        JOIN sites s ON a.site_id = s.id
+        WHERE a.id = ?
+      `, [id]);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error fetching advisory by ID:', error);
+      return null;
+    }
   },
 
   /**
    * Get advisories for a specific site
    * @param {number} siteId - Site ID
    * @param {boolean} activeOnly - Get only active advisories
-   * @returns {Array} Array of advisory objects
+   * @returns {Promise<Array>} Array of advisory objects
    */
-  getBySite(siteId, activeOnly = false) {
-    const db = getDatabase();
+  async getBySite(siteId, activeOnly = false) {
+    const db = await getDatabase();
     let query = 'SELECT * FROM advisories WHERE site_id = ?';
+    const params = [siteId];
+    
     if (activeOnly) {
-      query += ' AND status = \'active\'';
+      query += ' AND status = ?';
+      params.push('active');
     }
+    
     query += ' ORDER BY severity DESC, last_updated DESC';
-    return db.prepare(query).all(siteId);
+    
+    try {
+      const [rows] = await db.query(query, params);
+      return rows;
+    } catch (error) {
+      console.error('Error fetching advisories for site:', error);
+      return [];
+    }
   },
 
   /**
    * Create new advisory
    * @param {Object} advisory - Advisory data
-   * @returns {Object} Created advisory with ID
+   * @returns {Promise<Object>} Created advisory with ID
    */
-  create(advisory) {
-    const db = getDatabase();
-    const stmt = db.prepare(`
-      INSERT INTO advisories (
-        site_id, advisory_type, severity, status, source,
-        headline, description, start_time, end_time, issued_time, raw_payload
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+  async create(advisory) {
+    const db = await getDatabase();
+    try {
+      const [result] = await db.query(`
+        INSERT INTO advisories (
+          site_id, advisory_type, severity, status, source,
+          headline, description, start_time, end_time, issued_time, raw_payload
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        advisory.site_id,
+        advisory.advisory_type,
+        advisory.severity,
+        advisory.status || 'active',
+        advisory.source,
+        advisory.headline,
+        advisory.description,
+        advisory.start_time,
+        advisory.end_time,
+        advisory.issued_time,
+        advisory.raw_payload ? JSON.stringify(advisory.raw_payload) : null
+      ]);
 
-    const result = stmt.run(
-      advisory.site_id,
-      advisory.advisory_type,
-      advisory.severity,
-      advisory.status || 'active',
-      advisory.source,
-      advisory.headline,
-      advisory.description,
-      advisory.start_time,
-      advisory.end_time,
-      advisory.issued_time,
-      advisory.raw_payload ? JSON.stringify(advisory.raw_payload) : null
-    );
-
-    return this.getById(result.lastInsertRowid);
+      return this.getById(result.insertId);
+    } catch (error) {
+      console.error('Error creating advisory:', error);
+      throw error;
+    }
   },
 
   /**
    * Update advisory
    * @param {number} id - Advisory ID
    * @param {Object} updates - Fields to update
-   * @returns {Object|null} Updated advisory or null
+   * @returns {Promise<Object|null>} Updated advisory or null
    */
-  update(id, updates) {
-    const db = getDatabase();
+  async update(id, updates) {
+    const db = await getDatabase();
     const fields = [];
     const params = [];
 
@@ -141,68 +167,94 @@ const AdvisoryModel = {
     params.push(id);
 
     const query = `UPDATE advisories SET ${fields.join(', ')} WHERE id = ?`;
-    db.prepare(query).run(...params);
-
-    return this.getById(id);
+    
+    try {
+      await db.query(query, params);
+      return this.getById(id);
+    } catch (error) {
+      console.error('Error updating advisory:', error);
+      return null;
+    }
   },
 
   /**
    * Delete advisory
    * @param {number} id - Advisory ID
-   * @returns {boolean} Success status
+   * @returns {Promise<boolean>} Success status
    */
-  delete(id) {
-    const db = getDatabase();
-    const result = db.prepare('DELETE FROM advisories WHERE id = ?').run(id);
-    return result.changes > 0;
+  async delete(id) {
+    const db = await getDatabase();
+    try {
+      const [result] = await db.query('DELETE FROM advisories WHERE id = ?', [id]);
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error('Error deleting advisory:', error);
+      return false;
+    }
   },
 
   /**
    * Get advisory count by severity
    * @param {boolean} activeOnly - Count only active advisories
-   * @returns {Array} Array of {severity, count} objects
+   * @returns {Promise<Array>} Array of {severity, count} objects
    */
-  getCountBySeverity(activeOnly = true) {
-    const db = getDatabase();
+  async getCountBySeverity(activeOnly = true) {
+    const db = await getDatabase();
     let query = 'SELECT severity, COUNT(*) as count FROM advisories';
     if (activeOnly) {
-      query += ' WHERE status = \'active\'';
+      query += " WHERE status = 'active'";
     }
     query += ' GROUP BY severity ORDER BY count DESC';
-    return db.prepare(query).all();
+    
+    try {
+      const [rows] = await db.query(query);
+      return rows;
+    } catch (error) {
+      console.error('Error counting by severity:', error);
+      return [];
+    }
   },
 
   /**
    * Get recently updated advisories
    * @param {number} limit - Max number of results
-   * @returns {Array} Array of advisory objects
+   * @returns {Promise<Array>} Array of advisory objects
    */
-  getRecentlyUpdated(limit = 10) {
-    const db = getDatabase();
-    return db.prepare(`
-      SELECT a.*, s.site_code, s.name as site_name, s.city, s.state
-      FROM advisories a
-      JOIN sites s ON a.site_id = s.id
-      WHERE a.status = 'active'
-      ORDER BY a.last_updated DESC
-      LIMIT ?
-    `).all(limit);
+  async getRecentlyUpdated(limit = 10) {
+    const db = await getDatabase();
+    try {
+      const [rows] = await db.query(`
+        SELECT a.*, s.site_code, s.name as site_name, s.city, s.state
+        FROM advisories a
+        JOIN sites s ON a.site_id = s.id
+        WHERE a.status = 'active'
+        ORDER BY a.last_updated DESC
+        LIMIT ?
+      `, [limit]);
+      return rows;
+    } catch (error) {
+      console.error('Error fetching recently updated:', error);
+      return [];
+    }
   },
 
   /**
    * Mark expired advisories as expired
-   * @returns {number} Number of advisories marked as expired
+   * @returns {Promise<number>} Number of advisories marked as expired
    */
-  markExpired() {
-    const db = getDatabase();
-    const result = db.prepare(`
-      UPDATE advisories
-      SET status = 'expired', last_updated = CURRENT_TIMESTAMP
-      WHERE status = 'active'
-        AND end_time IS NOT NULL
-        AND datetime(end_time) < datetime('now')
-    `).run();
-    return result.changes;
+  async markExpired() {
+    const db = await getDatabase();
+    try {
+      const [result] = await db.query(`
+        UPDATE advisories
+        SET status = 'expired', last_updated = CURRENT_TIMESTAMP
+        WHERE status = 'active' AND end_time < NOW()
+      `);
+      return result.affectedRows;
+    } catch (error) {
+      console.error('Error marking expired advisories:', error);
+      return 0;
+    }
   }
 };
 
