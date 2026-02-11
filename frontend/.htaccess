@@ -1,0 +1,27 @@
+# Storm Scout - Apache/Passenger Routing Configuration
+# This file routes API requests to the Node.js app while serving static frontend files
+
+# Enable RewriteEngine
+RewriteEngine On
+
+# Route /api/* and /health to the Node.js Passenger app
+RewriteCond %{REQUEST_URI} ^/api/ [OR]
+RewriteCond %{REQUEST_URI} ^/health$
+RewriteRule ^(.*)$ - [L,PT]
+
+# Serve static files if they exist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Default to index.html for single-page app routing
+RewriteRule ^(.*)$ /index.html [L]
+
+# Set default directory index
+DirectoryIndex index.html
+
+# Enable CORS for API calls (if needed)
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
