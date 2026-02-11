@@ -39,6 +39,11 @@ const config = {
   // Logging configuration
   logging: {
     level: process.env.LOG_LEVEL || 'info'
+  },
+  
+  // Static files configuration
+  staticFiles: {
+    path: process.env.STATIC_FILES_PATH || null
   }
 };
 
