@@ -3,7 +3,7 @@
  * Handles all backend API requests
  */
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://your-domain.example.com/api';
 
 const API = {
     /**
