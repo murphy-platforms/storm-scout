@@ -26,6 +26,10 @@
 - ✅ Converted `seed.sql` from SQLite to MySQL syntax
 - ✅ Updated `config.js` with MySQL credentials structure
 - ✅ Updated `.env` files with MySQL configuration
+- ✅ Fixed SQL parsing to handle comment lines properly
+- ✅ Converted site model and routes to async/await
+- ✅ Created MySQL-compatible stubs for advisory and siteStatus models
+- ✅ Set up SSH access with key-based authentication
 
 ## ❌ Issues Encountered
 
@@ -35,29 +39,53 @@
 
 ## 🎯 Current Status
 
-**MySQL Conversion:** ✅ COMPLETE - Ready for deployment
+**✅ DEPLOYED AND RUNNING**
 
 **On Server:**
-- Database: `***REDACTED***` (MariaDB 11.4.9) - empty, ready for schema
-- Files: Need re-deployment with MySQL version
-- Node.js: Configured, ready to start after database initialization
+- Database: `***REDACTED***` (MariaDB 11.4.9) - ✅ Schema created, 219 sites loaded
+- Backend API: ✅ Running at https://your-domain.example.com
+- Node.js: ✅ Running on version 20.20.0
+- SSH Access: ✅ Configured for deployment
 
 **FTP Upload Paths:**
 - FTP uploads to: `/home/REDACTED_USER/your-domain.example.com/stormscout/`
 - Node.js app expects: `/home/REDACTED_USER/storm-scout/`
 - Must copy files: `cp -r ~/your-domain.example.com/stormscout/* ~/storm-scout/`
 
-## 📋 Next Steps: Deploy MySQL Version
+## 📋 Completed Deployment Steps
 
-### Deployment Steps
-1. Test MySQL version locally (requires local MySQL)
-2. Deploy updated code via FTP
-3. Copy files to correct location on server
-4. Run npm install in cPanel
-5. Initialize MySQL database with schema
-6. Seed with sample data
-7. Start Node.js application
-8. Test at https://your-domain.example.com
+1. ✅ Configured SSH access with Ed25519 key
+2. ✅ Deployed backend files via SSH/rsync
+3. ✅ Installed mysql2 and dependencies
+4. ✅ Initialized MySQL database schema
+5. ✅ Seeded database with 219 testing center sites
+6. ✅ Started Node.js application
+7. ✅ Verified API endpoints working
+
+## 🎯 Working Endpoints
+
+- ✅ `GET /health` - Health check
+- ✅ `GET /api/sites` - Returns all 219 sites
+- ✅ `GET /api/sites/:id` - Get site by ID
+- ✅ `GET /api/sites/states` - Get list of states
+- ✅ `GET /api/sites/regions` - Get list of regions
+- ✅ `GET /api/status/overview` - Dashboard statistics
+- ✅ `GET /api/status/sites` - Site statuses
+
+## 📋 Remaining Work
+
+### Backend
+- ⏳ Complete conversion of advisories routes/model to MySQL
+- ⏳ Complete conversion of notices routes/model to MySQL
+- ⏳ Re-enable disabled routes in app.js
+- ⏳ Set up NOAA weather data ingestion
+- ⏳ Configure ingestion scheduler
+
+### Frontend
+- ⏳ Deploy frontend files to public_html
+- ⏳ Update API endpoint URLs in frontend
+- ⏳ Test dashboard UI
+- ⏳ Configure proper routing
 
 ## 🔑 Server Details
 
@@ -66,9 +94,12 @@
 - **Node.js:** 20.20.0
 - **Database:** MariaDB 11.4.9-cll-lve
 
-**FTP:**
-- Host: `***REDACTED_HOST***:21`
-- User: `stormscout@your-domain.example.com`
+**SSH/FTP:**
+- Host: `***REDACTED_HOST***`
+- SSH Port: `REDACTED_PORT`
+- FTP Port: `21`
+- User: `REDACTED_USER` (SSH), `stormscout@your-domain.example.com` (FTP)
+- SSH Alias: `stormscout`
 
 **MySQL:**
 - Host: `localhost`

@@ -14,10 +14,12 @@ const SiteStatusModel = require('../models/siteStatus');
  * Get all sites with optional filters
  * Query params: state, region
  */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { state, region } = req.query;
-    const sites = SiteModel.getAll({ state, region });
+    console.log('[DEBUG] Fetching sites with filters:', { state, region });
+    const sites = await SiteModel.getAll({ state, region });
+    console.log('[DEBUG] Sites returned:', Array.isArray(sites), 'length:', sites ? sites.length : 'null');
     res.json({ success: true, data: sites, count: sites.length });
   } catch (error) {
     console.error('Error fetching sites:', error);
@@ -29,9 +31,9 @@ router.get('/', (req, res) => {
  * GET /api/sites/states
  * Get list of all states with sites
  */
-router.get('/states', (req, res) => {
+router.get('/states', async (req, res) => {
   try {
-    const states = SiteModel.getStates();
+    const states = await SiteModel.getStates();
     res.json({ success: true, data: states });
   } catch (error) {
     console.error('Error fetching states:', error);
@@ -43,9 +45,9 @@ router.get('/states', (req, res) => {
  * GET /api/sites/regions
  * Get list of all regions
  */
-router.get('/regions', (req, res) => {
+router.get('/regions', async (req, res) => {
   try {
-    const regions = SiteModel.getRegions();
+    const regions = await SiteModel.getRegions();
     res.json({ success: true, data: regions });
   } catch (error) {
     console.error('Error fetching regions:', error);
@@ -57,18 +59,18 @@ router.get('/regions', (req, res) => {
  * GET /api/sites/:id
  * Get site by ID with status and advisories
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const site = SiteModel.getById(id);
+    const site = await SiteModel.getById(id);
     
     if (!site) {
       return res.status(404).json({ success: false, error: 'Site not found' });
     }
     
     // Add status and advisories
-    const status = SiteStatusModel.getBySite(id);
-    const advisories = AdvisoryModel.getBySite(id, true); // Active only
+    const status = await SiteStatusModel.getBySite(id);
+    const advisories = await AdvisoryModel.getBySite(id, true); // Active only
     
     res.json({
       success: true,
@@ -89,17 +91,17 @@ router.get('/:id', (req, res) => {
  * Get all advisories for a specific site
  * Query params: active_only (boolean)
  */
-router.get('/:id/advisories', (req, res) => {
+router.get('/:id/advisories', async (req, res) => {
   try {
     const { id } = req.params;
     const activeOnly = req.query.active_only === 'true';
     
-    const site = SiteModel.getById(id);
+    const site = await SiteModel.getById(id);
     if (!site) {
       return res.status(404).json({ success: false, error: 'Site not found' });
     }
     
-    const advisories = AdvisoryModel.getBySite(id, activeOnly);
+    const advisories = await AdvisoryModel.getBySite(id, activeOnly);
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
     console.error('Error fetching site advisories:', error);
