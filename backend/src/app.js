@@ -7,7 +7,6 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const config = require('./config/config');
-const { getDatabase } = require('./config/database');
 
 // Import routes
 const sitesRouter = require('./routes/sites');
@@ -94,8 +93,5 @@ if (config.staticFiles.path) {
     res.sendFile(indexPath);
   });
 }
-
-// Initialize database connection
-getDatabase();
 
 module.exports = app;
