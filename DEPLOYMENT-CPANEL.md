@@ -5,6 +5,7 @@ Deploy Storm Scout to your cPanel hosting (Spaceship.com) with Node.js support.
 ## Prerequisites
 - cPanel account with Node.js support (✓ You have this!)
 - FTP/File Manager access
+- MySQL/MariaDB database (✓ Created: mwqtiakilx_stormscout)
 - Domain: teammurphy.rocks
 
 ## Deployment Steps
@@ -44,11 +45,18 @@ On your local machine, create a production-ready package:
 ```bash
 cd /Users/mmurphy/strom-scout/backend
 
-# Create .env.production
+# Create .env.production with MySQL credentials
 cat > .env.production << 'EOF'
 PORT=3000
 NODE_ENV=production
-DATABASE_PATH=./storm-scout.db
+
+# MySQL Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=mwqtiakilx_stormscout
+DB_PASSWORD=YOUR_MYSQL_PASSWORD_HERE
+DB_NAME=mwqtiakilx_stormscout
+
 INGESTION_ENABLED=true
 INGESTION_INTERVAL_MINUTES=15
 NOAA_API_BASE_URL=https://api.weather.gov
@@ -82,7 +90,14 @@ zip -r storm-scout-backend.zip backend/ -x "backend/node_modules/*" -x "backend/
    ```
    NODE_ENV = production
    PORT = 3000
-   DATABASE_PATH = ./storm-scout.db
+   
+   # MySQL Database Configuration
+   DB_HOST = localhost
+   DB_PORT = 3306
+   DB_USER = mwqtiakilx_stormscout
+   DB_PASSWORD = YOUR_MYSQL_PASSWORD
+   DB_NAME = mwqtiakilx_stormscout
+   
    INGESTION_ENABLED = true
    INGESTION_INTERVAL_MINUTES = 15
    NOAA_API_BASE_URL = https://api.weather.gov
@@ -107,16 +122,22 @@ If Terminal is not available:
 - cPanel will auto-install dependencies when you create the app
 - Or use the "Run NPM Install" button in the Node.js interface
 
-### Step 5: Initialize Database
+### Step 5: Initialize MySQL Database
 
 In cPanel Terminal or SSH:
 
 ```bash
 cd ~/storm-scout
 source /home/username/nodevenv/storm-scout/20/bin/activate
+
+# Initialize database schema
 npm run init-db
-npm run seed-db  # Optional: sample data
+
+# Seed with sample data (optional)
+npm run seed-db
 ```
+
+**Note:** The database `mwqtiakilx_stormscout` should already be created in cPanel MySQL Databases section with user `mwqtiakilx_stormscout` having ALL PRIVILEGES.
 
 ### Step 6: Update Frontend API URL
 
