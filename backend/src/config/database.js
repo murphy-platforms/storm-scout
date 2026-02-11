@@ -39,11 +39,11 @@ async function initDatabase() {
 
 /**
  * Get database connection from pool
- * @returns {Promise<Connection>} MySQL connection
+ * @returns {Pool} MySQL connection pool
  */
-async function getDatabase() {
+function getDatabase() {
   if (!pool) {
-    await initDatabase();
+    throw new Error('Database not initialized. Call initDatabase() first.');
   }
   return pool;
 }
