@@ -5,6 +5,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const config = require('./config/config');
 const { getDatabase } = require('./config/database');
 
@@ -21,6 +22,13 @@ const app = express();
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (if path configured)
+if (config.staticFiles.path) {
+  const publicPath = path.resolve(config.staticFiles.path);
+  console.log(`Serving static files from: ${publicPath}`);
+  app.use(express.static(publicPath));
+}
 
 // Request logging middleware (development)
 if (config.env === 'development') {
@@ -45,8 +53,8 @@ app.use('/api/advisories', advisoriesRouter);
 app.use('/api/status', statusRouter);
 app.use('/api/notices', noticesRouter);
 
-// Root endpoint
-app.get('/', (req, res) => {
+// API info endpoint
+app.get('/api', (req, res) => {
   res.json({
     name: 'Storm Scout API',
     version: '1.0.0',
@@ -60,11 +68,11 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
   res.status(404).json({
     success: false,
-    error: 'Endpoint not found',
+    error: 'API endpoint not found',
     path: req.path
   });
 });
@@ -77,6 +85,15 @@ app.use((err, req, res, next) => {
     error: config.env === 'development' ? err.message : 'Internal server error'
   });
 });
+
+// Serve index.html for all other non-API routes (SPA fallback)
+// This must be last to avoid catching API routes
+if (config.staticFiles.path) {
+  app.get('*', (req, res) => {
+    const indexPath = path.resolve(config.staticFiles.path, 'index.html');
+    res.sendFile(indexPath);
+  });
+}
 
 // Initialize database connection
 getDatabase();
