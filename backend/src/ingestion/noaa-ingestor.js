@@ -23,13 +23,13 @@ async function ingestNOAAData() {
     if (noaaAlerts.length === 0) {
       console.log('No active weather alerts from NOAA');
       // Mark all existing advisories as expired if no alerts
-      const expired = AdvisoryModel.markExpired();
+      const expired = await AdvisoryModel.markExpired();
       console.log(`Marked ${expired} expired advisories`);
       return;
     }
     
     // Step 2: Get all sites
-    const sites = SiteModel.getAll();
+    const sites = await SiteModel.getAll();
     console.log(`Processing ${sites.length} sites...`);
     
     // Step 3: Match alerts to sites
@@ -68,14 +68,14 @@ async function ingestNOAAData() {
     let statusesUpdated = 0;
     
     // First, mark all existing advisories as expired
-    AdvisoryModel.markExpired();
+    await AdvisoryModel.markExpired();
     
     // Create new advisories and update site statuses
     for (const [siteId, advisories] of siteAdvisories.entries()) {
       // Create advisories
       for (const advisory of advisories) {
         try {
-          AdvisoryModel.create(advisory);
+          await AdvisoryModel.create(advisory);
           advisoriesCreated++;
         } catch (error) {
           console.error(`Error creating advisory for site ${siteId}:`, error.message);
@@ -92,7 +92,7 @@ async function ingestNOAAData() {
       const reason = formatStatusReason(advisories);
       
       try {
-        SiteStatusModel.upsert(siteId, operationalStatus, reason);
+        await SiteStatusModel.upsert(siteId, operationalStatus, reason);
         statusesUpdated++;
       } catch (error) {
         console.error(`Error updating status for site ${siteId}:`, error.message);
@@ -103,7 +103,7 @@ async function ingestNOAAData() {
     for (const site of sites) {
       if (!siteAdvisories.has(site.id)) {
         try {
-          SiteStatusModel.upsert(site.id, 'Open', 'No active advisories');
+          await SiteStatusModel.upsert(site.id, 'Open', 'No active advisories');
         } catch (error) {
           console.error(`Error updating status for site ${site.id}:`, error.message);
         }
