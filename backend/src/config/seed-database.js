@@ -4,11 +4,14 @@
  * Usage: npm run seed-db
  */
 
-const { getDatabase, seedDatabase, closeDatabase } = require('./database');
+const { initDatabase, getDatabase, seedDatabase, closeDatabase } = require('./database');
 
 async function seed() {
   try {
     console.log('Seeding Storm Scout database...\n');
+    
+    // Initialize sql.js
+    await initDatabase();
     
     // Ensure database exists
     getDatabase();

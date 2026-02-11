@@ -4,11 +4,14 @@
  * Usage: npm run init-db
  */
 
-const { initializeSchema, loadSites, closeDatabase } = require('./database');
+const { initDatabase: initSqlJs, initializeSchema, loadSites, closeDatabase } = require('./database');
 
 async function initDatabase() {
   try {
     console.log('Initializing Storm Scout database...\n');
+    
+    // Initialize sql.js
+    await initSqlJs();
     
     // Initialize schema
     initializeSchema();

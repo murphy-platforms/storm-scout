@@ -6,11 +6,17 @@
 const app = require('./app');
 const config = require('./config/config');
 const { startScheduler } = require('./ingestion/scheduler');
+const { initDatabase } = require('./config/database');
 
 const PORT = config.port;
 
-// Start server
-const server = app.listen(PORT, () => {
+// Initialize database and start server
+async function startServer() {
+  // Initialize sql.js
+  await initDatabase();
+  
+  // Start server
+  const server = app.listen(PORT, () => {
   console.log('\n╔══════════════════════════════════════════════════════╗');
   console.log(`║  Storm Scout API Server                             ║`);
   console.log('╠══════════════════════════════════════════════════════╣');
@@ -28,21 +34,28 @@ const server = app.listen(PORT, () => {
   }
   
   console.log('\nServer is ready to accept requests.\n');
-});
+  });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
   console.log('\n\nSIGTERM received. Shutting down gracefully...');
-  server.close(() => {
-    console.log('Server closed.');
-    process.exit(0);
+    server.close(() => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
   });
-});
 
-process.on('SIGINT', () => {
-  console.log('\n\nSIGINT received. Shutting down gracefully...');
-  server.close(() => {
-    console.log('Server closed.');
-    process.exit(0);
+  process.on('SIGINT', () => {
+    console.log('\n\nSIGINT received. Shutting down gracefully...');
+    server.close(() => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
   });
+}
+
+// Start the server
+startServer().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
 });
