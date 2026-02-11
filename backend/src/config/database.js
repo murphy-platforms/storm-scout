@@ -1,115 +1,58 @@
 /**
- * Database Connection Module
- * Manages SQLite database connection using sql.js
+ * Database Connection Module using MySQL/MariaDB
+ * Manages MySQL connection pool
  */
 
-const initSqlJs = require('sql.js');
+const mysql = require('mysql2/promise');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
 
-let db = null;
-let SQL = null;
-let dbPath = null;
+let pool = null;
 
 /**
- * Initialize sql.js (must be called at startup)
+ * Initialize MySQL connection pool
+ * @returns {Promise<Pool>} MySQL connection pool
  */
 async function initDatabase() {
-  if (!SQL) {
-    SQL = await initSqlJs();
+  if (pool) {
+    return pool;
   }
-  return SQL;
+
+  pool = mysql.createPool({
+    host: config.database.host,
+    port: config.database.port || 3306,
+    user: config.database.user,
+    password: config.database.password,
+    database: config.database.database,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
+  });
+
+  console.log(`✓ MySQL pool created: ${config.database.database}@${config.database.host}`);
+  
+  return pool;
 }
 
 /**
- * Save database to file
+ * Get database connection from pool
+ * @returns {Promise<Connection>} MySQL connection
  */
-function saveDatabase() {
-  if (db && dbPath) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(dbPath, buffer);
+async function getDatabase() {
+  if (!pool) {
+    await initDatabase();
   }
-}
-
-/**
- * Initialize and return database connection
- * @returns {Object} SQLite database instance
- */
-function getDatabase() {
-  if (db) {
-    return db;
-  }
-
-  if (!SQL) {
-    throw new Error('Database not initialized. Call initDatabase() first.');
-  }
-
-  dbPath = path.resolve(__dirname, '../../', config.database.path);
-  
-  // Ensure directory exists
-  const dbDir = path.dirname(dbPath);
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-  }
-
-  // Load or create database
-  if (fs.existsSync(dbPath)) {
-    const buffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(buffer);
-  } else {
-    db = new SQL.Database();
-  }
-  
-  // Wrap prepare to match better-sqlite3 API
-  const originalPrepare = db.prepare.bind(db);
-  db.prepare = function(sql) {
-    const stmt = originalPrepare(sql);
-    return {
-      run: function(...params) {
-        stmt.bind(params);
-        stmt.step();
-        const rowsModified = db.getRowsModified();
-        const lastId = db.exec('SELECT last_insert_rowid() as id')[0]?.values[0]?.[0] || 0;
-        stmt.reset();
-        // Don't save on every run - let caller save explicitly
-        return { changes: rowsModified, lastInsertRowid: lastId };
-      },
-      get: function(...params) {
-        stmt.bind(params);
-        const result = stmt.step() ? stmt.getAsObject() : null;
-        stmt.reset();
-        return result;
-      },
-      all: function(...params) {
-        stmt.bind(params);
-        const results = [];
-        while (stmt.step()) {
-          results.push(stmt.getAsObject());
-        }
-        stmt.reset();
-        return results;
-      },
-      free: function() {
-        stmt.free();
-      }
-    };
-  };
-  
-  // Enable foreign keys
-  db.run('PRAGMA foreign_keys = ON');
-  
-  console.log(`✓ Database connected: ${dbPath}`);
-  
-  return db;
+  return pool;
 }
 
 /**
  * Initialize database schema
  */
-function initializeSchema() {
-  const db = getDatabase();
+async function initializeSchema() {
+  const db = await getDatabase();
   const schemaPath = path.join(__dirname, '../data/schema.sql');
   
   if (!fs.existsSync(schemaPath)) {
@@ -118,9 +61,15 @@ function initializeSchema() {
   
   const schema = fs.readFileSync(schemaPath, 'utf8');
   
-  // Execute schema
-  db.run(schema);
-  saveDatabase();
+  // Split by semicolons and execute each statement
+  const statements = schema
+    .split(';')
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && !s.startsWith('--'));
+  
+  for (const statement of statements) {
+    await db.query(statement);
+  }
   
   console.log('✓ Database schema initialized');
 }
@@ -128,8 +77,8 @@ function initializeSchema() {
 /**
  * Load sites from JSON file into database
  */
-function loadSites() {
-  const db = getDatabase();
+async function loadSites() {
+  const db = await getDatabase();
   const sitesPath = path.join(__dirname, '../data/sites.json');
   
   if (!fs.existsSync(sitesPath)) {
@@ -138,32 +87,22 @@ function loadSites() {
   
   const sitesData = JSON.parse(fs.readFileSync(sitesPath, 'utf8'));
   
-  const stmt = db.prepare(`
-    INSERT OR IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region)
+  const sql = `
+    INSERT IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
+  `;
   
-  db.run('BEGIN TRANSACTION');
-  try {
-    for (const site of sitesData) {
-      stmt.run(
-        site.site_code,
-        site.name,
-        site.city,
-        site.state,
-        site.latitude,
-        site.longitude,
-        site.region
-      );
-    }
-    db.run('COMMIT');
-  } catch (error) {
-    db.run('ROLLBACK');
-    throw error;
-  } finally {
-    stmt.free();
+  for (const site of sitesData) {
+    await db.query(sql, [
+      site.site_code,
+      site.name,
+      site.city,
+      site.state,
+      site.latitude,
+      site.longitude,
+      site.region
+    ]);
   }
-  saveDatabase();
   
   console.log(`✓ Loaded ${sitesData.length} sites into database`);
 }
@@ -171,8 +110,8 @@ function loadSites() {
 /**
  * Seed database with sample data
  */
-function seedDatabase() {
-  const db = getDatabase();
+async function seedDatabase() {
+  const db = await getDatabase();
   const seedPath = path.join(__dirname, '../data/seed.sql');
   
   if (!fs.existsSync(seedPath)) {
@@ -181,21 +120,28 @@ function seedDatabase() {
   }
   
   const seedData = fs.readFileSync(seedPath, 'utf8');
-  db.run(seedData);
-  saveDatabase();
+  
+  // Split by semicolons and execute each statement
+  const statements = seedData
+    .split(';')
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && !s.startsWith('--'));
+  
+  for (const statement of statements) {
+    await db.query(statement);
+  }
   
   console.log('✓ Database seeded with sample data');
 }
 
 /**
- * Close database connection
+ * Close database connection pool
  */
-function closeDatabase() {
-  if (db) {
-    saveDatabase();
-    db.close();
-    db = null;
-    console.log('✓ Database connection closed');
+async function closeDatabase() {
+  if (pool) {
+    await pool.end();
+    pool = null;
+    console.log('✓ Database pool closed');
   }
 }
 
@@ -205,6 +151,5 @@ module.exports = {
   initializeSchema,
   loadSites,
   seedDatabase,
-  closeDatabase,
-  saveDatabase
+  closeDatabase
 };
