@@ -37,3 +37,11 @@ temp/
 .deploy.config.local
 .ftpconfig
 *.zip
+*.tar.gz
+
+# Backup files
+*backup*
+*-stub.js
+*.bak
+*-sqljs*
+convert-models.sh
