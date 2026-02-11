@@ -12,15 +12,15 @@ const NoticeModel = require('../models/notice');
  * Get all notices with optional filters
  * Query params: jurisdiction_type, notice_type, state, active_only
  */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { jurisdiction_type, notice_type, state, active_only } = req.query;
     
     let notices;
     if (active_only === 'true') {
-      notices = NoticeModel.getActive({ jurisdiction_type, notice_type, state });
+      notices = await NoticeModel.getActive({ jurisdiction_type, notice_type, state });
     } else {
-      notices = NoticeModel.getAll({ jurisdiction_type, notice_type, state });
+      notices = await NoticeModel.getAll({ jurisdiction_type, notice_type, state });
     }
     
     res.json({ success: true, data: notices, count: notices.length });
@@ -35,10 +35,10 @@ router.get('/', (req, res) => {
  * Get active notices only
  * Query params: jurisdiction_type, state
  */
-router.get('/active', (req, res) => {
+router.get('/active', async (req, res) => {
   try {
     const { jurisdiction_type, state } = req.query;
-    const notices = NoticeModel.getActive({ jurisdiction_type, state });
+    const notices = await NoticeModel.getActive({ jurisdiction_type, state });
     res.json({ success: true, data: notices, count: notices.length });
   } catch (error) {
     console.error('Error fetching active notices:', error);
@@ -50,9 +50,9 @@ router.get('/active', (req, res) => {
  * GET /api/notices/stats
  * Get notice statistics
  */
-router.get('/stats', (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
-    const byType = NoticeModel.getCountByType(true);
+    const byType = await NoticeModel.getCountByType(true);
     res.json({ success: true, data: { by_type: byType } });
   } catch (error) {
     console.error('Error fetching notice stats:', error);
@@ -64,10 +64,10 @@ router.get('/stats', (req, res) => {
  * GET /api/notices/:id
  * Get notice by ID
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const notice = NoticeModel.getById(id);
+    const notice = await NoticeModel.getById(id);
     
     if (!notice) {
       return res.status(404).json({ success: false, error: 'Notice not found' });

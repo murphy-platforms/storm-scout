@@ -12,10 +12,10 @@ const AdvisoryModel = require('../models/advisory');
  * Get all advisories with optional filters
  * Query params: status, severity, state, site_id
  */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { status, severity, state, site_id } = req.query;
-    const advisories = AdvisoryModel.getAll({ status, severity, state, site_id });
+    const advisories = await AdvisoryModel.getAll({ status, severity, state, site_id });
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
     console.error('Error fetching advisories:', error);
@@ -28,10 +28,10 @@ router.get('/', (req, res) => {
  * Get all active advisories with optional filters
  * Query params: severity, state
  */
-router.get('/active', (req, res) => {
+router.get('/active', async (req, res) => {
   try {
     const { severity, state } = req.query;
-    const advisories = AdvisoryModel.getActive({ severity, state });
+    const advisories = await AdvisoryModel.getActive({ severity, state });
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
     console.error('Error fetching active advisories:', error);
@@ -44,10 +44,10 @@ router.get('/active', (req, res) => {
  * Get recently updated advisories
  * Query params: limit (default 10)
  */
-router.get('/recent', (req, res) => {
+router.get('/recent', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
-    const advisories = AdvisoryModel.getRecentlyUpdated(limit);
+    const advisories = await AdvisoryModel.getRecentlyUpdated(limit);
     res.json({ success: true, data: advisories });
   } catch (error) {
     console.error('Error fetching recent advisories:', error);
@@ -59,9 +59,9 @@ router.get('/recent', (req, res) => {
  * GET /api/advisories/stats
  * Get advisory statistics
  */
-router.get('/stats', (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
-    const bySeverity = AdvisoryModel.getCountBySeverity(true);
+    const bySeverity = await AdvisoryModel.getCountBySeverity(true);
     res.json({ success: true, data: { by_severity: bySeverity } });
   } catch (error) {
     console.error('Error fetching advisory stats:', error);
@@ -73,10 +73,10 @@ router.get('/stats', (req, res) => {
  * GET /api/advisories/:id
  * Get advisory by ID
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const advisory = AdvisoryModel.getById(id);
+    const advisory = await AdvisoryModel.getById(id);
     
     if (!advisory) {
       return res.status(404).json({ success: false, error: 'Advisory not found' });
