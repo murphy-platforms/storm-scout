@@ -61,14 +61,24 @@ async function initializeSchema() {
   
   const schema = fs.readFileSync(schemaPath, 'utf8');
   
-  // Split by semicolons and execute each statement
-  const statements = schema
+  // Remove comment lines and split by semicolons
+  const cleanedSchema = schema
+    .split('\n')
+    .filter(line => !line.trim().startsWith('--'))
+    .join('\n');
+  
+  const statements = cleanedSchema
     .split(';')
     .map(s => s.trim())
-    .filter(s => s.length > 0 && !s.startsWith('--'));
+    .filter(s => s.length > 0);
   
-  for (const statement of statements) {
-    await db.query(statement);
+  const connection = await db.getConnection();
+  try {
+    for (const statement of statements) {
+      await connection.query(statement);
+    }
+  } finally {
+    connection.release();
   }
   
   console.log('✓ Database schema initialized');
@@ -121,14 +131,24 @@ async function seedDatabase() {
   
   const seedData = fs.readFileSync(seedPath, 'utf8');
   
-  // Split by semicolons and execute each statement
-  const statements = seedData
+  // Remove comment lines and split by semicolons
+  const cleanedData = seedData
+    .split('\n')
+    .filter(line => !line.trim().startsWith('--'))
+    .join('\n');
+  
+  const statements = cleanedData
     .split(';')
     .map(s => s.trim())
-    .filter(s => s.length > 0 && !s.startsWith('--'));
+    .filter(s => s.length > 0);
   
-  for (const statement of statements) {
-    await db.query(statement);
+  const connection = await db.getConnection();
+  try {
+    for (const statement of statements) {
+      await connection.query(statement);
+    }
+  } finally {
+    connection.release();
   }
   
   console.log('✓ Database seeded with sample data');

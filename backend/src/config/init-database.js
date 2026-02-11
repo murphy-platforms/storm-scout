@@ -10,14 +10,14 @@ async function initDatabase() {
   try {
     console.log('Initializing Storm Scout database...\n');
     
-    // Initialize sql.js
+    // Initialize database connection
     await initSqlJs();
     
     // Initialize schema
-    initializeSchema();
+    await initializeSchema();
     
     // Load site data
-    loadSites();
+    await loadSites();
     
     console.log('\n✓ Database initialization complete!');
     console.log('You can now run: npm run seed-db (optional, for sample data)');

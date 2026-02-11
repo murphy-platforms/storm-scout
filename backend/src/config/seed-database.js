@@ -10,14 +10,14 @@ async function seed() {
   try {
     console.log('Seeding Storm Scout database...\n');
     
-    // Initialize sql.js
+    // Initialize database connection
     await initDatabase();
     
     // Ensure database exists
-    getDatabase();
+    await getDatabase();
     
     // Seed with sample data
-    seedDatabase();
+    await seedDatabase();
     
     console.log('\n✓ Database seeding complete!');
     console.log('Start the server: npm start');
