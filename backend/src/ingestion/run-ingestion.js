@@ -4,13 +4,13 @@
  * Usage: npm run ingest
  */
 
-const { getDatabase, closeDatabase } = require('../config/database');
+const { initDatabase, closeDatabase } = require('../config/database');
 const { ingestNOAAData } = require('./noaa-ingestor');
 
 async function runIngestion() {
   try {
     // Initialize database connection
-    getDatabase();
+    await initDatabase();
     
     // Run NOAA ingestion
     await ingestNOAAData();
