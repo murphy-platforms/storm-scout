@@ -96,14 +96,19 @@ log_step "Deploying backend..."
 lftp -c "
 set ftp:ssl-allow no
 open -u $FTP_USER,$FTP_PASSWORD $FTP_HOST:$FTP_PORT
+
+# Create storm-scout directory if it doesn't exist
+mkdir -p $FTP_BACKEND_PATH
+
 lcd ./backend
 cd $FTP_BACKEND_PATH
+
 mirror --reverse --delete --verbose \
     --exclude node_modules/ \
     --exclude .env \
-    --exclude '*.db' \
-    --exclude '*.db-shm' \
-    --exclude '*.db-wal' \
+    --exclude-glob '*.db' \
+    --exclude-glob '*.db-shm' \
+    --exclude-glob '*.db-wal' \
     --exclude .DS_Store \
     ./ ./
 quit
