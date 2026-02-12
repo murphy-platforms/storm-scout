@@ -174,12 +174,12 @@
         async function loadData() {
             try {
                 // Load alert types
-                const typesResponse = await fetch(`${API.BASE_URL}/filters/types/all`);
+                const typesResponse = await fetch(`${API_BASE_URL}/filters/types/all`);
                 const typesData = await typesResponse.json();
                 alertTypesByLevel = typesData.data;
                 
                 // Load presets
-                const presetsResponse = await fetch(`${API.BASE_URL}/filters`);
+                const presetsResponse = await fetch(`${API_BASE_URL}/filters`);
                 const presetsData = await presetsResponse.json();
                 filterPresets = presetsData.data;
                 
