@@ -108,7 +108,24 @@ curl -X POST https://teammurphy.rocks/api/operational-status/sites/1 \
   }'
 ```
 
-## Next Steps (Future Work)
+## Recent Updates
+
+### ✅ Filter System Improvements (Feb 12, 2026)
+**Default Filter Updated:**
+- Added 13 additional alerts to default exclusion list
+- Total: 55 alerts disabled by default, 13 enabled
+- Newly disabled alerts include: Excessive Heat Warning, Severe Thunderstorm Warning, Tornado Warning, Storm Surge Warning, and 9 others
+
+**UX/UI Improvements:**
+- Fixed toggle display logic (changed from `!== false` to `=== true`)
+- Implemented dynamic card updates - instant visual feedback when toggling
+- Enhanced CSS styling:
+  - Enabled cards: white background with green left border
+  - Disabled cards: light gray background
+  - Toggle switches always fully visible (100% opacity)
+  - Smooth 0.3s transitions on all state changes
+  - Enhanced hover effects with lift animation
+- Performance optimized: only updates toggled card, not entire page
 
 ### 📋 Remaining Frontend Pages
 These pages still need to be updated (non-critical):
