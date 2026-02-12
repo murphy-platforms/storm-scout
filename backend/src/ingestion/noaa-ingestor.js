@@ -3,12 +3,16 @@
  * Fetches weather alerts from NOAA and updates database
  */
 
+const fs = require('fs');
+const path = require('path');
 const { getNOAAAlerts } = require('./utils/api-client');
 const { normalizeNOAAAlert, calculateOperationalStatus, formatStatusReason } = require('./utils/normalizer');
 const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
 const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
+
+const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
 
 /**
  * Main ingestion function for NOAA weather data
@@ -115,6 +119,10 @@ async function ingestNOAAData() {
     console.log('\nCleaning up expired advisories...');
     const expiredRemoved = await removeExpiredAdvisories();
     
+    // Save timestamp of successful ingestion
+    const timestamp = new Date().toISOString();
+    fs.writeFileSync(LAST_INGESTION_FILE, JSON.stringify({ lastUpdated: timestamp }));
+    
     console.log('\n═══ Ingestion Complete ═══');
     console.log(`Advisories created: ${advisoriesCreated}`);
     console.log(`Site statuses updated: ${statusesUpdated}`);
@@ -190,6 +198,23 @@ function stateNameToCode(name) {
   return null;
 }
 
+/**
+ * Get last ingestion timestamp
+ * @returns {Object|null} {lastUpdated: ISO string} or null if never run
+ */
+function getLastIngestionTime() {
+  try {
+    if (fs.existsSync(LAST_INGESTION_FILE)) {
+      const data = fs.readFileSync(LAST_INGESTION_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error reading last ingestion time:', error);
+  }
+  return null;
+}
+
 module.exports = {
-  ingestNOAAData
+  ingestNOAAData,
+  getLastIngestionTime
 };

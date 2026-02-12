@@ -34,6 +34,18 @@
             <div class="col-12">
                 <h1 class="h2">Dashboard Overview</h1>
                 <p class="text-muted">Site-focused weather advisory monitoring for IMT and Operations</p>
+                <div class="alert alert-info mb-0" role="alert">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <i class="bi bi-clock-history"></i>
+                            <strong>Last Updated:</strong> <span id="lastUpdated">Loading...</span>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <strong>Next Update:</strong> <span id="nextUpdate">Loading...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -128,10 +140,62 @@
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script>
+        let nextUpdateTime = null;
+        let countdownInterval = null;
+
+        // Format timestamp in user's local timezone
+        function formatLocalTime(isoString) {
+            if (!isoString) return 'Never';
+            const date = new Date(isoString);
+            return date.toLocaleString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+        }
+
+        // Calculate and display countdown to next update
+        function updateCountdown() {
+            if (!nextUpdateTime) return;
+            
+            const now = new Date();
+            const diff = nextUpdateTime - now;
+            
+            if (diff <= 0) {
+                document.getElementById('nextUpdate').textContent = 'Updating now...';
+                // Reload data after a short delay
+                setTimeout(() => loadOverview(), 2000);
+                return;
+            }
+            
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            document.getElementById('nextUpdate').textContent = `${minutes}m ${seconds}s`;
+        }
+
         // Load overview data
         async function loadOverview() {
             try {
                 const data = await API.getOverview();
+                
+                // Update timestamp and countdown
+                document.getElementById('lastUpdated').textContent = formatLocalTime(data.last_updated);
+                
+                if (data.last_updated && data.update_interval_minutes) {
+                    const lastUpdate = new Date(data.last_updated);
+                    nextUpdateTime = new Date(lastUpdate.getTime() + data.update_interval_minutes * 60000);
+                    
+                    // Clear existing countdown interval
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    
+                    // Update countdown immediately and then every second
+                    updateCountdown();
+                    countdownInterval = setInterval(updateCountdown, 1000);
+                }
                 
                 document.getElementById('totalSites').textContent = data.total_sites;
                 document.getElementById('sitesWithAdvisories').textContent = data.sites_with_advisories;
