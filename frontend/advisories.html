@@ -42,6 +42,15 @@
                 <input type="text" class="form-control" id="searchBox" placeholder="Search by site code or name...">
             </div>
             <div class="col-md-2">
+                <select class="form-select" id="alertTypeFilter" title="Filter by impact level">
+                    <option value="">All Alert Types</option>
+                    <option value="OPERATIONS" selected>Operations View</option>
+                    <option value="EXECUTIVE">Executive Summary</option>
+                    <option value="SAFETY">Safety Focus</option>
+                    <option value="FULL">Full View</option>
+                </select>
+            </div>
+            <div class="col-md-2">
                 <select class="form-select" id="stateFilter">
                     <option value="">All States</option>
                 </select>
@@ -110,6 +119,54 @@
     <script src="js/utils.js"></script>
     <script>
         let allAdvisories = [];
+        let filterConfigs = {};
+        let alertTypesByLevel = {};
+        
+        // Load filter configurations from API
+        async function loadFilterConfigs() {
+            try {
+                const response = await fetch(`${API.BASE_URL}/filters`);
+                const data = await response.json();
+                filterConfigs = data.data;
+                
+                // Load all alert types by level
+                const typesResponse = await fetch(`${API.BASE_URL}/filters/types/all`);
+                const typesData = await typesResponse.json();
+                alertTypesByLevel = typesData.data;
+                
+                console.log('Loaded filter configs:', filterConfigs);
+            } catch (error) {
+                console.error('Failed to load filter configs:', error);
+            }
+        }
+        
+        // Check if alert type should be included based on selected filter
+        function shouldIncludeAlertType(alertType, filterName) {
+            if (!filterName || filterName === '') return true; // No filter, include all
+            
+            const config = filterConfigs[filterName];
+            if (!config) return true;
+            
+            // Check if explicitly excluded
+            if (config.excludeTypes && config.excludeTypes.includes(alertType)) {
+                return false;
+            }
+            
+            // Find impact level for this alert type
+            let impactLevel = null;
+            for (const [level, types] of Object.entries(alertTypesByLevel)) {
+                if (types.includes(alertType)) {
+                    impactLevel = level;
+                    break;
+                }
+            }
+            
+            // If no impact level found, include by default
+            if (!impactLevel) return true;
+            
+            // Check if this impact level is included in the filter
+            return config.includeCategories && config.includeCategories.includes(impactLevel);
+        }
         
         async function loadAdvisories() {
             try {
@@ -156,12 +213,14 @@
         
         function filterAdvisories() {
             const search = document.getElementById('searchBox').value.toLowerCase();
+            const alertTypeFilter = document.getElementById('alertTypeFilter').value;
             const state = document.getElementById('stateFilter').value;
             const severity = document.getElementById('severityFilter').value;
             const status = document.getElementById('statusFilter').value;
             
             const filtered = allAdvisories.filter(adv => {
                 if (search && !(adv.site_code.toLowerCase().includes(search) || adv.site_name.toLowerCase().includes(search))) return false;
+                if (alertTypeFilter && !shouldIncludeAlertType(adv.advisory_type, alertTypeFilter)) return false;
                 if (state && adv.state !== state) return false;
                 if (severity && adv.severity !== severity) return false;
                 if (status && adv.status !== status) return false;
@@ -169,14 +228,23 @@
             });
             
             renderAdvisories(filtered);
+            
+            // Show filter info
+            if (alertTypeFilter && filterConfigs[alertTypeFilter]) {
+                console.log(`Applied filter: ${filterConfigs[alertTypeFilter].name} - ${filterConfigs[alertTypeFilter].description}`);
+            }
         }
         
         document.getElementById('searchBox').addEventListener('input', filterAdvisories);
+        document.getElementById('alertTypeFilter').addEventListener('change', filterAdvisories);
         document.getElementById('stateFilter').addEventListener('change', filterAdvisories);
         document.getElementById('severityFilter').addEventListener('change', filterAdvisories);
         document.getElementById('statusFilter').addEventListener('change', filterAdvisories);
         
-        loadAdvisories();
+        // Initialize: Load filter configs then load advisories
+        loadFilterConfigs().then(() => {
+            loadAdvisories();
+        });
     </script>
 </body>
 </html>
