@@ -4,9 +4,9 @@ Node.js + Express backend for Storm Scout weather advisory dashboard.
 
 ## Tech Stack
 
-- **Runtime**: Node.js 18+
+- **Runtime**: Node.js 20 LTS (recommended) or 18+
 - **Framework**: Express.js
-- **Database**: SQLite3 (better-sqlite3)
+- **Database**: MySQL 8.0+ / MariaDB 10.5+ (async/await with mysql2)
 - **Scheduling**: node-cron
 - **HTTP Client**: axios
 
@@ -32,31 +32,51 @@ Edit `.env` to set your configuration:
 ```
 PORT=3000
 NODE_ENV=development
-DATABASE_PATH=./storm-scout.db
+
+# MySQL Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=storm_scout
+DB_PASSWORD=your_secure_password
+DB_NAME=storm_scout
+
+# NOAA Ingestion
 INGESTION_ENABLED=true
 INGESTION_INTERVAL_MINUTES=15
 NOAA_API_USER_AGENT=StormScout/1.0 (your-email@example.com)
+
+# Frontend Static Files (for production)
+STATIC_FILES_PATH=/path/to/frontend/directory
 ```
 
-### 3. Initialize Database
+### 3. Create MySQL Database
+
+Create a MySQL/MariaDB database:
+
+```sql
+CREATE DATABASE storm_scout;
+CREATE USER 'storm_scout'@'localhost' IDENTIFIED BY 'your_secure_password';
+GRANT ALL PRIVILEGES ON storm_scout.* TO 'storm_scout'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+### 4. Initialize Database Schema
 
 ```bash
 npm run init-db
 ```
 
-This will:
-- Create the database schema
-- Load all 220 US testing center locations
+This creates all tables with proper indexes.
 
-### 4. (Optional) Seed with Sample Data
-
-For testing with pre-populated data:
+### 5. Load Testing Center Sites
 
 ```bash
 npm run seed-db
 ```
 
-### 5. Start the Server
+This loads all 219 US testing center locations into the database.
+
+### 6. Start the Server
 
 ```bash
 npm start
@@ -99,6 +119,13 @@ npm run dev
 - `GET /api/notices/stats` - Get notice statistics
 - `GET /api/notices/:id` - Get notice by ID
 
+### Filters
+
+- `GET /api/filters` - Get all filter presets
+- `GET /api/filters/:filterName` - Get specific filter preset
+- `GET /api/filters/types/all` - Get all NOAA alert types by impact level
+- `GET /api/filters/types/:level` - Get alert types for specific impact level
+
 ## Data Ingestion
 
 ### Automatic Ingestion
@@ -113,10 +140,24 @@ To manually trigger data ingestion:
 npm run ingest
 ```
 
+### Advisory Cleanup
+
+To manually remove duplicate and expired advisories:
+
+```bash
+npm run cleanup
+```
+
+Cleanup automatically runs after each ingestion cycle to:
+- Remove duplicate advisories (same external_id)
+- Remove expired advisories (end_time > 1 hour in past or status='expired')
+
 ### Data Sources
 
 Currently implemented:
-- **NOAA Weather API** - Active weather alerts for the US
+- **NOAA Weather API** - 80+ alert types covering all official weather alerts
+- **Alert Taxonomy** - 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
+- **UPSERT Operations** - Prevents duplicate advisories using unique external_id index
 
 Planned:
 - State emergency management feeds
@@ -130,11 +171,28 @@ backend/
 ├── src/
 │   ├── app.js              # Express app configuration
 │   ├── server.js           # Server entry point
-│   ├── config/            # Configuration and database
-│   ├── models/            # Data access layer
+│   ├── config/
+│   │   ├── config.js       # App configuration
+│   │   ├── database.js     # MySQL connection pool
+│   │   └── noaa-alert-types.js # Filter presets & alert taxonomy
+│   ├── models/            # Data access layer (async/await)
+│   │   ├── site.js
+│   │   ├── advisory.js
+│   │   ├── notice.js
+│   │   └── siteStatus.js
 │   ├── routes/            # API routes
+│   │   ├── sites.js
+│   │   ├── advisories.js
+│   │   ├── notices.js
+│   │   ├── status.js
+│   │   └── filters.js      # Filter configuration API
 │   ├── ingestion/         # Weather data ingestion
+│   │   └── noaa-ingestor.js
+│   ├── utils/
+│   │   └── cleanup-advisories.js # Remove duplicates/expired
 │   └── data/              # Static data and schema
+│       ├── schema.sql
+│       └── sites.json      # 219 testing centers
 ├── package.json
 └── README.md
 ```
@@ -145,8 +203,13 @@ backend/
 
 To reset the database:
 
+```sql
+-- In MySQL:
+DROP DATABASE storm_scout;
+CREATE DATABASE storm_scout;
+```
+
 ```bash
-rm storm-scout.db*
 npm run init-db
 npm run seed-db
 ```
@@ -162,10 +225,19 @@ npm run ingest
 ## Production Deployment
 
 1. Set `NODE_ENV=production` in `.env`
-2. Configure appropriate `CORS_ORIGIN`
-3. Consider using PostgreSQL instead of SQLite for multi-server deployments
-4. Use PM2 or similar for process management
-5. Set up reverse proxy (nginx) for SSL/TLS
+2. Configure MySQL with appropriate connection limits
+3. Set `STATIC_FILES_PATH` to serve frontend from Express
+4. Use cPanel Passenger or PM2 for process management
+5. Set up SSL/TLS (handled by cPanel in current deployment)
+6. Deploy with rsync:
+
+```bash
+# Backend
+rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ user@host:~/storm-scout/
+
+# Restart (cPanel Passenger)
+ssh user@host "touch ~/storm-scout/tmp/restart.txt"
+```
 
 ## Troubleshooting
 
@@ -173,12 +245,19 @@ npm run ingest
 
 NOAA doesn't require an API key but requires a proper User-Agent. Make sure `NOAA_API_USER_AGENT` includes your contact email.
 
-### Database Locked Errors
+### MySQL Connection Issues
 
-If you see "database is locked" errors:
-- SQLite's WAL mode is enabled by default
-- Ensure only one ingestion process runs at a time
-- Consider PostgreSQL for high-concurrency scenarios
+If you see connection errors:
+- Verify MySQL credentials in `.env`
+- Check MySQL is running: `mysql --version`
+- Ensure user has proper permissions
+- Verify database exists: `SHOW DATABASES;`
+
+### Duplicate Advisory Warnings
+
+If you see "Duplicate entry" errors:
+- This is normal - advisories with the same external_id are updated via UPSERT
+- The cleanup script removes true duplicates
 
 ## License
 
