@@ -110,12 +110,41 @@ const AdvisoryModel = {
   },
 
   /**
-   * Find advisory by VTEC code
+   * Find advisory by VTEC event ID (persistent identifier)
    * Used to check if an alert update already exists before creating a duplicate
-   * @param {string} vtecCode - VTEC code
+   * Event ID stays the same across NEW→CON→EXT→EXP updates
+   * @param {string} vtecEventId - VTEC event ID (e.g., "PAJK.HW.W.0006")
    * @param {number} siteId - Site ID
    * @param {string} advisoryType - Advisory type (optional for additional validation)
    * @returns {Promise<Object|null>} Existing advisory or null
+   */
+  async findByVTECEventID(vtecEventId, siteId, advisoryType = null) {
+    if (!vtecEventId) return null;
+    
+    const db = await getDatabase();
+    let query = 'SELECT * FROM advisories WHERE vtec_event_id = ? AND site_id = ? AND status = ?';
+    const params = [vtecEventId, siteId, 'active'];
+    
+    // Optional: also match on advisory_type for extra safety
+    if (advisoryType) {
+      query += ' AND advisory_type = ?';
+      params.push(advisoryType);
+    }
+    
+    query += ' ORDER BY last_updated DESC LIMIT 1';
+    
+    try {
+      const [rows] = await db.query(query, params);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error finding advisory by VTEC event ID:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Find advisory by VTEC code (legacy - for backward compatibility)
+   * @deprecated Use findByVTECEventID instead
    */
   async findByVTEC(vtecCode, siteId, advisoryType = null) {
     if (!vtecCode) return null;
@@ -124,8 +153,6 @@ const AdvisoryModel = {
     let query = 'SELECT * FROM advisories WHERE vtec_code = ? AND site_id = ?';
     const params = [vtecCode, siteId];
     
-    // Optional: also match on advisory_type for extra safety
-    // This prevents different alert types with same VTEC from conflicting
     if (advisoryType) {
       query += ' AND advisory_type = ?';
       params.push(advisoryType);
@@ -151,19 +178,20 @@ const AdvisoryModel = {
   async create(advisory) {
     const db = await getDatabase();
     try {
-      // VTEC-based deduplication strategy:
-      // If VTEC exists, check if we already have this alert and update it
-      // This handles NOAA alert updates that have different external_ids
-      if (advisory.vtec_code) {
-        const existing = await this.findByVTEC(
-          advisory.vtec_code,
+      // VTEC Event ID based deduplication strategy:
+      // If VTEC event ID exists, check if we already have this event and update it
+      // Event ID stays consistent across NEW→CON→EXT updates
+      if (advisory.vtec_event_id) {
+        const existing = await this.findByVTECEventID(
+          advisory.vtec_event_id,
           advisory.site_id,
           advisory.advisory_type
         );
         
         if (existing) {
           // Update existing alert with new data
-          console.log(`Updating existing alert via VTEC: ${advisory.vtec_code} for site ${advisory.site_id}`);
+          const action = advisory.vtec_action || 'UNK';
+          console.log(`Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for site ${advisory.site_id}`);
           return this.update(existing.id, advisory);
         }
       }
@@ -185,8 +213,9 @@ const AdvisoryModel = {
       const [result] = await db.query(`
         INSERT INTO advisories (
           external_id, site_id, advisory_type, severity, status, source,
-          headline, description, start_time, end_time, issued_time, vtec_code, raw_payload
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          headline, description, start_time, end_time, issued_time, 
+          vtec_code, vtec_event_id, vtec_action, raw_payload
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           site_id = VALUES(site_id),
           advisory_type = VALUES(advisory_type),
@@ -199,6 +228,8 @@ const AdvisoryModel = {
           end_time = VALUES(end_time),
           issued_time = VALUES(issued_time),
           vtec_code = VALUES(vtec_code),
+          vtec_event_id = VALUES(vtec_event_id),
+          vtec_action = VALUES(vtec_action),
           raw_payload = VALUES(raw_payload),
           last_updated = CURRENT_TIMESTAMP
       `, [
@@ -214,18 +245,20 @@ const AdvisoryModel = {
         advisory.end_time,
         advisory.issued_time,
         advisory.vtec_code || null,
+        advisory.vtec_event_id || null,
+        advisory.vtec_action || null,
         rawPayloadStr
       ]);
 
       return this.getById(result.insertId || result.lastInsertId || advisory.id);
     } catch (error) {
       // Handle unique constraint violation (ER_DUP_ENTRY)
-      // This can happen if a duplicate VTEC alert is inserted between the findByVTEC check and insert
-      if (error.code === 'ER_DUP_ENTRY' && advisory.vtec_code) {
-        console.log(`Duplicate VTEC detected via constraint: ${advisory.vtec_code} - fetching existing alert`);
+      // This can happen if a duplicate event is inserted between the findByVTECEventID check and insert
+      if (error.code === 'ER_DUP_ENTRY' && advisory.vtec_event_id) {
+        console.log(`Duplicate event detected via constraint: ${advisory.vtec_event_id} [${advisory.vtec_action}] - fetching existing alert`);
         // Find and return the existing alert
-        const existing = await this.findByVTEC(
-          advisory.vtec_code,
+        const existing = await this.findByVTECEventID(
+          advisory.vtec_event_id,
           advisory.site_id,
           advisory.advisory_type
         );
