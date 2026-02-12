@@ -90,7 +90,7 @@
                                         <th>State</th>
                                         <th>Advisory Type</th>
                                         <th>Severity</th>
-                                        <th>Status</th>
+                                        <th>Action</th>
                                         <th>Source</th>
                                         <th>Last Updated</th>
                                     </tr>
@@ -176,6 +176,34 @@
             }
         }
         
+        function getActionBadge(action) {
+            if (!action) {
+                return '<span class="badge bg-secondary" title="No VTEC action code">-</span>';
+            }
+            
+            const actionConfig = {
+                'NEW': { label: 'NEW', class: 'bg-success', icon: '🆕', title: 'New alert issued' },
+                'CON': { label: 'CONTINUED', class: 'bg-primary', icon: '🔄', title: 'Alert continuing' },
+                'EXT': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert time extended' },
+                'EXA': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert extended (A)' },
+                'EXB': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert extended (B)' },
+                'UPG': { label: 'UPGRADED', class: 'bg-warning text-dark', icon: '⚠️', title: 'Alert upgraded' },
+                'EXP': { label: 'EXPIRED', class: 'bg-secondary', icon: '❌', title: 'Alert expired' },
+                'CAN': { label: 'CANCELLED', class: 'bg-dark', icon: '🚫', title: 'Alert cancelled' },
+                'COR': { label: 'CORRECTED', class: 'bg-warning text-dark', icon: '✏️', title: 'Correction issued' },
+                'ROU': { label: 'ROUTINE', class: 'bg-secondary', icon: '📋', title: 'Routine update' }
+            };
+            
+            const config = actionConfig[action] || { 
+                label: action, 
+                class: 'bg-secondary', 
+                icon: '', 
+                title: `Action: ${action}` 
+            };
+            
+            return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
+        }
+        
         function renderAdvisories(advisories) {
             const tbody = document.getElementById('advisoriesTable');
             if (advisories.length === 0) {
@@ -191,7 +219,7 @@
                     <td>${adv.state}</td>
                     <td>${adv.advisory_type}</td>
                     <td><span class="badge ${getSeverityBadge(adv.severity)}">${adv.severity}</span></td>
-                    <td><span class="badge ${getStatusBadge(adv.status)}">${adv.status}</span></td>
+                    <td>${getActionBadge(adv.vtec_action)}</td>
                     <td>${adv.source}</td>
                     <td>${formatDate(adv.last_updated)}</td>
                 </tr>
