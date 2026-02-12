@@ -68,12 +68,58 @@ async function ingestNOAAData() {
     
     console.log(`Matched alerts to ${siteAdvisories.size} sites\n`);
     
+    // Step 3.5: De-duplicate advisories - keep only most severe of each type per site
+    console.log('De-duplicating advisories by type per site...');
+    const severityOrder = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1, 'Unknown': 0 };
+    let beforeDedup = 0;
+    let afterDedup = 0;
+    
+    for (const [siteId, advisories] of siteAdvisories.entries()) {
+      beforeDedup += advisories.length;
+      
+      // Group by advisory type
+      const byType = new Map();
+      for (const advisory of advisories) {
+        const type = advisory.advisory_type;
+        if (!byType.has(type)) {
+          byType.set(type, []);
+        }
+        byType.get(type).push(advisory);
+      }
+      
+      // Keep only the most severe of each type (or most recent if same severity)
+      const deduplicated = [];
+      for (const [type, typeAdvisories] of byType.entries()) {
+        const mostSevere = typeAdvisories.reduce((best, current) => {
+          const bestSeverity = severityOrder[best.severity] || 0;
+          const currentSeverity = severityOrder[current.severity] || 0;
+          
+          // If same severity, prefer the one with later issued_time
+          if (bestSeverity === currentSeverity) {
+            const bestTime = new Date(best.issued_time || 0);
+            const currentTime = new Date(current.issued_time || 0);
+            return currentTime > bestTime ? current : best;
+          }
+          
+          return currentSeverity > bestSeverity ? current : best;
+        });
+        deduplicated.push(mostSevere);
+      }
+      
+      siteAdvisories.set(siteId, deduplicated);
+      afterDedup += deduplicated.length;
+    }
+    
+    console.log(`Before de-duplication: ${beforeDedup} advisories`);
+    console.log(`After de-duplication: ${afterDedup} advisories`);
+    console.log(`Removed ${beforeDedup - afterDedup} logical duplicates (same type, different zones)\n`);
+    
     // Step 4: Update database
     let advisoriesCreated = 0;
     let statusesUpdated = 0;
     const processedExternalIds = [];
     
-    // Create/update advisories using UPSERT (will update if     // Create/update advisories and track processed external IDs
+    // Create/update advisories and track processed external IDs
     for (const [siteId, advisories] of siteAdvisories.entries()) {
       // Create/update advisories
       for (const advisory of advisories) {

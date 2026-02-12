@@ -234,6 +234,68 @@ async function populateExternalIds() {
 }
 
 /**
+ * Remove duplicate advisory types per site
+ * Keeps only the most severe (or most recent) of each advisory type per site
+ */
+async function removeDuplicateTypes() {
+  const db = getDatabase();
+  
+  console.log('=== Removing Duplicate Advisory Types ===');
+  
+  const severityOrder = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1, 'Unknown': 0 };
+  let totalRemoved = 0;
+  
+  // Find sites with multiple advisories of the same type
+  const [duplicateTypes] = await db.query(`
+    SELECT site_id, advisory_type, COUNT(*) as count
+    FROM advisories
+    WHERE status = 'active'
+    GROUP BY site_id, advisory_type
+    HAVING count > 1
+  `);
+  
+  if (duplicateTypes.length === 0) {
+    console.log('✓ No duplicate advisory types found\n');
+    return 0;
+  }
+  
+  console.log(`Found ${duplicateTypes.length} advisory types with duplicates`);
+  
+  for (const dup of duplicateTypes) {
+    // Get all advisories of this type for this site
+    const [advisories] = await db.query(`
+      SELECT id, severity, issued_time, last_updated
+      FROM advisories
+      WHERE site_id = ? AND advisory_type = ? AND status = 'active'
+      ORDER BY 
+        CASE severity
+          WHEN 'Extreme' THEN 4
+          WHEN 'Severe' THEN 3
+          WHEN 'Moderate' THEN 2
+          WHEN 'Minor' THEN 1
+          ELSE 0
+        END DESC,
+        issued_time DESC,
+        last_updated DESC
+    `, [dup.site_id, dup.advisory_type]);
+    
+    if (advisories.length > 1) {
+      // Keep the first (most severe/recent), delete the rest
+      const idsToDelete = advisories.slice(1).map(a => a.id);
+      
+      if (idsToDelete.length > 0) {
+        await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
+        totalRemoved += idsToDelete.length;
+        console.log(`  Removed ${idsToDelete.length} duplicate "${dup.advisory_type}" for site ${dup.site_id}`);
+      }
+    }
+  }
+  
+  console.log(`✓ Total duplicate types removed: ${totalRemoved}\n`);
+  return totalRemoved;
+}
+
+/**
  * Main cleanup function
  */
 async function runCleanup() {
@@ -252,19 +314,24 @@ async function runCleanup() {
     // Step 2: Populate external_id from existing raw_payload
     await populateExternalIds();
     
-    // Step 3: Remove duplicates
+    // Step 3: Remove duplicate advisory types (same type, different zones)
+    const duplicateTypesRemoved = await removeDuplicateTypes();
+    
+    // Step 4: Remove duplicates by external_id
     const duplicatesRemoved = await removeDuplicateAdvisories();
     
-    // Step 4: Remove expired
+    // Step 5: Remove expired
     const expiredRemoved = await removeExpiredAdvisories();
     
     // Summary
+    const totalRemoved = duplicateTypesRemoved + duplicatesRemoved + expiredRemoved;
     console.log('╔══════════════════════════════════════════════════════╗');
     console.log('║  Cleanup Complete                                    ║');
     console.log('╠══════════════════════════════════════════════════════╣');
-    console.log(`║  Duplicates removed: ${duplicatesRemoved.toString().padStart(28)} ║`);
+    console.log(`║  Duplicate types:    ${duplicateTypesRemoved.toString().padStart(28)} ║`);
+    console.log(`║  Duplicate IDs:      ${duplicatesRemoved.toString().padStart(28)} ║`);
     console.log(`║  Expired removed:    ${expiredRemoved.toString().padStart(28)} ║`);
-    console.log(`║  Total removed:      ${(duplicatesRemoved + expiredRemoved).toString().padStart(28)} ║`);
+    console.log(`║  Total removed:      ${totalRemoved.toString().padStart(28)} ║`);
     console.log('╚══════════════════════════════════════════════════════╝\n');
     
     process.exit(0);
@@ -283,6 +350,7 @@ if (require.main === module) {
 
 module.exports = {
   removeDuplicateAdvisories,
+  removeDuplicateTypes,
   removeExpiredAdvisories,
   addExternalIdColumn,
   populateExternalIds,
