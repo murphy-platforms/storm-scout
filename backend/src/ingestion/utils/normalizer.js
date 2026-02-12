@@ -24,6 +24,30 @@ function normalizeSeverity(noaaSeverity) {
 }
 
 /**
+ * Extract VTEC (Valid Time Event Code) from NOAA alert
+ * VTEC format: /O.CON.PAJK.WS.W.0005.000000T0000Z-260213T0000Z/
+ * The event number (0005) stays consistent across all updates for the same weather event
+ * @param {Object} noaaAlert - NOAA alert feature object
+ * @returns {string|null} VTEC code or null if not found
+ */
+function extractVTEC(noaaAlert) {
+  try {
+    const properties = noaaAlert.properties;
+    const vtecArray = properties?.parameters?.VTEC;
+    
+    if (vtecArray && Array.isArray(vtecArray) && vtecArray.length > 0) {
+      // Return the first (primary) VTEC code
+      // Some alerts have multiple VTEC codes, but the first is the primary event
+      return vtecArray[0];
+    }
+  } catch (error) {
+    console.error('Failed to extract VTEC from alert:', error.message);
+  }
+  
+  return null;
+}
+
+/**
  * Normalize NOAA alert to our advisory schema
  * @param {Object} noaaAlert - NOAA alert feature object
  * @returns {Object} Normalized advisory data
@@ -41,6 +65,7 @@ function normalizeNOAAAlert(noaaAlert) {
     start_time: properties.onset || properties.effective || new Date().toISOString(),
     end_time: properties.ends || properties.expires,
     issued_time: properties.sent || new Date().toISOString(),
+    vtec_code: extractVTEC(noaaAlert),
     raw_payload: noaaAlert
   };
 }
@@ -128,6 +153,7 @@ function formatStatusReason(advisories) {
 module.exports = {
   normalizeSeverity,
   normalizeNOAAAlert,
+  extractVTEC,
   isPointInAlertArea,
   calculateWeatherImpact,
   calculateHighestWeatherImpact,
