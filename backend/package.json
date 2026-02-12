@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "init-db": "node src/config/init-database.js",
     "seed-db": "node src/config/seed-database.js",
-    "ingest": "node src/ingestion/run-ingestion.js"
+    "ingest": "node src/ingestion/run-ingestion.js",
+    "cleanup": "node src/utils/cleanup-advisories.js"
   },
   "keywords": [
     "weather",
