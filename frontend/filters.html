@@ -266,7 +266,8 @@
         
         // Toggle individual alert type
         function toggleAlertType(alertType) {
-            currentFilters[alertType] = !currentFilters[alertType];
+            // Toggle: if currently true, set to undefined (disabled), if undefined/false, set to true
+            currentFilters[alertType] = currentFilters[alertType] === true ? undefined : true;
             updateStatus();
         }
         
@@ -296,7 +297,7 @@
                 `;
                 
                 types.forEach(type => {
-                    const isEnabled = currentFilters[type] !== false;
+                    const isEnabled = currentFilters[type] === true;
                     const description = ALERT_DESCRIPTIONS[type] || 'Official NOAA weather alert type.';
                     
                     html += `
@@ -341,7 +342,7 @@
         // Update status display
         function updateStatus() {
             const totalTypes = Object.values(alertTypesByLevel).flat().length;
-            const enabledTypes = Object.values(currentFilters).filter(v => v !== false).length;
+            const enabledTypes = Object.values(currentFilters).filter(v => v === true).length;
             
             document.getElementById('enabledCount').textContent = enabledTypes;
             document.getElementById('totalCount').textContent = totalTypes;
@@ -361,14 +362,14 @@
         // Check if current config matches a preset
         function isPresetMatch(preset) {
             const enabledTypes = Object.entries(currentFilters)
-                .filter(([type, enabled]) => enabled !== false)
+                .filter(([type, enabled]) => enabled === true)
                 .map(([type]) => type);
             
             for (const [level, types] of Object.entries(alertTypesByLevel)) {
                 for (const type of types) {
                     const shouldBeEnabled = preset.includeCategories.includes(level) && 
                                           (!preset.excludeTypes || !preset.excludeTypes.includes(type));
-                    const isEnabled = currentFilters[type] !== false;
+                    const isEnabled = currentFilters[type] === true;
                     
                     if (shouldBeEnabled !== isEnabled) {
                         return false;
