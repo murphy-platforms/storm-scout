@@ -24,6 +24,7 @@
                     <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="status-management.html">Status Management</a></li>
                     <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
                 </ul>
             </div>
@@ -50,8 +51,69 @@
             </div>
         </div>
 
+        <!-- Weather Impact Assessment (Automatic) -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <h3 class="h4"><i class="bi bi-cloud-lightning"></i> Weather Impact Assessment (Automatic)</h3>
+                <p class="text-muted small mb-2">Based on severity of active weather advisories</p>
+            </div>
+        </div>
         <div class="row g-3 mb-4">
             <div class="col-md-3">
+                <div class="card text-center weather-card impact-red">
+                    <div class="card-body">
+                        <h5 class="card-title"><span class="badge weather-red">🔴 RED</span></h5>
+                        <p class="display-6 fw-bold mb-0 text-danger" id="weatherRed">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">High Impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center weather-card impact-orange">
+                    <div class="card-body">
+                        <h5 class="card-title"><span class="badge weather-orange">🟠 ORANGE</span></h5>
+                        <p class="display-6 fw-bold mb-0 text-warning" id="weatherOrange">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">Severe Impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center weather-card impact-yellow">
+                    <div class="card-body">
+                        <h5 class="card-title"><span class="badge weather-yellow">🟡 YELLOW</span></h5>
+                        <p class="display-6 fw-bold mb-0" id="weatherYellow">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">Moderate Impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center weather-card impact-green">
+                    <div class="card-body">
+                        <h5 class="card-title"><span class="badge weather-green">🟢 GREEN</span></h5>
+                        <p class="display-6 fw-bold mb-0 text-success" id="weatherGreen">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">Low/No Impact</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operational Status (Manual IMT/Ops Decision) -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <h3 class="h4"><i class="bi bi-gear"></i> Operational Status (IMT/Operations Decision)</h3>
+                <p class="text-muted small mb-2">Manually set by IMT or Operations team</p>
+            </div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title text-muted">Total Sites</h5>
@@ -61,7 +123,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title text-muted">Sites with Advisories</h5>
@@ -71,11 +133,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row g-3 mb-4">
             <div class="col-md-3">
                 <div class="card text-center border-danger">
                     <div class="card-body">
-                        <h5 class="card-title text-muted">Sites Closed</h5>
-                        <p class="display-6 fw-bold mb-0 text-danger" id="sitesClosed">
+                        <h5 class="card-title"><span class="badge status-closed">❌ CLOSED</span></h5>
+                        <p class="display-6 fw-bold mb-0 text-danger" id="statusClosed">
                             <span class="spinner-border spinner-border-sm"></span>
                         </p>
                     </div>
@@ -84,8 +148,28 @@
             <div class="col-md-3">
                 <div class="card text-center border-warning">
                     <div class="card-body">
-                        <h5 class="card-title text-muted">Sites At Risk</h5>
-                        <p class="display-6 fw-bold mb-0 text-warning" id="sitesAtRisk">
+                        <h5 class="card-title"><span class="badge status-restricted">⚠️ RESTRICTED</span></h5>
+                        <p class="display-6 fw-bold mb-0 text-warning" id="statusRestricted">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-info">
+                    <div class="card-body">
+                        <h5 class="card-title"><span class="badge status-pending">🔄 PENDING</span></h5>
+                        <p class="display-6 fw-bold mb-0" id="statusPending">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-success">
+                    <div class="card-body">
+                        <h5 class="card-title"><span class="badge status-open">✅ OPEN</span></h5>
+                        <p class="display-6 fw-bold mb-0 text-success" id="statusOpen">
                             <span class="spinner-border spinner-border-sm"></span>
                         </p>
                     </div>
@@ -213,12 +297,19 @@
                 const sitesWithAdvisories = new Set(filteredAdvisories.map(a => a.site_id)).size;
                 document.getElementById('sitesWithAdvisories').textContent = sitesWithAdvisories;
                 
-                // Note: We keep site status counts as-is since they reflect operational decisions
-                const closedCount = overviewData.status_counts.find(s => s.operational_status === 'Closed')?.count || 0;
-                const atRiskCount = overviewData.status_counts.find(s => s.operational_status === 'At Risk')?.count || 0;
+                // Weather Impact Counts
+                const weatherCounts = overviewData.weather_impact_counts || [];
+                document.getElementById('weatherRed').textContent = weatherCounts.find(w => w.weather_impact_level === 'red')?.count || 0;
+                document.getElementById('weatherOrange').textContent = weatherCounts.find(w => w.weather_impact_level === 'orange')?.count || 0;
+                document.getElementById('weatherYellow').textContent = weatherCounts.find(w => w.weather_impact_level === 'yellow')?.count || 0;
+                document.getElementById('weatherGreen').textContent = weatherCounts.find(w => w.weather_impact_level === 'green')?.count || 0;
                 
-                document.getElementById('sitesClosed').textContent = closedCount;
-                document.getElementById('sitesAtRisk').textContent = atRiskCount;
+                // Operational Status Counts
+                const statusCounts = overviewData.operational_status_counts || [];
+                document.getElementById('statusClosed').textContent = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
+                document.getElementById('statusRestricted').textContent = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;
+                document.getElementById('statusPending').textContent = statusCounts.find(s => s.operational_status === 'pending')?.count || 0;
+                document.getElementById('statusOpen').textContent = statusCounts.find(s => s.operational_status === 'open_normal')?.count || 0;
                 
                 // Recalculate severity counts from filtered advisories
                 const severityCounts = {};
@@ -237,14 +328,34 @@
                     ).join('');
                 document.getElementById('severityCounts').innerHTML = severityHTML || '<p class="text-muted">No active advisories</p>';
                 
-                // Recently updated
-                const recentHTML = overviewData.recently_updated.slice(0, 5).map(site =>
-                    `<div class="mb-2">
-                        <strong>${site.site_code}</strong> - ${site.name}
-                        <span class="badge ${getStatusBadge(site.operational_status)} ms-2">${site.operational_status}</span>
-                    </div>`
-                ).join('');
+                // Recently updated with dual status
+                const recentHTML = overviewData.recently_updated.slice(0, 5).map(site => {
+                    const weatherBadge = getWeatherBadge(site.weather_impact_level || 'green');
+                    const opsBadge = getOperationalBadge(site.operational_status || 'open_normal');
+                    return `<div class="mb-2">
+                        <strong>${site.site_code}</strong> - ${site.name}<br>
+                        <small>
+                            <span class="badge ${weatherBadge} me-1">Weather: ${(site.weather_impact_level || 'green').toUpperCase()}</span>
+                            <span class="badge ${opsBadge}">Ops: ${formatOperationalStatus(site.operational_status || 'open_normal')}</span>
+                        </small>
+                    </div>`;
+                }).join('');
                 document.getElementById('recentlyUpdated').innerHTML = recentHTML || '<p class="text-muted">No updates</p>';
+                
+                function getWeatherBadge(level) {
+                    const badges = { red: 'weather-red', orange: 'weather-orange', yellow: 'weather-yellow', green: 'weather-green' };
+                    return badges[level] || 'weather-green';
+                }
+                
+                function getOperationalBadge(status) {
+                    const badges = { closed: 'status-closed', open_restricted: 'status-restricted', pending: 'status-pending', open_normal: 'status-open' };
+                    return badges[status] || 'status-open';
+                }
+                
+                function formatOperationalStatus(status) {
+                    const labels = { closed: 'CLOSED', open_restricted: 'RESTRICTED', pending: 'PENDING', open_normal: 'OPEN' };
+                    return labels[status] || 'OPEN';
+                }
                 
             } catch (error) {
                 console.error('Failed to load overview:', error);
