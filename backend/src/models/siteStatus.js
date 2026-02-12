@@ -107,7 +107,7 @@ const SiteStatusModel = {
       decision_reason
     } = statusData;
 
-    const fields = ['site_id', 'last_updated'];
+    const fields = ['site_id'];
     const values = [siteId];
     const updates = ['last_updated = NOW()'];
 
@@ -145,12 +145,10 @@ const SiteStatusModel = {
       updates.push('decision_reason = VALUES(decision_reason)');
     }
 
-    const placeholders = fields.map(() => '?').join(', ');
-    fields.push('NOW()');
+    const placeholders = values.map(() => '?').join(', ');
     
-    // Remove last_updated from fields since we use NOW()
-    const insertFields = fields.slice(0, -1);
-    insertFields.push('last_updated');
+    // Add last_updated to field list for INSERT
+    const insertFields = [...fields, 'last_updated'];
 
     await db.query(`
       INSERT INTO site_status (${insertFields.join(', ')})
