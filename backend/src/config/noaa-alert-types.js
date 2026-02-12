@@ -115,6 +115,7 @@ const DEFAULT_FILTERS = {
       // HIGH exclusions (OFF by default)
       'Fire Warning', 'Gale Warning', 'High Wind Warning',
       'Severe Thunderstorm Watch', 'Red Flag Warning', 'Storm Warning',
+      'Excessive Heat Warning',
       
       // All MODERATE excluded (entire category OFF)
       'Flood Watch', 'Winter Storm Watch', 'Winter Weather Advisory',
