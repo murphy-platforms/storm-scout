@@ -102,6 +102,36 @@ const NOAA_ALERT_TYPES = {
  * Default filter configuration for different user personas
  */
 const DEFAULT_FILTERS = {
+  // Custom - Site-specific configuration (default)
+  CUSTOM: {
+    name: 'Site Default',
+    description: 'Customized alert configuration for testing center operations',
+    includeCategories: ['CRITICAL', 'HIGH', 'MODERATE'],
+    excludeTypes: [
+      // CRITICAL exclusions
+      'Tornado Warning', 'Flash Flood Warning', 'Extreme Wind Warning',
+      'Storm Surge Warning', 'Dust Storm Warning', 'Avalanche Warning',
+      // HIGH exclusions
+      'Gale Warning', 'Red Flag Warning',
+      // MODERATE exclusions
+      'Wind Advisory', 'Dense Fog Advisory', 'Freeze Warning', 'Frost Advisory',
+      'Blowing Dust Advisory', 'High Surf Warning', 'Coastal Flood Warning',
+      'Lakeshore Flood Warning',
+      // All LOW excluded
+      'Wind Chill Advisory', 'Wind Chill Watch', 'Small Craft Advisory',
+      'Brisk Wind Advisory', 'Hazardous Seas Warning', 'High Surf Advisory',
+      'Coastal Flood Advisory', 'Lakeshore Flood Advisory', 'Beach Hazards Statement',
+      'Rip Current Statement', 'Cold Weather Advisory', 'Freezing Fog Advisory',
+      'Ashfall Advisory', 'Air Quality Alert', 'Dense Smoke Advisory',
+      // All INFO excluded
+      'Special Weather Statement', 'Marine Weather Statement', 'Hydrologic Outlook',
+      'Hazardous Weather Outlook', 'Short Term Forecast', 'Administrative Message',
+      'Test', 'Child Abduction Emergency', 'Civil Danger Warning',
+      'Civil Emergency Message', 'Avalanche Watch', 'Avalanche Advisory',
+      'Fire Weather Watch'
+    ]
+  },
+
   // Operations - Show anything that could impact site operations
   OPERATIONS: {
     name: 'Operations View',
