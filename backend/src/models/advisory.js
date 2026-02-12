@@ -110,19 +110,48 @@ const AdvisoryModel = {
   },
 
   /**
-   * Create new advisory
+   * Create or update advisory (upsert)
+   * Uses external_id to prevent duplicates if provided
    * @param {Object} advisory - Advisory data
-   * @returns {Promise<Object>} Created advisory with ID
+   * @returns {Promise<Object>} Created/updated advisory with ID
    */
   async create(advisory) {
     const db = await getDatabase();
     try {
+      // Extract external_id from raw_payload if not provided
+      let externalId = advisory.external_id;
+      if (!externalId && advisory.raw_payload) {
+        const payload = typeof advisory.raw_payload === 'string' 
+          ? JSON.parse(advisory.raw_payload)
+          : advisory.raw_payload;
+        externalId = payload.id || payload.properties?.id;
+      }
+
+      const rawPayloadStr = advisory.raw_payload 
+        ? (typeof advisory.raw_payload === 'string' ? advisory.raw_payload : JSON.stringify(advisory.raw_payload))
+        : null;
+
+      // Use INSERT ... ON DUPLICATE KEY UPDATE to prevent duplicates
       const [result] = await db.query(`
         INSERT INTO advisories (
-          site_id, advisory_type, severity, status, source,
+          external_id, site_id, advisory_type, severity, status, source,
           headline, description, start_time, end_time, issued_time, raw_payload
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+          site_id = VALUES(site_id),
+          advisory_type = VALUES(advisory_type),
+          severity = VALUES(severity),
+          status = VALUES(status),
+          source = VALUES(source),
+          headline = VALUES(headline),
+          description = VALUES(description),
+          start_time = VALUES(start_time),
+          end_time = VALUES(end_time),
+          issued_time = VALUES(issued_time),
+          raw_payload = VALUES(raw_payload),
+          last_updated = CURRENT_TIMESTAMP
       `, [
+        externalId,
         advisory.site_id,
         advisory.advisory_type,
         advisory.severity,
@@ -133,10 +162,10 @@ const AdvisoryModel = {
         advisory.start_time,
         advisory.end_time,
         advisory.issued_time,
-        advisory.raw_payload ? JSON.stringify(advisory.raw_payload) : null
+        rawPayloadStr
       ]);
 
-      return this.getById(result.insertId);
+      return this.getById(result.insertId || result.lastInsertId || advisory.id);
     } catch (error) {
       console.error('Error creating advisory:', error);
       throw error;
