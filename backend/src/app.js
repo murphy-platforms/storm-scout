@@ -14,6 +14,7 @@ const advisoriesRouter = require('./routes/advisories');
 const statusRouter = require('./routes/status');
 const noticesRouter = require('./routes/notices');
 const filtersRouter = require('./routes/filters');
+const operationalStatusRouter = require('./routes/operational-status');
 
 // Create Express app
 const app = express();
@@ -53,6 +54,7 @@ app.use('/api/advisories', advisoriesRouter);
 app.use('/api/status', statusRouter);
 app.use('/api/notices', noticesRouter);
 app.use('/api/filters', filtersRouter);
+app.use('/api/operational-status', operationalStatusRouter);
 
 // API info endpoint
 app.get('/api', (req, res) => {
@@ -65,7 +67,8 @@ app.get('/api', (req, res) => {
       advisories: '/api/advisories',
       status: '/api/status',
       notices: '/api/notices',
-      filters: '/api/filters'
+      filters: '/api/filters',
+      operational_status: '/api/operational-status'
     }
   });
 });

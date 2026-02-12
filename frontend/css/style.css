@@ -35,6 +35,124 @@ body {
     padding: 0.35em 0.65em;
 }
 
+/* Weather Impact Levels */
+.weather-red {
+    background-color: #dc3545;
+    color: white;
+}
+
+.weather-orange {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.weather-yellow {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.weather-green {
+    background-color: #198754;
+    color: white;
+}
+
+/* Operational Status */
+.status-closed {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-restricted {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-open {
+    background-color: #198754;
+    color: white;
+}
+
+/* Dual Status Display */
+.site-status-dual {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+/* Weather Impact Cards */
+.weather-card {
+    border-left: 4px solid;
+    transition: transform 0.2s;
+}
+
+.weather-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.weather-card.impact-red {
+    border-left-color: #dc3545;
+}
+
+.weather-card.impact-orange {
+    border-left-color: #fd7e14;
+}
+
+.weather-card.impact-yellow {
+    border-left-color: #ffc107;
+}
+
+.weather-card.impact-green {
+    border-left-color: #198754;
+}
+
+/* Operational Status Management Page */
+.status-mgmt-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.decision-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.decision-info .decision-by {
+    font-weight: 600;
+}
+
+.bulk-action-bar {
+    position: sticky;
+    top: 56px;
+    background-color: #fff;
+    border-bottom: 2px solid #0d6efd;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
 /* Table */
 .table-hover tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.025);

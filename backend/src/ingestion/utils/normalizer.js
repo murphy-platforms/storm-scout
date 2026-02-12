@@ -61,33 +61,46 @@ function isPointInAlertArea(lat, lon, alertGeometry) {
 }
 
 /**
- * Calculate operational status based on advisory severity
- * Only considers HIGH and CRITICAL severity to match default filter
- * @param {string} severity - Advisory severity
- * @param {string} advisoryType - Type of advisory
- * @returns {string} Operational status (Open, At Risk, Closed)
+ * Calculate weather impact level based on advisory severity
+ * Automatic assessment - does NOT set operational status
+ * @param {string} severity - Advisory severity (Extreme, Severe, Moderate, Minor, Unknown)
+ * @returns {string} Weather impact level (red, orange, yellow, green)
  */
-function calculateOperationalStatus(severity, advisoryType) {
-  const type = advisoryType.toLowerCase();
+function calculateWeatherImpact(severity) {
+  // Map severity to weather impact color
+  const impactMap = {
+    'Extreme': 'red',      // CRITICAL - life-threatening conditions
+    'Severe': 'orange',     // HIGH - significant hazardous conditions
+    'Moderate': 'yellow',   // MODERATE - notable weather conditions
+    'Minor': 'green',       // LOW/MINIMAL - minor conditions
+    'Unknown': 'green'      // Default to green when severity unknown
+  };
   
-  // Immediate closures for Extreme severity
-  if (severity === 'Extreme') {
-    if (type.includes('hurricane warning') || 
-        type.includes('tornado emergency') ||
-        type.includes('evacuation')) {
-      return 'Closed';
+  return impactMap[severity] || 'green';
+}
+
+/**
+ * Calculate highest weather impact from multiple advisories
+ * @param {Array} advisories - Array of advisory objects with severity field
+ * @returns {string} Highest weather impact level (red, orange, yellow, green)
+ */
+function calculateHighestWeatherImpact(advisories) {
+  if (!advisories || advisories.length === 0) {
+    return 'green';
+  }
+  
+  // Priority order (highest to lowest)
+  const impactOrder = ['red', 'orange', 'yellow', 'green'];
+  
+  const impacts = advisories.map(adv => calculateWeatherImpact(adv.severity));
+  
+  for (const impact of impactOrder) {
+    if (impacts.includes(impact)) {
+      return impact;
     }
-    return 'At Risk';
   }
   
-  // At Risk for Severe severity (HIGH impact)
-  if (severity === 'Severe') {
-    return 'At Risk';
-  }
-  
-  // Ignore Moderate, Minor, and Unknown severity
-  // These don't trigger status changes (remain Open)
-  return 'Open';
+  return 'green';
 }
 
 /**
@@ -116,6 +129,9 @@ module.exports = {
   normalizeSeverity,
   normalizeNOAAAlert,
   isPointInAlertArea,
-  calculateOperationalStatus,
-  formatStatusReason
+  calculateWeatherImpact,
+  calculateHighestWeatherImpact,
+  formatStatusReason,
+  // Legacy export for backward compatibility
+  calculateOperationalStatus: calculateWeatherImpact
 };
