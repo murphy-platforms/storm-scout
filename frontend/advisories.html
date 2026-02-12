@@ -119,34 +119,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/alert-filters.js"></script>
     <script>
         let allAdvisories = [];
-        let filterConfigs = {};
-        let alertTypesByLevel = {};
         
-        // Load filter configurations from API
-        async function loadFilterConfigs() {
-            try {
-                const response = await fetch(`${API.BASE_URL}/filters`);
-                const data = await response.json();
-                filterConfigs = data.data;
-                
-                // Load all alert types by level
-                const typesResponse = await fetch(`${API.BASE_URL}/filters/types/all`);
-                const typesData = await typesResponse.json();
-                alertTypesByLevel = typesData.data;
-                
-                console.log('Loaded filter configs:', filterConfigs);
-            } catch (error) {
-                console.error('Failed to load filter configs:', error);
-            }
-        }
-        
-        // Check if alert type should be included based on selected filter
+        // Check if alert type should be included
+        // If dropdown has a preset selected, use that; otherwise use saved preferences
         function shouldIncludeAlertType(alertType, filterName) {
-            if (!filterName || filterName === '') return true; // No filter, include all
+            if (!filterName || filterName === '') {
+                // No dropdown selection - use saved user preferences
+                return AlertFilters.shouldIncludeAlertType(alertType);
+            }
             
-            const config = filterConfigs[filterName];
+            const config = AlertFilters.filterConfigs[filterName];
             if (!config) return true;
             
             // Check if explicitly excluded
@@ -156,7 +141,7 @@
             
             // Find impact level for this alert type
             let impactLevel = null;
-            for (const [level, types] of Object.entries(alertTypesByLevel)) {
+            for (const [level, types] of Object.entries(AlertFilters.alertTypesByLevel)) {
                 if (types.includes(alertType)) {
                     impactLevel = level;
                     break;
@@ -232,8 +217,8 @@
             renderAdvisories(filtered);
             
             // Show filter info
-            if (alertTypeFilter && filterConfigs[alertTypeFilter]) {
-                console.log(`Applied filter: ${filterConfigs[alertTypeFilter].name} - ${filterConfigs[alertTypeFilter].description}`);
+            if (alertTypeFilter && AlertFilters.filterConfigs[alertTypeFilter]) {
+                console.log(`Applied filter: ${AlertFilters.filterConfigs[alertTypeFilter].name} - ${AlertFilters.filterConfigs[alertTypeFilter].description}`);
             }
         }
         
@@ -244,8 +229,10 @@
         document.getElementById('statusFilter').addEventListener('change', filterAdvisories);
         
         // Initialize: Load filter configs then load advisories
-        loadFilterConfigs().then(() => {
+        AlertFilters.init().then(() => {
             loadAdvisories();
+            // Apply filters immediately on load to respect user's saved preferences
+            filterAdvisories();
         });
     </script>
 </body>
