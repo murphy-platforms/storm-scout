@@ -48,12 +48,77 @@ function extractVTEC(noaaAlert) {
 }
 
 /**
+ * Extract VTEC event ID (persistent identifier across alert updates)
+ * 
+ * VTEC format: /O.{ACTION}.{OFFICE}.{PHENOM}.{SIG}.{EVENT}.{TIMES}/
+ * Example: /O.CON.PAJK.HW.W.0006.260212T1200Z-260213T0300Z/
+ * 
+ * Event ID format: {OFFICE}.{PHENOM}.{SIG}.{EVENT}
+ * Example: PAJK.HW.W.0006
+ * 
+ * This ID stays the same when NOAA issues updates (NEW→CON→EXT→EXP)
+ * 
+ * @param {string} vtecCode - Full VTEC code
+ * @returns {string|null} Event ID (e.g., "PAJK.HW.W.0006") or null
+ */
+function extractVTECEventID(vtecCode) {
+  if (!vtecCode) return null;
+  
+  try {
+    // Parse: /O.{ACTION}.{OFFICE}.{PHENOM}.{SIG}.{EVENT}.{TIMES}/
+    const match = vtecCode.match(/\/O\.\w+\.(\w+)\.(\w+)\.(\w)\.(\d+)\./);
+    
+    if (!match) return null;
+    
+    const [, office, phenomena, significance, eventNum] = match;
+    return `${office}.${phenomena}.${significance}.${eventNum}`;
+  } catch (error) {
+    console.error('Failed to extract VTEC event ID:', error.message);
+    return null;
+  }
+}
+
+/**
+ * Extract VTEC action code (alert status: NEW, CON, EXT, etc.)
+ * 
+ * Action codes:
+ * - NEW: New alert issued
+ * - CON: Continuation of existing alert
+ * - EXT: Extension of alert time period
+ * - EXP: Alert expired
+ * - CAN: Alert cancelled
+ * - UPG: Alert upgraded to higher severity
+ * - EXA/EXB: Extended (A/B variants)
+ * - ROU: Routine
+ * - COR: Correction
+ * 
+ * @param {string} vtecCode - Full VTEC code
+ * @returns {string|null} Action code (e.g., "NEW", "CON", "EXT") or null
+ */
+function extractVTECAction(vtecCode) {
+  if (!vtecCode) return null;
+  
+  try {
+    // Parse: /O.{ACTION}.{OFFICE}.../ 
+    const match = vtecCode.match(/\/O\.(\w+)\./); 
+    
+    if (!match) return null;
+    
+    return match[1]; // Return the action code (NEW, CON, EXT, etc.)
+  } catch (error) {
+    console.error('Failed to extract VTEC action:', error.message);
+    return null;
+  }
+}
+
+/**
  * Normalize NOAA alert to our advisory schema
  * @param {Object} noaaAlert - NOAA alert feature object
  * @returns {Object} Normalized advisory data
  */
 function normalizeNOAAAlert(noaaAlert) {
   const properties = noaaAlert.properties;
+  const vtecCode = extractVTEC(noaaAlert);
   
   return {
     advisory_type: properties.event || 'Weather Advisory',
@@ -65,7 +130,9 @@ function normalizeNOAAAlert(noaaAlert) {
     start_time: properties.onset || properties.effective || new Date().toISOString(),
     end_time: properties.ends || properties.expires,
     issued_time: properties.sent || new Date().toISOString(),
-    vtec_code: extractVTEC(noaaAlert),
+    vtec_code: vtecCode,
+    vtec_event_id: extractVTECEventID(vtecCode),
+    vtec_action: extractVTECAction(vtecCode),
     raw_payload: noaaAlert
   };
 }
@@ -154,6 +221,8 @@ module.exports = {
   normalizeSeverity,
   normalizeNOAAAlert,
   extractVTEC,
+  extractVTECEventID,
+  extractVTECAction,
   isPointInAlertArea,
   calculateWeatherImpact,
   calculateHighestWeatherImpact,
