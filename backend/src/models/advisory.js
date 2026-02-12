@@ -110,14 +110,64 @@ const AdvisoryModel = {
   },
 
   /**
+   * Find advisory by VTEC code
+   * Used to check if an alert update already exists before creating a duplicate
+   * @param {string} vtecCode - VTEC code
+   * @param {number} siteId - Site ID
+   * @param {string} advisoryType - Advisory type (optional for additional validation)
+   * @returns {Promise<Object|null>} Existing advisory or null
+   */
+  async findByVTEC(vtecCode, siteId, advisoryType = null) {
+    if (!vtecCode) return null;
+    
+    const db = await getDatabase();
+    let query = 'SELECT * FROM advisories WHERE vtec_code = ? AND site_id = ?';
+    const params = [vtecCode, siteId];
+    
+    // Optional: also match on advisory_type for extra safety
+    // This prevents different alert types with same VTEC from conflicting
+    if (advisoryType) {
+      query += ' AND advisory_type = ?';
+      params.push(advisoryType);
+    }
+    
+    query += ' ORDER BY last_updated DESC LIMIT 1';
+    
+    try {
+      const [rows] = await db.query(query, params);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error finding advisory by VTEC:', error);
+      return null;
+    }
+  },
+
+  /**
    * Create or update advisory (upsert)
-   * Uses external_id to prevent duplicates if provided
+   * Uses VTEC-based deduplication when available, falls back to external_id
    * @param {Object} advisory - Advisory data
    * @returns {Promise<Object>} Created/updated advisory with ID
    */
   async create(advisory) {
     const db = await getDatabase();
     try {
+      // VTEC-based deduplication strategy:
+      // If VTEC exists, check if we already have this alert and update it
+      // This handles NOAA alert updates that have different external_ids
+      if (advisory.vtec_code) {
+        const existing = await this.findByVTEC(
+          advisory.vtec_code,
+          advisory.site_id,
+          advisory.advisory_type
+        );
+        
+        if (existing) {
+          // Update existing alert with new data
+          console.log(`Updating existing alert via VTEC: ${advisory.vtec_code} for site ${advisory.site_id}`);
+          return this.update(existing.id, advisory);
+        }
+      }
+      
       // Extract external_id from raw_payload if not provided
       let externalId = advisory.external_id;
       if (!externalId && advisory.raw_payload) {
@@ -131,12 +181,12 @@ const AdvisoryModel = {
         ? (typeof advisory.raw_payload === 'string' ? advisory.raw_payload : JSON.stringify(advisory.raw_payload))
         : null;
 
-      // Use INSERT ... ON DUPLICATE KEY UPDATE to prevent duplicates
+      // Insert new alert (or update by external_id if duplicate external_id)
       const [result] = await db.query(`
         INSERT INTO advisories (
           external_id, site_id, advisory_type, severity, status, source,
-          headline, description, start_time, end_time, issued_time, raw_payload
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          headline, description, start_time, end_time, issued_time, vtec_code, raw_payload
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           site_id = VALUES(site_id),
           advisory_type = VALUES(advisory_type),
@@ -148,6 +198,7 @@ const AdvisoryModel = {
           start_time = VALUES(start_time),
           end_time = VALUES(end_time),
           issued_time = VALUES(issued_time),
+          vtec_code = VALUES(vtec_code),
           raw_payload = VALUES(raw_payload),
           last_updated = CURRENT_TIMESTAMP
       `, [
@@ -162,6 +213,7 @@ const AdvisoryModel = {
         advisory.start_time,
         advisory.end_time,
         advisory.issued_time,
+        advisory.vtec_code || null,
         rawPayloadStr
       ]);
 
@@ -185,8 +237,14 @@ const AdvisoryModel = {
 
     for (const [key, value] of Object.entries(updates)) {
       if (key !== 'id' && key !== 'site_id') {
-        fields.push(`${key} = ?`);
-        params.push(value);
+        // Handle raw_payload JSON serialization
+        if (key === 'raw_payload' && value && typeof value === 'object') {
+          fields.push(`${key} = ?`);
+          params.push(JSON.stringify(value));
+        } else {
+          fields.push(`${key} = ?`);
+          params.push(value);
+        }
       }
     }
 
