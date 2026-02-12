@@ -79,13 +79,8 @@ const AlertFilters = {
             this.loadUserPreferences();
         }
         
-        // If user has explicit setting, use it
-        if (this.userFilters.hasOwnProperty(alertType)) {
-            return this.userFilters[alertType] !== false;
-        }
-        
-        // Default to include
-        return true;
+        // Only include if explicitly set to true
+        return this.userFilters[alertType] === true;
     },
     
     /**
@@ -104,7 +99,7 @@ const AlertFilters = {
         if (!this.userFilters) {
             this.loadUserPreferences();
         }
-        return Object.values(this.userFilters).filter(v => v !== false).length;
+        return Object.values(this.userFilters).filter(v => v === true).length;
     },
     
     /**
@@ -126,8 +121,8 @@ const AlertFilters = {
         }
         
         // Compare with user filters
-        const userEnabled = Object.keys(this.userFilters).filter(k => this.userFilters[k] !== false).sort();
-        const expectedEnabled = Object.keys(expectedFilters).filter(k => expectedFilters[k] !== false).sort();
+        const userEnabled = Object.keys(this.userFilters).filter(k => this.userFilters[k] === true).sort();
+        const expectedEnabled = Object.keys(expectedFilters).filter(k => expectedFilters[k] === true).sort();
         
         return JSON.stringify(userEnabled) === JSON.stringify(expectedEnabled);
     },
