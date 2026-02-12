@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getNOAAAlerts } = require('./utils/api-client');
-const { normalizeNOAAAlert, calculateOperationalStatus, formatStatusReason } = require('./utils/normalizer');
+const { normalizeNOAAAlert, calculateWeatherImpact, calculateHighestWeatherImpact, formatStatusReason } = require('./utils/normalizer');
 const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
@@ -136,28 +136,35 @@ async function ingestNOAAData() {
         }
       }
       
-      // Update site status based on most severe advisory
-      const mostSevere = advisories.reduce((max, adv) => {
-        const severityOrder = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1, 'Unknown': 0 };
-        return (severityOrder[adv.severity] || 0) > (severityOrder[max.severity] || 0) ? adv : max;
-      });
-      
-      const operationalStatus = calculateOperationalStatus(mostSevere.severity, mostSevere.advisory_type);
+      // Calculate weather impact based on most severe advisory
+      const weatherImpactLevel = calculateHighestWeatherImpact(advisories);
       const reason = formatStatusReason(advisories);
       
       try {
-        await SiteStatusModel.upsert(siteId, operationalStatus, reason);
+        // Update ONLY weather_impact_level, do NOT change operational_status
+        // Operational status is set manually by IMT/Operations
+        await SiteStatusModel.upsert(siteId, {
+          weather_impact_level: weatherImpactLevel,
+          reason: reason,
+          decision_by: 'weather_system'
+        });
         statusesUpdated++;
       } catch (error) {
         console.error(`Error updating status for site ${siteId}:`, error.message);
       }
     }
     
-    // Update sites with no advisories to Open status
+    // Update sites with no advisories to green weather impact
     for (const site of sites) {
       if (!siteAdvisories.has(site.id)) {
         try {
-          await SiteStatusModel.upsert(site.id, 'Open', 'No active advisories');
+          // Set weather impact to green (no advisories)
+          // Suggest open_normal if no operational status is set, but don't override existing decisions
+          await SiteStatusModel.upsert(site.id, {
+            weather_impact_level: 'green',
+            reason: 'No active advisories',
+            decision_by: 'weather_system'
+          });
         } catch (error) {
           console.error(`Error updating status for site ${site.id}:`, error.message);
         }

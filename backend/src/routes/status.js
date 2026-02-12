@@ -31,8 +31,11 @@ router.get('/overview', async (req, res) => {
     // Advisory count by severity
     const advisoriesBySeverity = await AdvisoryModel.getCountBySeverity(true);
     
-    // Site status counts
+    // Operational status counts
     const statusCounts = await SiteStatusModel.getCountByStatus();
+    
+    // Weather impact level counts
+    const weatherImpactCounts = await SiteStatusModel.getCountByWeatherImpact();
     
     // Recently updated sites
     const recentlyUpdated = await SiteStatusModel.getRecentlyUpdated(10);
@@ -48,7 +51,8 @@ router.get('/overview', async (req, res) => {
         sites_with_advisories: sitesWithAdvisories,
         total_active_advisories: totalActiveAdvisories,
         advisories_by_severity: advisoriesBySeverity,
-        status_counts: statusCounts,
+        operational_status_counts: statusCounts,
+        weather_impact_counts: weatherImpactCounts,
         recently_updated: recentlyUpdated,
         last_updated: lastIngestion?.lastUpdated || null,
         update_interval_minutes: updateIntervalMinutes
