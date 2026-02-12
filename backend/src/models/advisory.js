@@ -219,6 +219,21 @@ const AdvisoryModel = {
 
       return this.getById(result.insertId || result.lastInsertId || advisory.id);
     } catch (error) {
+      // Handle unique constraint violation (ER_DUP_ENTRY)
+      // This can happen if a duplicate VTEC alert is inserted between the findByVTEC check and insert
+      if (error.code === 'ER_DUP_ENTRY' && advisory.vtec_code) {
+        console.log(`Duplicate VTEC detected via constraint: ${advisory.vtec_code} - fetching existing alert`);
+        // Find and return the existing alert
+        const existing = await this.findByVTEC(
+          advisory.vtec_code,
+          advisory.site_id,
+          advisory.advisory_type
+        );
+        if (existing) {
+          // Update it with the new data
+          return this.update(existing.id, advisory);
+        }
+      }
       console.error('Error creating advisory:', error);
       throw error;
     }
