@@ -62,6 +62,7 @@ function isPointInAlertArea(lat, lon, alertGeometry) {
 
 /**
  * Calculate operational status based on advisory severity
+ * Only considers HIGH and CRITICAL severity to match default filter
  * @param {string} severity - Advisory severity
  * @param {string} advisoryType - Type of advisory
  * @returns {string} Operational status (Open, At Risk, Closed)
@@ -69,7 +70,7 @@ function isPointInAlertArea(lat, lon, alertGeometry) {
 function calculateOperationalStatus(severity, advisoryType) {
   const type = advisoryType.toLowerCase();
   
-  // Immediate closures
+  // Immediate closures for Extreme severity
   if (severity === 'Extreme') {
     if (type.includes('hurricane warning') || 
         type.includes('tornado emergency') ||
@@ -79,19 +80,13 @@ function calculateOperationalStatus(severity, advisoryType) {
     return 'At Risk';
   }
   
+  // At Risk for Severe severity (HIGH impact)
   if (severity === 'Severe') {
-    if (type.includes('blizzard warning') ||
-        type.includes('ice storm warning') ||
-        type.includes('extreme wind warning')) {
-      return 'At Risk';
-    }
     return 'At Risk';
   }
   
-  if (severity === 'Moderate') {
-    return 'At Risk';
-  }
-  
+  // Ignore Moderate, Minor, and Unknown severity
+  // These don't trigger status changes (remain Open)
   return 'Open';
 }
 
