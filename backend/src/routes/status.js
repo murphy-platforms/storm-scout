@@ -5,9 +5,11 @@
 
 const express = require('express');
 const router = express.Router();
+const config = require('../config/config');
 const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
+const { getLastIngestionTime } = require('../ingestion/noaa-ingestor');
 
 /**
  * GET /api/status/overview
@@ -35,6 +37,10 @@ router.get('/overview', async (req, res) => {
     // Recently updated sites
     const recentlyUpdated = await SiteStatusModel.getRecentlyUpdated(10);
     
+    // Get last ingestion time
+    const lastIngestion = getLastIngestionTime();
+    const updateIntervalMinutes = config.ingestion.intervalMinutes || 15;
+    
     res.json({
       success: true,
       data: {
@@ -43,7 +49,9 @@ router.get('/overview', async (req, res) => {
         total_active_advisories: totalActiveAdvisories,
         advisories_by_severity: advisoriesBySeverity,
         status_counts: statusCounts,
-        recently_updated: recentlyUpdated
+        recently_updated: recentlyUpdated,
+        last_updated: lastIngestion?.lastUpdated || null,
+        update_interval_minutes: updateIntervalMinutes
       }
     });
   } catch (error) {
