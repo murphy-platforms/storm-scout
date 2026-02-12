@@ -81,24 +81,101 @@ const SiteStatusModel = {
   },
 
   /**
-   * Update or create site status
+   * Update or create site status (now handles both weather impact and operational status)
    * @param {number} siteId - Site ID
-   * @param {string} status - Operational status
-   * @param {string} reason - Reason for status
+   * @param {Object} statusData - Status data object
+   * @param {string} statusData.operational_status - Operational status (open_normal, open_restricted, closed, pending)
+   * @param {string} statusData.weather_impact_level - Weather impact (green, yellow, orange, red)
+   * @param {string} statusData.reason - Legacy reason field
+   * @param {string} statusData.decision_by - Who made the operational decision
+   * @param {string} statusData.decision_reason - Reason for operational decision
    * @returns {Promise<Object>} Updated site status
    */
-  async upsert(siteId, status, reason = null) {
+  async upsert(siteId, statusData) {
     const db = getDatabase();
+    
+    // Handle legacy format (string status) for backward compatibility
+    if (typeof statusData === 'string') {
+      statusData = { operational_status: statusData };
+    }
+    
+    const {
+      operational_status,
+      weather_impact_level,
+      reason,
+      decision_by,
+      decision_reason
+    } = statusData;
+
+    const fields = ['site_id', 'last_updated'];
+    const values = [siteId];
+    const updates = ['last_updated = NOW()'];
+
+    if (operational_status !== undefined) {
+      fields.push('operational_status');
+      values.push(operational_status);
+      updates.push('operational_status = VALUES(operational_status)');
+    }
+
+    if (weather_impact_level !== undefined) {
+      fields.push('weather_impact_level');
+      values.push(weather_impact_level);
+      updates.push('weather_impact_level = VALUES(weather_impact_level)');
+    }
+
+    if (reason !== undefined) {
+      fields.push('reason');
+      values.push(reason);
+      updates.push('reason = VALUES(reason)');
+    }
+
+    if (decision_by !== undefined) {
+      fields.push('decision_by');
+      values.push(decision_by);
+      updates.push('decision_by = VALUES(decision_by)');
+      
+      // Auto-set decision_at when decision_by is provided
+      fields.push('decision_at');
+      updates.push('decision_at = NOW()');
+    }
+
+    if (decision_reason !== undefined) {
+      fields.push('decision_reason');
+      values.push(decision_reason);
+      updates.push('decision_reason = VALUES(decision_reason)');
+    }
+
+    const placeholders = fields.map(() => '?').join(', ');
+    fields.push('NOW()');
+    
+    // Remove last_updated from fields since we use NOW()
+    const insertFields = fields.slice(0, -1);
+    insertFields.push('last_updated');
+
     await db.query(`
-      INSERT INTO site_status (site_id, operational_status, reason, last_updated)
-      VALUES (?, ?, ?, NOW())
+      INSERT INTO site_status (${insertFields.join(', ')})
+      VALUES (${placeholders}, NOW())
       ON DUPLICATE KEY UPDATE
-        operational_status = VALUES(operational_status),
-        reason = VALUES(reason),
-        last_updated = NOW()
-    `, [siteId, status, reason]);
+        ${updates.join(',\n        ')}
+    `, values);
 
     return this.getBySite(siteId);
+  },
+
+  /**
+   * Set operational status manually (for IMT/Operations use)
+   * @param {number} siteId - Site ID
+   * @param {string} operationalStatus - Operational status (open_normal, open_restricted, closed, pending)
+   * @param {string} decisionBy - User who made the decision
+   * @param {string} decisionReason - Reason for the decision
+   * @returns {Promise<Object>} Updated site status
+   */
+  async setOperationalStatus(siteId, operationalStatus, decisionBy, decisionReason) {
+    return this.upsert(siteId, {
+      operational_status: operationalStatus,
+      decision_by: decisionBy,
+      decision_reason: decisionReason
+    });
   },
 
   /**
@@ -113,12 +190,61 @@ const SiteStatusModel = {
       GROUP BY operational_status
       ORDER BY 
         CASE operational_status
+          WHEN 'closed' THEN 1
+          WHEN 'open_restricted' THEN 2
+          WHEN 'pending' THEN 3
+          WHEN 'open_normal' THEN 4
+          -- Legacy values
           WHEN 'Closed' THEN 1
           WHEN 'At Risk' THEN 2
           WHEN 'Open' THEN 3
         END
     `);
     return rows;
+  },
+
+  /**
+   * Get weather impact level counts
+   * @returns {Promise<Array>} Array of {weather_impact_level, count} objects
+   */
+  async getCountByWeatherImpact() {
+    const db = getDatabase();
+    const [rows] = await db.query(`
+      SELECT weather_impact_level, COUNT(*) as count
+      FROM site_status
+      GROUP BY weather_impact_level
+      ORDER BY 
+        CASE weather_impact_level
+          WHEN 'red' THEN 1
+          WHEN 'orange' THEN 2
+          WHEN 'yellow' THEN 3
+          WHEN 'green' THEN 4
+        END
+    `);
+    return rows;
+  },
+
+  /**
+   * Bulk update operational status for multiple sites
+   * @param {Array<number>} siteIds - Array of site IDs
+   * @param {string} operationalStatus - Operational status
+   * @param {string} decisionBy - User who made the decision
+   * @param {string} decisionReason - Reason for the decision
+   * @returns {Promise<number>} Number of sites updated
+   */
+  async bulkSetOperationalStatus(siteIds, operationalStatus, decisionBy, decisionReason) {
+    const db = getDatabase();
+    const [result] = await db.query(`
+      UPDATE site_status
+      SET 
+        operational_status = ?,
+        decision_by = ?,
+        decision_at = NOW(),
+        decision_reason = ?,
+        last_updated = NOW()
+      WHERE site_id IN (?)
+    `, [operationalStatus, decisionBy, decisionReason, siteIds]);
+    return result.affectedRows;
   },
 
   /**
