@@ -71,17 +71,20 @@ async function ingestNOAAData() {
     // Step 4: Update database
     let advisoriesCreated = 0;
     let statusesUpdated = 0;
+    const processedExternalIds = [];
     
-    // First, mark all existing advisories as expired
-    await AdvisoryModel.markExpired();
-    
-    // Create new advisories and update site statuses
+    // Create/update advisories using UPSERT (will update if     // Create/update advisories and track processed external IDs
     for (const [siteId, advisories] of siteAdvisories.entries()) {
-      // Create advisories
+      // Create/update advisories
       for (const advisory of advisories) {
         try {
           await AdvisoryModel.create(advisory);
           advisoriesCreated++;
+          
+          // Track external_id for later cleanup
+          if (advisory.external_id) {
+            processedExternalIds.push(advisory.external_id);
+          }
         } catch (error) {
           console.error(`Error creating advisory for site ${siteId}:`, error.message);
         }
@@ -115,18 +118,60 @@ async function ingestNOAAData() {
       }
     }
     
-    // Step 5: Clean up expired advisories
-    console.log('\nCleaning up expired advisories...');
+    // Step 5: Mark advisories not in current batch as expired
+    console.log('\nMarking missing advisories as expired...');
+    const { getDatabase } = require('../config/database');
+    const db = await getDatabase();
+    let expiredCount = 0;
+    
+    if (processedExternalIds.length > 0) {
+      const [result] = await db.query(`
+        UPDATE advisories
+        SET status = 'expired', last_updated = CURRENT_TIMESTAMP
+        WHERE status = 'active' 
+          AND external_id IS NOT NULL
+          AND external_id NOT IN (?)
+      `, [processedExternalIds]);
+      expiredCount = result.affectedRows;
+      console.log(`Marked ${expiredCount} advisories as expired`);
+    }
+    
+    // Step 6: Clean up expired advisories (remove old ones)
+    console.log('\nCleaning up old expired advisories...');
     const expiredRemoved = await removeExpiredAdvisories();
+    
+    // Step 7: Check for sites with unusually high advisory counts (monitoring)
+    console.log('\nChecking for anomalies...');
+    const [highCountSites] = await db.query(`
+      SELECT s.site_code, s.name, s.state, COUNT(*) as advisory_count
+      FROM advisories a
+      JOIN sites s ON a.site_id = s.id
+      WHERE a.status = 'active'
+      GROUP BY s.id
+      HAVING advisory_count > 15
+      ORDER BY advisory_count DESC
+      LIMIT 5
+    `);
+    
+    if (highCountSites.length > 0) {
+      console.warn('⚠️  WARNING: Sites with unusually high advisory counts detected:');
+      highCountSites.forEach(site => {
+        console.warn(`   ${site.site_code} (${site.name}, ${site.state}): ${site.advisory_count} active advisories`);
+      });
+      console.warn('   This may indicate duplicate accumulation. Consider running cleanup.');
+    } else {
+      console.log('✓ No anomalies detected');
+    }
     
     // Save timestamp of successful ingestion
     const timestamp = new Date().toISOString();
     fs.writeFileSync(LAST_INGESTION_FILE, JSON.stringify({ lastUpdated: timestamp }));
     
     console.log('\n═══ Ingestion Complete ═══');
-    console.log(`Advisories created: ${advisoriesCreated}`);
+    console.log(`Advisories created/updated: ${advisoriesCreated}`);
     console.log(`Site statuses updated: ${statusesUpdated}`);
-    console.log(`Expired advisories removed: ${expiredRemoved}`);
+    console.log(`Advisories marked expired: ${expiredCount}`);
+    console.log(`Old expired removed: ${expiredRemoved}`);
     console.log(`═══════════════════════════\n`);
     
   } catch (error) {

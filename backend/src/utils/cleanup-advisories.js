@@ -8,60 +8,96 @@ const { initDatabase, getDatabase } = require('../config/database');
 /**
  * Remove duplicate advisories
  * Keeps the most recent version of each unique advisory
- * Uniqueness is based on: site_id + advisory_type + issued_time + headline
+ * Primary uniqueness: external_id (NOAA alert ID)
+ * Fallback uniqueness: site_id + advisory_type + start_time + end_time
  */
 async function removeDuplicateAdvisories() {
   const db = getDatabase();
   
   console.log('\n=== Removing Duplicate Advisories ===');
   
-  // Find duplicates by grouping on key fields
-  const [duplicates] = await db.query(`
-    SELECT site_id, advisory_type, issued_time, headline, COUNT(*) as count
+  let totalRemoved = 0;
+  
+  // STEP 1: Find duplicates by external_id (most reliable)
+  console.log('Finding duplicates by external_id...');
+  const [externalIdDuplicates] = await db.query(`
+    SELECT external_id, COUNT(*) as count
     FROM advisories
-    GROUP BY site_id, advisory_type, issued_time, headline
+    WHERE external_id IS NOT NULL
+    GROUP BY external_id
     HAVING count > 1
   `);
   
-  if (duplicates.length === 0) {
-    console.log('✓ No duplicate advisories found');
-    return 0;
-  }
-  
-  console.log(`Found ${duplicates.length} sets of duplicate advisories`);
-  
-  let totalRemoved = 0;
-  
-  // For each set of duplicates, keep the one with the highest ID (most recent insert)
-  for (const dup of duplicates) {
-    const [rows] = await db.query(`
-      SELECT id FROM advisories
-      WHERE site_id = ? 
-        AND advisory_type = ? 
-        AND issued_time = ? 
-        AND headline = ?
-      ORDER BY id DESC
-    `, [dup.site_id, dup.advisory_type, dup.issued_time, dup.headline]);
+  if (externalIdDuplicates.length > 0) {
+    console.log(`Found ${externalIdDuplicates.length} external_ids with duplicates`);
     
-    // Keep the first one (highest ID), delete the rest
-    const idsToDelete = rows.slice(1).map(r => r.id);
-    
-    if (idsToDelete.length > 0) {
-      await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
-      totalRemoved += idsToDelete.length;
-      console.log(`  Removed ${idsToDelete.length} duplicate(s) for "${dup.advisory_type}" at site ${dup.site_id}`);
+    for (const dup of externalIdDuplicates) {
+      const [rows] = await db.query(`
+        SELECT id, site_id, advisory_type FROM advisories
+        WHERE external_id = ?
+        ORDER BY id DESC
+      `, [dup.external_id]);
+      
+      // Keep the first one (highest ID = most recent), delete the rest
+      const idsToDelete = rows.slice(1).map(r => r.id);
+      
+      if (idsToDelete.length > 0) {
+        await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
+        totalRemoved += idsToDelete.length;
+        console.log(`  Removed ${idsToDelete.length} duplicate(s) for external_id "${dup.external_id}"`);
+      }
     }
   }
   
-  console.log(`✓ Total duplicates removed: ${totalRemoved}\n`);
+  // STEP 2: Find duplicates without external_id (fallback logic)
+  console.log('Finding duplicates by site+type+times...');
+  const [timeDuplicates] = await db.query(`
+    SELECT site_id, advisory_type, start_time, end_time, COUNT(*) as count
+    FROM advisories
+    WHERE external_id IS NULL
+    GROUP BY site_id, advisory_type, start_time, end_time
+    HAVING count > 1
+  `);
+  
+  if (timeDuplicates.length > 0) {
+    console.log(`Found ${timeDuplicates.length} sets of duplicates without external_id`);
+    
+    for (const dup of timeDuplicates) {
+      const [rows] = await db.query(`
+        SELECT id FROM advisories
+        WHERE site_id = ? 
+          AND advisory_type = ? 
+          AND start_time <=> ?
+          AND end_time <=> ?
+          AND external_id IS NULL
+        ORDER BY id DESC
+      `, [dup.site_id, dup.advisory_type, dup.start_time, dup.end_time]);
+      
+      const idsToDelete = rows.slice(1).map(r => r.id);
+      
+      if (idsToDelete.length > 0) {
+        await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
+        totalRemoved += idsToDelete.length;
+        console.log(`  Removed ${idsToDelete.length} duplicate(s) for "${dup.advisory_type}" at site ${dup.site_id}`);
+      }
+    }
+  }
+  
+  if (totalRemoved === 0) {
+    console.log('✓ No duplicate advisories found');
+  } else {
+    console.log(`✓ Total duplicates removed: ${totalRemoved}`);
+  }
+  
+  console.log('');
   return totalRemoved;
 }
 
 /**
  * Remove expired advisories
  * Deletes advisories where:
- * - status is 'expired'
- * - OR end_time is in the past (more than 1 hour ago)
+ * - status is 'expired' AND last_updated > 6 hours ago (gives users time to see them)
+ * - OR end_time is more than 24 hours in the past
  */
 async function removeExpiredAdvisories() {
   const db = getDatabase();
@@ -71,23 +107,25 @@ async function removeExpiredAdvisories() {
   // Get count before deletion
   const [beforeCount] = await db.query(`
     SELECT COUNT(*) as count FROM advisories 
-    WHERE status = 'expired' OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 1 HOUR))
+    WHERE (status = 'expired' AND last_updated < DATE_SUB(NOW(), INTERVAL 6 HOUR))
+       OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 24 HOUR))
   `);
   
   const expiredCount = beforeCount[0].count;
   
   if (expiredCount === 0) {
-    console.log('✓ No expired advisories to remove\n');
+    console.log('✓ No old expired advisories to remove\n');
     return 0;
   }
   
-  // Delete expired advisories
+  // Delete old expired advisories
   await db.query(`
     DELETE FROM advisories 
-    WHERE status = 'expired' OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 1 HOUR))
+    WHERE (status = 'expired' AND last_updated < DATE_SUB(NOW(), INTERVAL 6 HOUR))
+       OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 24 HOUR))
   `);
   
-  console.log(`✓ Removed ${expiredCount} expired advisories\n`);
+  console.log(`✓ Removed ${expiredCount} old expired advisories\n`);
   return expiredCount;
 }
 
