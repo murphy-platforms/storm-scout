@@ -127,8 +127,10 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title text-muted">Sites with Advisories</h5>
-                        <p class="display-6 fw-bold mb-0 text-warning" id="sitesWithAdvisories">
-                            <span class="spinner-border spinner-border-sm"></span>
+                        <p class="display-6 fw-bold mb-0">
+                            <a href="sites.html" class="text-warning text-decoration-none count-link" id="sitesWithAdvisories">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </a>
                         </p>
                     </div>
                 </div>
@@ -205,9 +207,9 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Recently Updated Sites</h5>
+                        <h5 class="mb-0">Sites with Advisories</h5>
                     </div>
-                    <div class="card-body" id="recentlyUpdated">
+                    <div class="card-body" id="sitesWithAdvisoriesList">
                         <div class="text-center"><span class="spinner-border"></span></div>
                     </div>
                 </div>
@@ -322,25 +324,32 @@
                     .filter(sev => severityCounts[sev] > 0)
                     .map(sev => 
                         `<div class="mb-2">
-                            <span class="badge ${getSeverityBadge(sev)} me-2">${sev}</span>
+                            <a href="advisories.html?severity=${sev}" class="badge ${getSeverityBadge(sev)} me-2 text-decoration-none">${sev}</a>
                             <strong>${severityCounts[sev]}</strong> advisories
                         </div>`
                     ).join('');
                 document.getElementById('severityCounts').innerHTML = severityHTML || '<p class="text-muted">No active advisories</p>';
                 
-                // Recently updated with dual status
-                const recentHTML = overviewData.recently_updated.slice(0, 5).map(site => {
+                // Sites with advisories (filter to show only sites with active advisories)
+                const sitesWithAdvisoriesData = overviewData.recently_updated
+                    .filter(site => {
+                        // Check if this site has any advisories in the filtered set
+                        return filteredAdvisories.some(adv => adv.site_id === site.site_id);
+                    })
+                    .slice(0, 5);
+                
+                const sitesHTML = sitesWithAdvisoriesData.map(site => {
                     const weatherBadge = getWeatherBadge(site.weather_impact_level || 'green');
                     const opsBadge = getOperationalBadge(site.operational_status || 'open_normal');
                     return `<div class="mb-2">
-                        <strong>${site.site_code}</strong> - ${site.name}<br>
+                        <a href="sites.html?site=${site.site_code}" class="text-decoration-none fw-bold">${site.site_code}</a> - ${site.name}<br>
                         <small>
                             <span class="badge ${weatherBadge} me-1">Weather: ${(site.weather_impact_level || 'green').toUpperCase()}</span>
                             <span class="badge ${opsBadge}">Ops: ${formatOperationalStatus(site.operational_status || 'open_normal')}</span>
                         </small>
                     </div>`;
                 }).join('');
-                document.getElementById('recentlyUpdated').innerHTML = recentHTML || '<p class="text-muted">No updates</p>';
+                document.getElementById('sitesWithAdvisoriesList').innerHTML = sitesHTML || '<p class="text-muted">No sites with advisories</p>';
                 
                 function getWeatherBadge(level) {
                     const badges = { red: 'weather-red', orange: 'weather-orange', yellow: 'weather-yellow', green: 'weather-green' };

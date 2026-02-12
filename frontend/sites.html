@@ -179,9 +179,24 @@
         document.getElementById('stateFilter').addEventListener('change', filterSites);
         document.getElementById('statusFilter').addEventListener('change', filterSites);
         
+        // Check for URL parameters on page load
+        function applyURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const siteParam = urlParams.get('site');
+            
+            if (siteParam) {
+                // Auto-populate search box with site code from URL
+                document.getElementById('searchBox').value = siteParam;
+                // Trigger filtering
+                filterSites();
+            }
+        }
+        
         // Initialize filters then load sites
         AlertFilters.init().then(() => {
             loadSites();
+            // Apply URL parameters after sites are loaded
+            setTimeout(() => applyURLParameters(), 100);
         });
     </script>
 </body>
