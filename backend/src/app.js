@@ -13,6 +13,7 @@ const sitesRouter = require('./routes/sites');
 const advisoriesRouter = require('./routes/advisories');
 const statusRouter = require('./routes/status');
 const noticesRouter = require('./routes/notices');
+const filtersRouter = require('./routes/filters');
 
 // Create Express app
 const app = express();
@@ -51,6 +52,7 @@ app.use('/api/sites', sitesRouter);
 app.use('/api/advisories', advisoriesRouter);
 app.use('/api/status', statusRouter);
 app.use('/api/notices', noticesRouter);
+app.use('/api/filters', filtersRouter);
 
 // API info endpoint
 app.get('/api', (req, res) => {
@@ -62,7 +64,8 @@ app.get('/api', (req, res) => {
       sites: '/api/sites',
       advisories: '/api/advisories',
       status: '/api/status',
-      notices: '/api/notices'
+      notices: '/api/notices',
+      filters: '/api/filters'
     }
   });
 });
