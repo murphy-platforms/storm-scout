@@ -8,6 +8,7 @@ const { normalizeNOAAAlert, calculateOperationalStatus, formatStatusReason } = r
 const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
+const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
 
 /**
  * Main ingestion function for NOAA weather data
@@ -110,9 +111,14 @@ async function ingestNOAAData() {
       }
     }
     
+    // Step 5: Clean up expired advisories
+    console.log('\nCleaning up expired advisories...');
+    const expiredRemoved = await removeExpiredAdvisories();
+    
     console.log('\n═══ Ingestion Complete ═══');
     console.log(`Advisories created: ${advisoriesCreated}`);
     console.log(`Site statuses updated: ${statusesUpdated}`);
+    console.log(`Expired advisories removed: ${expiredRemoved}`);
     console.log(`═══════════════════════════\n`);
     
   } catch (error) {
