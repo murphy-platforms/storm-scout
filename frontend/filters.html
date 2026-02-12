@@ -9,18 +9,43 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .alert-type-card {
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            border-left-width: 4px;
         }
+        
         .alert-type-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
+        
+        /* Enabled state - white background with green border */
+        .alert-type-card:not(.disabled) {
+            background-color: #ffffff;
+            border-left-color: #28a745;
+        }
+        
+        /* Disabled state - gray background */
         .alert-type-card.disabled {
-            opacity: 0.5;
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
         }
+        
+        /* Keep text slightly dimmed but toggle fully visible */
+        .alert-type-card.disabled .card-body {
+            opacity: 0.7;
+        }
+        
+        .alert-type-card.disabled .form-check-input {
+            opacity: 1 !important;
+        }
+        
+        /* Green toggle when checked */
         .form-check-input:checked {
             background-color: #28a745;
             border-color: #28a745;
         }
+        
         .impact-badge {
             font-size: 0.75rem;
             padding: 0.25rem 0.5rem;
@@ -266,8 +291,30 @@
         
         // Toggle individual alert type
         function toggleAlertType(alertType) {
-            // Toggle: if currently true, set to undefined (disabled), if undefined/false, set to true
-            currentFilters[alertType] = currentFilters[alertType] === true ? undefined : true;
+            // Toggle state
+            const newState = currentFilters[alertType] === true ? undefined : true;
+            currentFilters[alertType] = newState;
+            
+            // Update DOM immediately for instant visual feedback
+            const elementId = `alert_${alertType.replace(/\s+/g, '_')}`;
+            const checkbox = document.getElementById(elementId);
+            
+            if (checkbox) {
+                const card = checkbox.closest('.alert-type-card');
+                
+                if (card) {
+                    if (newState === true) {
+                        // Enable: remove disabled class, check the box
+                        card.classList.remove('disabled');
+                        checkbox.checked = true;
+                    } else {
+                        // Disable: add disabled class, uncheck the box
+                        card.classList.add('disabled');
+                        checkbox.checked = false;
+                    }
+                }
+            }
+            
             updateStatus();
         }
         
