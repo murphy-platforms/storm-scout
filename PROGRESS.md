@@ -39,13 +39,17 @@
 
 ## 🎯 Current Status
 
-**✅ DEPLOYED AND RUNNING**
+**✅ FULLY DEPLOYED AND OPERATIONAL**
+
+**Production Site:** https://your-domain.example.com
 
 **On Server:**
 - Database: `***REDACTED***` (MariaDB 11.4.9) - ✅ Schema created, 219 sites loaded
-- Backend API: ✅ Running at https://your-domain.example.com
+- Backend API: ✅ Running with all endpoints functional
+- Frontend: ✅ Dashboard accessible and operational
 - Node.js: ✅ Running on version 20.20.0
 - SSH Access: ✅ Configured for deployment
+- NOAA Ingestion: ✅ Running every 15 minutes (431 active advisories)
 
 **FTP Upload Paths:**
 - FTP uploads to: `/home/REDACTED_USER/your-domain.example.com/stormscout/`
@@ -64,28 +68,56 @@
 
 ## 🎯 Working Endpoints
 
-- ✅ `GET /health` - Health check
+**Sites:**
 - ✅ `GET /api/sites` - Returns all 219 sites
-- ✅ `GET /api/sites/:id` - Get site by ID
+- ✅ `GET /api/sites/:id` - Get site by ID  
+- ✅ `GET /api/sites?state=XX` - Filter by state
 - ✅ `GET /api/sites/states` - Get list of states
 - ✅ `GET /api/sites/regions` - Get list of regions
+
+**Advisories:**
+- ✅ `GET /api/advisories` - Get all active advisories (431 currently)
+- ✅ `GET /api/advisories?severity=Severe` - Filter by severity
+- ✅ `GET /api/advisories?site_id=X` - Filter by site
+- ✅ `GET /api/advisories/:id` - Get specific advisory
+
+**Status:**
 - ✅ `GET /api/status/overview` - Dashboard statistics
-- ✅ `GET /api/status/sites` - Site statuses
+- ✅ `GET /api/status/sites` - All site statuses
+- ✅ `GET /api/status/sites-impacted` - Sites at risk (90 currently)
 
-## 📋 Remaining Work
+**System:**
+- ✅ `GET /health` - Health check
+- ✅ `GET /api` - API information
+- ✅ `GET /` - Frontend dashboard (HTML)
 
-### Backend
-- ⏳ Complete conversion of advisories routes/model to MySQL
-- ⏳ Complete conversion of notices routes/model to MySQL
-- ⏳ Re-enable disabled routes in app.js
-- ⏳ Set up NOAA weather data ingestion
-- ⏳ Configure ingestion scheduler
+## ✅ Completed Conversions
+
+### Backend Models (All MySQL async/await)
+- ✅ `site.js` - Site data access
+- ✅ `advisory.js` - Weather advisory management
+- ✅ `notice.js` - System notices  
+- ✅ `siteStatus.js` - Operational status tracking
+
+### Routes
+- ✅ All routes converted to async/await
+- ✅ Sites routes fully functional
+- ✅ Advisories routes fully functional
+- ✅ Status routes fully functional
+- ✅ Notices routes fully functional
+
+### Data Ingestion
+- ✅ NOAA API integration working
+- ✅ Ingestion code converted to MySQL
+- ✅ Scheduler running every 15 minutes
+- ✅ 432 alerts → 436 advisories → 101 sites impacted
 
 ### Frontend
-- ⏳ Deploy frontend files to public_html
-- ⏳ Update API endpoint URLs in frontend
-- ⏳ Test dashboard UI
-- ⏳ Configure proper routing
+- ✅ All files deployed to public_html
+- ✅ API endpoint URLs updated for production
+- ✅ Static file serving configured in Express
+- ✅ Dashboard accessible at root domain
+- ✅ All pages functional (Dashboard, Sites, Advisories, Notices, Sources)
 
 ## 🔑 Server Details
 
