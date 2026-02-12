@@ -158,6 +158,23 @@ body {
     background-color: rgba(0, 0, 0, 0.025);
 }
 
+/* Navigation Links */
+/* Clickable count links */
+.count-link {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.count-link:hover {
+    opacity: 0.8;
+}
+
+/* Clickable severity badges */
+a.badge:hover {
+    opacity: 0.85;
+    text-decoration: none !important;
+}
+
 /* Responsive font sizes */
 @media (max-width: 768px) {
     .display-6 {

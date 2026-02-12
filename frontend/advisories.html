@@ -228,11 +228,25 @@
         document.getElementById('severityFilter').addEventListener('change', filterAdvisories);
         document.getElementById('statusFilter').addEventListener('change', filterAdvisories);
         
+        // Check for URL parameters on page load
+        function applyURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const severityParam = urlParams.get('severity');
+            
+            if (severityParam) {
+                // Auto-select severity dropdown with value from URL
+                const severityFilter = document.getElementById('severityFilter');
+                severityFilter.value = severityParam;
+                // Trigger filtering
+                filterAdvisories();
+            }
+        }
+        
         // Initialize: Load filter configs then load advisories
         AlertFilters.init().then(() => {
             loadAdvisories();
-            // Apply filters immediately on load to respect user's saved preferences
-            filterAdvisories();
+            // Apply URL parameters after advisories are loaded
+            setTimeout(() => applyURLParameters(), 100);
         });
     </script>
 </body>
