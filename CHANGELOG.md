@@ -14,6 +14,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Input validation with joi
 - Database backup automation
 
+## [1.3.0] - 2026-02-13
+
+### Added
+- **Dashboard UX Overhaul** - Reorganized index.html following action-first dashboard pattern
+  - Sites Requiring Attention moved to top (most actionable content first)
+  - Sticky update banner with timestamps and site counts (visible while scrolling)
+  - Quick action buttons: "View All Sites" and "Map View" for faster navigation
+  - "All Clear" success message when no sites need attention
+  - Enhanced footer with links to About/Sources and Filter Settings
+- **5 New MODERATE Alerts Enabled by Default** - Site Default preset now shows 18/68 alert types
+  - Winter Storm Watch
+  - Winter Weather Advisory
+  - Lake Effect Snow Warning
+  - Tropical Storm Watch
+  - High Surf Warning
+
+### Changed
+- **Page Layout Order** - Follows industry best practices for operational dashboards
+  1. Sites Requiring Attention (action items)
+  2. Weather Impact Assessment (situational awareness)
+  3. Operational Status (secondary metrics)
+  4. Detailed Statistics (collapsed for power users)
+- **Removed "About Storm Scout" section** from dashboard body (moved to footer link)
+- **Improved Mobile Responsiveness** - Weather/Status cards now use 2-column grid on mobile
+- **Streamlined Status Cards** - Reduced padding for more compact display
+
+### Fixed
+- **Navigation Consistency** - All 8 HTML pages now have identical 7-item navigation
+  - Removed duplicate "Sources" link from index.html
+  - Added missing "Map View" link to notices.html, filters.html, sources.html
+
 ## [1.2.2] - 2026-02-13
 
 ### Fixed
