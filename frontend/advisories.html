@@ -389,7 +389,9 @@
                         <div class="site-card-header">
                             <div>
                                 <h5 class="site-card-title">
-                                    <strong>${site.site_code}</strong> - ${site.site_name}
+                                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none text-dark">
+                                        <strong>${site.site_code}</strong> - ${site.site_name}
+                                    </a>
                                 </h5>
                                 <div class="site-card-location">
                                     <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
