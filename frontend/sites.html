@@ -81,6 +81,7 @@
     <script src="js/utils.js"></script>
     <script src="js/alert-filters.js"></script>
     <script src="js/update-banner.js"></script>
+    <script src="js/aggregation.js"></script>
     <script>
         let allSites = [];
         let allAdvisories = [];
@@ -115,24 +116,36 @@
             }
         }
         
-        // Apply user's filter preferences to sites and recalculate advisory counts
+        // Apply user's filter preferences and aggregate
         function applyFiltersToSites(sites, advisories) {
             // Filter advisories based on user preferences
             const filteredAdvisories = AlertFilters.filterAdvisories(advisories);
             
-            // Create map of site_id to filtered advisory count
-            const advisoryCountBySite = {};
-            filteredAdvisories.forEach(adv => {
-                advisoryCountBySite[adv.site_id] = (advisoryCountBySite[adv.site_id] || 0) + 1;
+            // Aggregate advisories by site with deduplication
+            const aggregatedSites = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
+            
+            // Create map for quick lookup
+            const siteMap = new Map();
+            aggregatedSites.forEach(site => {
+                siteMap.set(site.site_id, site);
             });
             
-            // Update sites with new advisory counts and filter out sites with no advisories
+            // Enhance original sites with aggregation data
             return sites
-                .map(site => ({
-                    ...site,
-                    advisory_count: advisoryCountBySite[site.site_id] || 0
-                }))
-                .filter(site => site.advisory_count > 0); // Only show sites with filtered advisories
+                .map(site => {
+                    const aggData = siteMap.get(site.site_id);
+                    if (!aggData) return null;
+                    
+                    return {
+                        ...site,
+                        advisory_count: aggData.unique_advisory_count,
+                        highest_severity: aggData.highest_severity,
+                        highest_severity_advisory: aggData.highest_severity_advisory,
+                        new_count: aggData.new_count,
+                        total_zone_count: aggData.total_zone_count
+                    };
+                })
+                .filter(site => site !== null); // Remove sites without advisories
         }
         
         function renderSites(sites) {
@@ -142,26 +155,56 @@
                 return;
             }
             
-            container.innerHTML = sites.map(site => `
+            // Sort by urgency (sites with highest severity first)
+            const sortedSites = [...sites].sort((a, b) => {
+                const rankA = SiteAggregator.getSeverityRank(a.highest_severity || 'Minor');
+                const rankB = SiteAggregator.getSeverityRank(b.highest_severity || 'Minor');
+                return rankB - rankA;
+            });
+            
+            container.innerHTML = sortedSites.map(site => {
+                const severityClass = site.highest_severity ? `site-card-${site.highest_severity.toLowerCase()}` : '';
+                const advisory = site.highest_severity_advisory;
+                
+                return `
                 <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card ${site.operational_status === 'Closed' ? 'border-danger' : 'border-warning'}">
+                    <div class="card site-card ${severityClass}">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                ${site.site_code} - ${site.name}
-                                <span class="badge ${getStatusBadge(site.operational_status)} float-end">${site.operational_status}</span>
-                            </h5>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">
+                                    <strong>${site.site_code}</strong> - ${site.name}
+                                </h5>
+                                ${site.highest_severity ? 
+                                    `<span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                        ${site.highest_severity}
+                                    </span>` : ''}
+                            </div>
+                            
+                            ${advisory ? `
+                            <div class="mb-2">
+                                <strong style="color: #dc3545;">${advisory.advisory_type}</strong>
+                                ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
+                            </div>
+                            ` : ''}
+                            
                             <p class="card-text">
                                 <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}<br>
-                                <i class="bi bi-map"></i> ${site.region || 'N/A'}<br>
-                                <i class="bi bi-exclamation-triangle"></i> <strong>${site.advisory_count}</strong> active ${site.advisory_count === 1 ? 'advisory' : 'advisories'}
+                                <i class="bi bi-exclamation-triangle"></i> <strong>${site.advisory_count}</strong> active ${site.advisory_count === 1 ? 'alert' : 'alerts'}
+                                ${site.total_zone_count !== site.advisory_count ? 
+                                    `<span class="text-muted small">(${site.total_zone_count} zones)</span>` : ''}
+                                ${site.new_count > 0 ? `<br><i class="bi bi-bell"></i> <strong>${site.new_count}</strong> new` : ''}
                             </p>
-                            <p class="text-muted small mb-0">
-                                ${site.reason || 'No reason provided'}
-                            </p>
+                            
+                            <div class="mt-2">
+                                <span class="badge ${getStatusBadge(site.operational_status)}">
+                                    Ops: ${site.operational_status || 'Unknown'}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
         function filterSites() {
