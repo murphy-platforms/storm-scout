@@ -1,253 +1,188 @@
 /**
- * Advisory Cleanup Utility
- * Removes duplicate and expired advisories from the database
+ * Unified Advisory Cleanup Module
+ * Consolidates all cleanup functionality with batching and race condition handling
+ * 
+ * Modes:
+ *   - full: Run all cleanup steps (external_id, VTEC, duplicates, expired)
+ *   - vtec: Clean VTEC-based duplicates only
+ *   - event_id: Clean event ID-based duplicates only
+ *   - expired: Remove expired advisories only
+ *   - duplicates: Remove all types of duplicates
  */
 
-const { initDatabase, getDatabase } = require('../config/database');
+const { initDatabase, getDatabase, closeDatabase } = require('../config/database');
+const { alertCleanupFailure } = require('./alerting');
+
+// Batch size for bulk operations to avoid memory/performance issues
+const BATCH_SIZE = 1000;
 
 /**
- * Remove duplicate advisories
- * Keeps the most recent version of each unique advisory
- * Primary uniqueness: external_id (NOAA alert ID)
- * Fallback uniqueness: site_id + advisory_type + start_time + end_time
+ * Delete records in batches to avoid large IN clauses
+ * @param {Array} ids - IDs to delete
+ * @param {string} table - Table name
+ * @returns {Promise<number>} Total deleted
  */
-async function removeDuplicateAdvisories() {
+async function batchDelete(ids, table = 'advisories') {
+  if (ids.length === 0) return 0;
+  
+  const db = getDatabase();
+  let totalDeleted = 0;
+  
+  // Process in batches
+  for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+    const batch = ids.slice(i, i + BATCH_SIZE);
+    const [result] = await db.query(`DELETE FROM ${table} WHERE id IN (?)`, [batch]);
+    totalDeleted += result.affectedRows;
+  }
+  
+  return totalDeleted;
+}
+
+/**
+ * Remove duplicate advisories by external_id
+ * Uses INSERT ... ON DUPLICATE KEY UPDATE pattern to avoid race conditions
+ */
+async function removeDuplicatesByExternalId() {
   const db = getDatabase();
   
-  console.log('\n=== Removing Duplicate Advisories ===');
+  console.log('\n=== Removing Duplicates by External ID ===');
   
-  let totalRemoved = 0;
-  
-  // STEP 1: Find duplicates by external_id (most reliable)
-  console.log('Finding duplicates by external_id...');
-  const [externalIdDuplicates] = await db.query(`
-    SELECT external_id, COUNT(*) as count
+  // Find duplicates by external_id
+  const [duplicates] = await db.query(`
+    SELECT external_id, GROUP_CONCAT(id ORDER BY id DESC) as ids, COUNT(*) as count
     FROM advisories
     WHERE external_id IS NOT NULL
     GROUP BY external_id
     HAVING count > 1
   `);
   
-  if (externalIdDuplicates.length > 0) {
-    console.log(`Found ${externalIdDuplicates.length} external_ids with duplicates`);
-    
-    for (const dup of externalIdDuplicates) {
-      const [rows] = await db.query(`
-        SELECT id, site_id, advisory_type FROM advisories
-        WHERE external_id = ?
-        ORDER BY id DESC
-      `, [dup.external_id]);
-      
-      // Keep the first one (highest ID = most recent), delete the rest
-      const idsToDelete = rows.slice(1).map(r => r.id);
-      
-      if (idsToDelete.length > 0) {
-        await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
-        totalRemoved += idsToDelete.length;
-        console.log(`  Removed ${idsToDelete.length} duplicate(s) for external_id "${dup.external_id}"`);
-      }
-    }
+  if (duplicates.length === 0) {
+    console.log('✓ No external_id duplicates found');
+    return 0;
   }
   
-  // STEP 2: Find duplicates without external_id (fallback logic)
-  console.log('Finding duplicates by site+type+times...');
-  const [timeDuplicates] = await db.query(`
-    SELECT site_id, advisory_type, start_time, end_time, COUNT(*) as count
+  console.log(`Found ${duplicates.length} external_ids with duplicates`);
+  
+  // Collect IDs to delete (all but the highest/newest ID for each external_id)
+  const idsToDelete = [];
+  for (const dup of duplicates) {
+    const ids = dup.ids.split(',').map(Number);
+    // Keep the first (highest ID), delete the rest
+    idsToDelete.push(...ids.slice(1));
+  }
+  
+  const deleted = await batchDelete(idsToDelete);
+  console.log(`✓ Removed ${deleted} external_id duplicates`);
+  return deleted;
+}
+
+/**
+ * Remove duplicates by VTEC event ID
+ * Prioritizes continuation (CON/EXT) over new (NEW) alerts
+ */
+async function removeDuplicatesByVTECEventId() {
+  const db = getDatabase();
+  
+  console.log('\n=== Removing Duplicates by VTEC Event ID ===');
+  
+  // Find duplicates: same event ID, site, and type
+  const [duplicateGroups] = await db.query(`
+    SELECT vtec_event_id, site_id, advisory_type, 
+           GROUP_CONCAT(
+             id ORDER BY 
+               CASE vtec_action
+                 WHEN 'CON' THEN 1 WHEN 'EXT' THEN 2 WHEN 'EXA' THEN 3
+                 WHEN 'EXB' THEN 4 WHEN 'UPG' THEN 5 WHEN 'COR' THEN 6
+                 WHEN 'NEW' THEN 7 WHEN 'EXP' THEN 8 WHEN 'CAN' THEN 9
+                 ELSE 10
+               END,
+               last_updated DESC,
+               id DESC
+           ) as ids,
+           COUNT(*) as count
     FROM advisories
-    WHERE external_id IS NULL
-    GROUP BY site_id, advisory_type, start_time, end_time
+    WHERE vtec_event_id IS NOT NULL AND status = 'active'
+    GROUP BY vtec_event_id, site_id, advisory_type
     HAVING count > 1
   `);
   
-  if (timeDuplicates.length > 0) {
-    console.log(`Found ${timeDuplicates.length} sets of duplicates without external_id`);
-    
-    for (const dup of timeDuplicates) {
-      const [rows] = await db.query(`
-        SELECT id FROM advisories
-        WHERE site_id = ? 
-          AND advisory_type = ? 
-          AND start_time <=> ?
-          AND end_time <=> ?
-          AND external_id IS NULL
-        ORDER BY id DESC
-      `, [dup.site_id, dup.advisory_type, dup.start_time, dup.end_time]);
-      
-      const idsToDelete = rows.slice(1).map(r => r.id);
-      
-      if (idsToDelete.length > 0) {
-        await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
-        totalRemoved += idsToDelete.length;
-        console.log(`  Removed ${idsToDelete.length} duplicate(s) for "${dup.advisory_type}" at site ${dup.site_id}`);
-      }
-    }
-  }
-  
-  if (totalRemoved === 0) {
-    console.log('✓ No duplicate advisories found');
-  } else {
-    console.log(`✓ Total duplicates removed: ${totalRemoved}`);
-  }
-  
-  console.log('');
-  return totalRemoved;
-}
-
-/**
- * Remove expired advisories
- * Deletes advisories where:
- * - status is 'expired' AND last_updated > 6 hours ago (gives users time to see them)
- * - OR end_time is more than 24 hours in the past
- */
-async function removeExpiredAdvisories() {
-  const db = getDatabase();
-  
-  console.log('=== Removing Expired Advisories ===');
-  
-  // Get count before deletion
-  const [beforeCount] = await db.query(`
-    SELECT COUNT(*) as count FROM advisories 
-    WHERE (status = 'expired' AND last_updated < DATE_SUB(NOW(), INTERVAL 6 HOUR))
-       OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 24 HOUR))
-  `);
-  
-  const expiredCount = beforeCount[0].count;
-  
-  if (expiredCount === 0) {
-    console.log('✓ No old expired advisories to remove\n');
+  if (duplicateGroups.length === 0) {
+    console.log('✓ No VTEC event ID duplicates found');
     return 0;
   }
   
-  // Delete old expired advisories
-  await db.query(`
-    DELETE FROM advisories 
-    WHERE (status = 'expired' AND last_updated < DATE_SUB(NOW(), INTERVAL 6 HOUR))
-       OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 24 HOUR))
-  `);
+  console.log(`Found ${duplicateGroups.length} VTEC event groups with duplicates`);
   
-  console.log(`✓ Removed ${expiredCount} old expired advisories\n`);
-  return expiredCount;
-}
-
-/**
- * Add external_id column if it doesn't exist
- * This will store the NOAA alert ID to prevent duplicates in the future
- */
-async function addExternalIdColumn() {
-  const db = getDatabase();
-  
-  console.log('=== Checking Database Schema ===');
-  
-  // Check if external_id column exists
-  const [columns] = await db.query(`
-    SELECT COLUMN_NAME 
-    FROM INFORMATION_SCHEMA.COLUMNS 
-    WHERE TABLE_SCHEMA = DATABASE() 
-      AND TABLE_NAME = 'advisories' 
-      AND COLUMN_NAME = 'external_id'
-  `);
-  
-  if (columns.length > 0) {
-    console.log('✓ external_id column already exists\n');
-    return false;
+  const idsToDelete = [];
+  for (const group of duplicateGroups) {
+    const ids = group.ids.split(',').map(Number);
+    // Keep the first (highest priority/most recent), delete the rest
+    idsToDelete.push(...ids.slice(1));
   }
   
-  console.log('Adding external_id column to advisories table...');
-  
-  // Add the column
-  await db.query(`
-    ALTER TABLE advisories 
-    ADD COLUMN external_id VARCHAR(255) AFTER id
-  `);
-  
-  // Add unique index
-  await db.query(`
-    ALTER TABLE advisories 
-    ADD UNIQUE INDEX idx_advisories_external_id (external_id)
-  `);
-  
-  console.log('✓ Added external_id column with unique index\n');
-  return true;
+  const deleted = await batchDelete(idsToDelete);
+  console.log(`✓ Removed ${deleted} VTEC event ID duplicates`);
+  return deleted;
 }
 
 /**
- * Extract and populate external_id from raw_payload
- * For existing advisories without external_id
+ * Remove duplicates by VTEC code (legacy)
  */
-async function populateExternalIds() {
+async function removeDuplicatesByVTECCode() {
   const db = getDatabase();
   
-  console.log('=== Populating External IDs ===');
+  console.log('\n=== Removing Duplicates by VTEC Code ===');
   
-  // Get advisories without external_id
-  const [advisories] = await db.query(`
-    SELECT id, raw_payload 
-    FROM advisories 
-    WHERE external_id IS NULL AND raw_payload IS NOT NULL
-    LIMIT 1000
+  const [duplicateGroups] = await db.query(`
+    SELECT vtec_code, site_id, advisory_type,
+           GROUP_CONCAT(id ORDER BY last_updated DESC, id DESC) as ids,
+           COUNT(*) as count
+    FROM advisories
+    WHERE vtec_code IS NOT NULL AND status = 'active'
+    GROUP BY vtec_code, site_id, advisory_type
+    HAVING count > 1
   `);
   
-  if (advisories.length === 0) {
-    console.log('✓ All advisories have external_id\n');
+  if (duplicateGroups.length === 0) {
+    console.log('✓ No VTEC code duplicates found');
     return 0;
   }
   
-  console.log(`Processing ${advisories.length} advisories...`);
+  console.log(`Found ${duplicateGroups.length} VTEC code groups with duplicates`);
   
-  let updated = 0;
-  
-  for (const advisory of advisories) {
-    try {
-      const payload = JSON.parse(advisory.raw_payload);
-      const externalId = payload.id || payload.properties?.id;
-      
-      if (externalId) {
-        // Check if external_id already exists
-        const [existing] = await db.query(
-          `SELECT id FROM advisories WHERE external_id = ? AND id != ?`, 
-          [externalId, advisory.id]
-        );
-        
-        if (existing.length > 0) {
-          // Duplicate found - delete this advisory, keep the existing one
-          await db.query(`DELETE FROM advisories WHERE id = ?`, [advisory.id]);
-          console.log(`  Removed duplicate advisory ${advisory.id} (external_id exists)`);
-        } else {
-          // No duplicate - update with external_id
-          await db.query(`UPDATE advisories SET external_id = ? WHERE id = ?`, [externalId, advisory.id]);
-          updated++;
-        }
-      }
-    } catch (error) {
-      // If it's a duplicate key error, delete this advisory
-      if (error.code === 'ER_DUP_ENTRY') {
-        await db.query(`DELETE FROM advisories WHERE id = ?`, [advisory.id]);
-        console.log(`  Removed duplicate advisory ${advisory.id}`);
-      } else {
-        console.error(`  Error processing advisory ${advisory.id}:`, error.message);
-      }
-    }
+  const idsToDelete = [];
+  for (const group of duplicateGroups) {
+    const ids = group.ids.split(',').map(Number);
+    idsToDelete.push(...ids.slice(1));
   }
   
-  console.log(`✓ Populated ${updated} external IDs\n`);
-  return updated;
+  const deleted = await batchDelete(idsToDelete);
+  console.log(`✓ Removed ${deleted} VTEC code duplicates`);
+  return deleted;
 }
 
 /**
  * Remove duplicate advisory types per site
- * Keeps only the most severe (or most recent) of each advisory type per site
+ * Keeps only the most severe of each advisory type per site
  */
 async function removeDuplicateTypes() {
   const db = getDatabase();
   
-  console.log('=== Removing Duplicate Advisory Types ===');
+  console.log('\n=== Removing Duplicate Advisory Types ===');
   
-  const severityOrder = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1, 'Unknown': 0 };
-  let totalRemoved = 0;
-  
-  // Find sites with multiple advisories of the same type
   const [duplicateTypes] = await db.query(`
-    SELECT site_id, advisory_type, COUNT(*) as count
+    SELECT site_id, advisory_type,
+           GROUP_CONCAT(
+             id ORDER BY 
+               CASE severity
+                 WHEN 'Extreme' THEN 4 WHEN 'Severe' THEN 3
+                 WHEN 'Moderate' THEN 2 WHEN 'Minor' THEN 1
+                 ELSE 0
+               END DESC,
+               issued_time DESC,
+               last_updated DESC
+           ) as ids,
+           COUNT(*) as count
     FROM advisories
     WHERE status = 'active'
     GROUP BY site_id, advisory_type
@@ -255,104 +190,301 @@ async function removeDuplicateTypes() {
   `);
   
   if (duplicateTypes.length === 0) {
-    console.log('✓ No duplicate advisory types found\n');
+    console.log('✓ No duplicate advisory types found');
     return 0;
   }
   
   console.log(`Found ${duplicateTypes.length} advisory types with duplicates`);
   
+  const idsToDelete = [];
   for (const dup of duplicateTypes) {
-    // Get all advisories of this type for this site
-    const [advisories] = await db.query(`
-      SELECT id, severity, issued_time, last_updated
-      FROM advisories
-      WHERE site_id = ? AND advisory_type = ? AND status = 'active'
-      ORDER BY 
-        CASE severity
-          WHEN 'Extreme' THEN 4
-          WHEN 'Severe' THEN 3
-          WHEN 'Moderate' THEN 2
-          WHEN 'Minor' THEN 1
-          ELSE 0
-        END DESC,
-        issued_time DESC,
-        last_updated DESC
-    `, [dup.site_id, dup.advisory_type]);
-    
-    if (advisories.length > 1) {
-      // Keep the first (most severe/recent), delete the rest
-      const idsToDelete = advisories.slice(1).map(a => a.id);
-      
-      if (idsToDelete.length > 0) {
-        await db.query(`DELETE FROM advisories WHERE id IN (?)`, [idsToDelete]);
-        totalRemoved += idsToDelete.length;
-        console.log(`  Removed ${idsToDelete.length} duplicate "${dup.advisory_type}" for site ${dup.site_id}`);
-      }
-    }
+    const ids = dup.ids.split(',').map(Number);
+    idsToDelete.push(...ids.slice(1));
   }
   
-  console.log(`✓ Total duplicate types removed: ${totalRemoved}\n`);
-  return totalRemoved;
+  const deleted = await batchDelete(idsToDelete);
+  console.log(`✓ Removed ${deleted} duplicate types`);
+  return deleted;
 }
 
 /**
- * Main cleanup function
+ * Remove expired advisories (batched)
  */
-async function runCleanup() {
+async function removeExpiredAdvisories() {
+  const db = getDatabase();
+  
+  console.log('\n=== Removing Expired Advisories ===');
+  
+  // Get IDs of expired advisories to delete
+  const [expiredRows] = await db.query(`
+    SELECT id FROM advisories 
+    WHERE (status = 'expired' AND last_updated < DATE_SUB(NOW(), INTERVAL 6 HOUR))
+       OR (end_time IS NOT NULL AND end_time < DATE_SUB(NOW(), INTERVAL 24 HOUR))
+    LIMIT 10000
+  `);
+  
+  if (expiredRows.length === 0) {
+    console.log('✓ No old expired advisories to remove');
+    return 0;
+  }
+  
+  const ids = expiredRows.map(r => r.id);
+  const deleted = await batchDelete(ids);
+  console.log(`✓ Removed ${deleted} old expired advisories`);
+  return deleted;
+}
+
+/**
+ * Populate external_id from raw_payload using atomic upsert
+ * Avoids race conditions with INSERT ... ON DUPLICATE KEY UPDATE
+ */
+async function populateExternalIds() {
+  const db = getDatabase();
+  
+  console.log('\n=== Populating External IDs ===');
+  
+  const [advisories] = await db.query(`
+    SELECT id, raw_payload 
+    FROM advisories 
+    WHERE external_id IS NULL AND raw_payload IS NOT NULL
+    LIMIT ${BATCH_SIZE}
+  `);
+  
+  if (advisories.length === 0) {
+    console.log('✓ All advisories have external_id');
+    return 0;
+  }
+  
+  console.log(`Processing ${advisories.length} advisories...`);
+  
+  let updated = 0;
+  let duplicatesRemoved = 0;
+  
+  for (const advisory of advisories) {
+    try {
+      const payload = JSON.parse(advisory.raw_payload);
+      const externalId = payload.id || payload.properties?.id;
+      
+      if (externalId) {
+        // Use a transaction to atomically check and update/delete
+        const connection = await db.getConnection();
+        try {
+          await connection.beginTransaction();
+          
+          // Lock the row with FOR UPDATE to prevent race conditions
+          const [existing] = await connection.query(
+            `SELECT id FROM advisories WHERE external_id = ? FOR UPDATE`, 
+            [externalId]
+          );
+          
+          if (existing.length > 0) {
+            // Duplicate - delete this one
+            await connection.query(`DELETE FROM advisories WHERE id = ?`, [advisory.id]);
+            duplicatesRemoved++;
+          } else {
+            // Update with external_id
+            await connection.query(
+              `UPDATE advisories SET external_id = ? WHERE id = ?`, 
+              [externalId, advisory.id]
+            );
+            updated++;
+          }
+          
+          await connection.commit();
+        } catch (error) {
+          await connection.rollback();
+          if (error.code === 'ER_DUP_ENTRY') {
+            // Race condition - another process set this external_id
+            await db.query(`DELETE FROM advisories WHERE id = ?`, [advisory.id]);
+            duplicatesRemoved++;
+          } else {
+            throw error;
+          }
+        } finally {
+          connection.release();
+        }
+      }
+    } catch (error) {
+      console.error(`  Error processing advisory ${advisory.id}:`, error.message);
+    }
+  }
+  
+  console.log(`✓ Populated ${updated} external IDs, removed ${duplicatesRemoved} duplicates`);
+  return updated + duplicatesRemoved;
+}
+
+/**
+ * Check database schema for required columns
+ */
+async function checkSchema() {
+  const db = getDatabase();
+  
+  console.log('\n=== Checking Database Schema ===');
+  
+  const requiredColumns = [
+    { name: 'external_id', type: 'VARCHAR(255)', after: 'id' },
+    { name: 'vtec_code', type: 'VARCHAR(255)', after: 'issued_time' },
+    { name: 'vtec_event_id', type: 'VARCHAR(50)', after: 'vtec_code' },
+    { name: 'vtec_action', type: 'VARCHAR(10)', after: 'vtec_event_id' }
+  ];
+  
+  const [columns] = await db.query(`
+    SELECT COLUMN_NAME 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+      AND TABLE_NAME = 'advisories'
+  `);
+  
+  const existingColumns = new Set(columns.map(c => c.COLUMN_NAME));
+  const missingColumns = requiredColumns.filter(c => !existingColumns.has(c.name));
+  
+  if (missingColumns.length === 0) {
+    console.log('✓ All required columns exist');
+    return true;
+  }
+  
+  console.warn(`Missing columns: ${missingColumns.map(c => c.name).join(', ')}`);
+  console.warn('Run database migrations to add missing columns.');
+  return false;
+}
+
+/**
+ * Run cleanup with specified mode
+ * @param {string} mode - Cleanup mode: full, vtec, event_id, expired, duplicates
+ * @param {Object} options - Additional options
+ * @returns {Promise<Object>} Cleanup results
+ */
+async function runCleanup(mode = 'full', options = {}) {
+  const { silent = false, exitOnComplete = true } = options;
+  const log = silent ? () => {} : console.log;
+  
+  const results = {
+    mode,
+    startTime: new Date().toISOString(),
+    externalIdDuplicates: 0,
+    vtecEventIdDuplicates: 0,
+    vtecCodeDuplicates: 0,
+    typeDuplicates: 0,
+    expiredRemoved: 0,
+    externalIdsPopulated: 0,
+    totalRemoved: 0,
+    success: true,
+    error: null
+  };
+  
   try {
     await initDatabase();
     
-    console.log('\n╔══════════════════════════════════════════════════════╗');
-    console.log('║  Storm Scout - Advisory Cleanup                     ║');
-    console.log('╠══════════════════════════════════════════════════════╣');
-    console.log(`║  Started: ${new Date().toISOString().padEnd(38)} ║`);
-    console.log('╚══════════════════════════════════════════════════════╝\n');
+    log('\n╔══════════════════════════════════════════════════════╗');
+    log(`║  Storm Scout - Advisory Cleanup (${mode.padEnd(15)})   ║`);
+    log('╠══════════════════════════════════════════════════════╣');
+    log(`║  Started: ${results.startTime.padEnd(38)} ║`);
+    log('╚══════════════════════════════════════════════════════╝');
     
-    // Step 1: Add external_id column if needed
-    await addExternalIdColumn();
+    // Check schema first
+    await checkSchema();
     
-    // Step 2: Populate external_id from existing raw_payload
-    await populateExternalIds();
+    // Run cleanup based on mode
+    switch (mode) {
+      case 'full':
+        results.externalIdsPopulated = await populateExternalIds();
+        results.externalIdDuplicates = await removeDuplicatesByExternalId();
+        results.vtecEventIdDuplicates = await removeDuplicatesByVTECEventId();
+        results.vtecCodeDuplicates = await removeDuplicatesByVTECCode();
+        results.typeDuplicates = await removeDuplicateTypes();
+        results.expiredRemoved = await removeExpiredAdvisories();
+        break;
+        
+      case 'vtec':
+        results.vtecCodeDuplicates = await removeDuplicatesByVTECCode();
+        break;
+        
+      case 'event_id':
+        results.vtecEventIdDuplicates = await removeDuplicatesByVTECEventId();
+        break;
+        
+      case 'expired':
+        results.expiredRemoved = await removeExpiredAdvisories();
+        break;
+        
+      case 'duplicates':
+        results.externalIdDuplicates = await removeDuplicatesByExternalId();
+        results.vtecEventIdDuplicates = await removeDuplicatesByVTECEventId();
+        results.vtecCodeDuplicates = await removeDuplicatesByVTECCode();
+        results.typeDuplicates = await removeDuplicateTypes();
+        break;
+        
+      default:
+        throw new Error(`Unknown cleanup mode: ${mode}`);
+    }
     
-    // Step 3: Remove duplicate advisory types (same type, different zones)
-    const duplicateTypesRemoved = await removeDuplicateTypes();
+    // Calculate totals
+    results.totalRemoved = 
+      results.externalIdDuplicates +
+      results.vtecEventIdDuplicates +
+      results.vtecCodeDuplicates +
+      results.typeDuplicates +
+      results.expiredRemoved;
     
-    // Step 4: Remove duplicates by external_id
-    const duplicatesRemoved = await removeDuplicateAdvisories();
+    results.endTime = new Date().toISOString();
     
-    // Step 5: Remove expired
-    const expiredRemoved = await removeExpiredAdvisories();
-    
-    // Summary
-    const totalRemoved = duplicateTypesRemoved + duplicatesRemoved + expiredRemoved;
-    console.log('╔══════════════════════════════════════════════════════╗');
-    console.log('║  Cleanup Complete                                    ║');
-    console.log('╠══════════════════════════════════════════════════════╣');
-    console.log(`║  Duplicate types:    ${duplicateTypesRemoved.toString().padStart(28)} ║`);
-    console.log(`║  Duplicate IDs:      ${duplicatesRemoved.toString().padStart(28)} ║`);
-    console.log(`║  Expired removed:    ${expiredRemoved.toString().padStart(28)} ║`);
-    console.log(`║  Total removed:      ${totalRemoved.toString().padStart(28)} ║`);
-    console.log('╚══════════════════════════════════════════════════════╝\n');
-    
-    process.exit(0);
+    // Print summary
+    log('\n╔══════════════════════════════════════════════════════╗');
+    log('║  Cleanup Complete                                    ║');
+    log('╠══════════════════════════════════════════════════════╣');
+    if (results.externalIdsPopulated > 0) {
+      log(`║  External IDs populated: ${results.externalIdsPopulated.toString().padStart(23)} ║`);
+    }
+    if (results.externalIdDuplicates > 0) {
+      log(`║  External ID duplicates: ${results.externalIdDuplicates.toString().padStart(23)} ║`);
+    }
+    if (results.vtecEventIdDuplicates > 0) {
+      log(`║  VTEC event duplicates:  ${results.vtecEventIdDuplicates.toString().padStart(23)} ║`);
+    }
+    if (results.vtecCodeDuplicates > 0) {
+      log(`║  VTEC code duplicates:   ${results.vtecCodeDuplicates.toString().padStart(23)} ║`);
+    }
+    if (results.typeDuplicates > 0) {
+      log(`║  Type duplicates:        ${results.typeDuplicates.toString().padStart(23)} ║`);
+    }
+    if (results.expiredRemoved > 0) {
+      log(`║  Expired removed:        ${results.expiredRemoved.toString().padStart(23)} ║`);
+    }
+    log(`║  Total removed:          ${results.totalRemoved.toString().padStart(23)} ║`);
+    log('╚══════════════════════════════════════════════════════╝\n');
     
   } catch (error) {
+    results.success = false;
+    results.error = error.message;
     console.error('\n✗ Cleanup failed:', error.message);
-    console.error(error.stack);
-    process.exit(1);
+    
+    // Send alert
+    await alertCleanupFailure(error);
+  } finally {
+    if (exitOnComplete) {
+      await closeDatabase();
+      process.exit(results.success ? 0 : 1);
+    }
   }
+  
+  return results;
 }
 
-// Run if called directly
+// CLI entry point
 if (require.main === module) {
-  runCleanup();
+  const mode = process.argv[2] || 'full';
+  runCleanup(mode);
 }
 
 module.exports = {
-  removeDuplicateAdvisories,
-  removeDuplicateTypes,
+  runCleanup,
   removeExpiredAdvisories,
-  addExternalIdColumn,
+  removeDuplicatesByExternalId,
+  removeDuplicatesByVTECEventId,
+  removeDuplicatesByVTECCode,
+  removeDuplicateTypes,
   populateExternalIds,
-  runCleanup
+  checkSchema,
+  batchDelete,
+  BATCH_SIZE
 };

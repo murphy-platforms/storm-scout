@@ -14,6 +14,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Input validation with joi
 - Database backup automation
 
+## [1.2.0] - 2026-02-13
+
+### Added
+- **Alerting Module** (`alerting.js`) - Webhook notifications for ingestion/cleanup failures
+  - Slack-formatted alerts with severity levels
+  - Alert throttling to prevent spam (5 min minimum)
+  - Support for ingestion failures, cleanup failures, and anomaly detection
+- **Hierarchical Geo-Matching** - Improved site-to-alert matching precision
+  - UGC code matching (most precise)
+  - County-level matching (fallback)
+  - State-level matching (least precise fallback)
+- **Database Retry Logic** - Automatic retries for transient connection failures
+- **API Rate Limiting** - 500ms minimum between NOAA API requests
+- **API Retry with Backoff** - Exponential backoff for 429/5xx responses
+- Advisory history table for trend analysis (`advisory_history`)
+- New site fields: `county`, `ugc_codes` for precise geo-matching
+- Scheduler status endpoint via `getSchedulerStatus()`
+
+### Changed
+- **Database Pool Configuration**
+  - Increased connection limit to 20
+  - Added queue limit (50) to prevent runaway connections
+  - Added acquire/connect timeouts (10s each)
+  - Keepalive delay increased to 30s
+- **Ingestion Process**
+  - Advisory creation and status updates now wrapped in transactions
+  - Anomaly detection with automatic alerting for sites with >15 advisories
+  - Improved logging and error handling
+- **Unified Cleanup Module** - Consolidated 4 cleanup scripts into 1
+  - Multiple modes: `full`, `vtec`, `event_id`, `expired`, `duplicates`
+  - Batched deletes in chunks of 1000
+  - Race condition handling with `SELECT ... FOR UPDATE`
+  - Automatic alerting on cleanup failures
+- **Schema Updated** - `schema.sql` now includes all production columns
+  - VTEC fields: `vtec_code`, `vtec_event_id`, `vtec_action`, `vtec_event_unique_key`
+  - Site status fields: `weather_impact_level`, `decision_by`, `decision_at`, `decision_reason`
+  - New indexes for common query patterns
+
+### Deprecated
+- `cleanup-duplicates.js` - Now wraps unified cleanup module
+- `cleanup-event-id-duplicates.js` - Now wraps unified cleanup module
+
+### Fixed
+- Default User-Agent no longer contains example email (now requires configuration)
+- Race conditions in external_id population during cleanup
+- Potential memory issues from unbounded connection queues
+
+### Technical
+- Added `withRetry()` utility function in database module
+- Added `requestWithRetry()` in API client
+- Added `enforceRateLimit()` for NOAA API calls
+- Added `extractGeoFromAlert()` for hierarchical geo-matching
+- Improved transaction handling in `noaa-ingestor.js`
+- Scheduler now tracks consecutive failures and alerts appropriately
+
 ## [1.1.0] - 2026-02-13
 
 ### Added

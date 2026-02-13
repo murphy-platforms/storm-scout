@@ -1,31 +1,139 @@
 /**
  * API Client for external weather/emergency data sources
- * Handles HTTP requests with proper headers and error handling
+ * Handles HTTP requests with rate limiting, retry logic, and proper error handling
  */
 
 const axios = require('axios');
 const config = require('../../config/config');
 
+// Rate limiting configuration
+const RATE_LIMIT = {
+  minRequestIntervalMs: 500,  // Minimum time between requests (2 req/sec max)
+  lastRequestTime: 0
+};
+
+// Retry configuration
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  initialDelayMs: 1000,
+  maxDelayMs: 30000,
+  retryableStatuses: [408, 429, 500, 502, 503, 504],  // Timeout, rate limit, server errors
+  retryableCodes: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND']
+};
+
 /**
- * Create NOAA API client
+ * Sleep for specified milliseconds
  */
-const noaaClient = axios.create({
-  baseURL: config.noaa.baseUrl,
-  timeout: 30000,
-  headers: {
-    'User-Agent': config.noaa.userAgent,
-    'Accept': 'application/json'
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Enforce rate limiting between requests
+ */
+async function enforceRateLimit() {
+  const now = Date.now();
+  const timeSinceLastRequest = now - RATE_LIMIT.lastRequestTime;
+  
+  if (timeSinceLastRequest < RATE_LIMIT.minRequestIntervalMs) {
+    await sleep(RATE_LIMIT.minRequestIntervalMs - timeSinceLastRequest);
   }
-});
+  
+  RATE_LIMIT.lastRequestTime = Date.now();
+}
+
+/**
+ * Check if error is retryable
+ */
+function isRetryable(error) {
+  if (error.response) {
+    return RETRY_CONFIG.retryableStatuses.includes(error.response.status);
+  }
+  return RETRY_CONFIG.retryableCodes.some(code => 
+    error.code === code || error.message?.includes(code)
+  );
+}
+
+/**
+ * Execute request with retry logic
+ */
+async function requestWithRetry(requestFn, description = 'API request') {
+  let lastError;
+  let delay = RETRY_CONFIG.initialDelayMs;
+  
+  for (let attempt = 1; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
+    try {
+      await enforceRateLimit();
+      return await requestFn();
+    } catch (error) {
+      lastError = error;
+      
+      if (!isRetryable(error) || attempt === RETRY_CONFIG.maxRetries) {
+        throw error;
+      }
+      
+      // Handle rate limit (429) with Retry-After header
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after'];
+        if (retryAfter) {
+          delay = parseInt(retryAfter, 10) * 1000;
+        }
+      }
+      
+      console.warn(`${description} failed (attempt ${attempt}/${RETRY_CONFIG.maxRetries}): ${error.message}. Retrying in ${delay}ms...`);
+      await sleep(delay);
+      delay = Math.min(delay * 2, RETRY_CONFIG.maxDelayMs);
+    }
+  }
+  
+  throw lastError;
+}
+
+/**
+ * Validate User-Agent is configured
+ */
+function validateConfig() {
+  if (!config.noaa.userAgent) {
+    throw new Error(
+      'NOAA_API_USER_AGENT environment variable is required. ' +
+      'Format: AppName/Version (contact-email@domain.com)'
+    );
+  }
+}
+
+/**
+ * Create NOAA API client with proper configuration
+ */
+function createNoaaClient() {
+  validateConfig();
+  
+  return axios.create({
+    baseURL: config.noaa.baseUrl,
+    timeout: 30000,
+    headers: {
+      'User-Agent': config.noaa.userAgent,
+      'Accept': 'application/geo+json'  // NOAA's preferred format
+    }
+  });
+}
+
+// Lazy-initialize client (allows for config validation at runtime)
+let _noaaClient = null;
+function getNoaaClient() {
+  if (!_noaaClient) {
+    _noaaClient = createNoaaClient();
+  }
+  return _noaaClient;
+}
 
 /**
  * Get active weather alerts from NOAA for US
  * @returns {Promise<Array>} Array of alert features
  */
 async function getNOAAAlerts() {
-  try {
+  return requestWithRetry(async () => {
     console.log('Fetching active weather alerts from NOAA...');
-    const response = await noaaClient.get('/alerts/active');
+    const response = await getNoaaClient().get('/alerts/active');
     
     if (response.data && response.data.features) {
       console.log(`✓ Received ${response.data.features.length} alerts from NOAA`);
@@ -33,14 +141,7 @@ async function getNOAAAlerts() {
     }
     
     return [];
-  } catch (error) {
-    console.error('Error fetching NOAA alerts:', error.message);
-    if (error.response) {
-      console.error('Response status:', error.response.status);
-      console.error('Response data:', error.response.data);
-    }
-    throw error;
-  }
+  }, 'Fetch NOAA alerts');
 }
 
 /**
@@ -50,18 +151,15 @@ async function getNOAAAlerts() {
  * @returns {Promise<Array>} Array of alert features
  */
 async function getNOAAAlertsByPoint(lat, lon) {
-  try {
-    const response = await noaaClient.get(`/alerts/active?point=${lat},${lon}`);
+  return requestWithRetry(async () => {
+    const response = await getNoaaClient().get(`/alerts/active?point=${lat},${lon}`);
     
     if (response.data && response.data.features) {
       return response.data.features;
     }
     
     return [];
-  } catch (error) {
-    console.error(`Error fetching NOAA alerts for point (${lat},${lon}):`, error.message);
-    return [];
-  }
+  }, `Fetch NOAA alerts for point (${lat},${lon})`);
 }
 
 /**
@@ -70,23 +168,48 @@ async function getNOAAAlertsByPoint(lat, lon) {
  * @returns {Promise<Array>} Array of alert features
  */
 async function getNOAAAlertsByState(state) {
-  try {
-    const response = await noaaClient.get(`/alerts/active?area=${state}`);
+  return requestWithRetry(async () => {
+    const response = await getNoaaClient().get(`/alerts/active?area=${state}`);
     
     if (response.data && response.data.features) {
       return response.data.features;
     }
     
     return [];
-  } catch (error) {
-    console.error(`Error fetching NOAA alerts for state ${state}:`, error.message);
-    return [];
-  }
+  }, `Fetch NOAA alerts for state ${state}`);
+}
+
+/**
+ * Get UGC zone information for geocoding
+ * @param {string} ugcCode - UGC code (e.g., 'FLZ076')
+ * @returns {Promise<Object|null>} Zone info or null
+ */
+async function getUGCZoneInfo(ugcCode) {
+  return requestWithRetry(async () => {
+    // UGC codes have format: SSZ### (state, type, number)
+    // Types: Z=zone, C=county
+    const stateCode = ugcCode.substring(0, 2);
+    const zoneType = ugcCode.substring(2, 3);
+    const zoneNum = ugcCode.substring(3);
+    
+    const endpoint = zoneType === 'C' 
+      ? `/zones/county/${ugcCode}`
+      : `/zones/forecast/${ugcCode}`;
+    
+    const response = await getNoaaClient().get(endpoint);
+    return response.data?.properties || null;
+  }, `Fetch UGC zone info for ${ugcCode}`);
 }
 
 module.exports = {
-  noaaClient,
   getNOAAAlerts,
   getNOAAAlertsByPoint,
-  getNOAAAlertsByState
+  getNOAAAlertsByState,
+  getUGCZoneInfo,
+  // Export for testing
+  _internal: {
+    requestWithRetry,
+    enforceRateLimit,
+    isRetryable
+  }
 };

@@ -1,6 +1,6 @@
 /**
  * Database Connection Module using MySQL/MariaDB
- * Manages MySQL connection pool
+ * Manages MySQL connection pool with retry logic and proper configuration
  */
 
 const mysql = require('mysql2/promise');
@@ -9,6 +9,54 @@ const fs = require('fs');
 const config = require('./config');
 
 let pool = null;
+
+// Retry configuration for transient failures
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  initialDelayMs: 1000,
+  maxDelayMs: 10000,
+  retryableCodes: ['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT', 'ECONNRESET', 'ER_CON_COUNT_ERROR']
+};
+
+/**
+ * Sleep for specified milliseconds
+ * @param {number} ms - Milliseconds to sleep
+ */
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Execute a database operation with retry logic
+ * @param {Function} operation - Async function to execute
+ * @param {string} operationName - Name for logging
+ * @returns {Promise<any>} Result of the operation
+ */
+async function withRetry(operation, operationName = 'Database operation') {
+  let lastError;
+  let delay = RETRY_CONFIG.initialDelayMs;
+  
+  for (let attempt = 1; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      const isRetryable = RETRY_CONFIG.retryableCodes.some(code => 
+        error.code === code || error.message?.includes(code)
+      );
+      
+      if (!isRetryable || attempt === RETRY_CONFIG.maxRetries) {
+        throw error;
+      }
+      
+      console.warn(`${operationName} failed (attempt ${attempt}/${RETRY_CONFIG.maxRetries}): ${error.message}. Retrying in ${delay}ms...`);
+      await sleep(delay);
+      delay = Math.min(delay * 2, RETRY_CONFIG.maxDelayMs);
+    }
+  }
+  
+  throw lastError;
+}
 
 /**
  * Initialize MySQL connection pool
@@ -26,11 +74,19 @@ async function initDatabase() {
     password: config.database.password,
     database: config.database.database,
     waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
+    connectionLimit: 20,            // Increased for better concurrency
+    queueLimit: 50,                 // Prevent runaway queue (was unlimited)
+    acquireTimeout: 10000,          // 10s timeout to acquire connection
+    connectTimeout: 10000,          // 10s timeout for initial connection
     enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+    keepAliveInitialDelay: 30000    // 30s keepalive (was 0)
   });
+
+  // Test the connection
+  await withRetry(async () => {
+    const connection = await pool.getConnection();
+    connection.release();
+  }, 'Initial database connection');
 
   console.log(`✓ MySQL pool created: ${config.database.database}@${config.database.host}`);
   
@@ -171,5 +227,6 @@ module.exports = {
   initializeSchema,
   loadSites,
   seedDatabase,
-  closeDatabase
+  closeDatabase,
+  withRetry
 };
