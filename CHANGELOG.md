@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Input validation with joi
 - Database backup automation
 
+## [1.2.2] - 2026-02-13
+
+### Fixed
+- **Map View Filter Integration** - Map now respects user filter preferences from Filter Settings
+  - Added `alert-filters.js` to map.html
+  - Map markers now only display for sites with advisories matching active filters
+  - Consistent filtering behavior across all pages (Overview, Advisories, Sites, Map)
+
 ## [1.2.1] - 2026-02-13
 
 ### Fixed
