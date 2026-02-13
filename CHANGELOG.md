@@ -17,9 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.2] - 2026-02-13
 
 ### Added
-- **NOAA External Links** - Direct links to official NOAA resources on site-detail.html
-  - "Official NOAA Alert" button links directly to the NWS alert page
-  - "View on Map" button links to the state's weather.gov page
+- **NOAA External Links** - Direct links to official NWS resources on site-detail.html
+  - "NWS Forecast" button links to forecast.weather.gov with site's exact lat/lon coordinates
+    - Shows local forecast with any active alerts/warnings for that location
+  - "Radar Map" button links to radar.weather.gov national radar
   - Links appear on highest severity alert and all advisory cards
   - Opens in new tab with proper security attributes
 
