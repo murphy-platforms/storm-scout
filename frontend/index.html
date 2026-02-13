@@ -192,25 +192,53 @@
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Active Advisories by Severity</h5>
-                    </div>
-                    <div class="card-body" id="severityCounts">
-                        <div class="text-center"><span class="spinner-border"></span></div>
+        <!-- Actionable Site Summaries -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <h3 class="h5">👁️ Sites Requiring Attention</h3>
+                <p class="text-muted small mb-3">Grouped by highest severity alert</p>
+            </div>
+        </div>
+        
+        <!-- CRITICAL SITES -->
+        <div id="criticalSitesSection"></div>
+        
+        <!-- ELEVATED SITES -->
+        <div id="elevatedSitesSection"></div>
+        
+        <!-- MONITORING SITES -->
+        <div id="monitoringSitesSection"></div>
+        
+        <!-- Original stats (collapsed) -->
+        <div class="row mb-4 mt-4">
+            <div class="col-12">
+                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detailedStats">
+                    <i class="bi bi-bar-chart"></i> Show Detailed Statistics
+                </button>
+            </div>
+        </div>
+        
+        <div class="collapse" id="detailedStats">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Active Advisories by Severity</h5>
+                        </div>
+                        <div class="card-body" id="severityCounts">
+                            <div class="text-center"><span class="spinner-border"></span></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Sites with Advisories</h5>
-                    </div>
-                    <div class="card-body" id="sitesWithAdvisoriesList">
-                        <div class="text-center"><span class="spinner-border"></span></div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recently Updated Sites</h5>
+                        </div>
+                        <div class="card-body" id="recentlyUpdatedList">
+                            <div class="text-center"><span class="spinner-border"></span></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -227,6 +255,7 @@
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/alert-filters.js"></script>
+    <script src="js/aggregation.js"></script>
     <script>
         let nextUpdateTime = null;
         let countdownInterval = null;
@@ -292,11 +321,18 @@
                 // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
                 
+                // Aggregate by site with deduplication
+                const aggregatedSites = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
+                const groupedSites = SiteAggregator.groupBySeverity(aggregatedSites);
+                
+                // Render grouped site summaries
+                renderSiteGroups(groupedSites);
+                
                 // Recalculate counts based on filtered data
                 document.getElementById('totalSites').textContent = overviewData.total_sites;
                 
                 // Sites with advisories (after filtering)
-                const sitesWithAdvisories = new Set(filteredAdvisories.map(a => a.site_id)).size;
+                const sitesWithAdvisories = aggregatedSites.length;
                 document.getElementById('sitesWithAdvisories').textContent = sitesWithAdvisories;
                 
                 // Weather Impact Counts
@@ -349,7 +385,7 @@
                         </small>
                     </div>`;
                 }).join('');
-                document.getElementById('sitesWithAdvisoriesList').innerHTML = sitesHTML || '<p class="text-muted">No sites with advisories</p>';
+                document.getElementById('recentlyUpdatedList').innerHTML = sitesHTML || '<p class="text-muted">No sites with advisories</p>';
                 
                 function getWeatherBadge(level) {
                     const badges = { red: 'weather-red', orange: 'weather-orange', yellow: 'weather-yellow', green: 'weather-green' };
@@ -370,6 +406,93 @@
                 console.error('Failed to load overview:', error);
                 showError('Failed to load dashboard data');
             }
+        }
+        
+        // Render grouped site summaries
+        function renderSiteGroups(groupedSites) {
+            renderSiteGroup('criticalSitesSection', 'critical', '🔴 IMMEDIATE ATTENTION', groupedSites.critical, false);
+            renderSiteGroup('elevatedSitesSection', 'elevated', '🟠 ELEVATED RISK', groupedSites.elevated, true);
+            renderSiteGroup('monitoringSitesSection', 'monitoring', '🟡 MONITORING', groupedSites.monitoring, true);
+        }
+        
+        function renderSiteGroup(containerId, cssClass, title, sites, collapsed) {
+            const container = document.getElementById(containerId);
+            
+            if (!sites || sites.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const collapseId = `collapse${cssClass}`;
+            const showClass = collapsed ? '' : 'show';
+            
+            container.innerHTML = `
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="severity-group-header ${cssClass} ${collapsed ? 'collapsed' : ''}" 
+                             data-bs-toggle="collapse" 
+                             data-bs-target="#${collapseId}">
+                            <h4 class="severity-group-title">${title}</h4>
+                            <span class="severity-group-count">${sites.length}</span>
+                            <span class="severity-group-toggle">▼</span>
+                        </div>
+                        <div class="collapse ${showClass}" id="${collapseId}">
+                            <div class="row mt-3">
+                                ${sites.slice(0, 6).map(site => renderSiteSummary(site)).join('')}
+                            </div>
+                            ${sites.length > 6 ? `
+                            <div class="text-center mt-2">
+                                <a href="sites.html" class="btn btn-sm btn-outline-primary">
+                                    View All ${sites.length} Sites <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSiteSummary(site) {
+            const severityClass = `site-card-${site.highest_severity.toLowerCase()}`;
+            const advisory = site.highest_severity_advisory;
+            
+            return `
+                <div class="col-lg-4 col-md-6 col-12 mb-3">
+                    <div class="card site-card ${severityClass}" style="height: 100%;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">
+                                    <strong>${site.site_code}</strong><br>
+                                    <small class="text-muted">${site.city}, ${site.state}</small>
+                                </h6>
+                                <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                    ${site.highest_severity}
+                                </span>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <strong>${advisory.advisory_type}</strong>
+                                ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
+                            </div>
+                            
+                            <small class="text-muted d-block mb-2">
+                                ${advisory.expires ? 'Expires: ' + formatDate(advisory.expires) : ''}
+                            </small>
+                            
+                            <div class="d-flex gap-2 align-items-center" style="font-size: 0.85rem;">
+                                <span>
+                                    <strong>${site.unique_advisory_count}</strong> ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
+                                </span>
+                                ${site.total_zone_count !== site.unique_advisory_count ? 
+                                    `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
+                                ${site.new_count > 0 ? 
+                                    `<span class="badge bg-success">${site.new_count} new</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         
         // Initialize filters then load overview
