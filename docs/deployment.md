@@ -380,6 +380,29 @@ SELECT site_code, COUNT(*) as alert_count FROM advisories GROUP BY site_code ORD
 4. Check NOAA API availability: `curl https://api.weather.gov/alerts/active`
 5. Review ingestion logs for errors
 
+#### Alerts Showing as Active After Expiration
+
+If alerts remain `active` after their `end_time` has passed:
+
+```bash
+# Check for stale alerts
+ssh stormscout "cd ~/storm-scout && node -e \"
+require('dotenv').config();
+const {initDatabase, getDatabase} = require('./src/config/database.js');
+initDatabase().then(() => getDatabase().query('SELECT COUNT(*) as stale FROM advisories WHERE status=\\\"active\\\" AND end_time < NOW()')).then(([r]) => console.log('Stale alerts:', r[0].stale));
+\""
+
+# Run the expiration fix manually
+ssh stormscout "cd ~/storm-scout && node -e \"
+require('dotenv').config();
+const {initDatabase} = require('./src/config/database.js');
+const {markExpiredByEndTime} = require('./src/utils/cleanup-advisories.js');
+initDatabase().then(() => markExpiredByEndTime()).then(n => {console.log('Fixed:', n); process.exit(0);});
+\""
+```
+
+As of v1.2.1, alerts are automatically marked as expired when `end_time < NOW()` during both ingestion and cleanup.
+
 #### Frontend Not Updating
 
 1. Hard refresh browser (clear cache)
