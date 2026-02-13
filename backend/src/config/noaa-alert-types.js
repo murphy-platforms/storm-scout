@@ -106,7 +106,7 @@ const DEFAULT_FILTERS = {
   CUSTOM: {
     name: 'Site Default',
     description: 'Customized alert configuration for testing center operations',
-    includeCategories: ['CRITICAL', 'HIGH'],
+    includeCategories: ['CRITICAL', 'HIGH', 'MODERATE'],
     excludeTypes: [
       // CRITICAL exclusions (OFF by default)
       'Tornado Warning', 'Storm Surge Warning', 'Severe Thunderstorm Warning',
@@ -117,11 +117,9 @@ const DEFAULT_FILTERS = {
       'Severe Thunderstorm Watch', 'Red Flag Warning', 'Storm Warning',
       'Excessive Heat Warning',
       
-      // All MODERATE excluded (entire category OFF)
-      'Flood Watch', 'Winter Storm Watch', 'Winter Weather Advisory',
-      'Wind Advisory', 'Heat Advisory', 'Dense Fog Advisory',
-      'Freeze Warning', 'Frost Advisory', 'Lake Effect Snow Warning',
-      'Blowing Dust Advisory', 'Tropical Storm Watch', 'High Surf Warning',
+      // MODERATE exclusions (most OFF, 5 enabled)
+      'Flood Watch', 'Wind Advisory', 'Heat Advisory', 'Dense Fog Advisory',
+      'Freeze Warning', 'Frost Advisory', 'Blowing Dust Advisory',
       'Coastal Flood Warning', 'Lakeshore Flood Warning',
       
       // All LOW excluded (entire category OFF)
