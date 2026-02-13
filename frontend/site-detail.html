@@ -343,6 +343,9 @@
                 <p class="card-text">
                     <strong>Source:</strong> ${advisory.source}
                 </p>
+                <div class="mt-3">
+                    ${getExternalLinks(advisory)}
+                </div>
             `;
         }
         
@@ -430,9 +433,12 @@
                                 <strong>Expires:</strong> ${group.expires ? formatDate(group.expires) + ' (' + getTimeRemaining(group.expires) + ')' : 'Unknown'}
                             </p>
                             ${group.zone_count > 1 ? 
-                                `<small class="text-muted">
+                                `<small class="text-muted d-block mb-2">
                                     This alert covers multiple NWS forecast zones for this location.
                                 </small>` : ''}
+                            <div class="mt-2">
+                                ${getExternalLinks(group.representative)}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -472,6 +478,57 @@
             if (hours < 24) return `${hours} hours remaining`;
             const days = Math.round(hours / 24);
             return days === 1 ? '1 day remaining' : `${days} days remaining`;
+        }
+        
+        /**
+         * Generate external links for NOAA official alert and map
+         * @param {Object} advisory - Advisory object with external_id and source
+         * @returns {string} HTML for external link buttons
+         */
+        function getExternalLinks(advisory) {
+            const links = [];
+            
+            // NOAA Official Alert Link (from external_id)
+            if (advisory.external_id && advisory.external_id.startsWith('http')) {
+                links.push(`
+                    <a href="${advisory.external_id}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="btn btn-sm btn-outline-primary me-2">
+                        <i class="bi bi-box-arrow-up-right"></i> Official NOAA Alert
+                    </a>
+                `);
+            }
+            
+            // Weather.gov Map Link (extract NWS office from source)
+            const nwsMapUrl = getNWSMapUrl(advisory);
+            if (nwsMapUrl) {
+                links.push(`
+                    <a href="${nwsMapUrl}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-map"></i> View on Map
+                    </a>
+                `);
+            }
+            
+            return links.length > 0 ? links.join('') : '';
+        }
+        
+        /**
+         * Get NWS weather.gov map URL from advisory
+         * @param {Object} advisory - Advisory object
+         * @returns {string|null} URL to weather.gov map or null
+         */
+        function getNWSMapUrl(advisory) {
+            // Try to get state from site data for weather.gov link
+            if (siteData && siteData.state) {
+                return `https://www.weather.gov/${siteData.state.toLowerCase()}`;
+            }
+            
+            // Fallback to national alerts map
+            return 'https://www.weather.gov/safety/hurricane';
         }
         
         // Initialize
