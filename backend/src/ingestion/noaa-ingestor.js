@@ -250,7 +250,18 @@ async function ingestNOAAData() {
       connection.release();
     }
     
-    // Step 5: Mark advisories not in current batch as expired
+    // Step 5: Mark advisories with passed end_time as expired
+    console.log('\nMarking advisories with passed end_time as expired...');
+    const [endTimeExpired] = await db.query(`
+      UPDATE advisories
+      SET status = 'expired', last_updated = NOW()
+      WHERE status = 'active' 
+        AND end_time IS NOT NULL 
+        AND end_time < NOW()
+    `);
+    console.log(`Marked ${endTimeExpired.affectedRows} advisories as expired (end_time passed)`);
+    
+    // Step 6: Mark advisories not in current batch as expired
     console.log('\nMarking missing advisories as expired...');
     let expiredCount = 0;
     
