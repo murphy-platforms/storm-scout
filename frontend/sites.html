@@ -172,7 +172,9 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h5 class="card-title mb-0">
-                                    <strong>${site.site_code}</strong> - ${site.name}
+                                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none text-dark">
+                                        <strong>${site.site_code}</strong> - ${site.name}
+                                    </a>
                                 </h5>
                                 ${site.highest_severity ? 
                                     `<span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">

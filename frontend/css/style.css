@@ -610,6 +610,63 @@ a.badge:hover {
     transform: rotate(-90deg);
 }
 
+/* ============================================
+   PHASE 2: TIMELINE AND DECISION HELPER
+   ============================================ */
+
+/* Timeline Component */
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-left: 2px solid #dee2e6;
+    margin-left: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.timeline-item-first {
+    border-left-color: #0d6efd;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -6px;
+    top: 1rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #0d6efd;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-item-first .timeline-marker {
+    background: #28a745;
+    box-shadow: 0 0 0 2px #0d6efd;
+    animation: pulse-timeline 2s infinite;
+}
+
+@keyframes pulse-timeline {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+/* Decision Helper Enhancement */
+.alert .badge {
+    font-size: inherit;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
     .site-card-header {
@@ -639,5 +696,10 @@ a.badge:hover {
     
     .summary-stat-value {
         font-size: 1.5rem;
+    }
+    
+    .timeline-item {
+        padding-left: 1rem;
+        margin-left: 0.25rem;
     }
 }
