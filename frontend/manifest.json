@@ -1,0 +1,60 @@
+{
+  "name": "Storm Scout",
+  "short_name": "StormScout",
+  "description": "Real-time weather advisory monitoring for testing center operations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#212529",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "business",
+    "weather"
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Overview Dashboard",
+      "short_name": "Overview",
+      "description": "View dashboard overview",
+      "url": "/index.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Active Advisories",
+      "short_name": "Advisories",
+      "description": "View active weather advisories",
+      "url": "/advisories.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Map View",
+      "short_name": "Map",
+      "description": "Interactive site map",
+      "url": "/map.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sites Impacted",
+      "short_name": "Sites",
+      "description": "View impacted testing centers",
+      "url": "/sites.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
