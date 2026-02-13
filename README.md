@@ -106,6 +106,8 @@ strom-scout/
     ├── index.html       # Overview dashboard
     ├── advisories.html  # Active advisories
     ├── sites.html       # Sites impacted
+    ├── site-detail.html # Individual site view
+    ├── map.html         # Interactive map view
     ├── notices.html     # Government notices
     ├── filters.html     # Filter configuration
     ├── sources.html     # Data sources
@@ -113,7 +115,8 @@ strom-scout/
     └── js/
         ├── api.js           # API client
         ├── utils.js         # Helpers
-        └── alert-filters.js # Shared filter logic
+        ├── alert-filters.js # Shared filter logic
+        └── aggregation.js   # Site aggregation utilities
 ```
 
 ## 🛠 Tech Stack
@@ -157,11 +160,11 @@ See `backend/README.md` for complete API documentation.
 
 ## Filter Configuration
 
-The default filter preset is **"Site Default" (CUSTOM)** with 51 out of 68 alert types enabled:
+The default filter preset is **"Site Default" (CUSTOM)** with 18 of 68 alert types enabled:
 
-- **CRITICAL**: 6/12 enabled (Hurricane, Ice Storm, Severe Thunderstorm, Typhoon, Tsunami, Blizzard)
-- **HIGH**: 12/14 enabled (excludes Gale Warning, Red Flag Warning)
-- **MODERATE**: 6/14 enabled (Flood Watch, Winter Storm Watch/Advisory, Heat Advisory, Tropical Storm Watch, Lake Effect Snow)
+- **CRITICAL**: 6/12 enabled (Flash Flood Warning, Hurricane Warning, Typhoon Warning, Tsunami Warning, Blizzard Warning, Ice Storm Warning)
+- **HIGH**: 7/14 enabled (Tornado Watch, Hurricane Watch, Typhoon Watch, Flood Warning, Winter Storm Warning, Tropical Storm Warning, Heavy Freezing Spray Warning)
+- **MODERATE**: 5/14 enabled (Winter Storm Watch, Winter Weather Advisory, Lake Effect Snow Warning, Tropical Storm Watch, High Surf Warning)
 - **LOW**: 0/15 enabled (all disabled)
 - **INFO**: 0/13 enabled (all disabled)
 
