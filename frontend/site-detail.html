@@ -488,47 +488,37 @@
         function getExternalLinks(advisory) {
             const links = [];
             
-            // NOAA Official Alert Link (from external_id)
-            if (advisory.external_id && advisory.external_id.startsWith('http')) {
+            // NWS Alerts page for this state (human-readable)
+            if (siteData && siteData.state) {
+                const stateAlertsUrl = `https://alerts-v2.weather.gov/?zone=${siteData.state}`;
                 links.push(`
-                    <a href="${advisory.external_id}" 
+                    <a href="${stateAlertsUrl}" 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       class="btn btn-sm btn-outline-primary me-2">
-                        <i class="bi bi-box-arrow-up-right"></i> Official NOAA Alert
+                       class="btn btn-sm btn-outline-primary me-2"
+                       title="View all active alerts for ${siteData.state} on NWS">
+                        <i class="bi bi-exclamation-triangle"></i> NWS Alerts (${siteData.state})
                     </a>
                 `);
             }
             
-            // Weather.gov Map Link (extract NWS office from source)
-            const nwsMapUrl = getNWSMapUrl(advisory);
-            if (nwsMapUrl) {
+            // Radar/Map view for this location
+            if (siteData && siteData.latitude && siteData.longitude) {
+                const radarUrl = `https://radar.weather.gov/?settings=v1_eyJhZ2VuZGEiOnsiaWQiOm51bGwsImNlbnRlciI6WyR7siteData.longitude},${siteData.latitude}]LCJ6b29tIjo3fX0%3D`;
+                // Simpler: link to weather.gov with lat/lon
+                const forecastUrl = `https://forecast.weather.gov/MapClick.php?lat=${siteData.latitude}&lon=${siteData.longitude}`;
                 links.push(`
-                    <a href="${nwsMapUrl}" 
+                    <a href="${forecastUrl}" 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-map"></i> View on Map
+                       class="btn btn-sm btn-outline-secondary"
+                       title="View forecast and radar for this location">
+                        <i class="bi bi-map"></i> Forecast & Radar
                     </a>
                 `);
             }
             
             return links.length > 0 ? links.join('') : '';
-        }
-        
-        /**
-         * Get NWS weather.gov map URL from advisory
-         * @param {Object} advisory - Advisory object
-         * @returns {string|null} URL to weather.gov map or null
-         */
-        function getNWSMapUrl(advisory) {
-            // Try to get state from site data for weather.gov link
-            if (siteData && siteData.state) {
-                return `https://www.weather.gov/${siteData.state.toLowerCase()}`;
-            }
-            
-            // Fallback to national alerts map
-            return 'https://www.weather.gov/safety/hurricane';
         }
         
         // Initialize
