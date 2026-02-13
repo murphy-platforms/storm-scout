@@ -208,7 +208,7 @@
         <!-- Summary Stats -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card text-center">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Extreme')" title="Click to toggle Extreme filter">
                     <div class="card-body">
                         <h5 class="text-danger" id="extremeCount">0</h5>
                         <small class="text-muted">Extreme Sites</small>
@@ -216,7 +216,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Severe')" title="Click to toggle Severe filter">
                     <div class="card-body">
                         <h5 class="text-warning" id="severeCount">0</h5>
                         <small class="text-muted">Severe Sites</small>
@@ -224,7 +224,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Moderate')" title="Click to toggle Moderate filter">
                     <div class="card-body">
                         <h5 class="text-secondary" id="moderateCount">0</h5>
                         <small class="text-muted">Moderate Sites</small>
@@ -232,7 +232,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center">
+                <div class="card text-center static-card">
                     <div class="card-body">
                         <h5 id="totalSitesCount">0</h5>
                         <small class="text-muted">Total Impacted</small>
@@ -434,6 +434,30 @@
             });
             
             updateVisibleCount();
+            updateStatCardStyles();
+        }
+        
+        function toggleFilter(severity) {
+            const checkbox = document.getElementById(`filter${severity}`);
+            checkbox.checked = !checkbox.checked;
+            applyFilters();
+        }
+        
+        function updateStatCardStyles() {
+            const filters = ['Extreme', 'Severe', 'Moderate'];
+            filters.forEach(severity => {
+                const checkbox = document.getElementById(`filter${severity}`);
+                const cards = document.querySelectorAll('.map-stat-card');
+                cards.forEach(card => {
+                    if (card.getAttribute('onclick')?.includes(severity)) {
+                        if (checkbox.checked) {
+                            card.classList.remove('filter-disabled');
+                        } else {
+                            card.classList.add('filter-disabled');
+                        }
+                    }
+                });
+            });
         }
         
         // Event listeners
