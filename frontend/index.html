@@ -31,172 +31,60 @@
         </div>
     </nav>
 
-    <div class="container-fluid mt-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="h2">Dashboard Overview</h1>
-                <p class="text-muted">Site-focused weather advisory monitoring for IMT and Operations</p>
-                <div class="alert alert-info mb-0" role="alert">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <i class="bi bi-clock-history"></i>
-                            <strong>Last Updated:</strong> <span id="lastUpdated">Loading...</span>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                            <i class="bi bi-arrow-repeat"></i>
-                            <strong>Next Update:</strong> <span id="nextUpdate">Loading...</span>
-                        </div>
-                    </div>
+    <!-- Sticky Update Banner -->
+    <div class="update-banner bg-dark text-white py-2 sticky-top" style="top: 56px; z-index: 1020;">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <small>
+                        <i class="bi bi-clock-history"></i>
+                        <strong>Last Updated:</strong> <span id="lastUpdated">Loading...</span>
+                    </small>
+                </div>
+                <div class="col-auto">
+                    <small>
+                        <i class="bi bi-arrow-repeat"></i>
+                        <strong>Next Update:</strong> <span id="nextUpdate">Loading...</span>
+                    </small>
+                </div>
+                <div class="col text-end">
+                    <span class="badge bg-secondary me-2">
+                        <span id="totalSites">--</span> Total Sites
+                    </span>
+                    <span class="badge bg-warning text-dark">
+                        <span id="sitesWithAdvisories">--</span> With Advisories
+                    </span>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Weather Impact Assessment (Automatic) -->
+    <div class="container-fluid mt-3">
+        <!-- Page Header -->
         <div class="row mb-3">
             <div class="col-12">
-                <h3 class="h4"><i class="bi bi-cloud-lightning"></i> Weather Impact Assessment (Automatic)</h3>
-                <p class="text-muted small mb-2">Based on severity of active weather advisories</p>
-            </div>
-        </div>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card text-center weather-card impact-red">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge weather-red">🔴 RED</span></h5>
-                        <p class="display-6 fw-bold mb-0 text-danger" id="weatherRed">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                        <small class="text-muted">High Impact</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center weather-card impact-orange">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge weather-orange">🟠 ORANGE</span></h5>
-                        <p class="display-6 fw-bold mb-0 text-warning" id="weatherOrange">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                        <small class="text-muted">Severe Impact</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center weather-card impact-yellow">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge weather-yellow">🟡 YELLOW</span></h5>
-                        <p class="display-6 fw-bold mb-0" id="weatherYellow">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                        <small class="text-muted">Moderate Impact</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center weather-card impact-green">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge weather-green">🟢 GREEN</span></h5>
-                        <p class="display-6 fw-bold mb-0 text-success" id="weatherGreen">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                        <small class="text-muted">Low/No Impact</small>
-                    </div>
-                </div>
+                <h1 class="h2 mb-1">Dashboard Overview</h1>
+                <p class="text-muted mb-0">Site-focused weather advisory monitoring for IMT and Operations</p>
             </div>
         </div>
 
-        <!-- Operational Status (Manual IMT/Ops Decision) -->
+        <!-- 1. SITES REQUIRING ATTENTION (Primary Action Area) -->
         <div class="row mb-3">
             <div class="col-12">
-                <h3 class="h4"><i class="bi bi-gear"></i> Operational Status (IMT/Operations Decision)</h3>
-                <p class="text-muted small mb-2">Manually set by IMT or Operations team</p>
-            </div>
-        </div>
-        <div class="row g-3 mb-4">
-            <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">Total Sites</h5>
-                        <p class="display-6 fw-bold mb-0" id="totalSites">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Sites Requiring Attention</h3>
+                        <p class="text-muted small mb-0">Grouped by highest severity alert</p>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
+                            <i class="bi bi-list-ul"></i> View All Sites
+                        </a>
+                        <a href="map.html" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-geo-alt"></i> Map View
+                        </a>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title text-muted">Sites with Advisories</h5>
-                        <p class="display-6 fw-bold mb-0">
-                            <a href="sites.html" class="text-warning text-decoration-none count-link" id="sitesWithAdvisories">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card text-center border-danger">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge status-closed">❌ CLOSED</span></h5>
-                        <p class="display-6 fw-bold mb-0 text-danger" id="statusClosed">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center border-warning">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge status-restricted">⚠️ RESTRICTED</span></h5>
-                        <p class="display-6 fw-bold mb-0 text-warning" id="statusRestricted">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center border-info">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge status-pending">🔄 PENDING</span></h5>
-                        <p class="display-6 fw-bold mb-0" id="statusPending">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center border-success">
-                    <div class="card-body">
-                        <h5 class="card-title"><span class="badge status-open">✅ OPEN</span></h5>
-                        <p class="display-6 fw-bold mb-0 text-success" id="statusOpen">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">About Storm Scout</h5>
-                        <p class="card-text">
-                            Storm Scout is a site-focused dashboard that consolidates active advisories and operational signals by location so we can quickly identify which testing centers may be impacted and support go/no-go decisions. It's built to reduce manual checking and keep attention on the sites and markets that matter most during weather events.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Actionable Site Summaries -->
-        <div class="row mb-2">
-            <div class="col-12">
-                <h3 class="h5">👁️ Sites Requiring Attention</h3>
-                <p class="text-muted small mb-3">Grouped by highest severity alert</p>
             </div>
         </div>
         
@@ -208,9 +96,123 @@
         
         <!-- MONITORING SITES -->
         <div id="monitoringSitesSection"></div>
-        
-        <!-- Original stats (collapsed) -->
-        <div class="row mb-4 mt-4">
+
+        <!-- No Sites Message (shown when no sites need attention) -->
+        <div id="noSitesMessage" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <strong>All Clear!</strong> No sites currently require attention based on your filter settings.
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. WEATHER IMPACT ASSESSMENT -->
+        <div class="row mb-3 mt-4">
+            <div class="col-12">
+                <h3 class="h4"><i class="bi bi-cloud-lightning"></i> Weather Impact Assessment</h3>
+                <p class="text-muted small mb-2">Automatic classification based on active advisory severity</p>
+            </div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card text-center weather-card impact-red h-100">
+                    <div class="card-body py-3">
+                        <span class="badge weather-red mb-1">🔴 RED</span>
+                        <p class="display-6 fw-bold mb-0 text-danger" id="weatherRed">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">High Impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center weather-card impact-orange h-100">
+                    <div class="card-body py-3">
+                        <span class="badge weather-orange mb-1">🟠 ORANGE</span>
+                        <p class="display-6 fw-bold mb-0 text-warning" id="weatherOrange">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">Severe Impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center weather-card impact-yellow h-100">
+                    <div class="card-body py-3">
+                        <span class="badge weather-yellow mb-1">🟡 YELLOW</span>
+                        <p class="display-6 fw-bold mb-0" id="weatherYellow">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">Moderate Impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center weather-card impact-green h-100">
+                    <div class="card-body py-3">
+                        <span class="badge weather-green mb-1">🟢 GREEN</span>
+                        <p class="display-6 fw-bold mb-0 text-success" id="weatherGreen">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                        <small class="text-muted">Low/No Impact</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. OPERATIONAL STATUS -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <h3 class="h4"><i class="bi bi-gear"></i> Operational Status</h3>
+                <p class="text-muted small mb-2">Current site status set by IMT/Operations team</p>
+            </div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-danger h-100">
+                    <div class="card-body py-3">
+                        <span class="badge status-closed mb-1">❌ CLOSED</span>
+                        <p class="display-6 fw-bold mb-0 text-danger" id="statusClosed">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-warning h-100">
+                    <div class="card-body py-3">
+                        <span class="badge status-restricted mb-1">⚠️ RESTRICTED</span>
+                        <p class="display-6 fw-bold mb-0 text-warning" id="statusRestricted">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-info h-100">
+                    <div class="card-body py-3">
+                        <span class="badge status-pending mb-1">🔄 PENDING</span>
+                        <p class="display-6 fw-bold mb-0" id="statusPending">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-success h-100">
+                    <div class="card-body py-3">
+                        <span class="badge status-open mb-1">✅ OPEN</span>
+                        <p class="display-6 fw-bold mb-0 text-success" id="statusOpen">
+                            <span class="spinner-border spinner-border-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. DETAILED STATISTICS (Collapsed) -->
+        <div class="row mb-4">
             <div class="col-12">
                 <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detailedStats">
                     <i class="bi bi-bar-chart"></i> Show Detailed Statistics
@@ -245,9 +247,21 @@
         </div>
     </div>
 
-    <footer class="bg-light text-center py-3 mt-5">
+    <footer class="bg-light py-3 mt-5">
         <div class="container">
-            <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="sources.html" class="text-muted text-decoration-none me-3">
+                        <i class="bi bi-info-circle"></i> About & Data Sources
+                    </a>
+                    <a href="filters.html" class="text-muted text-decoration-none">
+                        <i class="bi bi-sliders"></i> Filter Settings
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -327,6 +341,14 @@
                 
                 // Render grouped site summaries
                 renderSiteGroups(groupedSites);
+                
+                // Show/hide "no sites" message
+                const noSitesMsg = document.getElementById('noSitesMessage');
+                if (aggregatedSites.length === 0) {
+                    noSitesMsg.style.display = 'block';
+                } else {
+                    noSitesMsg.style.display = 'none';
+                }
                 
                 // Recalculate counts based on filtered data
                 document.getElementById('totalSites').textContent = overviewData.total_sites;
