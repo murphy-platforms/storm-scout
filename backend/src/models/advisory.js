@@ -110,6 +110,27 @@ const AdvisoryModel = {
   },
 
   /**
+   * Find advisory by external ID (NOAA's unique identifier)
+   * Primary deduplication strategy - external_id is always unique per alert
+   * @param {string} externalId - External ID from NOAA API
+   * @returns {Promise<Object|null>} Existing advisory or null
+   */
+  async findByExternalID(externalId) {
+    if (!externalId) return null;
+    
+    const db = await getDatabase();
+    const query = 'SELECT * FROM advisories WHERE external_id = ? LIMIT 1';
+    
+    try {
+      const [rows] = await db.query(query, [externalId]);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error finding advisory by external ID:', error);
+      return null;
+    }
+  },
+
+  /**
    * Find advisory by VTEC event ID (persistent identifier)
    * Used to check if an alert update already exists before creating a duplicate
    * Event ID stays the same across NEW→CON→EXT→EXP updates
@@ -171,14 +192,36 @@ const AdvisoryModel = {
 
   /**
    * Create or update advisory (upsert)
-   * Uses VTEC-based deduplication when available, falls back to external_id
+   * Deduplication strategy:
+   *   1. Check by external_id (always present, always unique)
+   *   2. If not found and has VTEC, check by vtec_event_id
+   *   3. Create new or update existing
    * @param {Object} advisory - Advisory data
    * @returns {Promise<Object>} Created/updated advisory with ID
    */
   async create(advisory) {
     const db = await getDatabase();
     try {
-      // VTEC Event ID based deduplication strategy:
+      // Extract external_id early for deduplication check
+      let externalId = advisory.external_id;
+      if (!externalId && advisory.raw_payload) {
+        const payload = typeof advisory.raw_payload === 'string' 
+          ? JSON.parse(advisory.raw_payload)
+          : advisory.raw_payload;
+        externalId = payload.id || payload.properties?.id;
+      }
+
+      // Primary deduplication: Check by external_id first (always present)
+      if (externalId) {
+        const existing = await this.findByExternalID(externalId);
+        if (existing) {
+          const action = advisory.vtec_action || 'UPD';
+          console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for site ${advisory.site_id}`);
+          return this.update(existing.id, advisory);
+        }
+      }
+
+      // Secondary deduplication: VTEC Event ID (for alerts without external_id or as fallback)
       // If VTEC event ID exists, check if we already have this event and update it
       // Event ID stays consistent across NEW→CON→EXT updates
       if (advisory.vtec_event_id) {
@@ -196,16 +239,8 @@ const AdvisoryModel = {
         }
       }
       
-      // Extract external_id from raw_payload if not provided
-      let externalId = advisory.external_id;
-      if (!externalId && advisory.raw_payload) {
-        const payload = typeof advisory.raw_payload === 'string' 
-          ? JSON.parse(advisory.raw_payload)
-          : advisory.raw_payload;
-        externalId = payload.id || payload.properties?.id;
-      }
-
-      const rawPayloadStr = advisory.raw_payload 
+      // external_id already extracted above for deduplication check
+      const rawPayloadStr = advisory.raw_payload
         ? (typeof advisory.raw_payload === 'string' ? advisory.raw_payload : JSON.stringify(advisory.raw_payload))
         : null;
 
