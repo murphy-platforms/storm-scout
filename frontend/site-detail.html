@@ -488,37 +488,32 @@
         function getExternalLinks(advisory) {
             const links = [];
             
-            // NWS Alerts page for this state (human-readable)
-            if (siteData && siteData.state) {
-                const stateAlertsUrl = `https://alerts-v2.weather.gov/?zone=${siteData.state}`;
-                links.push(`
-                    <a href="${stateAlertsUrl}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="btn btn-sm btn-outline-primary me-2"
-                       title="View all active alerts for ${siteData.state} on NWS">
-                        <i class="bi bi-exclamation-triangle"></i> NWS Alerts (${siteData.state})
-                    </a>
-                `);
-            }
-            
-            // Radar/Map view for this location
+            // Local forecast page with alerts (most useful - shows alerts for exact location)
             if (siteData && siteData.latitude && siteData.longitude) {
-                const radarUrl = `https://radar.weather.gov/?settings=v1_eyJhZ2VuZGEiOnsiaWQiOm51bGwsImNlbnRlciI6WyR7siteData.longitude},${siteData.latitude}]LCJ6b29tIjo3fX0%3D`;
-                // Simpler: link to weather.gov with lat/lon
                 const forecastUrl = `https://forecast.weather.gov/MapClick.php?lat=${siteData.latitude}&lon=${siteData.longitude}`;
                 links.push(`
                     <a href="${forecastUrl}" 
                        target="_blank" 
                        rel="noopener noreferrer"
-                       class="btn btn-sm btn-outline-secondary"
-                       title="View forecast and radar for this location">
-                        <i class="bi bi-map"></i> Forecast & Radar
+                       class="btn btn-sm btn-outline-primary me-2"
+                       title="View NWS forecast and active alerts for this location">
+                        <i class="bi bi-cloud-sun"></i> NWS Forecast
                     </a>
                 `);
             }
             
-            return links.length > 0 ? links.join('') : '';
+            // National radar map
+            links.push(`
+                <a href="https://radar.weather.gov/" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="btn btn-sm btn-outline-secondary"
+                   title="View national radar map">
+                    <i class="bi bi-broadcast"></i> Radar Map
+                </a>
+            `);
+            
+            return links.join('');
         }
         
         // Initialize
