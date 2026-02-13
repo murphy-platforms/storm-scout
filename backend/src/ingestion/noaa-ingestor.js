@@ -10,6 +10,7 @@ const { normalizeNOAAAlert, calculateWeatherImpact, calculateHighestWeatherImpac
 const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
+const AdvisoryHistory = require('../models/advisoryHistory');
 const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
 
 const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
@@ -189,11 +190,49 @@ async function ingestNOAAData() {
       console.log(`Marked ${expiredCount} advisories as expired`);
     }
     
-    // Step 6: Clean up expired advisories (remove old ones)
+    // Step 6: Create historical snapshots for trend analysis
+    console.log('\nCreating historical snapshots...');
+    try {
+      const snapshotData = [];
+      for (const [siteId, advisories] of siteAdvisories.entries()) {
+        // Aggregate data for snapshot
+        const severityRank = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1 };
+        const highestSeverity = advisories.reduce((highest, adv) => {
+          const rank = severityRank[adv.severity] || 0;
+          const highestRank = severityRank[highest.severity] || 0;
+          return rank > highestRank ? adv : highest;
+        }, advisories[0]);
+        
+        const aggregated = {
+          advisory_count: advisories.length,
+          highest_severity: highestSeverity.severity,
+          highest_severity_type: highestSeverity.advisory_type,
+          has_extreme: advisories.some(a => a.severity === 'Extreme'),
+          has_severe: advisories.some(a => a.severity === 'Severe'),
+          has_moderate: advisories.some(a => a.severity === 'Moderate'),
+          new_count: advisories.filter(a => a.vtec_action === 'NEW').length,
+          upgrade_count: advisories.filter(a => a.vtec_action === 'UPG').length,
+          advisories: advisories
+        };
+        
+        snapshotData.push({ siteId, aggregated });
+      }
+      
+      // Create all snapshots
+      for (const { siteId, aggregated } of snapshotData) {
+        await AdvisoryHistory.createSnapshot(siteId, aggregated);
+      }
+      console.log(`Created ${snapshotData.length} historical snapshots`);
+    } catch (error) {
+      console.error('Error creating snapshots:', error.message);
+      // Don't fail ingestion if snapshot fails
+    }
+    
+    // Step 7: Clean up expired advisories (remove old ones)
     console.log('\nCleaning up old expired advisories...');
     const expiredRemoved = await removeExpiredAdvisories();
     
-    // Step 7: Check for sites with unusually high advisory counts (monitoring)
+    // Step 8: Check for sites with unusually high advisory counts (monitoring)
     console.log('\nChecking for anomalies...');
     const [highCountSites] = await db.query(`
       SELECT s.site_code, s.name, s.state, COUNT(*) as advisory_count

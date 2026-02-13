@@ -60,6 +60,22 @@ const SiteModel = {
   },
 
   /**
+   * Get sites by multiple IDs
+   * @param {Array<number>} ids - Array of site IDs
+   * @returns {Promise<Array>} Array of site objects
+   */
+  async getByIds(ids) {
+    if (!ids || ids.length === 0) return [];
+    const db = await getDatabase();
+    const placeholders = ids.map(() => '?').join(',');
+    const [rows] = await db.query(
+      `SELECT * FROM sites WHERE id IN (${placeholders})`,
+      ids
+    );
+    return rows;
+  },
+
+  /**
    * Get sites by state
    * @param {string} state - State code (2-letter)
    * @returns {Promise<Array>} Array of site objects
