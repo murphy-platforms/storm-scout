@@ -1,0 +1,214 @@
+# Changelog
+
+All notable changes to Storm Scout will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned
+- Redis caching for API responses
+- API rate limiting with express-rate-limit
+- Unit tests with Jest
+- Input validation with joi
+- Database backup automation
+
+## [1.1.0] - 2026-02-13
+
+### Added
+- Update banner component showing last updated time and countdown to next update
+- Update banner deployed to all pages (index, advisories, sites, notices, filters, sources)
+- Comprehensive documentation in `docs/` directory
+  - `docs/deployment.md` - Production deployment procedures with SSH best practices
+  - `docs/api.md` - Complete API documentation emphasizing API layer usage
+  - `docs/vtec-implementation.md` - VTEC deduplication system documentation
+- ROADMAP.md outlining future improvements and priorities
+- CHANGELOG.md for tracking project history
+- GitHub issue templates for bug reports, feature requests, and technical debt
+
+### Changed
+- Standardized deployment documentation with current production setup
+- Documented rationale for SSH over FTP deployment approach
+- Emphasized best practice of using API endpoints instead of direct database queries
+
+### Documentation
+- Added deployment checklists and verification procedures
+- Documented database migration workflows
+- Added troubleshooting guides for common issues
+- Documented security and backup best practices
+- Added VTEC system implementation details and benefits
+
+## [1.0.0] - 2026-02-12
+
+### Added
+- VTEC (Valid Time Event Code) event ID deduplication system
+- `vtec_event_id` column to advisories table for persistent event tracking
+- `vtec_action` column to capture alert lifecycle status (NEW, CON, EXT, etc.)
+- Generated column `vtec_event_unique_key` for database-level deduplication
+- VTEC action badge display on advisories page with color coding
+- Action code tooltips showing status meanings
+- Migration scripts for backfilling VTEC data
+- Cleanup scripts for removing duplicate events
+
+### Changed
+- Advisory deduplication now based on VTEC event ID instead of full VTEC string
+- Status column on advisories page renamed to "Action" column
+- Database unique constraint updated to use event ID
+
+### Fixed
+- Eliminated ~40 duplicate weather alerts across system
+- Site 219 (Anchorage) reduced from ~30 to 25 unique alerts
+- All VTEC events now properly deduplicated while preserving action history
+
+### Technical
+- Added `extractVTECEventID()` function in normalizer.js
+- Added `extractVTECAction()` function in normalizer.js
+- Updated Advisory model with `findByVTECEventID()` method
+- Updated `createOrUpdate()` logic to use event ID for UPSERT operations
+- Added indexes for performance: `idx_vtec_event_id`, `idx_vtec_action`
+
+## [0.9.0] - 2026-02-11
+
+### Added
+- Alert filtering system with 68 NOAA alert types categorized by impact level
+- 5 impact levels: CRITICAL, HIGH, MODERATE, LOW, INFO
+- Custom filter configuration UI at `/filters.html`
+- 5 filter presets: Site Default, Operations View, Executive Summary, Safety Focus, Full View
+- Persistent filter preferences using localStorage
+- Real-time advisory count recalculation based on active filters
+- Filter-aware display across all dashboard pages
+
+### Changed
+- Overview counts now respect user filter preferences (client-side calculation)
+- Sites impacted page filters advisories based on user preferences
+- Improved filter UI with visual feedback (green borders for enabled, gray for disabled)
+
+### Technical
+- Created `alert-filters.js` shared module for filter logic
+- Added `/api/filters` endpoint for filter presets
+- Added `/api/filters/types/all` endpoint for alert type taxonomy
+- Implemented `AlertFilters` JavaScript object for frontend filter management
+
+## [0.8.0] - 2026-02-10
+
+### Added
+- 219 US testing center locations across all 50 states and territories
+- Real-time NOAA weather data ingestion every 15 minutes
+- Automated advisory cleanup removing expired alerts
+- Operational status calculation (Open/Closed/At Risk) based on severity
+- Sites impacted page showing facilities affected by weather
+- Government/local notices page (placeholder for future state/local data)
+
+### Changed
+- Improved site matching algorithm for weather alerts
+- Enhanced severity-based status determination
+
+## [0.7.0] - 2026-02-09
+
+### Added
+- Bootstrap 5.3 responsive dashboard UI
+- Six dashboard pages: Overview, Active Advisories, Sites Impacted, Notices, Filters, Sources
+- Navigation bar with active page highlighting
+- Consistent page layout and styling
+- Loading indicators for async data fetching
+
+### Technical
+- Created `api.js` frontend module for API client
+- Created `utils.js` for shared utility functions
+- Implemented responsive design with Bootstrap grid system
+
+## [0.6.0] - 2026-02-08
+
+### Added
+- REST API with Express.js
+- `/api/status/overview` endpoint for dashboard statistics
+- `/api/advisories/active` endpoint for current advisories
+- `/api/sites` endpoint for testing center locations
+- `/api/status/sites-impacted` endpoint for affected facilities
+- `/api/notices/active` endpoint for government notices
+- CORS configuration for cross-origin requests
+
+### Technical
+- Express routing structure
+- MySQL/MariaDB database models
+- Database connection pooling with mysql2
+
+## [0.5.0] - 2026-02-07
+
+### Added
+- MySQL/MariaDB database schema
+- Three main tables: sites, advisories, notices
+- Database initialization scripts
+- Seed data for 219 US testing centers
+- Unique indexes on external IDs to prevent duplicates
+
+### Technical
+- Database migrations via SQL scripts
+- UPSERT operations for advisory ingestion
+- Foreign key relationships between sites and advisories
+
+## [0.4.0] - 2026-02-06
+
+### Added
+- NOAA Weather API integration
+- Alert fetching by state
+- VTEC code extraction from CAP alerts
+- Alert normalization and standardization
+- Duplicate detection using external IDs
+
+### Technical
+- axios for HTTP requests
+- node-cron for scheduled ingestion
+- Custom NOAA API client with proper User-Agent
+
+## [0.3.0] - 2026-02-05
+
+### Added
+- Backend project structure with src/ organization
+- Configuration management with dotenv
+- Ingestion scheduling with node-cron
+- Basic logging infrastructure
+
+## [0.2.0] - 2026-02-04
+
+### Added
+- Frontend project structure
+- Static HTML pages for all views
+- CSS styling with Bootstrap
+- JavaScript modules for API interaction
+
+## [0.1.0] - 2026-02-03
+
+### Added
+- Initial project setup
+- README.md with project description
+- Package.json for backend dependencies
+- Git repository initialization
+- MIT License
+
+---
+
+## Version Numbering
+
+- **Major version (X.0.0)**: Breaking changes or major new features
+- **Minor version (0.X.0)**: New features, backward compatible
+- **Patch version (0.0.X)**: Bug fixes and small improvements
+
+## Types of Changes
+
+- **Added**: New features
+- **Changed**: Changes to existing functionality
+- **Deprecated**: Features that will be removed in future versions
+- **Removed**: Features removed in this version
+- **Fixed**: Bug fixes
+- **Security**: Security vulnerability fixes
+- **Technical**: Internal/technical changes not visible to users
+- **Documentation**: Documentation-only changes
+
+## Links
+
+- [Production Site](https://teammurphy.rocks)
+- [GitHub Repository](https://github.com/404-nullsignal/storm-scout)
+- [Issue Tracker](https://github.com/404-nullsignal/storm-scout/issues)
+- [Roadmap](./ROADMAP.md)
