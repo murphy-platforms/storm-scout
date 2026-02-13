@@ -14,6 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Input validation with joi
 - Database backup automation
 
+## [1.3.1] - 2026-02-13
+
+### Fixed
+- **Card Behavior Consistency** - All cards across the site now behave predictably
+  - Operational Status cards (index.html) are now static with no hover effects
+  - Site cards on advisories.html and sites.html are fully clickable (entire card, not just title)
+  - Impact Summary cards on site-detail.html are now static with no hover effects
+  - Map summary stat cards now toggle severity filters when clicked
+- **Weather Impact Count Fix** - GREEN count now correctly shows only sites with Minor advisories
+  - Previously counted sites with no advisories as GREEN incorrectly
+
 ## [1.3.0] - 2026-02-13
 
 ### Added
