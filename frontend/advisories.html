@@ -386,77 +386,77 @@
             
             return `
                 <div class="col-lg-6 col-12">
-                    <div class="card site-card ${severityClass}">
-                        <div class="site-card-header">
-                            <div>
-                                <h5 class="site-card-title">
-                                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none text-dark">
+                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                        <div class="card site-card site-card-clickable ${severityClass}">
+                            <div class="site-card-header">
+                                <div>
+                                    <h5 class="site-card-title text-dark">
                                         <strong>${site.site_code}</strong> - ${site.site_name}
-                                    </a>
-                                </h5>
-                                <div class="site-card-location">
-                                    <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
-                                </div>
-                            </div>
-                            <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
-                                ${site.highest_severity}
-                            </span>
-                        </div>
-                        <div class="site-card-body">
-                            <!-- Highest severity alert -->
-                            <div style="margin-bottom: 0.75rem;">
-                                <strong>${highestAlert.advisory_type}</strong>
-                                ${highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : ''}
-                                <br>
-                                <small class="text-muted">
-                                    ${highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : ''}
-                                </small>
-                            </div>
-                            
-                            <!-- Alert summary -->
-                            <div class="alert-summary">
-                                <div class="alert-stat">
-                                    <span class="alert-stat-icon">📊</span>
-                                    <span>
-                                        <span class="alert-stat-value">${site.unique_advisory_count}</span>
-                                        unique ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
-                                        ${site.total_zone_count !== site.unique_advisory_count ? 
-                                            `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
-                                    </span>
-                                </div>
-                                ${site.new_count > 0 ? `
-                                <div class="alert-stat">
-                                    <span class="alert-stat-icon">🆕</span>
-                                    <span><span class="alert-stat-value">${site.new_count}</span> new</span>
-                                </div>
-                                ` : ''}
-                                ${site.continued_count > 0 ? `
-                                <div class="alert-stat">
-                                    <span class="alert-stat-icon">🔄</span>
-                                    <span><span class="alert-stat-value">${site.continued_count}</span> continued</span>
-                                </div>
-                                ` : ''}
-                            </div>
-                            
-                            <!-- Advisory types -->
-                            <div class="advisory-type-list">
-                                ${site.type_groups.map(group => `
-                                    <div class="advisory-type-item">
-                                        <span class="advisory-type-name">${group.type}</span>
-                                        <div class="advisory-type-meta">
-                                            <span class="badge ${getSeverityBadge(group.severity)}">${group.severity}</span>
-                                            ${group.zone_count > 1 ? 
-                                                `<span class="zone-badge zone-badge-multi" title="${group.zone_count} NWS zones">
-                                                    <i class="bi bi-layers"></i> ${group.zone_count} zones
-                                                </span>` : 
-                                                `<span class="zone-badge">${group.representative.source || 'NWS'}</span>`
-                                            }
-                                        </div>
+                                    </h5>
+                                    <div class="site-card-location">
+                                        <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
                                     </div>
-                                `).join('')}
+                                </div>
+                                <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                    ${site.highest_severity}
+                                </span>
+                            </div>
+                            <div class="site-card-body">
+                                <!-- Highest severity alert -->
+                                <div style="margin-bottom: 0.75rem;">
+                                    <strong class="text-dark">${highestAlert.advisory_type}</strong>
+                                    ${highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : ''}
+                                    <br>
+                                    <small class="text-muted">
+                                        ${highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : ''}
+                                    </small>
+                                </div>
+                                
+                                <!-- Alert summary -->
+                                <div class="alert-summary">
+                                    <div class="alert-stat">
+                                        <span class="alert-stat-icon">📊</span>
+                                        <span class="text-dark">
+                                            <span class="alert-stat-value">${site.unique_advisory_count}</span>
+                                            unique ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
+                                            ${site.total_zone_count !== site.unique_advisory_count ? 
+                                                `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
+                                        </span>
+                                    </div>
+                                    ${site.new_count > 0 ? `
+                                    <div class="alert-stat">
+                                        <span class="alert-stat-icon">🆕</span>
+                                        <span class="text-dark"><span class="alert-stat-value">${site.new_count}</span> new</span>
+                                    </div>
+                                    ` : ''}
+                                    ${site.continued_count > 0 ? `
+                                    <div class="alert-stat">
+                                        <span class="alert-stat-icon">🔄</span>
+                                        <span class="text-dark"><span class="alert-stat-value">${site.continued_count}</span> continued</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <!-- Advisory types -->
+                                <div class="advisory-type-list">
+                                    ${site.type_groups.map(group => `
+                                        <div class="advisory-type-item">
+                                            <span class="advisory-type-name">${group.type}</span>
+                                            <div class="advisory-type-meta">
+                                                <span class="badge ${getSeverityBadge(group.severity)}">${group.severity}</span>
+                                                ${group.zone_count > 1 ? 
+                                                    `<span class="zone-badge zone-badge-multi" title="${group.zone_count} NWS zones">
+                                                        <i class="bi bi-layers"></i> ${group.zone_count} zones
+                                                    </span>` : 
+                                                    `<span class="zone-badge">${group.representative.source || 'NWS'}</span>`
+                                                }
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             `;
         }

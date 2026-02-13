@@ -193,42 +193,42 @@
                 
                 return `
                 <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card site-card ${severityClass}">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0">
-                                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none text-dark">
+                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                        <div class="card site-card site-card-clickable ${severityClass}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0 text-dark">
                                         <strong>${site.site_code}</strong> - ${site.name}
-                                    </a>
-                                </h5>
-                                ${site.highest_severity ? 
-                                    `<span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
-                                        ${site.highest_severity}
-                                    </span>` : ''}
-                            </div>
-                            
-                            ${advisory ? `
-                            <div class="mb-2">
-                                <strong style="color: #dc3545;">${advisory.advisory_type}</strong>
-                                ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
-                            </div>
-                            ` : ''}
-                            
-                            <p class="card-text">
-                                <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}<br>
-                                <i class="bi bi-exclamation-triangle"></i> <strong>${site.advisory_count}</strong> active ${site.advisory_count === 1 ? 'alert' : 'alerts'}
-                                ${site.total_zone_count !== site.advisory_count ? 
-                                    `<span class="text-muted small">(${site.total_zone_count} zones)</span>` : ''}
-                                ${site.new_count > 0 ? `<br><i class="bi bi-bell"></i> <strong>${site.new_count}</strong> new` : ''}
-                            </p>
-                            
-                            <div class="mt-2">
-                                <span class="badge ${getStatusBadge(site.operational_status)}">
-                                    Ops: ${site.operational_status || 'Unknown'}
-                                </span>
+                                    </h5>
+                                    ${site.highest_severity ? 
+                                        `<span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                            ${site.highest_severity}
+                                        </span>` : ''}
+                                </div>
+                                
+                                ${advisory ? `
+                                <div class="mb-2">
+                                    <strong style="color: #dc3545;">${advisory.advisory_type}</strong>
+                                    ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
+                                </div>
+                                ` : ''}
+                                
+                                <p class="card-text text-dark">
+                                    <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}<br>
+                                    <i class="bi bi-exclamation-triangle"></i> <strong>${site.advisory_count}</strong> active ${site.advisory_count === 1 ? 'alert' : 'alerts'}
+                                    ${site.total_zone_count !== site.advisory_count ? 
+                                        `<span class="text-muted small">(${site.total_zone_count} zones)</span>` : ''}
+                                    ${site.new_count > 0 ? `<br><i class="bi bi-bell"></i> <strong>${site.new_count}</strong> new` : ''}
+                                </p>
+                                
+                                <div class="mt-2">
+                                    <span class="badge ${getStatusBadge(site.operational_status)}">
+                                        Ops: ${site.operational_status || 'Unknown'}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 `;
             }).join('');
