@@ -8,7 +8,7 @@ Node.js + Express backend for Storm Scout weather advisory dashboard.
 - **Framework**: Express.js
 - **Database**: MySQL 8.0+ / MariaDB 10.5+ (async/await with mysql2)
 - **Scheduling**: node-cron
-- **HTTP Client**: axios
+- **HTTP Client**: axios (with rate limiting and retry logic)
 
 ## Setup
 
@@ -43,7 +43,11 @@ DB_NAME=storm_scout
 # NOAA Ingestion
 INGESTION_ENABLED=true
 INGESTION_INTERVAL_MINUTES=15
-NOAA_API_USER_AGENT=StormScout/1.0 (your-email@example.com)
+# IMPORTANT: User-Agent is REQUIRED - use your real email!
+NOAA_API_USER_AGENT=StormScout/1.0 (your-email@yourcompany.com)
+
+# Alerting (optional - for failure notifications)
+# ALERT_WEBHOOK_URL=https://hooks.slack.com/services/xxx/yyy/zzz
 
 # Frontend Static Files (for production)
 STATIC_FILES_PATH=/path/to/frontend/directory
@@ -142,15 +146,25 @@ npm run ingest
 
 ### Advisory Cleanup
 
-To manually remove duplicate and expired advisories:
+The unified cleanup module supports multiple modes:
 
 ```bash
+# Full cleanup (all modes)
 npm run cleanup
+
+# Or run specific cleanup modes:
+node src/utils/cleanup-advisories.js full       # All cleanup steps
+node src/utils/cleanup-advisories.js vtec       # VTEC code duplicates only
+node src/utils/cleanup-advisories.js event_id   # Event ID duplicates only
+node src/utils/cleanup-advisories.js expired    # Remove expired only
+node src/utils/cleanup-advisories.js duplicates # All duplicate types
 ```
 
-Cleanup automatically runs after each ingestion cycle to:
-- Remove duplicate advisories (same external_id)
-- Remove expired advisories (end_time > 1 hour in past or status='expired')
+Cleanup features:
+- **Batched deletes** - Processes in chunks of 1000 to avoid performance issues
+- **Race condition handling** - Uses transactions and `SELECT ... FOR UPDATE`
+- **Multiple deduplication strategies** - external_id, VTEC event ID, VTEC code, type
+- **Automatic alerts** - Sends Slack/webhook notifications on cleanup failures
 
 ### Data Sources
 
@@ -158,6 +172,17 @@ Currently implemented:
 - **NOAA Weather API** - 80+ alert types covering all official weather alerts
 - **Alert Taxonomy** - 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
 - **UPSERT Operations** - Prevents duplicate advisories using unique external_id index
+- **Rate Limiting** - 500ms between NOAA API requests to prevent throttling
+- **Retry Logic** - Automatic retries with exponential backoff for transient failures
+
+### Geo-Matching
+
+Site-to-alert matching uses hierarchical precision:
+1. **UGC Codes** (most precise) - Direct zone/county code matching
+2. **County Name** - Fallback to county-level matching
+3. **State** (least precise) - Fallback when no specific match found
+
+To enable precise matching, populate `ugc_codes` and `county` fields in the sites table.
 
 Planned:
 - State emergency management feeds
@@ -173,11 +198,12 @@ backend/
 │   ├── server.js           # Server entry point
 │   ├── config/
 │   │   ├── config.js       # App configuration
-│   │   ├── database.js     # MySQL connection pool
+│   │   ├── database.js     # MySQL connection pool (with retry logic)
 │   │   └── noaa-alert-types.js # Filter presets & alert taxonomy
 │   ├── models/            # Data access layer (async/await)
 │   │   ├── site.js
 │   │   ├── advisory.js
+│   │   ├── advisoryHistory.js  # Trend analysis snapshots
 │   │   ├── notice.js
 │   │   └── siteStatus.js
 │   ├── routes/            # API routes
@@ -187,12 +213,22 @@ backend/
 │   │   ├── status.js
 │   │   └── filters.js      # Filter configuration API
 │   ├── ingestion/         # Weather data ingestion
-│   │   └── noaa-ingestor.js
+│   │   ├── noaa-ingestor.js    # Main ingestion with transactions
+│   │   ├── scheduler.js        # Cron scheduler with alerting
+│   │   └── utils/
+│   │       ├── api-client.js   # NOAA API with rate limiting/retry
+│   │       └── normalizer.js   # Alert normalization & VTEC parsing
 │   ├── utils/
-│   │   └── cleanup-advisories.js # Remove duplicates/expired
+│   │   ├── cleanup-advisories.js # Unified cleanup module
+│   │   └── alerting.js          # Failure notification system
+│   ├── scripts/           # Maintenance scripts
+│   │   ├── scheduled-cleanup.js    # Cron-friendly cleanup
+│   │   ├── cleanup-duplicates.js   # (deprecated - uses unified module)
+│   │   └── cleanup-event-id-duplicates.js # (deprecated)
 │   └── data/              # Static data and schema
-│       ├── schema.sql
-│       └── sites.json      # 219 testing centers
+│       ├── schema.sql     # Full schema with all columns
+│       ├── migrations/    # SQL migration files
+│       └── sites.json     # 219 testing centers
 ├── package.json
 └── README.md
 ```
@@ -243,7 +279,10 @@ ssh user@host "touch ~/storm-scout/tmp/restart.txt"
 
 ### NOAA API Rate Limits
 
-NOAA doesn't require an API key but requires a proper User-Agent. Make sure `NOAA_API_USER_AGENT` includes your contact email.
+NOAA doesn't require an API key but requires a proper User-Agent. Make sure `NOAA_API_USER_AGENT` includes your contact email. The API client includes:
+- Automatic retry with exponential backoff (3 retries)
+- Rate limiting (500ms between requests)
+- Proper handling of 429 (Too Many Requests) responses
 
 ### MySQL Connection Issues
 
@@ -253,11 +292,30 @@ If you see connection errors:
 - Ensure user has proper permissions
 - Verify database exists: `SHOW DATABASES;`
 
+The database pool includes automatic retry for transient failures (ECONNREFUSED, ETIMEDOUT, etc.).
+
 ### Duplicate Advisory Warnings
 
 If you see "Duplicate entry" errors:
 - This is normal - advisories with the same external_id are updated via UPSERT
-- The cleanup script removes true duplicates
+- The cleanup module handles deduplication at multiple levels:
+  - `external_id` (NOAA alert ID)
+  - `vtec_event_id` (persistent event identifier)
+  - `vtec_code` (full VTEC string)
+  - `advisory_type` per site (keeps most severe)
+
+### Alerting Configuration
+
+To receive alerts on ingestion/cleanup failures:
+
+1. Set `ALERT_WEBHOOK_URL` in `.env` to your Slack webhook URL
+2. Alerts are sent for:
+   - First ingestion failure
+   - 3+ consecutive ingestion failures
+   - Anomaly detection (sites with >15 advisories)
+   - Cleanup failures
+
+Alerts are throttled to prevent spam (5 min minimum between alerts of same type).
 
 ## License
 

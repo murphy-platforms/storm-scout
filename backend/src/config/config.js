@@ -28,7 +28,8 @@ const config = {
   // NOAA API configuration
   noaa: {
     baseUrl: process.env.NOAA_API_BASE_URL || 'https://api.weather.gov',
-    userAgent: process.env.NOAA_API_USER_AGENT || 'StormScout/1.0 (contact@example.com)'
+    // User-Agent is REQUIRED by NOAA API - must be set in environment
+    userAgent: process.env.NOAA_API_USER_AGENT || null
   },
   
   // CORS configuration
