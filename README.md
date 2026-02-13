@@ -16,6 +16,7 @@ Currently monitoring 219 testing centers with real-time NOAA weather data update
 - **219 US Testing Center Locations** - Monitors sites across all 50 states and US territories
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
+- **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes (v1.2.1)
 - **Site Operational Status** - Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Live Update Tracking** - Dashboard displays last update timestamp and countdown to next refresh
 
