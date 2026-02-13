@@ -54,5 +54,29 @@ const API = {
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch sites');
         return json.data;
+    },
+
+    /**
+     * Get trends for all sites (Phase 3)
+     */
+    async getTrends(days = 7) {
+        const response = await fetch(`${API_BASE_URL}/trends?days=${days}`);
+        return await response.json();
+    },
+
+    /**
+     * Get trend for a specific site (Phase 3)
+     */
+    async getSiteTrend(siteId, days = 7) {
+        const response = await fetch(`${API_BASE_URL}/trends/${siteId}?days=${days}`);
+        return await response.json();
+    },
+
+    /**
+     * Get full history for a site (Phase 3)
+     */
+    async getSiteHistory(siteId, days = 7) {
+        const response = await fetch(`${API_BASE_URL}/trends/${siteId}/history?days=${days}`);
+        return await response.json();
     }
 };
