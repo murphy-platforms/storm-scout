@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Input validation with joi
 - Database backup automation
 
+## [1.2.1] - 2026-02-13
+
+### Fixed
+- **Alert Expiration Bug** - Alerts now properly marked as `expired` when `end_time` passes
+  - Added `markExpiredByEndTime()` function to cleanup module
+  - Ingestion now marks alerts as expired during each run if `end_time < NOW()`
+  - Cleanup module calls `markExpiredByEndTime()` before removing old records
+  - Fixes issue where 84+ alerts remained `active` despite expired `end_time`
+
 ## [1.2.0] - 2026-02-13
 
 ### Added

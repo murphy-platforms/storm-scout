@@ -208,6 +208,34 @@ async function removeDuplicateTypes() {
 }
 
 /**
+ * Mark alerts as expired when their end_time has passed
+ * This should run before removing expired advisories
+ */
+async function markExpiredByEndTime() {
+  const db = getDatabase();
+  
+  console.log('\n=== Marking Expired Advisories (by end_time) ===');
+  
+  // Mark as expired: active alerts where end_time has passed
+  const [result] = await db.query(`
+    UPDATE advisories
+    SET status = 'expired', last_updated = NOW()
+    WHERE status = 'active' 
+      AND end_time IS NOT NULL 
+      AND end_time < NOW()
+  `);
+  
+  const marked = result.affectedRows;
+  if (marked > 0) {
+    console.log(`✓ Marked ${marked} advisories as expired (end_time passed)`);
+  } else {
+    console.log('✓ No advisories to mark as expired');
+  }
+  
+  return marked;
+}
+
+/**
  * Remove expired advisories (batched)
  */
 async function removeExpiredAdvisories() {
@@ -215,7 +243,11 @@ async function removeExpiredAdvisories() {
   
   console.log('\n=== Removing Expired Advisories ===');
   
+  // First, mark any alerts that should be expired
+  await markExpiredByEndTime();
+  
   // Get IDs of expired advisories to delete
+  // Delete if: expired for 6+ hours, OR end_time was 24+ hours ago
   const [expiredRows] = await db.query(`
     SELECT id FROM advisories 
     WHERE (status = 'expired' AND last_updated < DATE_SUB(NOW(), INTERVAL 6 HOUR))
@@ -479,6 +511,7 @@ if (require.main === module) {
 module.exports = {
   runCleanup,
   removeExpiredAdvisories,
+  markExpiredByEndTime,
   removeDuplicatesByExternalId,
   removeDuplicatesByVTECEventId,
   removeDuplicatesByVTECCode,
