@@ -204,6 +204,21 @@ a.badge:hover {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Clickable site cards */
+.site-card-clickable {
+    cursor: pointer;
+}
+
+.site-card-clickable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.site-card-clickable:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 /* Severity-based card border colors */
 .site-card-extreme {
     border-left-color: #dc3545;

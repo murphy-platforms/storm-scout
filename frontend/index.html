@@ -481,40 +481,40 @@
             
             return `
                 <div class="col-lg-4 col-md-6 col-12 mb-3">
-                    <div class="card site-card ${severityClass}" style="height: 100%;">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-0">
-                                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none text-dark">
-                                        <strong>${site.site_code}</strong>
-                                    </a><br>
-                                    <small class="text-muted">${site.city}, ${site.state}</small>
-                                </h6>
-                                <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
-                                    ${site.highest_severity}
-                                </span>
-                            </div>
-                            
-                            <div class="mb-2">
-                                <strong>${advisory.advisory_type}</strong>
-                                ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
-                            </div>
-                            
-                            <small class="text-muted d-block mb-2">
-                                ${advisory.expires ? 'Expires: ' + formatDate(advisory.expires) : ''}
-                            </small>
-                            
-                            <div class="d-flex gap-2 align-items-center" style="font-size: 0.85rem;">
-                                <span>
-                                    <strong>${site.unique_advisory_count}</strong> ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
-                                </span>
-                                ${site.total_zone_count !== site.unique_advisory_count ? 
-                                    `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
-                                ${site.new_count > 0 ? 
-                                    `<span class="badge bg-success">${site.new_count} new</span>` : ''}
+                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                        <div class="card site-card site-card-clickable ${severityClass}" style="height: 100%;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0 text-dark">
+                                        <strong>${site.site_code}</strong><br>
+                                        <small class="text-muted">${site.city}, ${site.state}</small>
+                                    </h6>
+                                    <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                        ${site.highest_severity}
+                                    </span>
+                                </div>
+                                
+                                <div class="mb-2 text-dark">
+                                    <strong>${advisory.advisory_type}</strong>
+                                    ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
+                                </div>
+                                
+                                <small class="text-muted d-block mb-2">
+                                    ${advisory.expires ? 'Expires: ' + formatDate(advisory.expires) : ''}
+                                </small>
+                                
+                                <div class="d-flex gap-2 align-items-center text-dark" style="font-size: 0.85rem;">
+                                    <span>
+                                        <strong>${site.unique_advisory_count}</strong> ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
+                                    </span>
+                                    ${site.total_zone_count !== site.unique_advisory_count ? 
+                                        `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
+                                    ${site.new_count > 0 ? 
+                                        `<span class="badge bg-success">${site.new_count} new</span>` : ''}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             `;
         }
