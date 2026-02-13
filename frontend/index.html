@@ -365,43 +365,23 @@
                 const sitesWithAdvisories = aggregatedSites.length;
                 document.getElementById('sitesWithAdvisories').textContent = sitesWithAdvisories;
                 
-                // Weather Impact Counts - recalculated based on filtered sites
-                // Count sites by their weather_impact_level from the aggregated (filtered) data
+                // Weather Impact Counts - based on sites with filtered advisories only
+                // Only count sites that have active advisories matching user's filters
                 const weatherImpactCounts = { red: 0, orange: 0, yellow: 0, green: 0 };
                 
-                // Get all sites to check their weather impact levels
-                // Sites with filtered advisories use their actual weather_impact_level
-                // We need to count sites that have advisories after filtering
-                const sitesWithFilteredAdvisories = new Set(aggregatedSites.map(s => s.site_id));
+                // Map advisory severity to weather impact level
+                const severityToImpact = { 
+                    'Extreme': 'red', 
+                    'Severe': 'orange', 
+                    'Moderate': 'yellow', 
+                    'Minor': 'green' 
+                };
                 
-                // Get site weather levels from overviewData.recently_updated (which has weather_impact_level)
-                overviewData.recently_updated.forEach(site => {
-                    if (sitesWithFilteredAdvisories.has(site.site_id)) {
-                        const level = site.weather_impact_level || 'green';
-                        if (weatherImpactCounts.hasOwnProperty(level)) {
-                            weatherImpactCounts[level]++;
-                        }
-                    }
-                });
-                
-                // For sites not in recently_updated but in aggregatedSites, count based on severity
-                // Map severity to weather impact: Extreme->red, Severe->orange, Moderate->yellow, Minor->green
+                // Count each site with filtered advisories by their highest severity
                 aggregatedSites.forEach(site => {
-                    // Check if already counted from recently_updated
-                    const inRecentlyUpdated = overviewData.recently_updated.some(r => r.site_id === site.site_id);
-                    if (!inRecentlyUpdated) {
-                        const severity = site.highest_severity;
-                        const levelMap = { 'Extreme': 'red', 'Severe': 'orange', 'Moderate': 'yellow', 'Minor': 'green' };
-                        const level = levelMap[severity] || 'green';
-                        weatherImpactCounts[level]++;
-                    }
+                    const level = severityToImpact[site.highest_severity] || 'green';
+                    weatherImpactCounts[level]++;
                 });
-                
-                // Also count sites with NO advisories (after filtering) as green
-                const totalSitesCount = overviewData.total_sites;
-                const sitesWithAdvisoriesCount = aggregatedSites.length;
-                const sitesWithNoAdvisories = totalSitesCount - sitesWithAdvisoriesCount;
-                weatherImpactCounts.green += sitesWithNoAdvisories;
                 
                 document.getElementById('weatherRed').textContent = weatherImpactCounts.red;
                 document.getElementById('weatherOrange').textContent = weatherImpactCounts.orange;
