@@ -109,6 +109,21 @@ body {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
+/* Clickable weather cards */
+.weather-card-clickable {
+    cursor: pointer;
+}
+
+.weather-card-clickable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2);
+}
+
+.weather-card-clickable:active {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
 .weather-card.impact-red {
     border-left-color: #dc3545;
 }

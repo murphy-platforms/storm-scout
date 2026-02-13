@@ -46,6 +46,21 @@
             </div>
         </div>
 
+        <!-- Active Filter Banner -->
+        <div class="row mb-3" id="activeFilterBanner" style="display: none;">
+            <div class="col-12">
+                <div class="alert alert-info d-flex justify-content-between align-items-center mb-0">
+                    <span>
+                        <i class="bi bi-funnel-fill"></i>
+                        <strong>Filtered:</strong> Showing <span id="activeFilterLabel"></span> sites
+                    </span>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="clearWeatherFilter()">
+                        <i class="bi bi-x-lg"></i> Clear Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-3">
             <div class="col-md-3">
                 <input type="text" class="form-control" id="searchBox" placeholder="Search sites...">
@@ -53,6 +68,15 @@
             <div class="col-md-2">
                 <select class="form-select" id="stateFilter">
                     <option value="">All States</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="weatherImpactFilter">
+                    <option value="">All Weather Impacts</option>
+                    <option value="red">🔴 RED - High Impact</option>
+                    <option value="orange">🟠 ORANGE - Severe Impact</option>
+                    <option value="yellow">🟡 YELLOW - Moderate Impact</option>
+                    <option value="green">🟢 GREEN - Low/No Impact</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -213,6 +237,7 @@
         function filterSites() {
             const search = document.getElementById('searchBox').value.toLowerCase();
             const state = document.getElementById('stateFilter').value;
+            const weatherImpact = document.getElementById('weatherImpactFilter').value;
             const status = document.getElementById('statusFilter').value;
             
             // First apply alert type filters to get updated advisory counts
@@ -222,6 +247,7 @@
             const filtered = filteredData.filter(site => {
                 if (search && !(site.site_code.toLowerCase().includes(search) || site.name.toLowerCase().includes(search))) return false;
                 if (state && site.state !== state) return false;
+                if (weatherImpact && site.weather_impact_level !== weatherImpact) return false;
                 if (status && site.operational_status !== status) return false;
                 return true;
             });
@@ -229,21 +255,51 @@
             renderSites(filtered);
         }
         
+        // Clear weather impact filter
+        function clearWeatherFilter() {
+            document.getElementById('weatherImpactFilter').value = '';
+            document.getElementById('activeFilterBanner').style.display = 'none';
+            // Update URL without the parameter
+            const url = new URL(window.location);
+            url.searchParams.delete('weather_impact');
+            window.history.replaceState({}, '', url);
+            filterSites();
+        }
+        
         document.getElementById('searchBox').addEventListener('input', filterSites);
         document.getElementById('stateFilter').addEventListener('change', filterSites);
+        document.getElementById('weatherImpactFilter').addEventListener('change', function() {
+            // Hide banner when manually changing filter
+            if (!this.value) {
+                document.getElementById('activeFilterBanner').style.display = 'none';
+            }
+            filterSites();
+        });
         document.getElementById('statusFilter').addEventListener('change', filterSites);
         
         // Check for URL parameters on page load
         function applyURLParameters() {
             const urlParams = new URLSearchParams(window.location.search);
             const siteParam = urlParams.get('site');
+            const weatherImpactParam = urlParams.get('weather_impact');
             
             if (siteParam) {
                 // Auto-populate search box with site code from URL
                 document.getElementById('searchBox').value = siteParam;
-                // Trigger filtering
-                filterSites();
             }
+            
+            if (weatherImpactParam) {
+                // Set weather impact filter from URL
+                document.getElementById('weatherImpactFilter').value = weatherImpactParam;
+                
+                // Show active filter banner
+                const labels = { red: '🔴 RED (High Impact)', orange: '🟠 ORANGE (Severe Impact)', yellow: '🟡 YELLOW (Moderate Impact)', green: '🟢 GREEN (Low/No Impact)' };
+                document.getElementById('activeFilterLabel').textContent = labels[weatherImpactParam] || weatherImpactParam.toUpperCase();
+                document.getElementById('activeFilterBanner').style.display = 'block';
+            }
+            
+            // Trigger filtering
+            filterSites();
         }
         
         // Initialize filters then load sites

@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Quick action buttons: "View All Sites" and "Map View" for faster navigation
   - "All Clear" success message when no sites need attention
   - Enhanced footer with links to About/Sources and Filter Settings
+- **Clickable Dashboard Cards** - All cards now link to filtered views
+  - Site attention cards link to site detail page (entire card clickable)
+  - Weather Impact cards (RED/ORANGE/YELLOW/GREEN) link to filtered sites list
+  - New `weather_impact` URL parameter on sites.html for drill-down filtering
+  - Filter banner shows active weather impact filter with clear button
 - **5 New MODERATE Alerts Enabled by Default** - Site Default preset now shows 18/68 alert types
   - Winter Storm Watch
   - Winter Weather Advisory
