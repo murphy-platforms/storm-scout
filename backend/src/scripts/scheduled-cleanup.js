@@ -1,96 +1,44 @@
 #!/usr/bin/env node
 /**
- * Scheduled VTEC Duplicate Cleanup
- * Runs daily to remove any VTEC-based duplicates that may have accumulated
+ * Scheduled Advisory Cleanup
+ * Runs daily to remove duplicates and expired advisories
  * Designed to be run via cron (e.g., daily at 3 AM)
+ * 
+ * Usage: node scheduled-cleanup.js [mode]
+ * Modes: full (default), vtec, event_id, expired, duplicates
  */
 
 require('dotenv').config();
-const { initDatabase, getDatabase } = require('../config/database');
+const fs = require('fs');
+const path = require('path');
+const { runCleanup } = require('../utils/cleanup-advisories');
+
+const LOG_FILE = path.join(__dirname, '../../.cleanup-log.json');
 
 async function scheduledCleanup() {
+  const mode = process.argv[2] || 'full';
   const timestamp = new Date().toISOString();
-  console.log(`\n═══ Scheduled VTEC Cleanup Started ═══`);
-  console.log(`Time: ${timestamp}\n`);
+  
+  console.log(`\n═══ Scheduled Advisory Cleanup Started ═══`);
+  console.log(`Time: ${timestamp}`);
+  console.log(`Mode: ${mode}\n`);
   
   try {
-    await initDatabase();
-    const db = await getDatabase();
+    // Run cleanup with logging but don't exit immediately
+    const results = await runCleanup(mode, { exitOnComplete: false });
     
-    // Find VTEC-based duplicates: same VTEC code, site, and type
-    const [duplicateGroups] = await db.query(`
-      SELECT vtec_code, site_id, advisory_type, COUNT(*) as count
-      FROM advisories
-      WHERE vtec_code IS NOT NULL
-      AND status = 'active'
-      GROUP BY vtec_code, site_id, advisory_type
-      HAVING COUNT(*) > 1
-      ORDER BY count DESC
-    `);
-    
-    if (duplicateGroups.length === 0) {
-      console.log('✓ No VTEC duplicates found');
-      console.log('═══ Cleanup Complete ═══\n');
-      return;
-    }
-    
-    console.log(`Found ${duplicateGroups.length} groups of VTEC duplicates`);
-    
-    let totalDeleted = 0;
-    
-    for (const group of duplicateGroups) {
-      const { vtec_code, site_id, advisory_type, count } = group;
-      
-      // Get all alerts in this group, ordered by most recent first
-      const [alerts] = await db.query(`
-        SELECT id, external_id, last_updated, headline
-        FROM advisories
-        WHERE vtec_code = ? AND site_id = ? AND advisory_type = ? AND status = 'active'
-        ORDER BY last_updated DESC, id DESC
-      `, [vtec_code, site_id, advisory_type]);
-      
-      // Keep the first (most recent), delete the rest
-      const toKeep = alerts[0];
-      const toDelete = alerts.slice(1);
-      
-      console.log(`\nVTEC: ${vtec_code}`);
-      console.log(`  Site: ${site_id}, Type: ${advisory_type}`);
-      console.log(`  Keeping: ID ${toKeep.id} (updated ${toKeep.last_updated})`);
-      console.log(`  Deleting: ${toDelete.length} duplicate(s)`);
-      
-      for (const alert of toDelete) {
-        await db.query('DELETE FROM advisories WHERE id = ?', [alert.id]);
-        totalDeleted++;
-        console.log(`    - Deleted ID ${alert.id}`);
-      }
-    }
-    
-    console.log(`\n═══ Cleanup Complete ═══`);
-    console.log(`Total duplicates removed: ${totalDeleted}`);
-    console.log(`Groups processed: ${duplicateGroups.length}\n`);
-    
-    // Log to a file for monitoring
+    // Log results to file for monitoring
     const logEntry = {
       timestamp,
-      duplicateGroups: duplicateGroups.length,
-      totalDeleted,
-      details: duplicateGroups.map(g => ({
-        vtec: g.vtec_code,
-        site: g.site_id,
-        type: g.advisory_type,
-        count: g.count
-      }))
+      mode,
+      ...results
     };
-    
-    const fs = require('fs');
-    const path = require('path');
-    const logFile = path.join(__dirname, '../../.cleanup-log.json');
     
     // Append to log file
     let logs = [];
-    if (fs.existsSync(logFile)) {
+    if (fs.existsSync(LOG_FILE)) {
       try {
-        logs = JSON.parse(fs.readFileSync(logFile, 'utf8'));
+        logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf8'));
       } catch (e) {
         logs = [];
       }
@@ -103,7 +51,11 @@ async function scheduledCleanup() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     logs = logs.filter(log => new Date(log.timestamp) > thirtyDaysAgo);
     
-    fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
+    fs.writeFileSync(LOG_FILE, JSON.stringify(logs, null, 2));
+    
+    console.log(`Results logged to ${LOG_FILE}`);
+    
+    process.exit(results.success ? 0 : 1);
     
   } catch (error) {
     console.error('\n✗ Scheduled cleanup failed:', error);

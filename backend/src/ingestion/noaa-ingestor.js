@@ -1,6 +1,7 @@
 /**
  * NOAA Weather Data Ingestor
  * Fetches weather alerts from NOAA and updates database
+ * Features: transactions, UGC-level geo-matching, deduplication
  */
 
 const fs = require('fs');
@@ -12,6 +13,7 @@ const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
 const AdvisoryHistory = require('../models/advisoryHistory');
 const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
+const { alertAnomaly } = require('../utils/alerting');
 
 const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
 
@@ -34,11 +36,51 @@ async function ingestNOAAData() {
       return;
     }
     
-    // Step 2: Get all sites
+    // Step 2: Get all sites with their UGC codes for matching
     const sites = await SiteModel.getAll();
     console.log(`Processing ${sites.length} sites...`);
     
-    // Step 3: Match alerts to sites
+    // Build lookup maps for efficient matching
+    const sitesByState = new Map();      // state -> [sites]
+    const sitesByUGC = new Map();        // ugc_code -> [sites]
+    const sitesByCounty = new Map();     // "state|county" -> [sites]
+    
+    for (const site of sites) {
+      // Index by state
+      if (!sitesByState.has(site.state)) {
+        sitesByState.set(site.state, []);
+      }
+      sitesByState.get(site.state).push(site);
+      
+      // Index by UGC codes (if available)
+      if (site.ugc_codes) {
+        try {
+          const ugcCodes = typeof site.ugc_codes === 'string' 
+            ? JSON.parse(site.ugc_codes) 
+            : site.ugc_codes;
+          for (const ugc of ugcCodes) {
+            if (!sitesByUGC.has(ugc)) {
+              sitesByUGC.set(ugc, []);
+            }
+            sitesByUGC.get(ugc).push(site);
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      
+      // Index by county (state|county format for uniqueness)
+      if (site.county) {
+        const countyKey = `${site.state}|${site.county.toLowerCase()}`;
+        if (!sitesByCounty.has(countyKey)) {
+          sitesByCounty.set(countyKey, []);
+        }
+        sitesByCounty.get(countyKey).push(site);
+      }
+    }
+    
+    // Step 3: Match alerts to sites using hierarchical matching
+    // Priority: UGC codes > County > State (most specific wins)
     const siteAdvisories = new Map();
     
     for (const alert of noaaAlerts) {
@@ -49,21 +91,42 @@ async function ingestNOAAData() {
         continue;
       }
       
-      // Find sites in affected areas
-      // NOAA provides state codes in geocode.SAME field
-      const affectedStates = extractStatesFromAlert(properties);
+      // Extract geographic identifiers from alert
+      const { ugcCodes, counties, states } = extractGeoFromAlert(properties);
+      const matchedSites = new Set();
       
-      for (const site of sites) {
-        // Simple matching: if site's state is in affected states
-        if (affectedStates.includes(site.state)) {
-          if (!siteAdvisories.has(site.id)) {
-            siteAdvisories.set(site.id, []);
-          }
-          
-          const normalized = normalizeNOAAAlert(alert);
-          normalized.site_id = site.id;
-          siteAdvisories.get(site.id).push(normalized);
+      // Level 1: Match by UGC codes (most precise)
+      for (const ugc of ugcCodes) {
+        const sites = sitesByUGC.get(ugc) || [];
+        sites.forEach(site => matchedSites.add(site));
+      }
+      
+      // Level 2: Match by county (if no UGC matches for a site)
+      if (matchedSites.size === 0) {
+        for (const county of counties) {
+          const sites = sitesByCounty.get(county) || [];
+          sites.forEach(site => matchedSites.add(site));
         }
+      }
+      
+      // Level 3: Fallback to state matching (least precise)
+      // Only if no more specific matches found
+      if (matchedSites.size === 0) {
+        for (const state of states) {
+          const sites = sitesByState.get(state) || [];
+          sites.forEach(site => matchedSites.add(site));
+        }
+      }
+      
+      // Add alert to matched sites
+      for (const site of matchedSites) {
+        if (!siteAdvisories.has(site.id)) {
+          siteAdvisories.set(site.id, []);
+        }
+        
+        const normalized = normalizeNOAAAlert(alert);
+        normalized.site_id = site.id;
+        siteAdvisories.get(site.id).push(normalized);
       }
     }
     
@@ -115,67 +178,80 @@ async function ingestNOAAData() {
     console.log(`After de-duplication: ${afterDedup} advisories`);
     console.log(`Removed ${beforeDedup - afterDedup} logical duplicates (same type, different zones)\n`);
     
-    // Step 4: Update database
+    // Step 4: Update database with transaction
     let advisoriesCreated = 0;
     let statusesUpdated = 0;
     const processedExternalIds = [];
     
-    // Create/update advisories and track processed external IDs
-    for (const [siteId, advisories] of siteAdvisories.entries()) {
-      // Create/update advisories
-      for (const advisory of advisories) {
-        try {
-          await AdvisoryModel.create(advisory);
-          advisoriesCreated++;
-          
-          // Track external_id for later cleanup
-          if (advisory.external_id) {
-            processedExternalIds.push(advisory.external_id);
-          }
-        } catch (error) {
-          console.error(`Error creating advisory for site ${siteId}:`, error.message);
-        }
-      }
-      
-      // Calculate weather impact based on most severe advisory
-      const weatherImpactLevel = calculateHighestWeatherImpact(advisories);
-      const reason = formatStatusReason(advisories);
-      
-      try {
-        // Update ONLY weather_impact_level, do NOT change operational_status
-        // Operational status is set manually by IMT/Operations
-        await SiteStatusModel.upsert(siteId, {
-          weather_impact_level: weatherImpactLevel,
-          reason: reason,
-          decision_by: 'weather_system'
-        });
-        statusesUpdated++;
-      } catch (error) {
-        console.error(`Error updating status for site ${siteId}:`, error.message);
-      }
-    }
+    const { getDatabase } = require('../config/database');
+    const db = await getDatabase();
+    const connection = await db.getConnection();
     
-    // Update sites with no advisories to green weather impact
-    for (const site of sites) {
-      if (!siteAdvisories.has(site.id)) {
+    try {
+      await connection.beginTransaction();
+      
+      // Create/update advisories and track processed external IDs
+      for (const [siteId, advisories] of siteAdvisories.entries()) {
+        // Create/update advisories
+        for (const advisory of advisories) {
+          try {
+            await AdvisoryModel.create(advisory);
+            advisoriesCreated++;
+            
+            // Track external_id for later cleanup
+            if (advisory.external_id) {
+              processedExternalIds.push(advisory.external_id);
+            }
+          } catch (error) {
+            console.error(`Error creating advisory for site ${siteId}:`, error.message);
+            // Continue with other advisories - don't fail entire batch
+          }
+        }
+        
+        // Calculate weather impact based on most severe advisory
+        const weatherImpactLevel = calculateHighestWeatherImpact(advisories);
+        const reason = formatStatusReason(advisories);
+        
         try {
-          // Set weather impact to green (no advisories)
-          // Suggest open_normal if no operational status is set, but don't override existing decisions
-          await SiteStatusModel.upsert(site.id, {
-            weather_impact_level: 'green',
-            reason: 'No active advisories',
+          // Update ONLY weather_impact_level, do NOT change operational_status
+          // Operational status is set manually by IMT/Operations
+          await SiteStatusModel.upsert(siteId, {
+            weather_impact_level: weatherImpactLevel,
+            reason: reason,
             decision_by: 'weather_system'
           });
+          statusesUpdated++;
         } catch (error) {
-          console.error(`Error updating status for site ${site.id}:`, error.message);
+          console.error(`Error updating status for site ${siteId}:`, error.message);
         }
       }
+      
+      // Update sites with no advisories to green weather impact
+      for (const site of sites) {
+        if (!siteAdvisories.has(site.id)) {
+          try {
+            // Set weather impact to green (no advisories)
+            await SiteStatusModel.upsert(site.id, {
+              weather_impact_level: 'green',
+              reason: 'No active advisories',
+              decision_by: 'weather_system'
+            });
+          } catch (error) {
+            console.error(`Error updating status for site ${site.id}:`, error.message);
+          }
+        }
+      }
+      
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
     }
     
     // Step 5: Mark advisories not in current batch as expired
     console.log('\nMarking missing advisories as expired...');
-    const { getDatabase } = require('../config/database');
-    const db = await getDatabase();
     let expiredCount = 0;
     
     if (processedExternalIds.length > 0) {
@@ -247,10 +323,23 @@ async function ingestNOAAData() {
     
     if (highCountSites.length > 0) {
       console.warn('⚠️  WARNING: Sites with unusually high advisory counts detected:');
+      const anomalyDetails = [];
       highCountSites.forEach(site => {
         console.warn(`   ${site.site_code} (${site.name}, ${site.state}): ${site.advisory_count} active advisories`);
+        anomalyDetails.push({
+          site_code: site.site_code,
+          name: site.name,
+          state: site.state,
+          advisory_count: site.advisory_count
+        });
       });
       console.warn('   This may indicate duplicate accumulation. Consider running cleanup.');
+      
+      // Send alert for anomaly
+      await alertAnomaly(
+        `${highCountSites.length} site(s) have unusually high advisory counts (>15)`,
+        { sites: anomalyDetails }
+      );
     } else {
       console.log('✓ No anomalies detected');
     }
@@ -273,32 +362,72 @@ async function ingestNOAAData() {
 }
 
 /**
- * Extract state codes from NOAA alert properties
+ * Extract geographic identifiers from NOAA alert properties
+ * Returns UGC codes, county names, and state codes
  * @param {Object} properties - NOAA alert properties
- * @returns {Array} Array of state codes
+ * @returns {Object} { ugcCodes: [], counties: [], states: [] }
  */
-function extractStatesFromAlert(properties) {
+function extractGeoFromAlert(properties) {
+  const ugcCodes = new Set();
+  const counties = new Set();  // Format: "state|countyname"
   const states = new Set();
   
-  // Extract from areaDesc (e.g., "Florida Keys; Monroe County")
-  if (properties.areaDesc) {
-    const stateNames = properties.areaDesc.split(';').map(s => s.trim());
-    stateNames.forEach(name => {
-      const state = stateNameToCode(name);
-      if (state) states.add(state);
-    });
-  }
-  
-  // Extract from geocode.UGC (e.g., ["FLZ076", "FLZ077"])
+  // Extract from geocode.UGC (e.g., ["FLZ076", "FLZ077", "FLC087"])
+  // This is the most precise identifier
   if (properties.geocode && properties.geocode.UGC) {
     properties.geocode.UGC.forEach(code => {
-      // UGC codes start with 2-letter state code
+      ugcCodes.add(code);
+      // Also extract state code from UGC
       const stateCode = code.substring(0, 2);
       states.add(stateCode);
     });
   }
   
-  return Array.from(states);
+  // Extract from areaDesc (e.g., "Monroe County, FL; Miami-Dade County, FL")
+  // This gives us county names for secondary matching
+  if (properties.areaDesc) {
+    const areas = properties.areaDesc.split(';').map(s => s.trim());
+    areas.forEach(area => {
+      // Try to extract county name and state
+      const countyMatch = area.match(/^(.+?)\s+County(?:,\s*([A-Z]{2}))?/i);
+      if (countyMatch) {
+        const countyName = countyMatch[1].toLowerCase();
+        const state = countyMatch[2];
+        if (state) {
+          counties.add(`${state}|${countyName}`);
+          states.add(state);
+        }
+      } else {
+        // Try to extract state from area name
+        const state = stateNameToCode(area);
+        if (state) states.add(state);
+      }
+    });
+  }
+  
+  // Extract from geocode.SAME (FIPS codes) - can derive state
+  if (properties.geocode && properties.geocode.SAME) {
+    properties.geocode.SAME.forEach(fips => {
+      // SAME codes are 6 digits: first 2 are state FIPS
+      // We could map these to states but UGC is more reliable
+    });
+  }
+  
+  return {
+    ugcCodes: Array.from(ugcCodes),
+    counties: Array.from(counties),
+    states: Array.from(states)
+  };
+}
+
+/**
+ * Extract state codes from NOAA alert properties (legacy - for compatibility)
+ * @param {Object} properties - NOAA alert properties
+ * @returns {Array} Array of state codes
+ */
+function extractStatesFromAlert(properties) {
+  const { states } = extractGeoFromAlert(properties);
+  return states;
 }
 
 /**
