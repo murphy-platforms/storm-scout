@@ -6,6 +6,18 @@
     --danger-color: #dc3545;
     --warning-color: #ffc107;
     --success-color: #198754;
+    
+    /* Semantic Severity Colors (matching Beta UI) */
+    --severity-extreme: #ef4444;  /* Red - Critical */
+    --severity-severe: #f97316;   /* Orange - High Impact */
+    --severity-moderate: #eab308; /* Yellow - Moderate */
+    --severity-minor: #22c55e;    /* Green - Low/Minor */
+    
+    /* Background variants */
+    --severity-extreme-bg: rgba(239, 68, 68, 0.1);
+    --severity-severe-bg: rgba(249, 115, 22, 0.1);
+    --severity-moderate-bg: rgba(234, 179, 8, 0.1);
+    --severity-minor-bg: rgba(34, 197, 94, 0.1);
 }
 
 body {
@@ -62,23 +74,86 @@ body {
 
 /* Weather Impact Levels */
 .weather-red {
-    background-color: #dc3545;
+    background-color: var(--severity-extreme);
     color: white;
 }
 
 .weather-orange {
-    background-color: #fd7e14;
+    background-color: var(--severity-severe);
     color: white;
 }
 
 .weather-yellow {
-    background-color: #ffc107;
+    background-color: var(--severity-moderate);
     color: #000;
 }
 
 .weather-green {
-    background-color: #198754;
+    background-color: var(--severity-minor);
     color: white;
+}
+
+/* Severity Badge Classes (use for advisories) */
+.severity-extreme,
+.badge-extreme {
+    background-color: var(--severity-extreme);
+    color: white;
+}
+
+.severity-severe,
+.badge-severe {
+    background-color: var(--severity-severe);
+    color: white;
+}
+
+.severity-moderate,
+.badge-moderate {
+    background-color: var(--severity-moderate);
+    color: #000;
+}
+
+.severity-minor,
+.badge-minor {
+    background-color: var(--severity-minor);
+    color: white;
+}
+
+/* Severity Text Colors */
+.text-severity-extreme {
+    color: var(--severity-extreme) !important;
+}
+
+.text-severity-severe {
+    color: var(--severity-severe) !important;
+}
+
+.text-severity-moderate {
+    color: var(--severity-moderate) !important;
+}
+
+.text-severity-minor {
+    color: var(--severity-minor) !important;
+}
+
+/* Severity Background Colors */
+.bg-severity-extreme {
+    background-color: var(--severity-extreme-bg);
+    border-color: var(--severity-extreme);
+}
+
+.bg-severity-severe {
+    background-color: var(--severity-severe-bg);
+    border-color: var(--severity-severe);
+}
+
+.bg-severity-moderate {
+    background-color: var(--severity-moderate-bg);
+    border-color: var(--severity-moderate);
+}
+
+.bg-severity-minor {
+    background-color: var(--severity-minor-bg);
+    border-color: var(--severity-minor);
 }
 
 /* Operational Status */
@@ -150,19 +225,19 @@ body {
 }
 
 .weather-card.impact-red {
-    border-left-color: #dc3545;
+    border-left-color: var(--severity-extreme);
 }
 
 .weather-card.impact-orange {
-    border-left-color: #fd7e14;
+    border-left-color: var(--severity-severe);
 }
 
 .weather-card.impact-yellow {
-    border-left-color: #ffc107;
+    border-left-color: var(--severity-moderate);
 }
 
 .weather-card.impact-green {
-    border-left-color: #198754;
+    border-left-color: var(--severity-minor);
 }
 
 /* Operational Status Management Page */

@@ -10,12 +10,13 @@ const AdvisoryModel = require('../models/advisory');
 /**
  * GET /api/advisories
  * Get all advisories with optional filters
- * Query params: status, severity, state, site_id
+ * Query params: status, severity (comma-separated), state, site_id, advisory_type (comma-separated)
+ * Example: /api/advisories?severity=Extreme,Severe&state=CA
  */
 router.get('/', async (req, res) => {
   try {
-    const { status, severity, state, site_id } = req.query;
-    const advisories = await AdvisoryModel.getAll({ status, severity, state, site_id });
+    const { status, severity, state, site_id, advisory_type } = req.query;
+    const advisories = await AdvisoryModel.getAll({ status, severity, state, site_id, advisory_type });
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
     console.error('Error fetching advisories:', error);
@@ -26,12 +27,13 @@ router.get('/', async (req, res) => {
 /**
  * GET /api/advisories/active
  * Get all active advisories with optional filters
- * Query params: severity, state
+ * Query params: severity (comma-separated), state, advisory_type (comma-separated)
+ * Example: /api/advisories/active?severity=Extreme,Severe
  */
 router.get('/active', async (req, res) => {
   try {
-    const { severity, state } = req.query;
-    const advisories = await AdvisoryModel.getActive({ severity, state });
+    const { severity, state, advisory_type } = req.query;
+    const advisories = await AdvisoryModel.getActive({ severity, state, advisory_type });
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
     console.error('Error fetching active advisories:', error);
