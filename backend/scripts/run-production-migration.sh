@@ -18,22 +18,40 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Get database credentials
-if [ -f .env ]; then
-    source .env
-else
-    echo -e "${RED}Error: .env file not found${NC}"
-    echo "Please create .env file with database credentials"
+echo -e "${YELLOW}Enter database credentials:${NC}"
+echo ""
+
+# Check for .env.production first, then .env
+if [ -f .env.production ]; then
+    DB_HOST=$(grep '^DB_HOST=' .env.production | cut -d '=' -f2)
+    DB_USER=$(grep '^DB_USER=' .env.production | cut -d '=' -f2)
+    DB_NAME=$(grep '^DB_NAME=' .env.production | cut -d '=' -f2)
+    echo -e "Using credentials from .env.production"
+fi
+
+# Prompt for host (with default)
+read -p "Database host [${DB_HOST:-localhost}]: " input_host
+DB_HOST=${input_host:-${DB_HOST:-localhost}}
+
+# Prompt for user (with default)
+read -p "Database user [${DB_USER:-root}]: " input_user
+DB_USER=${input_user:-${DB_USER:-root}}
+
+# Prompt for database name (with default)
+read -p "Database name [${DB_NAME:-storm_scout}]: " input_name
+DB_NAME=${input_name:-${DB_NAME:-storm_scout}}
+
+# Prompt for password (no echo)
+read -s -p "Database password: " DB_PASSWORD
+echo ""
+echo ""
+
+if [ -z "$DB_PASSWORD" ]; then
+    echo -e "${RED}Error: Password cannot be empty${NC}"
     exit 1
 fi
 
-# Validate required environment variables
-if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_NAME" ]; then
-    echo -e "${RED}Error: Missing database credentials in .env${NC}"
-    echo "Required: DB_HOST, DB_USER, DB_PASSWORD, DB_NAME"
-    exit 1
-fi
-
-echo -e "${YELLOW}Database: $DB_NAME @ $DB_HOST${NC}"
+echo -e "${GREEN}Connecting to: $DB_NAME @ $DB_HOST as $DB_USER${NC}"
 echo ""
 
 # Confirm before proceeding
