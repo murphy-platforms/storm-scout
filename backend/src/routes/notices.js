@@ -6,13 +6,15 @@
 const express = require('express');
 const router = express.Router();
 const NoticeModel = require('../models/notice');
+const { handleValidationErrors } = require('../middleware/validate');
+const noticeValidators = require('../validators/notices');
 
 /**
  * GET /api/notices
  * Get all notices with optional filters
  * Query params: jurisdiction_type, notice_type, state, active_only
  */
-router.get('/', async (req, res) => {
+router.get('/', noticeValidators.getAll, handleValidationErrors, async (req, res) => {
   try {
     const { jurisdiction_type, notice_type, state, active_only } = req.query;
     
@@ -35,7 +37,7 @@ router.get('/', async (req, res) => {
  * Get active notices only
  * Query params: jurisdiction_type, state
  */
-router.get('/active', async (req, res) => {
+router.get('/active', noticeValidators.getActive, handleValidationErrors, async (req, res) => {
   try {
     const { jurisdiction_type, state } = req.query;
     const notices = await NoticeModel.getActive({ jurisdiction_type, state });
@@ -64,7 +66,7 @@ router.get('/stats', async (req, res) => {
  * GET /api/notices/:id
  * Get notice by ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', noticeValidators.getById, handleValidationErrors, async (req, res) => {
   try {
     const { id } = req.params;
     const notice = await NoticeModel.getById(id);

@@ -57,10 +57,12 @@ This document outlines planned improvements, features, and technical debt for St
 
 ### Security
 
-- [ ] **Add Input Validation**
-  - Validate all API inputs with joi or express-validator
-  - Sanitize user inputs
-  - Prevent injection attacks
+- [x] **Add Input Validation** ✅ (Completed 2026-02-14)
+  - Implemented with express-validator
+  - Validates all query params, route params, and request bodies
+  - Sanitizes strings (trim, uppercase for states)
+  - Type coercion for integers with range limits
+  - Consistent 400 error responses with field-level details
   - **Effort**: Medium | **Impact**: High
 
 - [ ] **Implement Helmet.js**
@@ -266,6 +268,8 @@ This document outlines planned improvements, features, and technical debt for St
 - ✅ Cached endpoints: status/overview, sites, advisories/active
 - ✅ Auto-invalidation after NOAA ingestion
 - ✅ ~100x faster response times on cache hits
+- ✅ Input validation with express-validator
+- ✅ Removed all flashing animations for accessibility
 
 ### v1.4.1 (February 14, 2026)
 - ✅ Severity validation in normalizer.js (defaults Unknown to Minor)

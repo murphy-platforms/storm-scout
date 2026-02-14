@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const AdvisoryModel = require('../models/advisory');
 const cache = require('../utils/cache');
+const { handleValidationErrors } = require('../middleware/validate');
+const advisoryValidators = require('../validators/advisories');
 
 /**
  * GET /api/advisories
@@ -14,7 +16,7 @@ const cache = require('../utils/cache');
  * Query params: status, severity (comma-separated), state, site_id, advisory_type (comma-separated)
  * Example: /api/advisories?severity=Extreme,Severe&state=CA
  */
-router.get('/', async (req, res) => {
+router.get('/', advisoryValidators.getAll, handleValidationErrors, async (req, res) => {
   try {
     const { status, severity, state, site_id, advisory_type } = req.query;
     const advisories = await AdvisoryModel.getAll({ status, severity, state, site_id, advisory_type });
@@ -31,7 +33,7 @@ router.get('/', async (req, res) => {
  * Query params: severity (comma-separated), state, advisory_type (comma-separated)
  * Example: /api/advisories/active?severity=Extreme,Severe
  */
-router.get('/active', async (req, res) => {
+router.get('/active', advisoryValidators.getActive, handleValidationErrors, async (req, res) => {
   try {
     const { severity, state, advisory_type } = req.query;
     
@@ -65,9 +67,9 @@ router.get('/active', async (req, res) => {
  * Get recently updated advisories
  * Query params: limit (default 10)
  */
-router.get('/recent', async (req, res) => {
+router.get('/recent', advisoryValidators.getRecent, handleValidationErrors, async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = req.query.limit || 10;
     const advisories = await AdvisoryModel.getRecentlyUpdated(limit);
     res.json({ success: true, data: advisories });
   } catch (error) {
@@ -94,7 +96,7 @@ router.get('/stats', async (req, res) => {
  * GET /api/advisories/:id
  * Get advisory by ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', advisoryValidators.getById, handleValidationErrors, async (req, res) => {
   try {
     const { id } = req.params;
     const advisory = await AdvisoryModel.getById(id);

@@ -9,13 +9,15 @@ const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
 const cache = require('../utils/cache');
+const { handleValidationErrors } = require('../middleware/validate');
+const siteValidators = require('../validators/sites');
 
 /**
  * GET /api/sites
  * Get all sites with optional filters
  * Query params: state, region
  */
-router.get('/', async (req, res) => {
+router.get('/', siteValidators.getAll, handleValidationErrors, async (req, res) => {
   try {
     const { state, region } = req.query;
     
@@ -101,7 +103,7 @@ router.get('/regions', async (req, res) => {
  * GET /api/sites/:id
  * Get site by ID with status and advisories
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', siteValidators.getById, handleValidationErrors, async (req, res) => {
   try {
     const { id } = req.params;
     const site = await SiteModel.getById(id);
@@ -133,7 +135,7 @@ router.get('/:id', async (req, res) => {
  * Get all advisories for a specific site
  * Query params: active_only (boolean)
  */
-router.get('/:id/advisories', async (req, res) => {
+router.get('/:id/advisories', siteValidators.getSiteAdvisories, handleValidationErrors, async (req, res) => {
   try {
     const { id } = req.params;
     const activeOnly = req.query.active_only === 'true';
