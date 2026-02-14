@@ -1,0 +1,136 @@
+/**
+ * Storm Scout - Tooltip Styles
+ * Lightweight CSS-only tooltips for onboarding help
+ */
+
+/* Help Icon Button */
+.help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c757d;
+    background: transparent;
+    border: 1.5px solid #6c757d;
+    border-radius: 50%;
+    cursor: help;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.help-icon:hover {
+    color: #0d6efd;
+    border-color: #0d6efd;
+    background: rgba(13, 110, 253, 0.1);
+    transform: scale(1.1);
+}
+
+/* Tooltip Container */
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip Content */
+.tooltip-content {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    padding: 10px 14px;
+    background: #1a1a1a;
+    color: #ffffff;
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    z-index: 10000;
+    max-width: 300px;
+    white-space: normal;
+}
+
+/* Tooltip Arrow */
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a1a1a;
+}
+
+/* Show tooltip on hover/focus */
+.help-icon:hover + .tooltip-content,
+.help-icon:focus + .tooltip-content,
+.tooltip-content:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* Alternative: Tooltip to the right (for sidebar) */
+.tooltip-content.tooltip-right {
+    bottom: auto;
+    left: 100%;
+    top: 50%;
+    transform: translateX(8px) translateY(-50%);
+}
+
+.tooltip-content.tooltip-right::after {
+    top: 50%;
+    left: 0;
+    transform: translateX(-100%) translateY(-50%);
+    border-top-color: transparent;
+    border-right-color: #1a1a1a;
+}
+
+.help-icon:hover + .tooltip-content.tooltip-right,
+.help-icon:focus + .tooltip-content.tooltip-right {
+    transform: translateX(12px) translateY(-50%);
+}
+
+/* Tooltip for light backgrounds */
+.tooltip-light .tooltip-content {
+    background: #ffffff;
+    color: #1a1a1a;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tooltip-light .tooltip-content::after {
+    border-top-color: #ffffff;
+}
+
+.tooltip-light .tooltip-content.tooltip-right::after {
+    border-top-color: transparent;
+    border-right-color: #ffffff;
+}
+
+/* Accessibility */
+.help-icon:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .tooltip-content {
+        transition-duration: 0.01ms;
+    }
+    
+    .help-icon {
+        transform: none !important;
+    }
+}
