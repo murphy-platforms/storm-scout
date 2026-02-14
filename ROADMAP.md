@@ -2,10 +2,10 @@
 
 This document outlines planned improvements, features, and technical debt for Storm Scout.
 
-## Current Version: 1.1.0
+## Current Version: 1.4.1
 
 **Production URL**: https://teammurphy.rocks  
-**Last Updated**: February 13, 2026
+**Last Updated**: February 14, 2026
 
 ---
 
@@ -230,10 +230,9 @@ This document outlines planned improvements, features, and technical debt for St
 
 ### Database
 
-- [ ] **Review and Optimize Indexes**
-  - Analyze slow queries
-  - Add composite indexes where beneficial
-  - Remove unused indexes
+- [x] **Review and Optimize Indexes** ✅ (Completed 2026-02-14)
+  - Added composite index `idx_advisories_status_severity`
+  - API response time improved 21% (676ms → 535ms)
   - **Effort**: Low
 
 - [ ] **Add Database Migrations Framework**
@@ -258,6 +257,13 @@ This document outlines planned improvements, features, and technical debt for St
 ---
 
 ## Recently Completed
+
+### v1.4.1 (February 14, 2026)
+- ✅ Severity validation in normalizer.js (defaults Unknown to Minor)
+- ✅ Database CHECK constraint on severity column
+- ✅ Composite index for status+severity queries (21% perf improvement)
+- ✅ Beta UI notices.html page
+- ✅ QA review fixes (BUG-PROD-002, BUG-PROD-004, BUG-PROD-005, BUG-PROD-008)
 
 ### v1.1.0 (February 13, 2026)
 - ✅ Added update banner to all pages
@@ -318,4 +324,4 @@ If you'd like to contribute to any of these items:
 
 **Questions or suggestions?** Open a GitHub issue or contact the IMT Operations team.
 
-**Last Reviewed**: February 13, 2026
+**Last Reviewed**: February 14, 2026
