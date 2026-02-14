@@ -2,155 +2,761 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE26KTHBDE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-ZE26KTHBDE');
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Storm Scout - Site Detail</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>Site Detail - Storm Scout</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Site Detail-specific styles */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-tertiary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition-base);
+            margin-bottom: 1.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--color-bg-card);
+            color: var(--color-text-primary);
+            border-color: var(--color-border-hover);
+        }
+
+        .site-header-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .site-header-card.critical {
+            border-left: 4px solid var(--color-critical);
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
+        }
+
+        .site-header-card.high {
+            border-left: 4px solid var(--color-high);
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.05), transparent);
+        }
+
+        .site-header-card.moderate {
+            border-left: 4px solid var(--color-moderate);
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.05), transparent);
+        }
+
+        .site-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .site-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .site-title .site-code {
+            color: var(--color-primary);
+        }
+
+        .site-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+        }
+
+        .severity-badge-large {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .severity-badge-large.critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--color-critical);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        .severity-badge-large.high {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--color-high);
+        }
+
+        .severity-badge-large.moderate {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--color-moderate);
+        }
+
+        .severity-badge-large.low {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-low);
+        }
+
+        /* Decision Helper */
+        .decision-helper {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .decision-helper.close {
+            border-color: var(--color-critical);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), transparent);
+        }
+
+        .decision-helper.restricted {
+            border-color: var(--color-high);
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), transparent);
+        }
+
+        .decision-helper.monitor {
+            border-color: var(--color-moderate);
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), transparent);
+        }
+
+        .decision-helper-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .decision-helper-header svg {
+            color: var(--color-moderate);
+        }
+
+        .decision-helper-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .decision-recommendation {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .decision-recommendation.close {
+            background: var(--color-critical);
+            color: white;
+        }
+
+        .decision-recommendation.restricted {
+            background: var(--color-high);
+            color: white;
+        }
+
+        .decision-recommendation.monitor {
+            background: var(--color-moderate);
+            color: #000;
+        }
+
+        .decision-recommendation.open {
+            background: var(--color-low);
+            color: #000;
+        }
+
+        .decision-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .decision-item label {
+            display: block;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .decision-item span {
+            font-size: 0.875rem;
+            color: var(--color-text-primary);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header svg {
+            color: var(--color-text-muted);
+        }
+
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .section-header .count {
+            background: var(--color-bg-tertiary);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Alert Card */
+        .alert-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-card.critical {
+            border-color: var(--color-critical);
+        }
+
+        .alert-card.high {
+            border-color: var(--color-high);
+        }
+
+        .alert-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .alert-type {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .alert-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .alert-badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .alert-badge.severity {
+            text-transform: uppercase;
+        }
+
+        .alert-badge.severity.critical { background: rgba(239, 68, 68, 0.15); color: var(--color-critical); }
+        .alert-badge.severity.high { background: rgba(249, 115, 22, 0.15); color: var(--color-high); }
+        .alert-badge.severity.moderate { background: rgba(234, 179, 8, 0.15); color: var(--color-moderate); }
+        .alert-badge.severity.low { background: rgba(34, 197, 94, 0.15); color: var(--color-low); }
+
+        .alert-badge.action {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-secondary);
+        }
+
+        .alert-badge.action.new {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-low);
+        }
+
+        .alert-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .alert-meta-item label {
+            display: block;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-meta-item span {
+            font-size: 0.875rem;
+            color: var(--color-text-primary);
+        }
+
+        .alert-meta-item .time-remaining {
+            color: var(--color-high);
+            font-weight: 500;
+        }
+
+        .alert-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .alert-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-bg-tertiary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.8125rem;
+            transition: var(--transition-base);
+        }
+
+        .alert-link:hover {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border-color: var(--color-border-hover);
+        }
+
+        /* Impact Summary Grid */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .impact-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+
+        .impact-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .impact-type {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .impact-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .impact-count .count {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        .impact-count .label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .zone-badge {
+            padding: 0.25rem 0.5rem;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* Timeline */
+        .timeline {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .timeline-marker {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--color-text-muted);
+            flex-shrink: 0;
+            margin-top: 0.375rem;
+        }
+
+        .timeline-item:first-child .timeline-marker {
+            background: var(--color-primary);
+            box-shadow: 0 0 8px var(--color-primary);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-time {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Advisory List */
+        .advisory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .advisory-item {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .advisory-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: var(--color-bg-tertiary);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .advisory-item-body {
+            padding: 1rem 1.25rem;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: var(--color-bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--color-text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .site-header-top {
+                flex-direction: column;
+            }
+
+            .decision-details {
+                grid-template-columns: 1fr;
+            }
+
+            .alert-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="bi bi-cloud-lightning"></i> Storm Scout
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="url(#logo-gradient)" stroke-width="2"/>
+                    <path d="M16 6 L18 14 L26 16 L18 18 L16 26 L14 18 L6 16 L14 14 Z" fill="url(#logo-gradient)"/>
+                    <defs>
+                        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3b82f6"/>
+                            <stop offset="100%" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Storm Scout</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                Overview
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
-                    <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
-                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+            <a href="advisories.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Advisories
+            </a>
+            <a href="sites.html" class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Sites
+            </a>
+            <a href="map.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                    <line x1="8" y1="2" x2="8" y2="18"/>
+                    <line x1="16" y1="6" x2="16" y2="22"/>
+                </svg>
+                Map View
+            </a>
+            <a href="filters.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                </svg>
+                Settings
+            </a>
+        </nav>
+    </aside>
 
-    <div class="container-fluid mt-4">
-        <!-- Back Navigation -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <h1>Site Detail</h1>
             </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loadingState" class="row">
-            <div class="col-12 text-center py-5">
-                <span class="spinner-border spinner-border-lg"></span>
-                <p class="mt-3">Loading site details...</p>
-            </div>
-        </div>
-
-        <!-- Error State -->
-        <div id="errorState" class="row" style="display: none;">
-            <div class="col-12">
-                <div class="alert alert-danger">
-                    <h4><i class="bi bi-exclamation-triangle"></i> Error Loading Site</h4>
-                    <p id="errorMessage"></p>
-                    <a href="sites.html" class="btn btn-primary">View All Sites</a>
+            <div class="top-bar-right">
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    Live Updates
                 </div>
+                <button class="btn btn-secondary" onclick="loadSiteDetail()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                    </svg>
+                    Refresh
+                </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Site Detail Content -->
-        <div id="siteContent" style="display: none;">
-            <!-- Site Header -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card site-card" id="siteHeaderCard">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h1 class="h3 mb-1">
-                                        <strong id="siteCode"></strong> - <span id="siteName"></span>
-                                    </h1>
-                                    <p class="text-muted mb-0">
-                                        <i class="bi bi-geo-alt"></i> <span id="siteLocation"></span>
-                                    </p>
-                                </div>
-                                <span class="badge severity-badge-large" id="highestSeverityBadge"></span>
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Back Button -->
+            <a href="sites.html" class="back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back to Sites
+            </a>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loading-state">
+                <div class="spinner"></div>
+                <p>Loading site details...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="empty-state" id="error-state" style="display: none;">
+                <div class="empty-state-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <h3 id="error-title">Error</h3>
+                <p id="error-message">Unable to load site details.</p>
+                <a href="sites.html" class="btn btn-primary" style="margin-top: 1rem;">View All Sites</a>
+            </div>
+
+            <!-- Site Content -->
+            <div id="site-content" style="display: none;">
+                <!-- Site Header -->
+                <div class="site-header-card" id="site-header">
+                    <div class="site-header-top">
+                        <div>
+                            <h1 class="site-title">
+                                <span class="site-code" id="site-code"></span> - <span id="site-name"></span>
+                            </h1>
+                            <div class="site-meta">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span id="site-location"></span>
                             </div>
                         </div>
+                        <span class="severity-badge-large" id="severity-badge"></span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Decision Helper -->
-            <div class="row mb-4" id="decisionHelperContainer"></div>
-
-            <!-- Highest Severity Alert -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4><i class="bi bi-exclamation-triangle-fill"></i> Highest Severity Alert</h4>
-                </div>
-                <div class="col-12">
-                    <div class="card border-danger" id="highestAlertCard">
-                        <div class="card-body">
-                            <!-- Populated by JS -->
+                <!-- Decision Helper -->
+                <div class="decision-helper" id="decision-helper">
+                    <div class="decision-helper-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        <h3>Decision Recommendation</h3>
+                    </div>
+                    <span class="decision-recommendation" id="decision-recommendation"></span>
+                    <div class="decision-details">
+                        <div class="decision-item">
+                            <label>Reason</label>
+                            <span id="decision-reason"></span>
+                        </div>
+                        <div class="decision-item">
+                            <label>Safety Risk</label>
+                            <span id="decision-risk"></span>
+                        </div>
+                        <div class="decision-item">
+                            <label>Estimated Duration</label>
+                            <span id="decision-duration"></span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Impact Summary -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4><i class="bi bi-bar-chart-fill"></i> Impact Summary</h4>
+                <!-- Highest Severity Alert -->
+                <div class="section-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <h2>Highest Severity Alert</h2>
                 </div>
-                <div class="col-12" id="impactSummaryContainer">
+                <div class="alert-card" id="highest-alert">
                     <!-- Populated by JS -->
                 </div>
-            </div>
 
-            <!-- Timeline -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4><i class="bi bi-clock-history"></i> Alert Timeline</h4>
+                <!-- Impact Summary -->
+                <div class="section-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                    <h2>Impact Summary</h2>
                 </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body" id="timelineContainer">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
+                <div class="impact-grid" id="impact-grid">
+                    <!-- Populated by JS -->
                 </div>
-            </div>
 
-            <!-- All Advisories -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4><i class="bi bi-list-ul"></i> All Active Advisories (<span id="totalAdvisoryCount">0</span>)</h4>
+                <!-- Timeline -->
+                <div class="section-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <h2>Alert Timeline</h2>
                 </div>
-                <div class="col-12" id="allAdvisoriesContainer">
+                <div class="timeline" id="timeline">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- All Advisories -->
+                <div class="section-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"/>
+                        <line x1="8" y1="12" x2="21" y2="12"/>
+                        <line x1="8" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                    <h2>All Active Advisories</h2>
+                    <span class="count" id="advisory-count">0</span>
+                </div>
+                <div class="advisory-list" id="advisory-list">
                     <!-- Populated by JS -->
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <footer class="bg-light text-center py-3 mt-5">
-        <div class="container">
-            <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/alert-filters.js"></script>
@@ -158,125 +764,119 @@
     <script>
         let siteData = null;
         let siteAdvisories = [];
-        
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSiteDetail();
+            document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        });
+
         async function loadSiteDetail() {
+            showLoading(true);
             try {
-                // Get site code from URL
                 const urlParams = new URLSearchParams(window.location.search);
-                const siteCode = urlParams.get('site');
-                
-                if (!siteCode) {
-                    showError('No site code provided in URL');
+                const siteId = urlParams.get('site_id') || urlParams.get('site');
+
+                if (!siteId) {
+                    showError('No site specified', 'Please select a site from the Sites page.');
                     return;
                 }
-                
-                // Load all advisories and sites
+
                 const [allAdvisories, allSites] = await Promise.all([
                     API.getActiveAdvisories(),
                     API.getSites()
                 ]);
-                
-                // Find the site
-                siteData = allSites.find(s => s.site_code === siteCode);
+
+                siteData = allSites.find(s => s.site_id === siteId || s.site_code === siteId);
                 if (!siteData) {
-                    showError(`Site ${siteCode} not found`);
+                    showError('Site Not Found', `Site "${siteId}" was not found in the system.`);
                     return;
                 }
-                
-                // Get advisories for this site
-                siteAdvisories = allAdvisories.filter(a => a.site_code === siteCode);
-                
+
+                siteAdvisories = allAdvisories.filter(a => 
+                    a.site_id === siteData.site_id || a.site_code === siteData.site_code
+                );
+
                 if (siteAdvisories.length === 0) {
-                    showError(`No active advisories for site ${siteCode}`);
+                    showError('No Active Advisories', `Site "${siteData.name}" has no active weather advisories.`);
                     return;
                 }
-                
-                // Aggregate with deduplication
+
                 const aggregated = SiteAggregator.aggregateBySite(siteAdvisories, { deduplicateZones: true });
-                const siteAggData = aggregated[0]; // Should only be one site
-                
-                // Render the page
+                const siteAggData = aggregated[0];
+
                 renderSiteHeader(siteData, siteAggData);
-                renderDecisionHelper(siteData, siteAggData);
+                renderDecisionHelper(siteAggData);
                 renderHighestAlert(siteAggData);
                 renderImpactSummary(siteAggData);
                 renderTimeline(siteAggData);
                 renderAllAdvisories(siteAggData);
-                
-                // Show content, hide loading
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('siteContent').style.display = 'block';
-                
+
+                showLoading(false);
+                document.getElementById('site-content').style.display = 'block';
+
             } catch (error) {
                 console.error('Error loading site detail:', error);
-                showError('Failed to load site details: ' + error.message);
+                showError('Error Loading Data', 'Failed to load site details. Please try again.');
             }
         }
-        
-        function showError(message) {
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('errorState').style.display = 'block';
+
+        function showLoading(show) {
+            document.getElementById('loading-state').style.display = show ? 'flex' : 'none';
+            if (show) {
+                document.getElementById('site-content').style.display = 'none';
+                document.getElementById('error-state').style.display = 'none';
+            }
         }
-        
+
+        function showError(title, message) {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('site-content').style.display = 'none';
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-state').style.display = 'block';
+        }
+
         function renderSiteHeader(site, aggData) {
-            document.getElementById('siteCode').textContent = site.site_code;
-            document.getElementById('siteName').textContent = site.name;
-            document.getElementById('siteLocation').textContent = `${site.city}, ${site.state}`;
-            
-            const severity = aggData.highest_severity;
-            const severityBadge = document.getElementById('highestSeverityBadge');
-            severityBadge.textContent = severity;
-            severityBadge.className = `badge severity-badge-large severity-${severity.toLowerCase()}`;
-            
-            const headerCard = document.getElementById('siteHeaderCard');
-            headerCard.className = `card site-card site-card-${severity.toLowerCase()}`;
+            const severity = (aggData.highest_severity || 'moderate').toLowerCase();
+            document.getElementById('site-code').textContent = site.site_code || site.site_id;
+            document.getElementById('site-name').textContent = site.name;
+            document.getElementById('site-location').textContent = `${site.city}, ${site.state}`;
+
+            const severityBadge = document.getElementById('severity-badge');
+            severityBadge.textContent = aggData.highest_severity || 'Moderate';
+            severityBadge.className = `severity-badge-large ${severity}`;
+
+            const headerCard = document.getElementById('site-header');
+            headerCard.className = `site-header-card ${severity}`;
         }
-        
-        function renderDecisionHelper(site, aggData) {
-            const container = document.getElementById('decisionHelperContainer');
+
+        function renderDecisionHelper(aggData) {
             const decision = calculateDecision(aggData);
-            
-            const decisionClass = {
-                'CLOSE': 'danger',
-                'RESTRICTED': 'warning',
-                'MONITOR': 'info',
-                'OPEN': 'success'
-            }[decision.recommendation] || 'secondary';
-            
-            container.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-${decisionClass} border-2">
-                        <h5 class="alert-heading">
-                            <i class="bi bi-lightbulb-fill"></i> Decision Recommendation
-                        </h5>
-                        <p class="mb-2">
-                            <strong>Recommendation:</strong> 
-                            <span class="badge bg-${decisionClass}" style="font-size: 1.1rem; padding: 0.5rem 0.75rem;">
-                                ${decision.recommendation}
-                            </span>
-                        </p>
-                        <p class="mb-2"><strong>Reason:</strong> ${decision.reason}</p>
-                        <p class="mb-2"><strong>Safety Risk:</strong> ${decision.safetyRisk}</p>
-                        <p class="mb-0"><strong>Estimated Duration:</strong> ${decision.duration}</p>
-                    </div>
-                </div>
-            `;
+            const helper = document.getElementById('decision-helper');
+            helper.className = `decision-helper ${decision.recommendation.toLowerCase()}`;
+
+            const recEl = document.getElementById('decision-recommendation');
+            recEl.textContent = decision.recommendation;
+            recEl.className = `decision-recommendation ${decision.recommendation.toLowerCase()}`;
+
+            document.getElementById('decision-reason').textContent = decision.reason;
+            document.getElementById('decision-risk').textContent = decision.safetyRisk;
+            document.getElementById('decision-duration').textContent = decision.duration;
         }
-        
+
         function calculateDecision(aggData) {
             const severity = aggData.highest_severity;
             const advisory = aggData.highest_severity_advisory;
             const alertCount = aggData.unique_advisory_count;
-            
-            // Calculate time to expiration
+
             let duration = 'Unknown';
             if (advisory.expires) {
                 const hours = Math.round((new Date(advisory.expires) - new Date()) / 3600000);
                 duration = hours > 24 ? `${Math.round(hours/24)} days` : `${hours} hours`;
             }
-            
-            // Decision logic
+
             if (severity === 'Extreme') {
                 return {
                     recommendation: 'CLOSE',
@@ -285,12 +885,11 @@
                     duration
                 };
             }
-            
+
             if (severity === 'Severe') {
-                // Check for travel/safety impacting alerts
                 const travelImpacting = ['Blizzard', 'Ice Storm', 'Flood', 'Hurricane', 'Tornado'];
                 const isTravelImpact = travelImpacting.some(t => advisory.advisory_type.includes(t));
-                
+
                 if (isTravelImpact) {
                     return {
                         recommendation: 'CLOSE',
@@ -307,7 +906,7 @@
                     };
                 }
             }
-            
+
             if (severity === 'Moderate') {
                 if (alertCount >= 5) {
                     return {
@@ -325,7 +924,7 @@
                     };
                 }
             }
-            
+
             return {
                 recommendation: 'MONITOR',
                 reason: `Minor weather impacts. Normal operations with awareness.`,
@@ -333,151 +932,143 @@
                 duration
             };
         }
-        
+
         function renderHighestAlert(aggData) {
             const advisory = aggData.highest_severity_advisory;
-            const card = document.getElementById('highestAlertCard');
-            
+            const severity = (advisory.severity || 'moderate').toLowerCase();
+            const card = document.getElementById('highest-alert');
+            card.className = `alert-card ${severity}`;
+
             card.innerHTML = `
-                <h5 class="card-title">${advisory.advisory_type}</h5>
-                <p class="card-text">
-                    <span class="badge ${getSeverityBadge(advisory.severity)}">${advisory.severity}</span>
-                    ${getActionBadgeWithTime(advisory)}
-                </p>
-                <p class="card-text">
-                    <strong>Issued:</strong> ${formatDate(advisory.last_updated)}<br>
-                    <strong>Expires:</strong> ${advisory.expires ? formatDate(advisory.expires) + ' (' + getTimeRemaining(advisory.expires) + ')' : 'Unknown'}
-                </p>
-                <p class="card-text">
-                    <strong>Source:</strong> ${advisory.source}
-                </p>
-                <div class="mt-3">
+                <div class="alert-card-header">
+                    <span class="alert-type">${advisory.advisory_type}</span>
+                    <div class="alert-badges">
+                        <span class="alert-badge severity ${severity}">${advisory.severity}</span>
+                        ${getActionBadge(advisory)}
+                    </div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-meta-item">
+                        <label>Issued</label>
+                        <span>${formatDate(advisory.last_updated)}</span>
+                    </div>
+                    <div class="alert-meta-item">
+                        <label>Expires</label>
+                        <span>${advisory.expires ? formatDate(advisory.expires) : 'Unknown'}
+                            ${advisory.expires ? `<span class="time-remaining">(${getTimeRemaining(advisory.expires)})</span>` : ''}
+                        </span>
+                    </div>
+                    <div class="alert-meta-item">
+                        <label>Source</label>
+                        <span>${advisory.source || 'NWS'}</span>
+                    </div>
+                </div>
+                <div class="alert-links">
                     ${getExternalLinks(advisory)}
                 </div>
             `;
         }
-        
+
         function renderImpactSummary(aggData) {
-            const container = document.getElementById('impactSummaryContainer');
-            
-            const summary = aggData.type_groups.map(group => `
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card static-card">
-                        <div class="card-body">
-                            <h6 class="card-title">${group.type}</h6>
-                            <p class="mb-2">
-                                <span class="badge ${getSeverityBadge(group.severity)}">${group.severity}</span>
-                            </p>
-                            <p class="mb-0">
-                                <strong>${group.count}</strong> ${group.count === 1 ? 'alert' : 'alerts'}
-                                ${group.zone_count > 1 ? 
-                                    `<span class="badge zone-badge zone-badge-multi ms-2">${group.zone_count} zones</span>` : 
-                                    ''}
-                            </p>
+            const container = document.getElementById('impact-grid');
+            container.innerHTML = aggData.type_groups.map(group => {
+                const severity = (group.severity || 'moderate').toLowerCase();
+                return `
+                    <div class="impact-card">
+                        <div class="impact-card-header">
+                            <span class="impact-type">${group.type}</span>
+                            <span class="alert-badge severity ${severity}">${group.severity}</span>
+                        </div>
+                        <div class="impact-count">
+                            <span class="count">${group.count}</span>
+                            <span class="label">${group.count === 1 ? 'alert' : 'alerts'}</span>
+                            ${group.zone_count > 1 ? `<span class="zone-badge">${group.zone_count} zones</span>` : ''}
                         </div>
                     </div>
-                </div>
-            `).join('');
-            
-            container.innerHTML = `<div class="row">${summary}</div>`;
+                `;
+            }).join('');
         }
-        
+
         function renderTimeline(aggData) {
-            const container = document.getElementById('timelineContainer');
-            
-            // Sort advisories by last_updated
-            const sorted = [...aggData.advisories].sort((a, b) => 
+            const container = document.getElementById('timeline');
+            const sorted = [...aggData.advisories].sort((a, b) =>
                 new Date(b.last_updated) - new Date(a.last_updated)
             );
-            
-            const timeline = sorted.map((adv, index) => {
+
+            container.innerHTML = sorted.map((adv, index) => {
                 const hoursAgo = Math.round((new Date() - new Date(adv.last_updated)) / 3600000);
-                const timeText = hoursAgo < 1 ? 'Just now' : 
-                                 hoursAgo === 1 ? '1 hour ago' : 
-                                 hoursAgo < 24 ? `${hoursAgo} hours ago` : 
-                                 `${Math.round(hoursAgo/24)} days ago`;
-                
+                const timeText = hoursAgo < 1 ? 'Just now' :
+                    hoursAgo === 1 ? '1 hour ago' :
+                    hoursAgo < 24 ? `${hoursAgo} hours ago` :
+                    `${Math.round(hoursAgo/24)} days ago`;
+                const severity = (adv.severity || 'moderate').toLowerCase();
+
                 return `
-                    <div class="timeline-item ${index === 0 ? 'timeline-item-first' : ''}">
+                    <div class="timeline-item">
                         <div class="timeline-marker"></div>
                         <div class="timeline-content">
-                            <small class="text-muted">${formatDate(adv.last_updated)} (${timeText})</small>
-                            <div>
-                                <strong>${adv.advisory_type}</strong>
-                                ${getActionBadgeWithTime(adv)}
-                                <span class="badge ${getSeverityBadge(adv.severity)} ms-2">${adv.severity}</span>
+                            <div class="timeline-time">${formatDate(adv.last_updated)} (${timeText})</div>
+                            <div class="timeline-title">
+                                ${adv.advisory_type}
+                                ${getActionBadge(adv)}
+                                <span class="alert-badge severity ${severity}">${adv.severity}</span>
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
-            
-            container.innerHTML = timeline || '<p class="text-muted">No timeline data available</p>';
         }
-        
+
         function renderAllAdvisories(aggData) {
-            const container = document.getElementById('allAdvisoriesContainer');
-            document.getElementById('totalAdvisoryCount').textContent = aggData.total_zone_count;
-            
-            const advisories = aggData.type_groups.map(group => `
-                <div class="col-12 mb-3">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">
-                                ${group.type}
-                                <span class="badge ${getSeverityBadge(group.severity)} float-end">${group.severity}</span>
-                            </h6>
+            document.getElementById('advisory-count').textContent = aggData.total_zone_count || aggData.advisories.length;
+            const container = document.getElementById('advisory-list');
+
+            container.innerHTML = aggData.type_groups.map(group => {
+                const severity = (group.severity || 'moderate').toLowerCase();
+                return `
+                    <div class="advisory-item">
+                        <div class="advisory-item-header">
+                            <span class="alert-type">${group.type}</span>
+                            <span class="alert-badge severity ${severity}">${group.severity}</span>
                         </div>
-                        <div class="card-body">
-                            <p class="mb-2">
-                                ${getActionBadgeWithTime(group.representative)}
-                                ${group.zone_count > 1 ? 
-                                    `<span class="badge zone-badge zone-badge-multi ms-2">
-                                        <i class="bi bi-layers"></i> ${group.zone_count} NWS zones
-                                    </span>` : 
-                                    `<span class="badge zone-badge ms-2">${group.representative.source}</span>`}
-                            </p>
-                            <p class="mb-1">
-                                <strong>Expires:</strong> ${group.expires ? formatDate(group.expires) + ' (' + getTimeRemaining(group.expires) + ')' : 'Unknown'}
-                            </p>
-                            ${group.zone_count > 1 ? 
-                                `<small class="text-muted d-block mb-2">
-                                    This alert covers multiple NWS forecast zones for this location.
-                                </small>` : ''}
-                            <div class="mt-2">
+                        <div class="advisory-item-body">
+                            <div class="alert-badges" style="margin-bottom: 0.75rem;">
+                                ${getActionBadge(group.representative)}
+                                ${group.zone_count > 1 ? `<span class="zone-badge">${group.zone_count} NWS zones</span>` : ''}
+                            </div>
+                            <div class="alert-meta">
+                                <div class="alert-meta-item">
+                                    <label>Expires</label>
+                                    <span>${group.expires ? formatDate(group.expires) + ' (' + getTimeRemaining(group.expires) + ')' : 'Unknown'}</span>
+                                </div>
+                            </div>
+                            ${group.zone_count > 1 ? `<p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">This alert covers multiple NWS forecast zones for this location.</p>` : ''}
+                            <div class="alert-links">
                                 ${getExternalLinks(group.representative)}
                             </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
-            
-            container.innerHTML = `<div class="row">${advisories}</div>`;
+                `;
+            }).join('');
         }
-        
-        function getActionBadgeWithTime(advisory) {
+
+        function getActionBadge(advisory) {
             if (!advisory.vtec_action) {
-                return '<span class="badge bg-secondary">-</span>';
+                return '';
             }
-            
+
             const hoursOld = (Date.now() - new Date(advisory.last_updated)) / 3600000;
-            
             const actionConfig = {
-                'NEW': { 
-                    label: 'NEW', 
-                    class: hoursOld < 2 ? 'action-badge-new' : 'bg-success',
-                    icon: '🆕'
-                },
-                'CON': { label: 'CONTINUED', class: 'action-badge-continued', icon: '🔄' },
-                'EXT': { label: 'EXTENDED', class: 'action-badge-extended', icon: '⏱️' },
-                'UPG': { label: 'UPGRADED', class: 'bg-warning text-dark', icon: '⚠️' }
+                'NEW': { label: 'NEW', class: hoursOld < 2 ? 'new' : '', icon: '🆕' },
+                'CON': { label: 'CONTINUED', class: '', icon: '🔄' },
+                'EXT': { label: 'EXTENDED', class: '', icon: '⏱️' },
+                'UPG': { label: 'UPGRADED', class: '', icon: '⚠️' }
             };
-            
-            const config = actionConfig[advisory.vtec_action] || { label: advisory.vtec_action, class: 'bg-secondary', icon: '' };
-            
-            return `<span class="badge ${config.class}">${config.icon} ${config.label}</span>`;
+
+            const config = actionConfig[advisory.vtec_action] || { label: advisory.vtec_action, class: '', icon: '' };
+            return `<span class="alert-badge action ${config.class}">${config.icon} ${config.label}</span>`;
         }
-        
+
         function getTimeRemaining(expiresISO) {
             const hours = Math.round((new Date(expiresISO) - new Date()) / 3600000);
             if (hours < 0) return 'Expired';
@@ -487,45 +1078,47 @@
             const days = Math.round(hours / 24);
             return days === 1 ? '1 day remaining' : `${days} days remaining`;
         }
-        
-        /**
-         * Generate external links for NOAA official alert and map
-         * @param {Object} advisory - Advisory object with external_id and source
-         * @returns {string} HTML for external link buttons
-         */
+
         function getExternalLinks(advisory) {
             const links = [];
-            
-            // Local forecast page with alerts (most useful - shows alerts for exact location)
+
             if (siteData && siteData.latitude && siteData.longitude) {
                 const forecastUrl = `https://forecast.weather.gov/MapClick.php?lat=${siteData.latitude}&lon=${siteData.longitude}`;
                 links.push(`
-                    <a href="${forecastUrl}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="btn btn-sm btn-outline-primary me-2"
-                       title="View NWS forecast and active alerts for this location">
-                        <i class="bi bi-cloud-sun"></i> NWS Forecast
+                    <a href="${forecastUrl}" target="_blank" rel="noopener noreferrer" class="alert-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>
+                        </svg>
+                        NWS Forecast
                     </a>
                 `);
             }
-            
-            // National radar map
+
             links.push(`
-                <a href="https://radar.weather.gov/" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   class="btn btn-sm btn-outline-secondary"
-                   title="View national radar map">
-                    <i class="bi bi-broadcast"></i> Radar Map
+                <a href="https://radar.weather.gov/" target="_blank" rel="noopener noreferrer" class="alert-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="6"/>
+                        <circle cx="12" cy="12" r="2"/>
+                    </svg>
+                    Radar Map
                 </a>
             `);
-            
+
             return links.join('');
         }
-        
-        // Initialize
-        loadSiteDetail();
+
+        function formatDate(isoString) {
+            if (!isoString) return 'Unknown';
+            const date = new Date(isoString);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
     </script>
 </body>
 </html>
