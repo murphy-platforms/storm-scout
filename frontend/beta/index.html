@@ -602,13 +602,98 @@
             });
         }
 
-        // Generate sparkline
-        function generateSparkline(containerId, heights) {
+        // Generate sparkline from data array
+        function generateSparkline(containerId, dataPoints) {
             const container = document.getElementById(containerId);
             if (!container) return;
+            
+            if (!dataPoints || dataPoints.length === 0) {
+                container.innerHTML = '<div class="sparkline-no-data">Accumulating...</div>';
+                return;
+            }
+            
+            // Normalize data to percentages (0-100)
+            const max = Math.max(...dataPoints, 1);
+            const heights = dataPoints.map(val => Math.max((val / max) * 100, 5)); // Min 5% visibility
+            
             container.innerHTML = heights.map(h => 
                 `<div class="sparkline-bar" style="height: ${h}%;"></div>`
             ).join('');
+        }
+        
+        // Load and render sparklines with real historical data
+        async function loadSparklines() {
+            try {
+                // Check if historical data is available
+                const availability = await API.getHistoricalDataAvailability();
+                
+                if (availability.status === 'accumulating' || availability.status === 'error') {
+                    // Show "accumulating data" state
+                    ['sparklineCritical', 'sparklineHigh', 'sparklineModerate', 'sparklineLow'].forEach(id => {
+                        const container = document.getElementById(id);
+                        if (container) {
+                            container.innerHTML = '<div class="sparkline-no-data" style="font-size: 0.7rem; color: var(--color-text-muted);">Accumulating data...</div>';
+                            container.title = availability.message || 'Historical data is being collected';
+                        }
+                    });
+                    return;
+                }
+                
+                // Fetch severity trends
+                const trendsData = await API.getSeverityTrends(3); // 3 days
+                
+                if (trendsData.status === 'success' && trendsData.trends) {
+                    // Render sparklines with real data
+                    generateSparkline('sparklineCritical', trendsData.trends.critical);
+                    generateSparkline('sparklineHigh', trendsData.trends.high);
+                    generateSparkline('sparklineModerate', trendsData.trends.moderate);
+                    generateSparkline('sparklineLow', trendsData.trends.low);
+                    
+                    // Update trend indicators
+                    if (trendsData.direction) {
+                        updateTrendIndicator('trendCritical', trendsData.direction.critical);
+                        updateTrendIndicator('trendHigh', trendsData.direction.high);
+                        updateTrendIndicator('trendModerate', trendsData.direction.moderate);
+                    }
+                } else {
+                    // Fallback: show "no data" message
+                    ['sparklineCritical', 'sparklineHigh', 'sparklineModerate', 'sparklineLow'].forEach(id => {
+                        generateSparkline(id, []);
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Failed to load sparklines:', error);
+                // Silently fail - show "accumulating" message
+                ['sparklineCritical', 'sparklineHigh', 'sparklineModerate', 'sparklineLow'].forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) {
+                        container.innerHTML = '<div class="sparkline-no-data" style="font-size: 0.7rem; color: var(--color-text-muted);">Accumulating...</div>';
+                    }
+                });
+            }
+        }
+        
+        // Update trend indicator (arrow and percentage)
+        function updateTrendIndicator(elementId, trendData) {
+            const element = document.getElementById(elementId);
+            if (!element || !trendData) return;
+            
+            const { direction, changePercent } = trendData;
+            
+            // Remove existing classes
+            element.classList.remove('up', 'down', 'neutral');
+            
+            if (direction === 'up') {
+                element.classList.add('up');
+                element.innerHTML = `<span>↑ +${changePercent}%</span>`;
+            } else if (direction === 'down') {
+                element.classList.add('down');
+                element.innerHTML = `<span>↓ ${changePercent}%</span>`;
+            } else {
+                element.classList.add('neutral');
+                element.innerHTML = '<span>→ Stable</span>';
+            }
         }
 
         // Load overview data
@@ -686,11 +771,8 @@
                 updateBarChart(severityCounts);
                 updateDonutChart(statusCounts, overviewData.total_sites);
                 
-                // Generate sparklines (mock data for visual effect)
-                generateSparkline('sparklineCritical', [20, 15, 10, 25, 20, 35, 45, 30, 55, 70, 85, 100]);
-                generateSparkline('sparklineHigh', [60, 75, 85, 70, 55, 45, 50, 60, 55, 50, 45, 50]);
-                generateSparkline('sparklineModerate', [90, 85, 75, 60, 55, 50, 45, 40, 35, 30, 25, 20]);
-                generateSparkline('sparklineLow', [100, 98, 95, 97, 96, 98, 97, 99, 96, 97, 98, 96]);
+                // Load real sparklines from historical data
+                loadSparklines();
                 
             } catch (error) {
                 console.error('Failed to load overview:', error);
