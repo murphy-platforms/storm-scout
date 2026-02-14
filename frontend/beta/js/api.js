@@ -78,5 +78,73 @@ const API = {
     async getSiteHistory(siteId, days = 7) {
         const response = await fetch(`${API_BASE_URL}/trends/${siteId}/history?days=${days}`);
         return await response.json();
+    },
+
+    // ========================================
+    // HISTORICAL DATA API (MED-5)
+    // ========================================
+
+    /**
+     * Get system-wide overview trends
+     * @param {number} days - Number of days of history (default 3)
+     * @returns {Promise} Trend data with severity counts, sites impacted, etc.
+     */
+    async getOverviewTrends(days = 3) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/history/overview-trends?days=${days}`);
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to fetch overview trends:', error);
+            return { status: 'error', message: error.message };
+        }
+    },
+
+    /**
+     * Get severity-specific trends for sparklines
+     * @param {number} days - Number of days of history (default 3)
+     * @returns {Promise} Severity trend data (critical, high, moderate, low)
+     */
+    async getSeverityTrends(days = 3) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/history/severity-trends?days=${days}`);
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to fetch severity trends:', error);
+            return { status: 'error', message: error.message };
+        }
+    },
+
+    /**
+     * Get per-site advisory count trends
+     * @param {number} siteId - Site ID
+     * @param {number} days - Number of days of history (default 3)
+     * @returns {Promise} Site-specific trend data
+     */
+    async getSiteTrends(siteId, days = 3) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/history/site-trends/${siteId}?days=${days}`);
+            return await response.json();
+        } catch (error) {
+            console.error(`Failed to fetch site trends for site ${siteId}:`, error);
+            return { status: 'error', message: error.message };
+        }
+    },
+
+    /**
+     * Check if historical data is available and ready
+     * @returns {Promise} Data availability status
+     */
+    async getHistoricalDataAvailability() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/history/data-availability`);
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to check historical data availability:', error);
+            return { 
+                status: 'error', 
+                message: 'Unable to check data availability',
+                recommendation: 'Show "Accumulating data..." message'
+            };
+        }
     }
 };
