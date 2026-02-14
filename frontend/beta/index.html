@@ -138,6 +138,12 @@
                         <span class="filter-pill-count" id="filterLow">--</span>
                     </button>
                     
+                    <!-- Filter Indicator -->
+                    <a href="filters.html" id="filterIndicator" class="filter-pill" style="display: none; background: var(--color-accent-bg); border-color: var(--color-accent); color: var(--color-accent);" title="Click to manage filters">
+                        <span aria-hidden="true">⚙️</span>
+                        Filters: <span id="filterCount">--</span>/<span id="filterTotal">--</span> types
+                    </a>
+                    
                     <div class="search-box">
                         <span class="search-icon" aria-hidden="true">🔍</span>
                         <input type="search" class="search-input" placeholder="Search sites..." aria-label="Search sites" id="siteSearch">
@@ -661,8 +667,31 @@
             }
         });
 
+        // Update filter indicator
+        function updateFilterIndicator() {
+            const indicator = document.getElementById('filterIndicator');
+            const filterCount = document.getElementById('filterCount');
+            const filterTotal = document.getElementById('filterTotal');
+            
+            if (!indicator || !AlertFilters.alertTypesByLevel) return;
+            
+            const enabled = AlertFilters.getEnabledCount();
+            const total = AlertFilters.getTotalAlertTypes();
+            
+            filterCount.textContent = enabled;
+            filterTotal.textContent = total;
+            
+            // Show indicator only if filters are active (not showing all)
+            if (AlertFilters.hasActiveFilters()) {
+                indicator.style.display = 'inline-flex';
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+        
         // Initialize
         AlertFilters.init().then(() => {
+            updateFilterIndicator();
             loadOverview();
         });
     </script>

@@ -128,6 +128,31 @@ const AlertFilters = {
     },
     
     /**
+     * Get total number of alert types available
+     */
+    getTotalAlertTypes() {
+        let total = 0;
+        for (const types of Object.values(this.alertTypesByLevel)) {
+            total += types.length;
+        }
+        return total;
+    },
+    
+    /**
+     * Check if using full view (all alert types enabled)
+     */
+    isFullView() {
+        return this.getEnabledCount() === this.getTotalAlertTypes();
+    },
+    
+    /**
+     * Check if filters are customized (not all types enabled)
+     */
+    hasActiveFilters() {
+        return !this.isFullView();
+    },
+    
+    /**
      * Get human-readable filter status
      */
     getFilterStatus() {
