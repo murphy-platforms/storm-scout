@@ -20,6 +20,9 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
 - **Filter Presets**: Site Default, Operations View, Executive Summary, Safety Focus, Full View
 - **Data Integrity**: Database CHECK constraint enforces valid severity values
+- **In-Memory Caching**: node-cache for fast API responses (~100x faster on cache hits)
+- **API Rate Limiting**: 100 requests/15 min general, 20/15 min for writes (express-rate-limit)
+- **Input Validation**: All API endpoints validated with express-validator
 
 ---
 
@@ -31,7 +34,10 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Database**: MySQL 8.0+ / MariaDB 11.4.9 (async/await with mysql2)
 - **Scheduling**: node-cron for 15-minute ingestion cycles
 - **HTTP Client**: axios with rate limiting (500ms) and retry logic
-- **Dependencies**: express, cors, mysql2, node-cron, axios, dotenv
+- **Caching**: node-cache for in-memory API response caching
+- **Validation**: express-validator for input sanitization
+- **Rate Limiting**: express-rate-limit for API protection
+- **Dependencies**: express, cors, mysql2, node-cron, axios, dotenv, node-cache, express-validator, express-rate-limit
 
 ### Frontend
 - **UI Framework**: Bootstrap 5.3
@@ -85,7 +91,18 @@ strom-scout/
 │   │   │   └── utils/
 │   │   │       ├── api-client.js     # NOAA API with rate limiting/retry
 │   │   │       └── normalizer.js     # Alert normalization & VTEC parsing
+│   │   ├── middleware/              # Express middleware
+│   │   │   ├── rateLimiter.js       # API rate limiting (100/15min, 20/15min writes)
+│   │   │   └── validate.js          # Input validation error handler
+│   │   ├── validators/              # Route validation rules
+│   │   │   ├── common.js            # Shared rules (id, state, limit)
+│   │   │   ├── advisories.js
+│   │   │   ├── sites.js
+│   │   │   ├── notices.js
+│   │   │   ├── history.js
+│   │   │   └── status.js
 │   │   ├── utils/
+│   │   │   ├── cache.js             # In-memory caching with node-cache
 │   │   │   ├── cleanup-advisories.js # Unified cleanup module
 │   │   │   └── alerting.js          # Failure notification system
 │   │   ├── scripts/                  # Maintenance scripts
@@ -291,12 +308,12 @@ ssh -p 21098 mwqtiakilx@teammurphy.rocks "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Database CHECK constraint on severity
 - ✅ Composite index for status+severity queries
 - ✅ Beta UI with all pages including notices.html
+- ✅ In-memory caching with node-cache (status/overview, sites, advisories/active)
+- ✅ API rate limiting with express-rate-limit (100 req/15 min, 20 writes/15 min)
+- ✅ Input validation with express-validator (all endpoints)
 
 ### High Priority (Next)
-- [ ] Redis caching for `/api/status/overview` (reduces DB load)
-- [ ] API rate limiting (prevent abuse)
 - [ ] Unit tests (Jest) for models and utilities
-- [ ] Input validation (joi or express-validator)
 
 ### Medium Priority
 - [ ] Phase 2: Zone filtering (reduce multi-zone alerts to preferred offices) - 10-12 hours
