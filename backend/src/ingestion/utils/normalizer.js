@@ -6,21 +6,25 @@
 /**
  * Map NOAA severity to our severity levels
  * @param {string} noaaSeverity - NOAA severity (Extreme, Severe, Moderate, Minor, Unknown)
- * @returns {string} Normalized severity
+ * @returns {string} Normalized severity (defaults to 'Minor' for unknown/invalid values)
  */
 function normalizeSeverity(noaaSeverity) {
-  if (!noaaSeverity) return 'Unknown';
+  if (!noaaSeverity) return 'Minor';
   
   const severity = noaaSeverity.toLowerCase();
-  const map = {
+  const validSeverities = {
     'extreme': 'Extreme',
     'severe': 'Severe',
     'moderate': 'Moderate',
-    'minor': 'Minor',
-    'unknown': 'Unknown'
+    'minor': 'Minor'
   };
   
-  return map[severity] || 'Unknown';
+  const normalized = validSeverities[severity];
+  if (!normalized) {
+    console.warn(`Invalid severity "${noaaSeverity}" received, defaulting to Minor`);
+    return 'Minor';
+  }
+  return normalized;
 }
 
 /**
