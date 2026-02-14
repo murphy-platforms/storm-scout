@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const AdvisoryModel = require('../models/advisory');
+const cache = require('../utils/cache');
 
 /**
  * GET /api/advisories
@@ -33,8 +34,26 @@ router.get('/', async (req, res) => {
 router.get('/active', async (req, res) => {
   try {
     const { severity, state, advisory_type } = req.query;
+    
+    // Only cache requests with no filters
+    const hasFilters = severity || state || advisory_type;
+    
+    if (!hasFilters) {
+      const cached = cache.get(cache.CACHE_KEYS.ACTIVE_ADVISORIES);
+      if (cached) {
+        return res.json(cached);
+      }
+    }
+    
     const advisories = await AdvisoryModel.getActive({ severity, state, advisory_type });
-    res.json({ success: true, data: advisories, count: advisories.length });
+    const response = { success: true, data: advisories, count: advisories.length };
+    
+    // Cache only unfiltered requests
+    if (!hasFilters) {
+      cache.set(cache.CACHE_KEYS.ACTIVE_ADVISORIES, response, cache.TTL.SHORT);
+    }
+    
+    res.json(response);
   } catch (error) {
     console.error('Error fetching active advisories:', error);
     res.status(500).json({ success: false, error: error.message });

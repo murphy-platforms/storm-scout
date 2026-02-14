@@ -10,6 +10,7 @@ const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
 const { getLastIngestionTime } = require('../ingestion/noaa-ingestor');
+const cache = require('../utils/cache');
 
 /**
  * GET /api/status/overview
@@ -17,6 +18,13 @@ const { getLastIngestionTime } = require('../ingestion/noaa-ingestor');
  */
 router.get('/overview', async (req, res) => {
   try {
+    // Check cache first
+    const cached = cache.get(cache.CACHE_KEYS.STATUS_OVERVIEW);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Cache miss - query database
     // Total sites
     const allSites = await SiteModel.getAll();
     const totalSites = allSites.length;
@@ -44,7 +52,7 @@ router.get('/overview', async (req, res) => {
     const lastIngestion = getLastIngestionTime();
     const updateIntervalMinutes = config.ingestion.intervalMinutes || 15;
     
-    res.json({
+    const response = {
       success: true,
       data: {
         total_sites: totalSites,
@@ -57,7 +65,12 @@ router.get('/overview', async (req, res) => {
         last_updated: lastIngestion?.lastUpdated || null,
         update_interval_minutes: updateIntervalMinutes
       }
-    });
+    };
+
+    // Cache the response
+    cache.set(cache.CACHE_KEYS.STATUS_OVERVIEW, response, cache.TTL.SHORT);
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching overview:', error);
     res.status(500).json({ success: false, error: error.message });
