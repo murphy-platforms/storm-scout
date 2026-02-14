@@ -41,13 +41,74 @@ if (config.env === 'development') {
   });
 }
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+// Health check endpoint (enhanced with database and ingestion status)
+app.get('/health', async (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  const { getDatabase } = require('./config/database');
+  
+  const health = {
+    status: 'ok',
     timestamp: new Date().toISOString(),
-    environment: config.env
-  });
+    environment: config.env,
+    checks: {
+      database: { status: 'unknown' },
+      ingestion: { status: 'unknown' }
+    }
+  };
+  
+  try {
+    // Check database connection
+    const db = getDatabase();
+    await db.query('SELECT 1');
+    health.checks.database = { 
+      status: 'ok',
+      message: 'Database connection successful'
+    };
+  } catch (error) {
+    health.status = 'degraded';
+    health.checks.database = {
+      status: 'error',
+      message: error.message
+    };
+  }
+  
+  try {
+    // Check last ingestion time
+    const ingestionFile = path.join(__dirname, '../.last-ingestion.json');
+    if (fs.existsSync(ingestionFile)) {
+      const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
+      const lastUpdate = new Date(data.lastUpdated);
+      const minutesAgo = (Date.now() - lastUpdate.getTime()) / (1000 * 60);
+      
+      health.checks.ingestion = {
+        status: minutesAgo <= 30 ? 'ok' : 'stale',
+        lastUpdated: data.lastUpdated,
+        minutesAgo: Math.round(minutesAgo),
+        message: minutesAgo <= 30 
+          ? 'Ingestion is current' 
+          : `Last ingestion was ${Math.round(minutesAgo)} minutes ago (expected: <= 30 min)`
+      };
+      
+      if (minutesAgo > 30) {
+        health.status = 'degraded';
+      }
+    } else {
+      health.checks.ingestion = {
+        status: 'unknown',
+        message: 'No ingestion history found (ingestion may not have run yet)'
+      };
+    }
+  } catch (error) {
+    health.checks.ingestion = {
+      status: 'error',
+      message: `Error checking ingestion status: ${error.message}`
+    };
+  }
+  
+  // Set HTTP status based on overall health
+  const httpStatus = health.status === 'ok' ? 200 : 503;
+  res.status(httpStatus).json(health);
 });
 
 // API routes
@@ -66,7 +127,7 @@ app.get('/api', (req, res) => {
     name: 'Storm Scout API',
     version: '1.0.0',
     endpoints: {
-      health: '/health',
+      health: '/health (Database + Ingestion status)',
       sites: '/api/sites',
       advisories: '/api/advisories',
       status: '/api/status',
