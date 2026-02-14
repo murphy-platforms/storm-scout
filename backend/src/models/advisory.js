@@ -8,7 +8,7 @@ const { getDatabase } = require('../config/database');
 const AdvisoryModel = {
   /**
    * Get all advisories with optional filters
-   * @param {Object} filters - Optional filters (status, severity, state, site_id)
+   * @param {Object} filters - Optional filters (status, severity, state, site_id, advisory_type)
    * @returns {Promise<Array>} Array of advisory objects with site data
    */
   async getAll(filters = {}) {
@@ -26,9 +26,28 @@ const AdvisoryModel = {
       params.push(filters.status);
     }
 
+    // Support multiple severity values (array or comma-separated string)
     if (filters.severity) {
-      query += ' AND a.severity = ?';
-      params.push(filters.severity);
+      const severities = Array.isArray(filters.severity) 
+        ? filters.severity 
+        : filters.severity.split(',').map(s => s.trim());
+      
+      if (severities.length > 0) {
+        query += ` AND a.severity IN (${severities.map(() => '?').join(', ')})`;
+        params.push(...severities);
+      }
+    }
+
+    // Support multiple advisory types
+    if (filters.advisory_type) {
+      const types = Array.isArray(filters.advisory_type)
+        ? filters.advisory_type
+        : filters.advisory_type.split(',').map(t => t.trim());
+      
+      if (types.length > 0) {
+        query += ` AND a.advisory_type IN (${types.map(() => '?').join(', ')})`;
+        params.push(...types);
+      }
     }
 
     if (filters.state) {
