@@ -175,15 +175,15 @@ Users can customize their filter preferences at **/filters.html**, and changes a
 Production deployment to https://teammurphy.rocks:
 
 ```bash
-# Deploy backend
-rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ user@host:~/storm-scout/
+# One-command deploy (recommended)
+./deploy.sh
 
-# Deploy frontend
-rsync -avz -e "ssh -p 21098" frontend/ user@host:~/public_html/
-
-# Restart app
-ssh user@host "touch ~/storm-scout/tmp/restart.txt"
+# Or manual deployment:
+rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ mwqtiakilx@teammurphy.rocks:~/storm-scout/
+rsync -avz -e "ssh -p 21098" frontend/ mwqtiakilx@teammurphy.rocks:~/public_html/
 ```
+
+See `DEPLOY.md` for detailed deployment instructions.
 
 ## License
 
