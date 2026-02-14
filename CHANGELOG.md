@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0] - 2026-02-14
 
 ### Added
+- **API Rate Limiting** - Protects against abuse and ensures fair usage
+  - General API: 100 requests per 15 minutes per IP
+  - Write operations: 20 requests per 15 minutes per IP
+  - Health checks exempt from rate limiting
+  - Returns 429 Too Many Requests with retry info when exceeded
+  - Standard rate limit headers in responses
+  - File: `middleware/rateLimiter.js`
+
 - **Input Validation** - All API endpoints now validate and sanitize inputs
   - New `express-validator` middleware for all routes
   - Validates query params: severity, state, limit, days, etc.
