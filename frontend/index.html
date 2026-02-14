@@ -56,6 +56,10 @@
                     </small>
                 </div>
                 <div class="col text-end">
+                    <!-- Filter Indicator -->
+                    <a href="filters.html" id="filterIndicator" class="badge bg-info text-dark me-2 text-decoration-none" style="display: none;" title="Click to manage filters">
+                        <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
+                    </a>
                     <span class="badge bg-secondary me-2">
                         <span id="totalSites">--</span> Total Sites
                     </span>
@@ -551,8 +555,31 @@
             `;
         }
         
+        // Update filter indicator
+        function updateFilterIndicator() {
+            const indicator = document.getElementById('filterIndicator');
+            const filterCount = document.getElementById('filterCount');
+            const filterTotal = document.getElementById('filterTotal');
+            
+            if (!indicator || !AlertFilters.alertTypesByLevel) return;
+            
+            const enabled = AlertFilters.getEnabledCount();
+            const total = AlertFilters.getTotalAlertTypes();
+            
+            filterCount.textContent = enabled;
+            filterTotal.textContent = total;
+            
+            // Show indicator only if filters are active (not showing all)
+            if (AlertFilters.hasActiveFilters()) {
+                indicator.style.display = 'inline-block';
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+        
         // Initialize filters then load overview
         AlertFilters.init().then(() => {
+            updateFilterIndicator();
             loadOverview();
         });
     </script>
