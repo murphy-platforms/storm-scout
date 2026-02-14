@@ -227,7 +227,8 @@ a:hover { color: var(--color-accent-hover); }
 .severity-label { font-size: 0.9rem; font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
 .severity-sites { font-size: 0.85rem; color: var(--color-text-muted); }
 
-.sparkline { height: 40px; margin-top: var(--space-md); display: flex; align-items: flex-end; gap: 3px; }
+.sparkline { height: 40px; margin-top: var(--space-md); display: flex; align-items: flex-end; gap: 3px; opacity: 0.6; cursor: help; }
+.sparkline:hover { opacity: 1; }
 .sparkline-bar { flex: 1; background: rgba(255, 255, 255, 0.1); border-radius: 2px; transition: all var(--transition-fast); }
 .sparkline-bar:hover { background: rgba(255, 255, 255, 0.2); }
 .severity-card.critical .sparkline-bar { background: var(--color-critical-bg); }
