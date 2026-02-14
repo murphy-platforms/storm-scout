@@ -22,10 +22,12 @@ This document outlines planned improvements, features, and technical debt for St
   - ~100x faster response times on cache hits
   - **Effort**: Medium | **Impact**: High
 
-- [ ] **Implement API Rate Limiting**
-  - Protect against abuse and DDoS
-  - Use express-rate-limit middleware
-  - Set reasonable limits (e.g., 100 requests/15 minutes per IP)
+- [x] **Implement API Rate Limiting** ✅ (Completed 2026-02-14)
+  - Protects against abuse and DDoS
+  - 100 requests/15 min for general API
+  - 20 requests/15 min for write operations
+  - Health checks exempt from limiting
+  - Returns 429 with retry info when exceeded
   - **Effort**: Low | **Impact**: High
 
 - [ ] **Add Pagination to Advisories**
@@ -269,6 +271,7 @@ This document outlines planned improvements, features, and technical debt for St
 - ✅ Auto-invalidation after NOAA ingestion
 - ✅ ~100x faster response times on cache hits
 - ✅ Input validation with express-validator
+- ✅ API rate limiting (100 req/15 min)
 - ✅ Removed all flashing animations for accessibility
 
 ### v1.4.1 (February 14, 2026)
