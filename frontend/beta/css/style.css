@@ -73,6 +73,39 @@
     --color-text-secondary: #e5e5e5;
 }
 
+/* Light Theme */
+.light-theme {
+    --color-bg-primary: #f8f9fa;
+    --color-bg-secondary: #ffffff;
+    --color-bg-card: #ffffff;
+    --color-bg-card-hover: #f1f3f5;
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-border-light: rgba(0, 0, 0, 0.15);
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #6c757d;
+    --color-text-muted: #9ca3af;
+    
+    --color-critical-bg: rgba(239, 68, 68, 0.1);
+    --color-critical-border: rgba(239, 68, 68, 0.2);
+    
+    --color-high-bg: rgba(249, 115, 22, 0.1);
+    --color-high-border: rgba(249, 115, 22, 0.2);
+    
+    --color-moderate-bg: rgba(234, 179, 8, 0.1);
+    --color-moderate-border: rgba(234, 179, 8, 0.2);
+    
+    --color-low-bg: rgba(34, 197, 94, 0.1);
+    --color-low-border: rgba(34, 197, 94, 0.2);
+    
+    --color-accent-bg: rgba(59, 130, 246, 0.1);
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-glow-critical: 0 0 30px rgba(239, 68, 68, 0.15);
+    --shadow-glow-high: 0 0 30px rgba(249, 115, 22, 0.15);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {

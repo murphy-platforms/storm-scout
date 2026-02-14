@@ -79,6 +79,10 @@
             
             <div class="sidebar-footer">
                 <div class="a11y-toggle">
+                    <span>🌙 Dark Mode</span>
+                    <div class="toggle-switch active" role="switch" aria-checked="true" tabindex="0" aria-label="Toggle dark/light mode" id="themeToggle"></div>
+                </div>
+                <div class="a11y-toggle" style="margin-top: var(--space-sm);">
                     <span>High Contrast</span>
                     <div class="toggle-switch" role="switch" aria-checked="false" tabindex="0" aria-label="Toggle high contrast mode" id="contrastToggle"></div>
                 </div>
@@ -662,6 +666,66 @@
                 this.click();
             }
         });
+
+        // Theme toggle (Dark/Light Mode)
+        const THEME_STORAGE_KEY = 'stormScout_theme';
+        const themeToggle = document.getElementById('themeToggle');
+        const themeLabel = themeToggle.previousElementSibling;
+        
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+                themeToggle.classList.remove('active');
+                themeToggle.setAttribute('aria-checked', 'false');
+                themeLabel.textContent = '☀️ Light Mode';
+            } else {
+                document.body.classList.remove('light-theme');
+                themeToggle.classList.add('active');
+                themeToggle.setAttribute('aria-checked', 'true');
+                themeLabel.textContent = '🌙 Dark Mode';
+            }
+        }
+        
+        // Detect system preference and apply theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+            
+            if (savedTheme) {
+                // User has manually set a preference
+                applyTheme(savedTheme);
+            } else {
+                // Follow system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(prefersDark ? 'dark' : 'light');
+            }
+        }
+        
+        // Toggle theme on click
+        themeToggle.addEventListener('click', function() {
+            const isCurrentlyDark = document.body.classList.contains('light-theme') === false;
+            const newTheme = isCurrentlyDark ? 'light' : 'dark';
+            
+            applyTheme(newTheme);
+            localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        });
+        
+        // Keyboard support
+        themeToggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+        
+        // Listen for system theme changes (if user hasn't manually set preference)
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem(THEME_STORAGE_KEY)) {
+                applyTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+        
+        // Initialize theme early (before page fully loads)
+        initTheme();
 
         document.getElementById('refreshBtn').addEventListener('click', loadOverview);
 
