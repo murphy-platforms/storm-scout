@@ -324,10 +324,118 @@ Set in cPanel → Node.js app interface:
 - `ALERT_WEBHOOK_URL` (optional, for Slack notifications)
 
 ### Monitoring
-- **Health Check**: `curl https://teammurphy.rocks/health`
+- **Health Check**: `curl https://teammurphy.rocks/health` (enhanced with database + ingestion status)
 - **Logs**: cPanel → Node.js → View Logs
 - **Database**: phpMyAdmin in cPanel
 - **Ingestion Status**: Check `last_updated` in advisories table
+
+### Database Backup & Disaster Recovery
+
+**Critical Data**: The Storm Scout database (`mwqtiakilx_stormscout`) contains:
+- **Static**: 219 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
+- **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
+- **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
+- **Configuration**: Site status overrides (site_status table) - manual IMT decisions, **CRITICAL** to preserve
+
+**Backup Strategy**:
+
+1. **Automated Daily Backups (cPanel)**
+   - **Frequency**: Daily at 2:00 AM EST (configured in cPanel)
+   - **Retention**: 7 days (shared hosting default)
+   - **Location**: cPanel → Backups → Download Full Backup
+   - **Access**: Log into https://server37.shared.spaceship.host:2083, navigate to Backups
+   - **Restore**: cPanel → Backups → Restore → Select backup file
+
+2. **Manual Weekly Backups (Recommended)**
+   - **Frequency**: Every Sunday (or after major changes)
+   - **Method**: Export via phpMyAdmin or command line
+   - **Storage**: Local machine + offsite (Google Drive, Dropbox, etc.)
+   
+   ```bash
+   # Via SSH (requires password)
+   ssh -p 21098 mwqtiakilx@teammurphy.rocks
+   mysqldump -u mwqtiakilx_stormsc -p mwqtiakilx_stormscout > stormscout_backup_$(date +%Y%m%d).sql
+   
+   # Download backup to local machine
+   scp -P 21098 mwqtiakilx@teammurphy.rocks:~/stormscout_backup_*.sql ~/backups/
+   ```
+   
+   Via phpMyAdmin:
+   - Log into cPanel → phpMyAdmin
+   - Select `mwqtiakilx_stormscout` database
+   - Export → Quick → SQL → Go
+   - Save `.sql` file locally
+
+3. **Pre-Deployment Backups (Required)**
+   - **Always** create a backup before:
+     - Database schema changes (migrations)
+     - Major version upgrades
+     - Bulk data operations
+   - Store with deployment notes and git commit hash
+
+**Recovery Procedures**:
+
+1. **Full Database Restore** (Disaster Recovery):
+   ```bash
+   # Via SSH
+   ssh -p 21098 mwqtiakilx@teammurphy.rocks
+   mysql -u mwqtiakilx_stormsc -p mwqtiakilx_stormscout < stormscout_backup_YYYYMMDD.sql
+   ```
+   
+   Via phpMyAdmin:
+   - cPanel → phpMyAdmin → Import
+   - Choose backup `.sql` file
+   - Execute
+   
+   **Post-Restore Steps**:
+   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 219)
+   - Check for active advisories: `SELECT COUNT(*) FROM advisories WHERE status='active';`
+   - Restart ingestion: Backend will auto-populate advisories within 15 minutes
+   - Verify health: `curl https://teammurphy.rocks/health`
+
+2. **Partial Recovery** (Specific Tables):
+   - Export single table from backup:
+     ```bash
+     # Extract specific table from full backup
+     sed -n '/DROP TABLE.*`advisory_history`/,/UNLOCK TABLES/p' backup.sql > advisory_history_only.sql
+     mysql -u mwqtiakilx_stormsc -p mwqtiakilx_stormscout < advisory_history_only.sql
+     ```
+
+3. **Data Loss Scenarios**:
+   
+   | Scenario | Impact | Recovery Time | Steps |
+   |----------|--------|---------------|-------|
+   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend |
+   | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
+   | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
+   | **Site_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
+   | **Complete DB loss** | 🔴 Critical - Full outage | 10-15 min | Restore from latest backup, verify, restart |
+
+**Backup Verification**:
+
+Test backups monthly by:
+1. Download latest backup
+2. Restore to local test database (`storm_scout_test`)
+3. Verify table counts and data integrity
+4. Document any issues
+
+```bash
+# Local restore test
+mysql -u root -p storm_scout_test < stormscout_backup_YYYYMMDD.sql
+mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM sites;"
+mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM advisories;"
+```
+
+**Backup Security**:
+- Backups contain **no personally identifiable information (PII)**
+- Database passwords should **never** be committed to git or stored in backups
+- Store backups encrypted if possible (use GPG or disk encryption)
+- Rotate backup files older than 30 days
+
+**Documentation Updates**:
+- **Last Backup Verified**: [Add date after testing restore]
+- **Backup Location**: [Add your backup storage location]
+- **Contact for Restore**: [Add IMT/DevOps contact]
 
 ---
 
