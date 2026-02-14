@@ -453,5 +453,156 @@ const StormScoutExport = {
             const data = getDataFunc();
             this.generateHTMLReport(data, 'executive');
         });
+    },
+    
+    /**
+     * Generate shareable link with current filter state
+     * @returns {string} Full URL with filter parameters
+     */
+    generateShareableLink() {
+        const baseUrl = window.location.origin + window.location.pathname;
+        const params = new URLSearchParams();
+        
+        // Get current filter state from localStorage
+        const filterPreset = localStorage.getItem('selectedFilterPreset') || 'CUSTOM';
+        const customFilters = localStorage.getItem('customFilters');
+        
+        if (filterPreset !== 'CUSTOM') {
+            params.set('preset', filterPreset);
+        } else if (customFilters) {
+            try {
+                const filters = JSON.parse(customFilters);
+                params.set('filters', btoa(JSON.stringify(filters))); // Base64 encode
+            } catch (e) {
+                console.error('Error encoding filters:', e);
+            }
+        }
+        
+        // Add current page context
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('weather_impact')) {
+            params.set('weather_impact', urlParams.get('weather_impact'));
+        }
+        if (urlParams.has('status')) {
+            params.set('status', urlParams.get('status'));
+        }
+        
+        return baseUrl + (params.toString() ? '?' + params.toString() : '');
+    },
+    
+    /**
+     * Copy shareable link to clipboard
+     */
+    async copyShareableLink() {
+        const link = this.generateShareableLink();
+        
+        try {
+            await navigator.clipboard.writeText(link);
+            this.showNotification('✓ Link copied to clipboard', 'success');
+            return true;
+        } catch (err) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = link;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                this.showNotification('✓ Link copied to clipboard', 'success');
+                return true;
+            } catch (err2) {
+                this.showNotification('✗ Failed to copy link', 'error');
+                return false;
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+    },
+    
+    /**
+     * Open browser print dialog for PDF export
+     */
+    printToPDF() {
+        // Add print-specific class to body
+        document.body.classList.add('print-mode');
+        
+        // Trigger print dialog
+        window.print();
+        
+        // Remove print mode class after print dialog closes
+        setTimeout(() => {
+            document.body.classList.remove('print-mode');
+        }, 1000);
+        
+        this.showNotification('Print dialog opened', 'success');
+    },
+    
+    /**
+     * Show notification toast
+     * @param {string} message
+     * @param {string} type - 'success' or 'error'
+     */
+    showNotification(message, type = 'success') {
+        // Remove existing notification if present
+        const existing = document.getElementById('export-notification');
+        if (existing) {
+            existing.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.id = 'export-notification';
+        notification.className = `export-notification export-notification-${type}`;
+        notification.textContent = message;
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'polite');
+
+        document.body.appendChild(notification);
+
+        // Show notification
+        setTimeout(() => notification.classList.add('show'), 10);
+
+        // Hide and remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    },
+    
+    /**
+     * Apply URL parameters to filter state (for shareable links)
+     */
+    applyURLFilters() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Apply preset filter
+        if (params.has('preset')) {
+            const preset = params.get('preset');
+            localStorage.setItem('selectedFilterPreset', preset);
+            console.log('Applied filter preset from URL:', preset);
+        }
+        
+        // Apply custom filters
+        if (params.has('filters')) {
+            try {
+                const filtersJSON = atob(params.get('filters'));
+                const filters = JSON.parse(filtersJSON);
+                localStorage.setItem('customFilters', JSON.stringify(filters));
+                localStorage.setItem('selectedFilterPreset', 'CUSTOM');
+                console.log('Applied custom filters from URL');
+            } catch (e) {
+                console.error('Error decoding URL filters:', e);
+            }
+        }
     }
 };
+
+// Auto-apply URL filters on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => StormScoutExport.applyURLFilters());
+} else {
+    StormScoutExport.applyURLFilters();
+}
