@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Google Analytics (GA4)** - Added tracking to all frontend pages (G-ZE26KTHBDE)
+  - Enables visitor analytics and usage monitoring
+  - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
+
 ### Planned
 - Redis caching for API responses
 - API rate limiting with express-rate-limit
