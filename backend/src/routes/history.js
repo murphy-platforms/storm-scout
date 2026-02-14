@@ -11,6 +11,8 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
+const { handleValidationErrors } = require('../middleware/validate');
+const historyValidators = require('../validators/history');
 
 /**
  * Helper: Calculate trend direction and percentage change
@@ -41,10 +43,10 @@ function calculateTrend(dataPoints) {
  * Returns system-wide historical metrics for dashboard overview
  * Query params: ?days=3 (default), ?limit=20 (max snapshots)
  */
-router.get('/overview-trends', async (req, res) => {
+router.get('/overview-trends', historyValidators.getOverviewTrends, handleValidationErrors, async (req, res) => {
     try {
-        const days = parseInt(req.query.days) || 3;
-        const limit = parseInt(req.query.limit) || 20;
+        const days = req.query.days || 3;
+        const limit = req.query.limit || 20;
         
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
@@ -142,9 +144,9 @@ router.get('/overview-trends', async (req, res) => {
  * Returns severity-specific trends for sparklines
  * Query params: ?days=3 (default)
  */
-router.get('/severity-trends', async (req, res) => {
+router.get('/severity-trends', historyValidators.getSeverityTrends, handleValidationErrors, async (req, res) => {
     try {
-        const days = parseInt(req.query.days) || 3;
+        const days = req.query.days || 3;
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
         const [snapshots] = await pool.query(`
@@ -202,14 +204,10 @@ router.get('/severity-trends', async (req, res) => {
  * Returns per-site advisory count history
  * Query params: ?days=3 (default)
  */
-router.get('/site-trends/:siteId', async (req, res) => {
+router.get('/site-trends/:siteId', historyValidators.getSiteTrends, handleValidationErrors, async (req, res) => {
     try {
-        const siteId = parseInt(req.params.siteId);
-        const days = parseInt(req.query.days) || 3;
-        
-        if (isNaN(siteId)) {
-            return res.status(400).json({ error: 'Invalid site ID' });
-        }
+        const siteId = req.params.siteId;
+        const days = req.query.days || 3;
         
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
