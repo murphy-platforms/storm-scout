@@ -35,7 +35,6 @@ build/
 tmp/
 temp/
 .deploy.config.local
-.ftpconfig
 *.zip
 *.tar.gz
 

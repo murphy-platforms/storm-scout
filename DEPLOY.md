@@ -17,17 +17,18 @@ export DEPLOY_FRONTEND_PATH="~/public_html"
 
 ### 2. Test SSH Connection
 
-Make sure you can SSH into your server:
+Make sure you can SSH into your server (note: uses port REDACTED_PORT):
 
 ```bash
-ssh REDACTED_USER@your-domain.example.com
+ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com
 ```
 
-If using a specific SSH key, configure it in `~/.ssh/config`:
+Configure in `~/.ssh/config` for convenience:
 
 ```
 Host your-domain.example.com
     User REDACTED_USER
+    Port REDACTED_PORT
     IdentityFile ~/.ssh/id_ed25519_deploy
 ```
 
@@ -60,15 +61,15 @@ If the script doesn't work, deploy manually:
 
 ### Backend:
 ```bash
-rsync -avz --exclude 'node_modules/' --exclude '*.db*' --exclude '.env' \
+rsync -avz -e "ssh -p REDACTED_PORT" --exclude 'node_modules/' --exclude '*.db*' --exclude '.env' \
   ./backend/ REDACTED_USER@your-domain.example.com:~/storm-scout/
 
-ssh REDACTED_USER@your-domain.example.com "cd ~/storm-scout && source ~/nodevenv/storm-scout/20/bin/activate && npm install --production"
+ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com "cd ~/storm-scout && source ~/nodevenv/storm-scout/20/bin/activate && npm install --production"
 ```
 
 ### Frontend:
 ```bash
-rsync -avz ./frontend/ REDACTED_USER@your-domain.example.com:~/public_html/
+rsync -avz -e "ssh -p REDACTED_PORT" ./frontend/ REDACTED_USER@your-domain.example.com:~/public_html/
 ```
 
 ### Restart:
@@ -78,8 +79,8 @@ Go to cPanel → Node.js → Restart "storm-scout" app
 
 ### SSH Connection Fails
 - Check `DEPLOY_HOST` and `DEPLOY_USER` in `.deploy.config.local`
-- Verify SSH key: `ssh -i ~/.ssh/id_ed25519_deploy REDACTED_USER@your-domain.example.com`
-- Check `~/.ssh/config` for host configuration
+- Verify SSH key: `ssh -p REDACTED_PORT -i ~/.ssh/id_ed25519_deploy REDACTED_USER@your-domain.example.com`
+- Check `~/.ssh/config` for host configuration (must include `Port REDACTED_PORT`)
 
 ### rsync: command not found
 Make sure rsync is installed:
@@ -94,7 +95,7 @@ brew install rsync
 ### Database Not Initializing
 Manually initialize on server:
 ```bash
-ssh REDACTED_USER@your-domain.example.com
+ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com
 cd ~/storm-scout
 source ~/nodevenv/storm-scout/20/bin/activate
 npm run init-db
