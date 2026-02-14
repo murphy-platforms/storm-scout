@@ -2,210 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=***REDACTED_GA_ID***"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '***REDACTED_GA_ID***');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map View - Storm Scout</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Storm Scout - Map View</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Map-specific styles */
         #map {
-            height: calc(100vh - 220px);
+            height: calc(100vh - 200px);
             min-height: 500px;
             width: 100%;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--color-border);
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
-
-        .map-container {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .map-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .map-controls {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-        }
-
-        .map-controls h3 {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--color-text-primary);
-            margin-bottom: 0.75rem;
-        }
-
-        .filter-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.625rem 0;
-            border-bottom: 1px solid var(--color-border);
-            cursor: pointer;
-        }
-
-        .filter-toggle:last-child {
-            border-bottom: none;
-        }
-
-        .filter-toggle input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--color-primary);
-            cursor: pointer;
-        }
-
-        .filter-toggle label {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-        }
-
-        .filter-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .filter-dot.critical { background: var(--color-critical); box-shadow: 0 0 8px var(--color-critical); }
-        .filter-dot.high { background: var(--color-high); }
-        .filter-dot.moderate { background: var(--color-moderate); }
-        .filter-dot.low { background: var(--color-low); }
-
-        .filter-count {
-            padding: 0.125rem 0.5rem;
-            background: var(--color-bg-tertiary);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            color: var(--color-text-muted);
-        }
-
-        /* Legend */
+        
         .map-legend {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
+            background: white;
             padding: 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
-
-        .map-legend h3 {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--color-text-primary);
-            margin-bottom: 0.75rem;
-        }
-
+        
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.625rem;
-            padding: 0.375rem 0;
-            font-size: 0.8125rem;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
         }
-
-        .legend-marker {
-            width: 24px;
-            height: 24px;
+        
+        .legend-icon {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            font-size: 0.625rem;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-
-        .legend-marker.critical { background: var(--color-critical); }
-        .legend-marker.high { background: var(--color-high); }
-        .legend-marker.moderate { background: var(--color-moderate); color: #000; }
-        .legend-marker.low { background: var(--color-low); color: #000; }
-
-        .legend-text {
-            color: var(--color-text-secondary);
-        }
-
-        /* Map buttons */
-        .map-actions {
-            display: flex;
-            gap: 0.5rem;
+        
+        .map-controls {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
             margin-bottom: 1rem;
         }
-
-        .map-btn {
-            padding: 0.5rem 1rem;
-            background: var(--color-bg-tertiary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            color: var(--color-text-secondary);
-            font-size: 0.8125rem;
-            cursor: pointer;
-            transition: var(--transition-base);
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-
-        .map-btn:hover {
-            background: var(--color-bg-card);
-            color: var(--color-text-primary);
-            border-color: var(--color-border-hover);
-        }
-
-        /* Stats row */
-        .map-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .map-stat-card {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition-base);
-        }
-
-        .map-stat-card:hover {
-            border-color: var(--color-border-hover);
-        }
-
-        .map-stat-card.disabled {
-            opacity: 0.5;
-        }
-
-        .map-stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        .map-stat-value.critical { color: var(--color-critical); }
-        .map-stat-value.high { color: var(--color-high); }
-        .map-stat-value.moderate { color: var(--color-moderate); }
-
-        .map-stat-label {
-            font-size: 0.75rem;
-            color: var(--color-text-muted);
-        }
-
-        /* Custom leaflet marker */
+        
+        /* Custom marker styles */
         .severity-marker {
             border-radius: 50%;
             border: 3px solid white;
@@ -217,347 +67,196 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-
+        
         .severity-marker:hover {
             transform: scale(1.2);
-            z-index: 1000 !important;
+            z-index: 1000;
         }
-
-        .marker-critical {
-            background-color: var(--color-critical);
+        
+        .marker-extreme {
+            background-color: #dc3545;
             animation: pulse-marker 2s infinite;
         }
-
-        .marker-high {
-            background-color: var(--color-high);
+        
+        .marker-severe {
+            background-color: #fd7e14;
         }
-
+        
         .marker-moderate {
-            background-color: var(--color-moderate);
+            background-color: #ffc107;
             color: #000;
         }
-
-        .marker-low {
-            background-color: var(--color-low);
-            color: #000;
+        
+        .marker-minor {
+            background-color: #6c757d;
         }
-
+        
         @keyframes pulse-marker {
             0%, 100% {
-                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 0 rgba(239, 68, 68, 0.7);
+                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 0 rgba(220, 53, 69, 0.7);
             }
             50% {
-                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 15px rgba(239, 68, 68, 0);
+                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 15px rgba(220, 53, 69, 0);
             }
         }
-
-        /* Leaflet popup styling */
+        
+        /* Leaflet popup customization */
         .leaflet-popup-content-wrapper {
-            background: var(--color-bg-card);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
+            border-radius: 0.375rem;
         }
-
-        .leaflet-popup-content {
-            margin: 0;
-            color: var(--color-text-primary);
-        }
-
-        .leaflet-popup-tip {
-            background: var(--color-bg-card);
-        }
-
+        
         .site-popup {
-            min-width: 240px;
-            padding: 1rem;
+            min-width: 250px;
         }
-
-        .site-popup-header {
-            margin-bottom: 0.75rem;
+        
+        .site-popup h6 {
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
-
-        .site-popup-header h4 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            color: var(--color-text-primary);
+        
+        .site-popup .badge {
+            margin-right: 0.25rem;
             margin-bottom: 0.25rem;
-        }
-
-        .site-popup-location {
-            font-size: 0.8125rem;
-            color: var(--color-text-muted);
-        }
-
-        .site-popup-badges {
-            display: flex;
-            gap: 0.375rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .popup-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.6875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .popup-badge.critical { background: rgba(239, 68, 68, 0.15); color: var(--color-critical); }
-        .popup-badge.high { background: rgba(249, 115, 22, 0.15); color: var(--color-high); }
-        .popup-badge.moderate { background: rgba(234, 179, 8, 0.15); color: var(--color-moderate); }
-        .popup-badge.low { background: rgba(34, 197, 94, 0.15); color: var(--color-low); }
-        .popup-badge.new { background: rgba(34, 197, 94, 0.15); color: var(--color-low); }
-
-        .site-popup-stats {
-            font-size: 0.8125rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 0.75rem;
-        }
-
-        .site-popup-btn {
-            display: block;
-            width: 100%;
-            padding: 0.5rem;
-            background: var(--color-primary);
-            border: none;
-            border-radius: var(--radius-md);
-            color: white;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            transition: var(--transition-base);
-        }
-
-        .site-popup-btn:hover {
-            background: var(--color-primary-dark);
-            color: white;
-        }
-
-        @media (max-width: 1024px) {
-            .map-container {
-                grid-template-columns: 1fr;
-            }
-
-            .map-sidebar {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-
-            .map-controls, .map-legend {
-                flex: 1;
-                min-width: 200px;
-            }
-
-            #map {
-                height: 60vh;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .map-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="14" stroke="url(#logo-gradient)" stroke-width="2"/>
-                    <path d="M16 6 L18 14 L26 16 L18 18 L16 26 L14 18 L6 16 L14 14 Z" fill="url(#logo-gradient)"/>
-                    <defs>
-                        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#3b82f6"/>
-                            <stop offset="100%" stop-color="#8b5cf6"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <span>Storm Scout</span>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-cloud-lightning"></i> Storm Scout
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="map.html">Map View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
+                </ul>
             </div>
         </div>
-        <nav class="sidebar-nav">
-            <a href="index.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7" rx="1"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1"/>
-                </svg>
-                Overview
-            </a>
-            <a href="advisories.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                Advisories
-            </a>
-            <a href="sites.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Sites
-            </a>
-            <a href="map.html" class="nav-item active">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
-                    <line x1="8" y1="2" x2="8" y2="18"/>
-                    <line x1="16" y1="6" x2="16" y2="22"/>
-                </svg>
-                Map View
-            </a>
-            <a href="filters.html" class="nav-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-                </svg>
-                Settings
-            </a>
-        </nav>
-    </aside>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Top Bar -->
-        <header class="top-bar">
-            <div class="top-bar-left">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"/>
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <line x1="3" y1="18" x2="21" y2="18"/>
-                    </svg>
-                </button>
-                <h1>Map View</h1>
+    <div class="container-fluid mt-4">
+        <div class="row mb-3">
+            <div class="col-12">
+                <h1 class="h2"><i class="bi bi-geo-alt-fill"></i> Map View</h1>
+                <p class="text-muted">Interactive map showing all sites color-coded by highest severity</p>
             </div>
-            <div class="top-bar-right">
-                <span class="filter-count" id="visible-count">0 sites visible</span>
-                <button class="btn btn-secondary" onclick="loadMapData()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/>
-                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-                    </svg>
-                    Refresh
-                </button>
-            </div>
-        </header>
+        </div>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-content">
-            <!-- Stats Row -->
-            <div class="map-stats">
-                <div class="map-stat-card" onclick="toggleFilter('Extreme')">
-                    <div class="map-stat-value critical" id="extreme-count">0</div>
-                    <div class="map-stat-label">Extreme Sites</div>
-                </div>
-                <div class="map-stat-card" onclick="toggleFilter('Severe')">
-                    <div class="map-stat-value high" id="severe-count">0</div>
-                    <div class="map-stat-label">Severe Sites</div>
-                </div>
-                <div class="map-stat-card" onclick="toggleFilter('Moderate')">
-                    <div class="map-stat-value moderate" id="moderate-count">0</div>
-                    <div class="map-stat-label">Moderate Sites</div>
-                </div>
-                <div class="map-stat-card">
-                    <div class="map-stat-value" id="total-count">0</div>
-                    <div class="map-stat-label">Total Impacted</div>
-                </div>
-            </div>
-
-            <!-- Map Container -->
-            <div class="map-container">
-                <div class="map-main">
-                    <div class="map-actions">
-                        <button class="map-btn" onclick="fitAllMarkers()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="15 3 21 3 21 9"/>
-                                <polyline points="9 21 3 21 3 15"/>
-                                <line x1="21" y1="3" x2="14" y2="10"/>
-                                <line x1="3" y1="21" x2="10" y2="14"/>
-                            </svg>
-                            Fit All Sites
-                        </button>
-                        <button class="map-btn" onclick="resetMap()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="1 4 1 10 7 10"/>
-                                <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
-                            </svg>
-                            Reset View
-                        </button>
-                    </div>
-                    <div id="map"></div>
-                </div>
-
-                <div class="map-sidebar">
-                    <!-- Filters -->
-                    <div class="map-controls">
-                        <h3>Filter by Severity</h3>
-                        <div class="filter-toggle">
-                            <input type="checkbox" id="filterExtreme" checked onchange="applyFilters()">
-                            <label for="filterExtreme">
-                                <span class="filter-dot critical"></span>
-                                Extreme
-                            </label>
-                            <span class="filter-count" id="filter-extreme-count">0</span>
+        <!-- Map Controls -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <div class="map-controls">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label mb-0 me-2">Filter by Severity:</label>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="checkbox" class="btn-check" id="filterExtreme" checked>
+                                <label class="btn btn-outline-danger" for="filterExtreme">Extreme</label>
+                                
+                                <input type="checkbox" class="btn-check" id="filterSevere" checked>
+                                <label class="btn btn-outline-warning" for="filterSevere">Severe</label>
+                                
+                                <input type="checkbox" class="btn-check" id="filterModerate" checked>
+                                <label class="btn btn-outline-secondary" for="filterModerate">Moderate</label>
+                            </div>
                         </div>
-                        <div class="filter-toggle">
-                            <input type="checkbox" id="filterSevere" checked onchange="applyFilters()">
-                            <label for="filterSevere">
-                                <span class="filter-dot high"></span>
-                                Severe
-                            </label>
-                            <span class="filter-count" id="filter-severe-count">0</span>
+                        <div class="col-md-4">
+                            <button class="btn btn-sm btn-primary" onclick="fitAllMarkers()">
+                                <i class="bi bi-arrows-fullscreen"></i> Fit All Sites
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="resetMap()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </button>
                         </div>
-                        <div class="filter-toggle">
-                            <input type="checkbox" id="filterModerate" checked onchange="applyFilters()">
-                            <label for="filterModerate">
-                                <span class="filter-dot moderate"></span>
-                                Moderate
-                            </label>
-                            <span class="filter-count" id="filter-moderate-count">0</span>
-                        </div>
-                        <div class="filter-toggle">
-                            <input type="checkbox" id="filterMinor" checked onchange="applyFilters()">
-                            <label for="filterMinor">
-                                <span class="filter-dot low"></span>
-                                Minor
-                            </label>
-                            <span class="filter-count" id="filter-minor-count">0</span>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-secondary" id="visibleSiteCount">0 sites visible</span>
                         </div>
                     </div>
-
-                    <!-- Legend -->
-                    <div class="map-legend">
-                        <h3>Legend</h3>
-                        <div class="legend-item">
-                            <div class="legend-marker critical">3</div>
-                            <span class="legend-text">Extreme - Immediate action</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-marker high">2</div>
-                            <span class="legend-text">Severe - High impact</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-marker moderate">1</div>
-                            <span class="legend-text">Moderate - Monitor</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-marker low">1</div>
-                            <span class="legend-text">Minor - Low impact</span>
-                        </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="map-legend">
+                    <h6 class="mb-3">Severity Legend</h6>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-extreme"></div>
+                        <span><strong>Extreme</strong> - Immediate action required</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-severe"></div>
+                        <span><strong>Severe</strong> - High impact</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-moderate"></div>
+                        <span><strong>Moderate</strong> - Monitor closely</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-minor"></div>
+                        <span><strong>Minor</strong> - Low impact</span>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
 
+        <!-- Map Container -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Extreme')" title="Click to toggle Extreme filter">
+                    <div class="card-body">
+                        <h5 class="text-danger" id="extremeCount">0</h5>
+                        <small class="text-muted">Extreme Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Severe')" title="Click to toggle Severe filter">
+                    <div class="card-body">
+                        <h5 class="text-warning" id="severeCount">0</h5>
+                        <small class="text-muted">Severe Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Moderate')" title="Click to toggle Moderate filter">
+                    <div class="card-body">
+                        <h5 class="text-secondary" id="moderateCount">0</h5>
+                        <small class="text-muted">Moderate Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center static-card">
+                    <div class="card-body">
+                        <h5 id="totalSitesCount">0</h5>
+                        <small class="text-muted">Total Impacted</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
@@ -567,75 +266,71 @@
         let map;
         let markers = [];
         let markerLayer;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initMap();
-            loadMapData();
-            document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
-                document.getElementById('sidebar').classList.toggle('open');
-            });
-        });
-
+        
+        // Initialize map
         function initMap() {
-            map = L.map('map', {
-                zoomControl: true,
-                attributionControl: true
-            }).setView([39.8283, -98.5795], 4);
-
-            // Dark theme tile layer
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO',
+            map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
-
+            
             markerLayer = L.layerGroup().addTo(map);
-
-            map.on('moveend', updateVisibleCount);
         }
-
+        
         async function loadMapData() {
             try {
+                // Initialize filters first
                 await AlertFilters.init();
-
+                
                 const [allAdvisories, allSites] = await Promise.all([
                     API.getActiveAdvisories(),
                     API.getSites()
                 ]);
-
+                
+                // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
+                
+                // Aggregate FILTERED advisories by site
                 const aggregated = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
-
+                
+                // Create map of aggregated data
                 const aggMap = new Map();
                 aggregated.forEach(site => {
                     aggMap.set(site.site_id, site);
                 });
-
+                
+                // Filter to sites with advisories and add coordinates
                 const sitesWithAdvisories = allSites
                     .filter(site => aggMap.has(site.id))
                     .map(site => ({
                         ...site,
                         ...aggMap.get(site.id)
                     }));
-
+                
                 renderMarkers(sitesWithAdvisories);
                 updateStats(aggregated);
-
+                
             } catch (error) {
                 console.error('Failed to load map data:', error);
+                alert('Failed to load map data. Please refresh the page.');
             }
         }
-
+        
         function renderMarkers(sites) {
+            // Clear existing markers
             markerLayer.clearLayers();
             markers = [];
-
+            
             sites.forEach(site => {
                 if (!site.latitude || !site.longitude) return;
-
-                const severity = site.highest_severity || 'Minor';
+                
+                const severity = site.highest_severity;
                 const severityClass = `marker-${severity.toLowerCase()}`;
-
-                const iconHtml = `<div class="severity-marker ${severityClass}" style="width: 30px; height: 30px;">${site.unique_advisory_count || 1}</div>`;
+                
+                // Create custom div icon
+                const iconHtml = `<div class="severity-marker ${severityClass}" style="width: 30px; height: 30px;">${site.unique_advisory_count}</div>`;
                 const customIcon = L.divIcon({
                     html: iconHtml,
                     className: '',
@@ -643,124 +338,147 @@
                     iconAnchor: [15, 15],
                     popupAnchor: [0, -15]
                 });
-
+                
+                // Create marker
                 const marker = L.marker([site.latitude, site.longitude], { icon: customIcon });
-                const sevClass = severity.toLowerCase();
-
+                
+                // Create popup content
                 const popupContent = `
                     <div class="site-popup">
-                        <div class="site-popup-header">
-                            <h4>${site.site_code || site.site_id} - ${site.name}</h4>
-                            <div class="site-popup-location">${site.city}, ${site.state}</div>
-                        </div>
-                        <div class="site-popup-badges">
-                            <span class="popup-badge ${sevClass}">${severity}</span>
-                            ${site.new_count > 0 ? `<span class="popup-badge new">${site.new_count} NEW</span>` : ''}
-                        </div>
-                        <div class="site-popup-stats">
-                            <strong>${site.unique_advisory_count || 1}</strong> unique alerts
-                            ${site.total_zone_count && site.total_zone_count !== site.unique_advisory_count ? 
-                                ` (${site.total_zone_count} zones)` : ''}
-                        </div>
-                        <a href="site-detail.html?site=${site.site_code || site.site_id}" class="site-popup-btn">
-                            View Details →
+                        <h6><strong>${site.site_code}</strong> - ${site.name}</h6>
+                        <p class="mb-2">
+                            <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
+                        </p>
+                        <p class="mb-2">
+                            <span class="badge severity-${severity.toLowerCase()}">${severity}</span>
+                            ${site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : ''}
+                        </p>
+                        <p class="mb-2">
+                            <strong>${site.unique_advisory_count}</strong> unique alerts
+                            ${site.total_zone_count !== site.unique_advisory_count ? 
+                                `<small class="text-muted">(${site.total_zone_count} zones)</small>` : ''}
+                        </p>
+                        <p class="mb-2">
+                            <strong>Highest Alert:</strong><br>
+                            ${site.highest_severity_advisory.advisory_type}
+                        </p>
+                        <a href="site-detail.html?site=${site.site_code}" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-arrow-right-circle"></i> View Details
                         </a>
                     </div>
                 `;
-
-                marker.bindPopup(popupContent, {
-                    maxWidth: 280,
-                    className: 'dark-popup'
-                });
-
+                
+                marker.bindPopup(popupContent);
+                
+                // Add to layer and tracking
                 marker.addTo(markerLayer);
-                markers.push({ marker, site, severity });
+                markers.push({
+                    marker,
+                    site,
+                    severity
+                });
             });
-
+            
+            // Fit map to show all markers
             if (markers.length > 0) {
-                fitAllMarkers();
+                const group = L.featureGroup(markers.map(m => m.marker));
+                map.fitBounds(group.getBounds().pad(0.1));
             }
-
+            
             updateVisibleCount();
         }
-
+        
         function updateStats(sites) {
             const counts = {
                 extreme: sites.filter(s => s.highest_severity === 'Extreme').length,
                 severe: sites.filter(s => s.highest_severity === 'Severe').length,
-                moderate: sites.filter(s => s.highest_severity === 'Moderate').length,
-                minor: sites.filter(s => s.highest_severity === 'Minor').length
+                moderate: sites.filter(s => s.highest_severity === 'Moderate').length
             };
-
-            document.getElementById('extreme-count').textContent = counts.extreme;
-            document.getElementById('severe-count').textContent = counts.severe;
-            document.getElementById('moderate-count').textContent = counts.moderate;
-            document.getElementById('total-count').textContent = sites.length;
-
-            document.getElementById('filter-extreme-count').textContent = counts.extreme;
-            document.getElementById('filter-severe-count').textContent = counts.severe;
-            document.getElementById('filter-moderate-count').textContent = counts.moderate;
-            document.getElementById('filter-minor-count').textContent = counts.minor;
+            
+            document.getElementById('extremeCount').textContent = counts.extreme;
+            document.getElementById('severeCount').textContent = counts.severe;
+            document.getElementById('moderateCount').textContent = counts.moderate;
+            document.getElementById('totalSitesCount').textContent = sites.length;
         }
-
+        
         function updateVisibleCount() {
-            const visible = markers.filter(m => {
-                try {
-                    return map.getBounds().contains(m.marker.getLatLng());
-                } catch (e) {
-                    return false;
-                }
-            }).length;
-            document.getElementById('visible-count').textContent = `${visible} sites visible`;
+            const visible = markers.filter(m => map.getBounds().contains(m.marker.getLatLng())).length;
+            document.getElementById('visibleSiteCount').textContent = `${visible} sites visible`;
         }
-
+        
         function fitAllMarkers() {
             if (markers.length > 0) {
                 const group = L.featureGroup(markers.map(m => m.marker));
                 map.fitBounds(group.getBounds().pad(0.1));
             }
         }
-
+        
         function resetMap() {
             map.setView([39.8283, -98.5795], 4);
             document.getElementById('filterExtreme').checked = true;
             document.getElementById('filterSevere').checked = true;
             document.getElementById('filterModerate').checked = true;
-            document.getElementById('filterMinor').checked = true;
             applyFilters();
         }
-
+        
         function applyFilters() {
             const showExtreme = document.getElementById('filterExtreme').checked;
             const showSevere = document.getElementById('filterSevere').checked;
             const showModerate = document.getElementById('filterModerate').checked;
-            const showMinor = document.getElementById('filterMinor').checked;
-
+            
             markers.forEach(({ marker, severity }) => {
                 const show = (
                     (severity === 'Extreme' && showExtreme) ||
                     (severity === 'Severe' && showSevere) ||
                     (severity === 'Moderate' && showModerate) ||
-                    (severity === 'Minor' && showMinor)
+                    severity === 'Minor'
                 );
-
+                
                 if (show) {
                     marker.addTo(markerLayer);
                 } else {
                     markerLayer.removeLayer(marker);
                 }
             });
-
+            
             updateVisibleCount();
+            updateStatCardStyles();
         }
-
+        
         function toggleFilter(severity) {
             const checkbox = document.getElementById(`filter${severity}`);
-            if (checkbox) {
-                checkbox.checked = !checkbox.checked;
-                applyFilters();
-            }
+            checkbox.checked = !checkbox.checked;
+            applyFilters();
         }
+        
+        function updateStatCardStyles() {
+            const filters = ['Extreme', 'Severe', 'Moderate'];
+            filters.forEach(severity => {
+                const checkbox = document.getElementById(`filter${severity}`);
+                const cards = document.querySelectorAll('.map-stat-card');
+                cards.forEach(card => {
+                    if (card.getAttribute('onclick')?.includes(severity)) {
+                        if (checkbox.checked) {
+                            card.classList.remove('filter-disabled');
+                        } else {
+                            card.classList.add('filter-disabled');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('filterExtreme').addEventListener('change', applyFilters);
+        document.getElementById('filterSevere').addEventListener('change', applyFilters);
+        document.getElementById('filterModerate').addEventListener('change', applyFilters);
+        
+        map?.on('moveend', updateVisibleCount);
+        
+        // Initialize
+        initMap();
+        loadMapData();
     </script>
+    <script src="js/ui-toggle.js"></script>
 </body>
 </html>
