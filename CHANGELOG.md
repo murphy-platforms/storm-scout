@@ -13,11 +13,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
 
 ### Planned
+- Historical data API endpoints for trend retrieval
+- Trend visualization dashboards
+- Predictive analytics based on historical patterns
 - Redis caching for API responses
 - API rate limiting with express-rate-limit
 - Unit tests with Jest
 - Input validation with joi
 - Database backup automation
+
+## [1.4.0] - 2026-02-14
+
+### Added
+- **Historical Snapshot System** - Automatic capture of system-wide and per-site metrics
+  - `system_snapshots` table for system-wide aggregates (severity counts, site statuses, advisory actions)
+  - `advisory_history` table for per-site historical snapshots
+  - Snapshots captured every 6 hours, retained for 3 days (12 snapshots)
+  - Automatic cleanup of data older than 3 days
+  - Transaction-safe capture with rollback on failure
+- **Snapshot Scheduler** - Integrated with main ingestion scheduler
+  - Initial snapshot runs 5 seconds after server start
+  - Recurring snapshots every 6 hours
+  - Error handling with webhook notifications
+  - Failure tracking and alerting
+
+### Fixed
+- **Database Connection Pattern** - Standardized across all models
+  - Fixed `db.query is not a function` errors in all model files
+  - Removed incorrect `await getDatabase()` calls (10+ instances in advisory.js, 8+ in site.js, 5+ in notice.js)
+  - Fixed `advisoryHistory.js` to use `getDatabase()` correctly (5 query methods)
+  - Fixed `capture-historical-snapshot.js` pool.getConnection() usage
+- **Site Status Column Mismatch** - Fixed INSERT/UPDATE logic in siteStatus.js
+  - Resolved "Column count doesn't match value count" errors during weather ingestion
+  - Fixed `decision_at` handling to use NULL default in INSERT, NOW() in UPDATE
+  - All 219 sites now update correctly during ingestion cycles
+- **Module Caching** - Resolved Passenger cache issues
+  - Implemented proper stop.txt → restart.txt cycle for complete module reload
+  - Zero errors in production after complete restart
+
+### Changed
+- **Operational Status Migration** - Completed conversion to 4-category system
+  - Migrated all sites from legacy (Open, At Risk, Closed) to new system (open_normal, open_restricted, pending, closed)
+  - Set decision tracking metadata for all migrated records
+  - Result: 202 open_normal, 17 open_restricted sites
+
+### Technical
+- Added database indexes for snapshot tables (site_id, snapshot_time)
+- Snapshot capture performance: ~2-3 seconds for all 219 sites
+- All models now use consistent database connection pattern: `const db = getDatabase()`
+- Improved error logging and troubleshooting capabilities
+
+### Performance
+- Minimal database impact from snapshots (optimized indexes)
+- No performance degradation during ingestion
+- Automatic cleanup prevents table bloat
+
+### Documentation
+- Added `HISTORICAL-SNAPSHOTS-DEPLOYMENT.md` with complete deployment details
+- Documented troubleshooting steps for module caching issues
+- Added verification queries and rollback procedures
 
 ## [1.3.2] - 2026-02-13
 

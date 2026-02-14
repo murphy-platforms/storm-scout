@@ -7,7 +7,7 @@ const { getDatabase } = require('../config/database');
 
 const NoticeModel = {
   async getAll(filters = {}) {
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT * FROM notices WHERE 1=1';
     const params = [];
     
@@ -38,7 +38,7 @@ const NoticeModel = {
   },
 
   async getActive(filters = {}) {
-    const db = await getDatabase();
+    const db = getDatabase();
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
     let query = 'SELECT * FROM notices WHERE effective_time <= ? AND (expiration_time IS NULL OR expiration_time > ?)';
     const params = [now, now];
@@ -65,7 +65,7 @@ const NoticeModel = {
   },
 
   async getById(id) {
-    const db = await getDatabase();
+    const db = getDatabase();
     try {
       const [rows] = await db.query('SELECT * FROM notices WHERE id = ?', [id]);
       return rows[0] || null;
@@ -76,7 +76,7 @@ const NoticeModel = {
   },
 
   async getCountByType(activeOnly = true) {
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT notice_type, COUNT(*) as count FROM notices';
     
     if (activeOnly) {
