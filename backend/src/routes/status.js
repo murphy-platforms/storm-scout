@@ -11,6 +11,8 @@ const AdvisoryModel = require('../models/advisory');
 const SiteStatusModel = require('../models/siteStatus');
 const { getLastIngestionTime } = require('../ingestion/noaa-ingestor');
 const cache = require('../utils/cache');
+const { handleValidationErrors } = require('../middleware/validate');
+const statusValidators = require('../validators/status');
 
 /**
  * GET /api/status/overview
@@ -96,7 +98,7 @@ router.get('/sites-impacted', async (req, res) => {
  * Get all site statuses with optional filters
  * Query params: operational_status, state
  */
-router.get('/sites', async (req, res) => {
+router.get('/sites', statusValidators.getSites, handleValidationErrors, async (req, res) => {
   try {
     const { operational_status, state } = req.query;
     const statuses = await SiteStatusModel.getAll({ operational_status, state });

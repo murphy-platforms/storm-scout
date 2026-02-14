@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0] - 2026-02-14
 
 ### Added
+- **Input Validation** - All API endpoints now validate and sanitize inputs
+  - New `express-validator` middleware for all routes
+  - Validates query params: severity, state, limit, days, etc.
+  - Validates route params: id must be positive integer
+  - Sanitizes strings: trim whitespace, uppercase state codes
+  - Type coercion with range limits (e.g., limit 1-100)
+  - Consistent 400 error responses with field-level details
+  - Files: `middleware/validate.js`, `validators/*.js`
+
 - **In-Memory Caching** - Reduces database load on high-traffic endpoints
   - New `cache.js` utility module using node-cache
   - Cached endpoints with TTL:
