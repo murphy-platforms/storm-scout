@@ -467,20 +467,46 @@ a.badge:hover {
 .action-badge-new {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
-    font-size: 0.9rem;
-    padding: 0.35rem 0.65rem;
+    font-size: 1rem;
+    padding: 0.45rem 0.85rem;
     font-weight: 700;
-    animation: highlight-new 3s ease-out;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+    animation: highlight-new 3s ease-out, pulse-new 2s ease-in-out 3s infinite;
+    position: relative;
 }
 
+/* Initial attention-grabbing animation */
 @keyframes highlight-new {
     0% {
         background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-        transform: scale(1.1);
+        transform: scale(1.15);
+        box-shadow: 0 4px 16px rgba(255, 193, 7, 0.6);
     }
     100% {
         background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         transform: scale(1);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+    }
+}
+
+/* Subtle continuous pulse after initial animation */
+@keyframes pulse-new {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 3px 12px rgba(40, 167, 69, 0.6);
+    }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .action-badge-new {
+        animation: none;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.5);
     }
 }
 
