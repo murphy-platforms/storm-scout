@@ -17,17 +17,18 @@ export DEPLOY_FRONTEND_PATH="~/public_html"
 
 ### 2. Test SSH Connection
 
-Make sure you can SSH into your server:
+Make sure you can SSH into your server (note: uses port 21098):
 
 ```bash
-ssh mwqtiakilx@your-domain.example.com
+ssh -p 21098 mwqtiakilx@your-domain.example.com
 ```
 
-If using a specific SSH key, configure it in `~/.ssh/config`:
+Configure in `~/.ssh/config` for convenience:
 
 ```
 Host your-domain.example.com
     User mwqtiakilx
+    Port 21098
     IdentityFile ~/.ssh/id_ed25519_prometric
 ```
 
@@ -60,15 +61,15 @@ If the script doesn't work, deploy manually:
 
 ### Backend:
 ```bash
-rsync -avz --exclude 'node_modules/' --exclude '*.db*' --exclude '.env' \
+rsync -avz -e "ssh -p 21098" --exclude 'node_modules/' --exclude '*.db*' --exclude '.env' \
   ./backend/ mwqtiakilx@your-domain.example.com:~/storm-scout/
 
-ssh mwqtiakilx@your-domain.example.com "cd ~/storm-scout && source ~/nodevenv/storm-scout/20/bin/activate && npm install --production"
+ssh -p 21098 mwqtiakilx@your-domain.example.com "cd ~/storm-scout && source ~/nodevenv/storm-scout/20/bin/activate && npm install --production"
 ```
 
 ### Frontend:
 ```bash
-rsync -avz ./frontend/ mwqtiakilx@your-domain.example.com:~/public_html/
+rsync -avz -e "ssh -p 21098" ./frontend/ mwqtiakilx@your-domain.example.com:~/public_html/
 ```
 
 ### Restart:
@@ -78,8 +79,8 @@ Go to cPanel → Node.js → Restart "storm-scout" app
 
 ### SSH Connection Fails
 - Check `DEPLOY_HOST` and `DEPLOY_USER` in `.deploy.config.local`
-- Verify SSH key: `ssh -i ~/.ssh/id_ed25519_prometric mwqtiakilx@your-domain.example.com`
-- Check `~/.ssh/config` for host configuration
+- Verify SSH key: `ssh -p 21098 -i ~/.ssh/id_ed25519_prometric mwqtiakilx@your-domain.example.com`
+- Check `~/.ssh/config` for host configuration (must include `Port 21098`)
 
 ### rsync: command not found
 Make sure rsync is installed:
@@ -94,7 +95,7 @@ brew install rsync
 ### Database Not Initializing
 Manually initialize on server:
 ```bash
-ssh mwqtiakilx@your-domain.example.com
+ssh -p 21098 mwqtiakilx@your-domain.example.com
 cd ~/storm-scout
 source ~/nodevenv/storm-scout/20/bin/activate
 npm run init-db
