@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const { getDatabase } = require('../config/database');
 
 class AdvisoryHistory {
     /**
@@ -36,7 +36,8 @@ class AdvisoryHistory {
             advisorySnapshot
         ];
         
-        const [result] = await db.query(query, params);
+        const connection = getDatabase();
+        const [result] = await connection.query(query, params);
         return result.insertId;
     }
     
@@ -62,7 +63,8 @@ class AdvisoryHistory {
             ORDER BY snapshot_time ASC
         `;
         
-        const [rows] = await db.query(query, [siteId, days]);
+        const connection = getDatabase();
+        const [rows] = await connection.query(query, [siteId, days]);
         return rows;
     }
     
@@ -77,7 +79,8 @@ class AdvisoryHistory {
             LIMIT 1
         `;
         
-        const [rows] = await db.query(query, [siteId]);
+        const connection = getDatabase();
+        const [rows] = await connection.query(query, [siteId]);
         return rows[0] || null;
     }
     
@@ -133,7 +136,8 @@ class AdvisoryHistory {
             WHERE snapshot_time >= DATE_SUB(NOW(), INTERVAL ? DAY)
         `;
         
-        const [rows] = await db.query(query, [days]);
+        const connection = getDatabase();
+        const [rows] = await connection.query(query, [days]);
         const siteIds = rows.map(r => r.site_id);
         
         const trends = await Promise.all(
@@ -155,7 +159,8 @@ class AdvisoryHistory {
             WHERE snapshot_time < DATE_SUB(NOW(), INTERVAL ? DAY)
         `;
         
-        const [result] = await db.query(query, [daysToKeep]);
+        const connection = getDatabase();
+        const [result] = await connection.query(query, [daysToKeep]);
         return result.affectedRows;
     }
 }

@@ -134,8 +134,7 @@ const SiteStatusModel = {
       values.push(decision_by);
       updates.push('decision_by = VALUES(decision_by)');
       
-      // Auto-set decision_at when decision_by is provided
-      fields.push('decision_at');
+      // Auto-set decision_at when decision_by is provided (using NOW() for both INSERT and UPDATE)
       updates.push('decision_at = NOW()');
     }
 

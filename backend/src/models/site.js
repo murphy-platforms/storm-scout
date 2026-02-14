@@ -12,7 +12,7 @@ const SiteModel = {
    * @returns {Promise<Array>} Array of site objects
    */
   async getAll(filters = {}) {
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT * FROM sites';
     const params = [];
     const conditions = [];
@@ -43,7 +43,7 @@ const SiteModel = {
    * @returns {Promise<Object|null>} Site object or null
    */
   async getById(id) {
-    const db = await getDatabase();
+    const db = getDatabase();
     const [rows] = await db.query('SELECT * FROM sites WHERE id = ?', [id]);
     return rows[0] || null;
   },
@@ -54,7 +54,7 @@ const SiteModel = {
    * @returns {Promise<Object|null>} Site object or null
    */
   async getBySiteCode(siteCode) {
-    const db = await getDatabase();
+    const db = getDatabase();
     const [rows] = await db.query('SELECT * FROM sites WHERE site_code = ?', [siteCode]);
     return rows[0] || null;
   },
@@ -66,7 +66,7 @@ const SiteModel = {
    */
   async getByIds(ids) {
     if (!ids || ids.length === 0) return [];
-    const db = await getDatabase();
+    const db = getDatabase();
     const placeholders = ids.map(() => '?').join(',');
     const [rows] = await db.query(
       `SELECT * FROM sites WHERE id IN (${placeholders})`,
@@ -81,7 +81,7 @@ const SiteModel = {
    * @returns {Promise<Array>} Array of site objects
    */
   async getByState(state) {
-    const db = await getDatabase();
+    const db = getDatabase();
     const [rows] = await db.query('SELECT * FROM sites WHERE state = ? ORDER BY city', [state]);
     return rows;
   },
@@ -94,7 +94,7 @@ const SiteModel = {
    * @returns {Array} Array of site objects with distance
    */
   async findNearby(lat, lon, radiusMiles = 50) {
-    const db = await getDatabase();
+    const db = getDatabase();
     // Using Haversine formula approximation
     const query = `
       SELECT *,
@@ -120,7 +120,7 @@ const SiteModel = {
    * @returns {Promise<Array>} Array of {state, count} objects
    */
   async getCountByState() {
-    const db = await getDatabase();
+    const db = getDatabase();
     const [rows] = await db.query(`
       SELECT state, COUNT(*) as count
       FROM sites
@@ -135,7 +135,7 @@ const SiteModel = {
    * @returns {Promise<Array>} Array of state codes
    */
   async getStates() {
-    const db = await getDatabase();
+    const db = getDatabase();
     const [rows] = await db.query('SELECT DISTINCT state FROM sites ORDER BY state');
     return rows.map(row => row.state);
   },
@@ -145,7 +145,7 @@ const SiteModel = {
    * @returns {Promise<Array>} Array of region names
    */
   async getRegions() {
-    const db = await getDatabase();
+    const db = getDatabase();
     const [rows] = await db.query('SELECT DISTINCT region FROM sites WHERE region IS NOT NULL ORDER BY region');
     return rows.map(row => row.region);
   }
