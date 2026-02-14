@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Jurisdiction filter dropdown (Federal, State, County, City)
   - Dark mode and high contrast support
   - Mobile responsive design
+- **Self-Hosted Inter Font** (BUG-PROD-009) - Removed Google Fonts CDN dependency
+  - Downloaded InterVariable.woff2 from official rsms/inter repository
+  - Created `beta/css/fonts.css` with @font-face declarations
+  - Eliminates external CDN dependency that could break typography
 - **Google Analytics (GA4)** - Added tracking to all frontend pages (***REDACTED_GA_ID***)
   - Enables visitor analytics and usage monitoring
   - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
@@ -43,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical
 - Migration: `20260214-add-severity-constraint-and-index.sql`
 - Updated `schema.sql` with new index and constraint
+- Self-hosted Inter font (352KB) in `beta/fonts/`
 
 ## [1.4.0] - 2026-02-14
 
