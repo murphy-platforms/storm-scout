@@ -2,320 +2,922 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=***REDACTED_GA_ID***"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '***REDACTED_GA_ID***');
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Storm Scout - Sites Impacted</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>Impacted Sites - Storm Scout</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Sites-specific styles */
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1rem;
+        }
+
+        .site-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .site-card:hover {
+            border-color: var(--color-border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .site-card.critical {
+            border-left: 4px solid var(--color-critical);
+        }
+
+        .site-card.high {
+            border-left: 4px solid var(--color-high);
+        }
+
+        .site-card.moderate {
+            border-left: 4px solid var(--color-moderate);
+        }
+
+        .site-card.low {
+            border-left: 4px solid var(--color-low);
+        }
+
+        .site-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .site-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .site-location {
+            font-size: 0.8125rem;
+            color: var(--color-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .site-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .status-badge.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-low);
+        }
+
+        .status-badge.impacted {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--color-critical);
+        }
+
+        .status-badge.monitoring {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--color-moderate);
+        }
+
+        .site-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .metric-value.critical { color: var(--color-critical); }
+        .metric-value.high { color: var(--color-high); }
+        .metric-value.moderate { color: var(--color-moderate); }
+
+        .metric-label {
+            font-size: 0.6875rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .weather-impacts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-top: 0.75rem;
+        }
+
+        .impact-tag {
+            padding: 0.25rem 0.5rem;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* List view styles */
+        .sites-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sites-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--color-bg-tertiary);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .sites-table th:first-child {
+            border-radius: var(--radius-md) 0 0 0;
+        }
+
+        .sites-table th:last-child {
+            border-radius: 0 var(--radius-md) 0 0;
+        }
+
+        .sites-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            vertical-align: middle;
+        }
+
+        .sites-table tr {
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .sites-table tbody tr:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        .site-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .severity-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .severity-indicator.critical { background: var(--color-critical); box-shadow: 0 0 8px var(--color-critical); }
+        .severity-indicator.high { background: var(--color-high); box-shadow: 0 0 8px var(--color-high); }
+        .severity-indicator.moderate { background: var(--color-moderate); }
+        .severity-indicator.low { background: var(--color-low); }
+
+        .site-name-info h4 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin-bottom: 0.125rem;
+        }
+
+        .site-name-info span {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .advisory-counts {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .advisory-count {
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .advisory-count.critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--color-critical);
+        }
+
+        .advisory-count.high {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--color-high);
+        }
+
+        .advisory-count.moderate {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--color-moderate);
+        }
+
+        .advisory-count.low {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-low);
+        }
+
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            background: var(--color-bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: 0.25rem;
+        }
+
+        .view-toggle button {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--color-text-muted);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .view-toggle button.active {
+            background: var(--color-bg-card);
+            color: var(--color-text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-toggle button:hover:not(.active) {
+            color: var(--color-text-secondary);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: var(--color-bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--color-text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .sites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sites-table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="bi bi-cloud-lightning"></i> Storm Scout
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="url(#logo-gradient)" stroke-width="2"/>
+                    <path d="M16 6 L18 14 L26 16 L18 18 L16 26 L14 18 L6 16 L14 14 Z" fill="url(#logo-gradient)"/>
+                    <defs>
+                        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3b82f6"/>
+                            <stop offset="100%" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Storm Scout</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                Overview
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="sites.html">Sites Impacted</a></li>
-                    <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
-                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+            <a href="advisories.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Advisories
+                <span class="nav-badge" id="nav-advisory-count">0</span>
+            </a>
+            <a href="sites.html" class="nav-item active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Sites
+                <span class="nav-badge" id="nav-site-count">0</span>
+            </a>
+            <a href="map.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                    <line x1="8" y1="2" x2="8" y2="18"/>
+                    <line x1="16" y1="6" x2="16" y2="22"/>
+                </svg>
+                Map View
+            </a>
+            <a href="filters.html" class="nav-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                </svg>
+                Settings
+            </a>
+        </nav>
+    </aside>
 
-    <div class="container-fluid mt-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="h2">Sites Impacted</h1>
-                <p class="text-muted">Testing centers currently impacted by weather advisories</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <h1>Impacted Sites</h1>
             </div>
-        </div>
-
-        <!-- Update Banner -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <div id="update-banner-container"></div>
+            <div class="top-bar-right">
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    Live Updates
+                </div>
+                <button class="btn btn-secondary" onclick="loadData()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                    </svg>
+                    Refresh
+                </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Active Filter Banner -->
-        <div class="row mb-3" id="activeFilterBanner" style="display: none;">
-            <div class="col-12">
-                <div class="alert alert-info d-flex justify-content-between align-items-center mb-0">
-                    <span>
-                        <i class="bi bi-funnel-fill"></i>
-                        <strong>Filtered:</strong> Showing <span id="activeFilterLabel"></span> sites
-                    </span>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="clearWeatherFilter()">
-                        <i class="bi bi-x-lg"></i> Clear Filter
-                    </button>
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Stats Row -->
+            <div class="stats-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="severity-card" style="--severity-color: var(--color-text-primary);">
+                    <div class="severity-card-content">
+                        <div class="severity-count" id="total-sites">0</div>
+                        <div class="severity-label">Total Sites</div>
+                    </div>
+                </div>
+                <div class="severity-card critical">
+                    <div class="severity-card-content">
+                        <div class="severity-count" id="critical-sites">0</div>
+                        <div class="severity-label">Critical Impact</div>
+                    </div>
+                </div>
+                <div class="severity-card high">
+                    <div class="severity-card-content">
+                        <div class="severity-count" id="high-sites">0</div>
+                        <div class="severity-label">High Impact</div>
+                    </div>
+                </div>
+                <div class="severity-card moderate">
+                    <div class="severity-card-content">
+                        <div class="severity-count" id="moderate-sites">0</div>
+                        <div class="severity-label">Moderate Impact</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <input type="text" class="form-control" id="searchBox" placeholder="Search sites...">
+            <!-- Filters Section -->
+            <div class="filter-section">
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Search sites by name or location...">
+                </div>
+                <div class="filter-controls">
+                    <select class="filter-select" id="state-filter">
+                        <option value="">All States</option>
+                    </select>
+                    <select class="filter-select" id="impact-filter">
+                        <option value="">All Impact Types</option>
+                    </select>
+                    <select class="filter-select" id="severity-filter">
+                        <option value="">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button class="active" id="grid-view-btn" onclick="setView('grid')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                            </svg>
+                            Grid
+                        </button>
+                        <button id="list-view-btn" onclick="setView('list')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="8" y1="6" x2="21" y2="6"/>
+                                <line x1="8" y1="12" x2="21" y2="12"/>
+                                <line x1="8" y1="18" x2="21" y2="18"/>
+                                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                <line x1="3" y1="18" x2="3.01" y2="18"/>
+                            </svg>
+                            List
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-2">
-                <select class="form-select" id="stateFilter">
-                    <option value="">All States</option>
-                </select>
+
+            <!-- Active Filters Pills -->
+            <div class="filter-pills" id="filter-pills" style="display: none;">
+                <!-- Dynamic filter pills -->
             </div>
-            <div class="col-md-2">
-                <select class="form-select" id="weatherImpactFilter">
-                    <option value="">All Weather Impacts</option>
-                    <option value="red">🔴 RED - High Impact</option>
-                    <option value="orange">🟠 ORANGE - Severe Impact</option>
-                    <option value="yellow">🟡 YELLOW - Moderate Impact</option>
-                    <option value="green">🟢 GREEN - Low/No Impact</option>
-                </select>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loading-state">
+                <div class="spinner"></div>
+                <p>Loading impacted sites...</p>
             </div>
-            <div class="col-md-2">
-                <select class="form-select" id="statusFilter">
-                    <option value="">All Statuses</option>
-                    <option value="Closed">Closed</option>
-                    <option value="At Risk">At Risk</option>
-                </select>
+
+            <!-- Sites Grid View -->
+            <div class="sites-grid" id="sites-grid" style="display: none;">
+                <!-- Dynamic site cards -->
+            </div>
+
+            <!-- Sites Table View -->
+            <div class="sites-table-container" id="sites-table-container" style="display: none;">
+                <table class="sites-table">
+                    <thead>
+                        <tr>
+                            <th>Site Name</th>
+                            <th>State</th>
+                            <th>Weather Impacts</th>
+                            <th>Active Advisories</th>
+                            <th>Highest Severity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sites-table-body">
+                        <!-- Dynamic table rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-state-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <h3>No Sites Found</h3>
+                <p>No sites match your current filters. Try adjusting your search criteria.</p>
             </div>
         </div>
+    </main>
 
-        <div class="row" id="sitesContainer">
-            <div class="col-12 text-center">
-                <span class="spinner-border"></span> Loading...
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-light text-center py-3 mt-5">
-        <div class="container">
-            <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/alert-filters.js"></script>
-    <script src="js/update-banner.js"></script>
-    <script src="js/aggregation.js"></script>
+    <script src="js/site-aggregator.js"></script>
     <script>
         let allSites = [];
         let allAdvisories = [];
-        
-        async function loadSites() {
+        let currentView = 'grid';
+        let weatherImpactTypes = new Set();
+        let states = new Set();
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setupEventListeners();
+            applyUrlFilters();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('search-input').addEventListener('input', debounce(filterSites, 300));
+            document.getElementById('state-filter').addEventListener('change', filterSites);
+            document.getElementById('impact-filter').addEventListener('change', filterSites);
+            document.getElementById('severity-filter').addEventListener('change', filterSites);
+
+            // Mobile menu
+            document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        }
+
+        function applyUrlFilters() {
+            const params = new URLSearchParams(window.location.search);
+            const siteFilter = params.get('site');
+            const impactFilter = params.get('weather_impact');
+
+            if (siteFilter) {
+                document.getElementById('search-input').value = siteFilter;
+            }
+            if (impactFilter) {
+                setTimeout(() => {
+                    document.getElementById('impact-filter').value = impactFilter;
+                    filterSites();
+                }, 500);
+            }
+        }
+
+        async function loadData() {
+            showLoading(true);
             try {
-                // Load both site status and all advisories
                 const [sites, advisories] = await Promise.all([
                     API.getImpactedSites(),
                     API.getActiveAdvisories()
                 ]);
-                
+
                 allSites = sites;
                 allAdvisories = advisories;
-                
-                // Apply filters and recalculate advisory counts
-                const filteredData = applyFiltersToSites(sites, advisories);
-                renderSites(filteredData);
-                
-                // Populate state filter
-                const states = [...new Set(filteredData.map(s => s.state))].sort();
-                const stateSelect = document.getElementById('stateFilter');
-                states.forEach(state => {
-                    const option = document.createElement('option');
-                    option.value = state;
-                    option.textContent = state;
-                    stateSelect.appendChild(option);
-                });
-            } catch (error) {
-                document.getElementById('sitesContainer').innerHTML = 
-                    '<div class="col-12 text-center text-danger">Failed to load impacted sites</div>';
-            }
-        }
-        
-        // Apply user's filter preferences and aggregate
-        function applyFiltersToSites(sites, advisories) {
-            // Filter advisories based on user preferences
-            const filteredAdvisories = AlertFilters.filterAdvisories(advisories);
-            
-            // Aggregate advisories by site with deduplication
-            const aggregatedSites = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
-            
-            // Create map for quick lookup
-            const siteMap = new Map();
-            aggregatedSites.forEach(site => {
-                siteMap.set(site.site_id, site);
-            });
-            
-            // Enhance original sites with aggregation data
-            return sites
-                .map(site => {
-                    const aggData = siteMap.get(site.site_id);
-                    if (!aggData) return null;
-                    
+
+                // Build aggregated site data
+                const aggregatedSites = SiteAggregator.aggregateBySite(advisories);
+                allSites = allSites.map(site => {
+                    const aggregated = aggregatedSites.find(s => s.siteId === site.site_id);
                     return {
                         ...site,
-                        advisory_count: aggData.unique_advisory_count,
-                        highest_severity: aggData.highest_severity,
-                        highest_severity_advisory: aggData.highest_severity_advisory,
-                        new_count: aggData.new_count,
-                        total_zone_count: aggData.total_zone_count
+                        advisories: aggregated?.advisories || [],
+                        advisoryCount: aggregated?.advisoryCount || 0,
+                        highestSeverity: aggregated?.highestSeverity || 'low',
+                        weatherTypes: aggregated?.weatherTypes || []
                     };
-                })
-                .filter(site => site !== null); // Remove sites without advisories
-        }
-        
-        function renderSites(sites) {
-            const container = document.getElementById('sitesContainer');
-            if (sites.length === 0) {
-                container.innerHTML = '<div class="col-12 text-center text-muted">No sites currently impacted</div>';
-                return;
+                });
+
+                // Collect unique values for filters
+                allSites.forEach(site => {
+                    if (site.state) states.add(site.state);
+                    site.weatherTypes?.forEach(type => weatherImpactTypes.add(type));
+                });
+
+                populateFilters();
+                updateStats();
+                updateNavCounts();
+                filterSites();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load site data');
             }
-            
-            // Sort by urgency (sites with highest severity first)
-            const sortedSites = [...sites].sort((a, b) => {
-                const rankA = SiteAggregator.getSeverityRank(a.highest_severity || 'Minor');
-                const rankB = SiteAggregator.getSeverityRank(b.highest_severity || 'Minor');
-                return rankB - rankA;
-            });
-            
-            container.innerHTML = sortedSites.map(site => {
-                const severityClass = site.highest_severity ? `site-card-${site.highest_severity.toLowerCase()}` : '';
-                const advisory = site.highest_severity_advisory;
-                
-                return `
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
-                        <div class="card site-card site-card-clickable ${severityClass}">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h5 class="card-title mb-0 text-dark">
-                                        <strong>${site.site_code}</strong> - ${site.name}
-                                    </h5>
-                                    ${site.highest_severity ? 
-                                        `<span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
-                                            ${site.highest_severity}
-                                        </span>` : ''}
-                                </div>
-                                
-                                ${advisory ? `
-                                <div class="mb-2">
-                                    <strong style="color: #dc3545;">${advisory.advisory_type}</strong>
-                                    ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
-                                </div>
-                                ` : ''}
-                                
-                                <p class="card-text text-dark">
-                                    <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}<br>
-                                    <i class="bi bi-exclamation-triangle"></i> <strong>${site.advisory_count}</strong> active ${site.advisory_count === 1 ? 'alert' : 'alerts'}
-                                    ${site.total_zone_count !== site.advisory_count ? 
-                                        `<span class="text-muted small">(${site.total_zone_count} zones)</span>` : ''}
-                                    ${site.new_count > 0 ? `<br><i class="bi bi-bell"></i> <strong>${site.new_count}</strong> new` : ''}
-                                </p>
-                                
-                                <div class="mt-2">
-                                    <span class="badge ${getStatusBadge(site.operational_status)}">
-                                        Ops: ${site.operational_status || 'Unknown'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                `;
-            }).join('');
+            showLoading(false);
         }
-        
-        function filterSites() {
-            const search = document.getElementById('searchBox').value.toLowerCase();
-            const state = document.getElementById('stateFilter').value;
-            const weatherImpact = document.getElementById('weatherImpactFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            
-            // First apply alert type filters to get updated advisory counts
-            const filteredData = applyFiltersToSites(allSites, allAdvisories);
-            
-            // Then apply UI filters
-            const filtered = filteredData.filter(site => {
-                if (search && !(site.site_code.toLowerCase().includes(search) || site.name.toLowerCase().includes(search))) return false;
-                if (state && site.state !== state) return false;
-                if (weatherImpact && site.weather_impact_level !== weatherImpact) return false;
-                if (status && site.operational_status !== status) return false;
-                return true;
+
+        function populateFilters() {
+            const stateFilter = document.getElementById('state-filter');
+            const impactFilter = document.getElementById('impact-filter');
+
+            // Populate states
+            Array.from(states).sort().forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateFilter.appendChild(option);
             });
-            
+
+            // Populate weather impacts
+            Array.from(weatherImpactTypes).sort().forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = formatWeatherType(type);
+                impactFilter.appendChild(option);
+            });
+        }
+
+        function updateStats() {
+            const severityCounts = { critical: 0, high: 0, moderate: 0, low: 0 };
+            allSites.forEach(site => {
+                if (site.highestSeverity && severityCounts.hasOwnProperty(site.highestSeverity)) {
+                    severityCounts[site.highestSeverity]++;
+                }
+            });
+
+            document.getElementById('total-sites').textContent = allSites.length;
+            document.getElementById('critical-sites').textContent = severityCounts.critical;
+            document.getElementById('high-sites').textContent = severityCounts.high;
+            document.getElementById('moderate-sites').textContent = severityCounts.moderate;
+        }
+
+        function updateNavCounts() {
+            document.getElementById('nav-advisory-count').textContent = allAdvisories.length;
+            document.getElementById('nav-site-count').textContent = allSites.length;
+        }
+
+        function filterSites() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const stateFilter = document.getElementById('state-filter').value;
+            const impactFilter = document.getElementById('impact-filter').value;
+            const severityFilter = document.getElementById('severity-filter').value;
+
+            const filtered = allSites.filter(site => {
+                const matchesSearch = !searchTerm ||
+                    site.name?.toLowerCase().includes(searchTerm) ||
+                    site.city?.toLowerCase().includes(searchTerm) ||
+                    site.state?.toLowerCase().includes(searchTerm);
+
+                const matchesState = !stateFilter || site.state === stateFilter;
+                const matchesImpact = !impactFilter || site.weatherTypes?.includes(impactFilter);
+                const matchesSeverity = !severityFilter || site.highestSeverity === severityFilter;
+
+                return matchesSearch && matchesState && matchesImpact && matchesSeverity;
+            });
+
+            // Sort by severity
+            const severityOrder = { critical: 0, high: 1, moderate: 2, low: 3 };
+            filtered.sort((a, b) => severityOrder[a.highestSeverity] - severityOrder[b.highestSeverity]);
+
+            updateFilterPills(searchTerm, stateFilter, impactFilter, severityFilter);
             renderSites(filtered);
         }
-        
-        // Clear weather impact filter
-        function clearWeatherFilter() {
-            document.getElementById('weatherImpactFilter').value = '';
-            document.getElementById('activeFilterBanner').style.display = 'none';
-            // Update URL without the parameter
-            const url = new URL(window.location);
-            url.searchParams.delete('weather_impact');
-            window.history.replaceState({}, '', url);
+
+        function updateFilterPills(search, state, impact, severity) {
+            const container = document.getElementById('filter-pills');
+            const hasFilters = search || state || impact || severity;
+
+            if (!hasFilters) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+            container.innerHTML = '';
+
+            if (search) {
+                container.appendChild(createFilterPill(`Search: "${search}"`, () => {
+                    document.getElementById('search-input').value = '';
+                    filterSites();
+                }));
+            }
+            if (state) {
+                container.appendChild(createFilterPill(`State: ${state}`, () => {
+                    document.getElementById('state-filter').value = '';
+                    filterSites();
+                }));
+            }
+            if (impact) {
+                container.appendChild(createFilterPill(`Impact: ${formatWeatherType(impact)}`, () => {
+                    document.getElementById('impact-filter').value = '';
+                    filterSites();
+                }));
+            }
+            if (severity) {
+                container.appendChild(createFilterPill(`Severity: ${severity}`, () => {
+                    document.getElementById('severity-filter').value = '';
+                    filterSites();
+                }));
+            }
+
+            // Clear all button
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'filter-pill clear-all';
+            clearBtn.innerHTML = 'Clear All';
+            clearBtn.onclick = clearAllFilters;
+            container.appendChild(clearBtn);
+        }
+
+        function createFilterPill(text, onRemove) {
+            const pill = document.createElement('button');
+            pill.className = 'filter-pill';
+            pill.innerHTML = `${text} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            pill.onclick = onRemove;
+            return pill;
+        }
+
+        function clearAllFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('state-filter').value = '';
+            document.getElementById('impact-filter').value = '';
+            document.getElementById('severity-filter').value = '';
             filterSites();
         }
-        
-        document.getElementById('searchBox').addEventListener('input', filterSites);
-        document.getElementById('stateFilter').addEventListener('change', filterSites);
-        document.getElementById('weatherImpactFilter').addEventListener('change', function() {
-            // Hide banner when manually changing filter
-            if (!this.value) {
-                document.getElementById('activeFilterBanner').style.display = 'none';
+
+        function renderSites(sites) {
+            const gridContainer = document.getElementById('sites-grid');
+            const tableContainer = document.getElementById('sites-table-container');
+            const tableBody = document.getElementById('sites-table-body');
+            const emptyState = document.getElementById('empty-state');
+
+            if (sites.length === 0) {
+                gridContainer.style.display = 'none';
+                tableContainer.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
             }
-            filterSites();
-        });
-        document.getElementById('statusFilter').addEventListener('change', filterSites);
-        
-        // Check for URL parameters on page load
-        function applyURLParameters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const siteParam = urlParams.get('site');
-            const weatherImpactParam = urlParams.get('weather_impact');
-            
-            if (siteParam) {
-                // Auto-populate search box with site code from URL
-                document.getElementById('searchBox').value = siteParam;
+
+            emptyState.style.display = 'none';
+
+            if (currentView === 'grid') {
+                gridContainer.style.display = 'grid';
+                tableContainer.style.display = 'none';
+                gridContainer.innerHTML = sites.map(site => createSiteCard(site)).join('');
+            } else {
+                gridContainer.style.display = 'none';
+                tableContainer.style.display = 'block';
+                tableBody.innerHTML = sites.map(site => createSiteRow(site)).join('');
             }
-            
-            if (weatherImpactParam) {
-                // Set weather impact filter from URL
-                document.getElementById('weatherImpactFilter').value = weatherImpactParam;
-                
-                // Show active filter banner
-                const labels = { red: '🔴 RED (High Impact)', orange: '🟠 ORANGE (Severe Impact)', yellow: '🟡 YELLOW (Moderate Impact)', green: '🟢 GREEN (Low/No Impact)' };
-                document.getElementById('activeFilterLabel').textContent = labels[weatherImpactParam] || weatherImpactParam.toUpperCase();
-                document.getElementById('activeFilterBanner').style.display = 'block';
-            }
-            
-            // Trigger filtering
+        }
+
+        function createSiteCard(site) {
+            const severity = site.highestSeverity || 'low';
+            const advisoryBySeverity = getAdvisoryCountsBySeverity(site.advisories);
+
+            return `
+                <div class="site-card ${severity}" onclick="goToSiteDetail('${site.site_id}')">
+                    <div class="site-card-header">
+                        <div class="site-info">
+                            <h3>${site.name || 'Unknown Site'}</h3>
+                            <div class="site-location">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                ${site.city || ''}, ${site.state || ''}
+                            </div>
+                        </div>
+                        <div class="site-status">
+                            <span class="status-badge ${site.advisoryCount > 0 ? 'impacted' : 'active'}">
+                                ${site.advisoryCount > 0 ? 'Impacted' : 'Active'}
+                            </span>
+                        </div>
+                    </div>
+                    ${site.weatherTypes?.length > 0 ? `
+                        <div class="weather-impacts">
+                            ${site.weatherTypes.slice(0, 3).map(type => `
+                                <span class="impact-tag">${formatWeatherType(type)}</span>
+                            `).join('')}
+                            ${site.weatherTypes.length > 3 ? `<span class="impact-tag">+${site.weatherTypes.length - 3} more</span>` : ''}
+                        </div>
+                    ` : ''}
+                    <div class="site-metrics">
+                        <div class="metric-item">
+                            <div class="metric-value ${advisoryBySeverity.critical > 0 ? 'critical' : ''}">${advisoryBySeverity.critical}</div>
+                            <div class="metric-label">Critical</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value ${advisoryBySeverity.high > 0 ? 'high' : ''}">${advisoryBySeverity.high}</div>
+                            <div class="metric-label">High</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value ${advisoryBySeverity.moderate > 0 ? 'moderate' : ''}">${advisoryBySeverity.moderate + advisoryBySeverity.low}</div>
+                            <div class="metric-label">Other</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createSiteRow(site) {
+            const severity = site.highestSeverity || 'low';
+            const advisoryBySeverity = getAdvisoryCountsBySeverity(site.advisories);
+
+            return `
+                <tr onclick="goToSiteDetail('${site.site_id}')">
+                    <td>
+                        <div class="site-name-cell">
+                            <div class="severity-indicator ${severity}"></div>
+                            <div class="site-name-info">
+                                <h4>${site.name || 'Unknown Site'}</h4>
+                                <span>${site.city || ''}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${site.state || '-'}</td>
+                    <td>
+                        ${site.weatherTypes?.slice(0, 2).map(type => `<span class="impact-tag">${formatWeatherType(type)}</span>`).join(' ') || '-'}
+                    </td>
+                    <td>
+                        <div class="advisory-counts">
+                            ${advisoryBySeverity.critical > 0 ? `<span class="advisory-count critical">${advisoryBySeverity.critical}</span>` : ''}
+                            ${advisoryBySeverity.high > 0 ? `<span class="advisory-count high">${advisoryBySeverity.high}</span>` : ''}
+                            ${advisoryBySeverity.moderate > 0 ? `<span class="advisory-count moderate">${advisoryBySeverity.moderate}</span>` : ''}
+                            ${advisoryBySeverity.low > 0 ? `<span class="advisory-count low">${advisoryBySeverity.low}</span>` : ''}
+                            ${site.advisoryCount === 0 ? '<span style="color: var(--color-text-muted);">None</span>' : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${severity === 'critical' || severity === 'high' ? 'impacted' : severity === 'moderate' ? 'monitoring' : 'active'}">
+                            ${severity.charAt(0).toUpperCase() + severity.slice(1)}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function getAdvisoryCountsBySeverity(advisories) {
+            const counts = { critical: 0, high: 0, moderate: 0, low: 0 };
+            advisories?.forEach(adv => {
+                const severity = adv.severity?.toLowerCase() || 'low';
+                if (counts.hasOwnProperty(severity)) {
+                    counts[severity]++;
+                }
+            });
+            return counts;
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('grid-view-btn').classList.toggle('active', view === 'grid');
+            document.getElementById('list-view-btn').classList.toggle('active', view === 'list');
             filterSites();
         }
-        
-        // Initialize filters then load sites
-        AlertFilters.init().then(() => {
-            loadSites();
-            // Apply URL parameters after sites are loaded
-            setTimeout(() => applyURLParameters(), 100);
-        });
+
+        function goToSiteDetail(siteId) {
+            window.location.href = `site-detail.html?site_id=${siteId}`;
+        }
+
+        function formatWeatherType(type) {
+            if (!type) return '';
+            return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading-state').style.display = show ? 'flex' : 'none';
+            if (show) {
+                document.getElementById('sites-grid').style.display = 'none';
+                document.getElementById('sites-table-container').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            const emptyState = document.getElementById('empty-state');
+            emptyState.querySelector('h3').textContent = 'Error Loading Data';
+            emptyState.querySelector('p').textContent = message;
+            emptyState.style.display = 'block';
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
     </script>
 </body>
 </html>
