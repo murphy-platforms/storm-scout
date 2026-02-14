@@ -14,8 +14,13 @@ NC='\033[0m' # No Color
 # Configuration (update these for your server)
 SERVER_HOST="${DEPLOY_HOST:-teammurphy.rocks}"
 SERVER_USER="${DEPLOY_USER:-mwqtiakilx}"
+SERVER_PORT="${DEPLOY_PORT:-21098}"
 SERVER_BACKEND_PATH="${DEPLOY_BACKEND_PATH:-~/storm-scout}"
 SERVER_FRONTEND_PATH="${DEPLOY_FRONTEND_PATH:-~/public_html}"
+
+# SSH command with port
+SSH_CMD="ssh -p $SERVER_PORT"
+RSYNC_SSH="ssh -p $SERVER_PORT"
 
 # Local paths
 LOCAL_BACKEND="./backend/"
@@ -41,7 +46,7 @@ log_step() {
 # Check if SSH connection works
 check_connection() {
     log_step "Checking server connection..."
-    if ssh -o ConnectTimeout=5 "$SERVER_USER@$SERVER_HOST" "echo 'Connected'" > /dev/null 2>&1; then
+    if $SSH_CMD -o ConnectTimeout=5 "$SERVER_USER@$SERVER_HOST" "echo 'Connected'" > /dev/null 2>&1; then
         log_info "SSH connection successful"
         return 0
     else
@@ -85,7 +90,7 @@ deploy_backend() {
     log_step "Deploying backend..."
     
     # Sync files (exclude node_modules, .env, .db files)
-    rsync -avz --delete \
+    rsync -avz -e "$RSYNC_SSH" --delete \
         --exclude 'node_modules/' \
         --exclude '*.db' \
         --exclude '*.db-shm' \
@@ -102,7 +107,7 @@ deploy_frontend() {
     log_step "Deploying frontend..."
     
     # Sync frontend files
-    rsync -avz --delete \
+    rsync -avz -e "$RSYNC_SSH" --delete \
         --exclude '.DS_Store' \
         "$LOCAL_FRONTEND" "$SERVER_USER@$SERVER_HOST:$SERVER_FRONTEND_PATH/"
     
@@ -113,7 +118,7 @@ deploy_frontend() {
 post_deploy() {
     log_step "Installing dependencies and restarting app..."
     
-    ssh "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
+    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
         cd ~/storm-scout
         
         # Activate Node environment
