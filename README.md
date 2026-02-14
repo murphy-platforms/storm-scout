@@ -34,6 +34,11 @@ Currently monitoring 219 testing centers with real-time NOAA weather data update
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 
+### Performance & Security
+- **In-Memory Caching** - node-cache for ~100x faster API responses on cache hits
+- **API Rate Limiting** - 100 requests/15 min general, 20/15 min for write operations
+- **Input Validation** - All API endpoints validated and sanitized with express-validator
+
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
 - **Database Optimization** - UPSERT operations prevent duplicate advisories, unique indexes on external IDs
@@ -122,6 +127,7 @@ strom-scout/
 ## 🛠 Tech Stack
 
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
+**Middleware:** node-cache (caching), express-rate-limit, express-validator  
 **Frontend:** HTML5, Bootstrap 5.3, Vanilla JavaScript, localStorage API  
 **Data:** NOAA Weather API (80+ alert types), 219 US testing centers  
 **Deployment:** cPanel with Passenger, SSH/rsync  
