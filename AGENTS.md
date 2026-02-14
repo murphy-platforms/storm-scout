@@ -15,10 +15,11 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
 - **219 Testing Centers**: Monitoring sites across all 50 US states and territories
-- **Smart Filtering**: 80+ NOAA alert types with 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
+- **Smart Filtering**: 80+ NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
 - **Filter Presets**: Site Default, Operations View, Executive Summary, Safety Focus, Full View
+- **Data Integrity**: Database CHECK constraint enforces valid severity values
 
 ---
 
@@ -98,7 +99,7 @@ strom-scout/
 │   └── package.json
 │
 └── frontend/            # Bootstrap 5.3 UI
-    ├── index.html       # Overview dashboard
+    ├── index.html       # Overview dashboard (Classic)
     ├── advisories.html  # Active advisories list
     ├── sites.html       # Sites impacted
     ├── site-detail.html # Individual site view
@@ -106,9 +107,16 @@ strom-scout/
     ├── notices.html     # Government notices
     ├── filters.html     # Filter configuration
     ├── sources.html     # Data sources
+    ├── beta/            # Beta UI (modern design)
+    │   ├── index.html   # Operations Dashboard
+    │   ├── advisories.html
+    │   ├── sites.html
+    │   ├── notices.html # Government notices
+    │   ├── filters.html
+    │   └── css/style.css
     ├── css/style.css
     └── js/
-        ├── api.js           # API client
+        ├── api.js           # API client (shared by Classic & Beta)
         ├── utils.js         # Helper functions
         ├── alert-filters.js # Shared filter logic
         └── aggregation.js   # Site aggregation utilities
@@ -279,9 +287,12 @@ ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com "touch ~/storm-scout/
 - ✅ Production deployment
 - ✅ 219 testing centers loaded
 - ✅ 15-minute NOAA ingestion working
+- ✅ Severity validation (defaults Unknown to Minor)
+- ✅ Database CHECK constraint on severity
+- ✅ Composite index for status+severity queries
+- ✅ Beta UI with all pages including notices.html
 
 ### High Priority (Next)
-- [ ] Add unique constraint on `external_id` (5 min, **RECOMMENDED**)
 - [ ] Redis caching for `/api/status/overview` (reduces DB load)
 - [ ] API rate limiting (prevent abuse)
 - [ ] Unit tests (Jest) for models and utilities
