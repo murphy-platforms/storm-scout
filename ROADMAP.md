@@ -263,7 +263,8 @@ This document outlines planned improvements, features, and technical debt for St
 - ✅ Database CHECK constraint on severity column
 - ✅ Composite index for status+severity queries (21% perf improvement)
 - ✅ Beta UI notices.html page
-- ✅ QA review fixes (BUG-PROD-002, BUG-PROD-004, BUG-PROD-005, BUG-PROD-008)
+- ✅ Self-hosted Inter font (removed Google Fonts CDN dependency)
+- ✅ All QA review bugs closed (BUG-PROD-001 through BUG-PROD-009)
 
 ### v1.1.0 (February 13, 2026)
 - ✅ Added update banner to all pages
