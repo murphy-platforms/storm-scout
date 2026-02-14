@@ -107,9 +107,10 @@
                 <div class="top-bar-actions">
                     <div class="update-status" aria-live="polite">
                         <div class="update-dot" aria-hidden="true"></div>
-                        <span>Live</span>
+                        <span>Last update:</span>
+                        <strong><span id="lastUpdated">--:--</span></strong>
                         <span>•</span>
-                        <span>Next update in</span>
+                        <span>Next in</span>
                         <span class="next-update" id="nextUpdate">--:--</span>
                         <div class="progress-ring" aria-hidden="true">
                             <svg viewBox="0 0 28 28">
@@ -708,6 +709,14 @@
                 // Update timestamps
                 document.getElementById('lastUpdatedActivity').textContent = `Synced ${formatLocalTime(overviewData.last_updated)}`;
                 document.getElementById('lastUpdatedTime').textContent = formatTimeAgo(overviewData.last_updated);
+                
+                // Update top bar last updated time (short format)
+                const lastUpdatedEl = document.getElementById('lastUpdated');
+                if (lastUpdatedEl && overviewData.last_updated) {
+                    const date = new Date(overviewData.last_updated);
+                    const timeStr = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+                    lastUpdatedEl.textContent = timeStr;
+                }
                 
                 if (overviewData.last_updated && overviewData.update_interval_minutes) {
                     const lastUpdate = new Date(overviewData.last_updated);
