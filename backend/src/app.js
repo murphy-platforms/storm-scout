@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const config = require('./config/config');
+const { apiLimiter, writeLimiter } = require('./middleware/rateLimiter');
 
 // Import routes
 const sitesRouter = require('./routes/sites');
@@ -25,6 +26,12 @@ const app = express();
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting - apply to all /api routes
+app.use('/api', apiLimiter);
+
+// Stricter rate limiting for write operations
+app.use('/api/operational-status', writeLimiter);
 
 // Serve static files (if path configured)
 if (config.staticFiles.path) {
