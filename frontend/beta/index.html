@@ -127,6 +127,13 @@
             <div class="dashboard-content">
                 <!-- Quick Filters -->
                 <div class="quick-filters" role="group" aria-label="Quick severity filters" id="quickFilters">
+                    <span class="tooltip-wrapper" style="display: inline-flex; align-items: center; margin-right: var(--space-sm);">
+                        <span style="font-weight: 600; color: var(--color-text-primary); margin-right: 4px;">Filters</span>
+                        <span class="help-icon" tabindex="0" aria-label="Help: Filter System">?</span>
+                        <span class="tooltip-content" role="tooltip">
+                            <strong>Filter System</strong>: Choose which severity levels and alert types to display. Click severity pills to toggle. Manage detailed filters in <a href="filters.html" style="color: var(--color-accent); text-decoration: underline;">Filter Settings</a>.
+                        </span>
+                    </span>
                     <button class="filter-pill critical active" data-severity="Extreme" aria-pressed="true">
                         <span aria-hidden="true">🔴</span>
                         Critical
@@ -181,7 +188,14 @@
                 
                 <!-- Severity Overview Cards -->
                 <section aria-labelledby="severity-overview-title">
-                    <h2 id="severity-overview-title" class="sr-only">Severity Overview</h2>
+                    <h2 id="severity-overview-title" class="sr-only">Weather Impact Assessment
+                        <span class="tooltip-wrapper">
+                            <span class="help-icon" tabindex="0" aria-label="Help: Weather Impact Assessment">?</span>
+                            <span class="tooltip-content" role="tooltip">
+                                <strong>Weather Impact Assessment</strong> is automatically calculated from active NOAA advisories. Severity levels (Red, Orange, Yellow, Green) are assigned based on alert type and urgency.
+                            </span>
+                        </span>
+                    </h2>
                     <div class="severity-grid stagger-children">
                         <!-- Critical / Red -->
                         <a href="sites.html?weather_impact=red" class="severity-card critical">
@@ -190,7 +204,14 @@
                                 <div class="severity-trend neutral" id="trendCritical"><span>--</span></div>
                             </div>
                             <div class="severity-count" id="weatherRed"><span class="loading-spinner"></span></div>
-                            <div class="severity-label">Critical / Red</div>
+                            <div class="severity-label">Critical / Red
+                                <span class="tooltip-wrapper">
+                                    <span class="help-icon" tabindex="0" aria-label="Help: Critical severity">?</span>
+                                    <span class="tooltip-content" role="tooltip">
+                                        <strong>Critical (Red)</strong>: Life-threatening conditions like Tornado Warnings, Extreme Wind Warnings, Flash Flood Emergencies. Requires immediate action.
+                                    </span>
+                                </span>
+                            </div>
                             <div class="severity-sites" id="criticalSitesLabel">-- sites affected</div>
                             <div class="sparkline" id="sparklineCritical" title="Sample trend data - not actual historical data" aria-label="Sample trend visualization"></div>
                         </a>
@@ -202,7 +223,14 @@
                                 <div class="severity-trend neutral" id="trendHigh"><span>--</span></div>
                             </div>
                             <div class="severity-count" id="weatherOrange"><span class="loading-spinner"></span></div>
-                            <div class="severity-label">High / Orange</div>
+                            <div class="severity-label">High / Orange
+                                <span class="tooltip-wrapper">
+                                    <span class="help-icon" tabindex="0" aria-label="Help: High severity">?</span>
+                                    <span class="tooltip-content" role="tooltip">
+                                        <strong>High (Orange)</strong>: Significant weather impacts like Severe Thunderstorm Warnings, Blizzard Warnings, High Wind Warnings. Plan for disruptions.
+                                    </span>
+                                </span>
+                            </div>
                             <div class="severity-sites" id="highSitesLabel">-- sites affected</div>
                             <div class="sparkline" id="sparklineHigh" title="Sample trend data - not actual historical data" aria-label="Sample trend visualization"></div>
                         </a>
@@ -214,7 +242,14 @@
                                 <div class="severity-trend neutral" id="trendModerate"><span>--</span></div>
                             </div>
                             <div class="severity-count" id="weatherYellow"><span class="loading-spinner"></span></div>
-                            <div class="severity-label">Moderate / Yellow</div>
+                            <div class="severity-label">Moderate / Yellow
+                                <span class="tooltip-wrapper">
+                                    <span class="help-icon" tabindex="0" aria-label="Help: Moderate severity">?</span>
+                                    <span class="tooltip-content" role="tooltip">
+                                        <strong>Moderate (Yellow)</strong>: Minor weather impacts like Winter Weather Advisories, Wind Advisories, Flood Advisories. Monitor conditions.
+                                    </span>
+                                </span>
+                            </div>
                             <div class="severity-sites" id="moderateSitesLabel">-- sites affected</div>
                             <div class="sparkline" id="sparklineModerate" title="Sample trend data - not actual historical data" aria-label="Sample trend visualization"></div>
                         </a>
@@ -296,7 +331,14 @@
                         <!-- Site Status Donut Chart -->
                         <section class="card" aria-labelledby="status-chart-title">
                             <div class="card-header">
-                                <h2 id="status-chart-title" class="card-title">Operational Status</h2>
+                                <h2 id="status-chart-title" class="card-title">Operational Status
+                                    <span class="tooltip-wrapper">
+                                        <span class="help-icon" tabindex="0" aria-label="Help: Operational Status">?</span>
+                                        <span class="tooltip-content" role="tooltip">
+                                            <strong>Operational Status</strong> is manually managed by IMT and Operations teams. Status can be: <strong>Open</strong> (normal operations), <strong>Restricted</strong> (limited access), <strong>Pending</strong> (decision needed), or <strong>Closed</strong> (no operations).
+                                        </span>
+                                    </span>
+                                </h2>
                             </div>
                             <div class="chart-container">
                                 <div class="donut-chart-wrapper">
