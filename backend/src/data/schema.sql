@@ -59,11 +59,17 @@ CREATE TABLE IF NOT EXISTS advisories (
 CREATE INDEX idx_advisories_site ON advisories(site_id);
 CREATE INDEX idx_advisories_status ON advisories(status);
 CREATE INDEX idx_advisories_severity ON advisories(severity);
+CREATE INDEX idx_advisories_status_severity ON advisories(status, severity);
 CREATE INDEX idx_advisories_time ON advisories(start_time, end_time);
 CREATE INDEX idx_advisories_status_time ON advisories(status, start_time, end_time);
 CREATE INDEX idx_advisories_site_status ON advisories(site_id, status);
 CREATE INDEX idx_vtec_event_id ON advisories(vtec_event_id);
 CREATE INDEX idx_vtec_action ON advisories(vtec_action);
+
+-- Enforce valid severity values
+ALTER TABLE advisories 
+ADD CONSTRAINT chk_advisories_severity 
+CHECK (severity IN ('Extreme', 'Severe', 'Moderate', 'Minor'));
 
 -- Site status table: operational status of each testing center
 CREATE TABLE IF NOT EXISTS site_status (
