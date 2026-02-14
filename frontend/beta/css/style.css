@@ -392,3 +392,44 @@ a:hover { color: var(--color-accent-hover); }
 .mb-xl { margin-bottom: var(--space-xl); }
 .text-muted { color: var(--color-text-muted); }
 .text-secondary { color: var(--color-text-secondary); }
+
+/* ============================================
+   REDUCED MOTION ACCESSIBILITY
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    /* Disable smooth scrolling */
+    html { scroll-behavior: auto; }
+    
+    /* Disable all animations */
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    /* Remove transform-based animations */
+    .critical-alerts-banner { animation: none; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+    .critical-icon { animation: none; }
+    .update-dot { animation: none; }
+    .loading-spinner { animation: none; border-top-color: var(--color-accent); }
+    
+    /* Remove hover transforms */
+    .severity-card:hover { transform: none; }
+    .critical-alert-card:hover { transform: none; }
+    .site-item:hover { transform: none; }
+    .btn-primary:hover { transform: none; }
+    
+    /* Keep functional transitions but make them instant */
+    .sidebar,
+    .toggle-switch,
+    .toggle-switch::after,
+    .progress-ring-progress {
+        transition-duration: 0s;
+    }
+    
+    /* Remove staggered fade-in animations */
+    .fade-in { animation: none; opacity: 1; transform: none; }
+    .stagger-children > * { animation: none; opacity: 1; }
+}
