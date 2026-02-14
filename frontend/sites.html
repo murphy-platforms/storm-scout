@@ -597,13 +597,13 @@
                 // Build aggregated site data
                 const aggregatedSites = SiteAggregator.aggregateBySite(advisories);
                 allSites = allSites.map(site => {
-                    const aggregated = aggregatedSites.find(s => s.siteId === site.site_id);
+                    const aggregated = aggregatedSites.find(s => s.site_id === site.site_id);
                     return {
                         ...site,
                         advisories: aggregated?.advisories || [],
-                        advisoryCount: aggregated?.advisoryCount || 0,
-                        highestSeverity: aggregated?.highestSeverity || 'low',
-                        weatherTypes: aggregated?.weatherTypes || []
+                        advisoryCount: aggregated?.unique_advisory_count || 0,
+                        highestSeverity: aggregated?.highest_severity || 'low',
+                        weatherTypes: aggregated?.unique_types || []
                     };
                 });
 
