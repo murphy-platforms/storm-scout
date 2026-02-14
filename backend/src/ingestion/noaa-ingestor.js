@@ -14,6 +14,7 @@ const SiteStatusModel = require('../models/siteStatus');
 const AdvisoryHistory = require('../models/advisoryHistory');
 const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
 const { alertAnomaly } = require('../utils/alerting');
+const cache = require('../utils/cache');
 
 const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
 
@@ -354,6 +355,9 @@ async function ingestNOAAData() {
     } else {
       console.log('✓ No anomalies detected');
     }
+    
+    // Invalidate cache to ensure fresh data is served
+    cache.invalidateAll();
     
     // Save timestamp of successful ingestion
     const timestamp = new Date().toISOString();

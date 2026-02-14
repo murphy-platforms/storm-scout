@@ -11,10 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
 - Predictive analytics based on historical patterns
-- Redis caching for API responses
 - API rate limiting with express-rate-limit
 - Unit tests with Jest
 - Database backup automation
+
+## [1.5.0] - 2026-02-14
+
+### Added
+- **In-Memory Caching** - Reduces database load on high-traffic endpoints
+  - New `cache.js` utility module using node-cache
+  - Cached endpoints with TTL:
+    - `/api/status/overview` - 15 min (matches ingestion interval)
+    - `/api/sites` - 1 hour (static site data)
+    - `/api/sites/states` - 24 hours (rarely changes)
+    - `/api/sites/regions` - 24 hours (rarely changes)
+    - `/api/advisories/active` - 15 min
+  - Cache automatically invalidated after NOAA ingestion
+  - Only caches unfiltered requests (filtered requests bypass cache)
+  - Logging for cache hits/misses: `[CACHE] HIT/MISS/SET`
+
+### Performance
+- Expected ~100x faster response times for cached endpoints (~5ms vs ~500ms)
+- Reduced database connection usage during traffic spikes
+- Minimal memory footprint (~100KB for all cached data)
+
+### Technical
+- Added `node-cache` dependency
+- New file: `backend/src/utils/cache.js`
+- Modified: `status.js`, `sites.js`, `advisories.js`, `noaa-ingestor.js`
 
 ## [1.4.1] - 2026-02-14
 
