@@ -2,556 +2,666 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Operations Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=***REDACTED_GA_ID***"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '***REDACTED_GA_ID***');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '***REDACTED_GA_ID***');
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Storm Scout - Overview</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="bi bi-cloud-lightning"></i> Storm Scout
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="index.html">Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
-                    <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
-                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
-                </ul>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo" aria-label="Storm Scout Home">
+                    <div class="logo-icon" aria-hidden="true">⛈️</div>
+                    <div class="logo-text">Storm<span>Scout</span></div>
+                </a>
             </div>
-        </div>
-    </nav>
-
-    <!-- Sticky Update Banner -->
-    <div class="update-banner bg-dark text-white py-2 sticky-top" style="top: 56px; z-index: 1020;">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <small>
-                        <i class="bi bi-clock-history"></i>
-                        <strong>Last Updated:</strong> <span id="lastUpdated">Loading...</span>
-                    </small>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Dashboard</div>
+                    <a href="index.html" class="nav-item active" aria-current="page">
+                        <span class="nav-item-icon" aria-hidden="true">📊</span>
+                        Overview
+                    </a>
+                    <a href="advisories.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">⚠️</span>
+                        Active Advisories
+                        <span class="nav-badge" id="navAdvisoryCount">--</span>
+                    </a>
+                    <a href="sites.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📍</span>
+                        Sites Impacted
+                        <span class="nav-badge warning" id="navSitesCount">--</span>
+                    </a>
+                    <a href="map.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">🗺️</span>
+                        Map View
+                    </a>
                 </div>
-                <div class="col-auto">
-                    <small>
-                        <i class="bi bi-arrow-repeat"></i>
-                        <strong>Next Update:</strong> <span id="nextUpdate">Loading...</span>
-                    </small>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="sites.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📋</span>
+                        All Sites
+                        <span class="nav-badge info" id="navTotalSites">--</span>
+                    </a>
+                    <a href="notices.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📜</span>
+                        Government Notices
+                    </a>
+                    <a href="filters.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">⚙️</span>
+                        Filter Settings
+                    </a>
                 </div>
-                <div class="col text-end">
-                    <span class="badge bg-secondary me-2">
-                        <span id="totalSites">--</span> Total Sites
-                    </span>
-                    <span class="badge bg-warning text-dark">
-                        <span id="sitesWithAdvisories">--</span> With Advisories
-                    </span>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Information</div>
+                    <a href="sources.html" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📡</span>
+                        Data Sources
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="a11y-toggle">
+                    <span>High Contrast</span>
+                    <div class="toggle-switch" role="switch" aria-checked="false" tabindex="0" aria-label="Toggle high contrast mode" id="contrastToggle"></div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="container-fluid mt-3">
-        <!-- Page Header -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <h1 class="h2 mb-1">Dashboard Overview</h1>
-                <p class="text-muted mb-0">Site-focused weather advisory monitoring for IMT and Operations</p>
-            </div>
-        </div>
-
-        <!-- 1. SITES REQUIRING ATTENTION (Primary Action Area) -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-bar">
+                <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" id="mobileMenuBtn">☰</button>
+                <h1 class="page-title">Operations Dashboard</h1>
+                
+                <div class="top-bar-actions">
+                    <div class="update-status" aria-live="polite">
+                        <div class="update-dot" aria-hidden="true"></div>
+                        <span>Live</span>
+                        <span>•</span>
+                        <span>Next update in</span>
+                        <span class="next-update" id="nextUpdate">--:--</span>
+                        <div class="progress-ring" aria-hidden="true">
+                            <svg viewBox="0 0 28 28">
+                                <circle class="progress-ring-circle" cx="14" cy="14" r="12"/>
+                                <circle class="progress-ring-progress" cx="14" cy="14" r="12" id="progressRing"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="refreshBtn" aria-label="Refresh data">
+                        <span aria-hidden="true">↻</span>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Quick Filters -->
+                <div class="quick-filters" role="group" aria-label="Quick severity filters" id="quickFilters">
+                    <button class="filter-pill critical active" data-severity="Extreme" aria-pressed="true">
+                        <span aria-hidden="true">🔴</span>
+                        Critical
+                        <span class="filter-pill-count" id="filterCritical">--</span>
+                    </button>
+                    <button class="filter-pill high active" data-severity="Severe" aria-pressed="true">
+                        <span aria-hidden="true">🟠</span>
+                        High Impact
+                        <span class="filter-pill-count" id="filterHigh">--</span>
+                    </button>
+                    <button class="filter-pill moderate active" data-severity="Moderate" aria-pressed="true">
+                        <span aria-hidden="true">🟡</span>
+                        Moderate
+                        <span class="filter-pill-count" id="filterModerate">--</span>
+                    </button>
+                    <button class="filter-pill low" data-severity="Minor" aria-pressed="false">
+                        <span aria-hidden="true">🟢</span>
+                        Low
+                        <span class="filter-pill-count" id="filterLow">--</span>
+                    </button>
+                    
+                    <div class="search-box">
+                        <span class="search-icon" aria-hidden="true">🔍</span>
+                        <input type="search" class="search-input" placeholder="Search sites..." aria-label="Search sites" id="siteSearch">
+                    </div>
+                </div>
+                
+                <!-- Critical Alerts Banner (shown when critical alerts exist) -->
+                <section class="critical-alerts-banner fade-in" id="criticalBanner" style="display: none;" aria-labelledby="critical-alerts-title" role="alert">
+                    <div class="critical-header">
+                        <div class="critical-icon" aria-hidden="true">⚡</div>
+                        <div>
+                            <h2 id="critical-alerts-title" class="critical-title">Sites Requiring Immediate Attention</h2>
+                            <p class="critical-subtitle" id="criticalSubtitle">-- sites affected by severe weather conditions</p>
+                        </div>
+                    </div>
+                    <div class="critical-alerts-grid stagger-children" id="criticalAlertsGrid"></div>
+                </section>
+                
+                <!-- All Clear Banner (shown when no alerts) -->
+                <section class="all-clear" id="allClearBanner" style="display: none;">
+                    <div class="all-clear-icon">✅</div>
+                    <h2 class="all-clear-title">All Clear</h2>
+                    <p class="all-clear-subtitle">No sites currently require attention based on your filter settings.</p>
+                </section>
+                
+                <!-- Severity Overview Cards -->
+                <section aria-labelledby="severity-overview-title">
+                    <h2 id="severity-overview-title" class="sr-only">Severity Overview</h2>
+                    <div class="severity-grid stagger-children">
+                        <!-- Critical / Red -->
+                        <a href="sites.html?weather_impact=red" class="severity-card critical">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper"><span aria-hidden="true">🚨</span></div>
+                                <div class="severity-trend neutral" id="trendCritical"><span>--</span></div>
+                            </div>
+                            <div class="severity-count" id="weatherRed"><span class="loading-spinner"></span></div>
+                            <div class="severity-label">Critical / Red</div>
+                            <div class="severity-sites" id="criticalSitesLabel">-- sites affected</div>
+                            <div class="sparkline" id="sparklineCritical" aria-hidden="true"></div>
+                        </a>
+                        
+                        <!-- High / Orange -->
+                        <a href="sites.html?weather_impact=orange" class="severity-card high">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper"><span aria-hidden="true">⚠️</span></div>
+                                <div class="severity-trend neutral" id="trendHigh"><span>--</span></div>
+                            </div>
+                            <div class="severity-count" id="weatherOrange"><span class="loading-spinner"></span></div>
+                            <div class="severity-label">High / Orange</div>
+                            <div class="severity-sites" id="highSitesLabel">-- sites affected</div>
+                            <div class="sparkline" id="sparklineHigh" aria-hidden="true"></div>
+                        </a>
+                        
+                        <!-- Moderate / Yellow -->
+                        <a href="sites.html?weather_impact=yellow" class="severity-card moderate">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper"><span aria-hidden="true">⚡</span></div>
+                                <div class="severity-trend neutral" id="trendModerate"><span>--</span></div>
+                            </div>
+                            <div class="severity-count" id="weatherYellow"><span class="loading-spinner"></span></div>
+                            <div class="severity-label">Moderate / Yellow</div>
+                            <div class="severity-sites" id="moderateSitesLabel">-- sites affected</div>
+                            <div class="sparkline" id="sparklineModerate" aria-hidden="true"></div>
+                        </a>
+                        
+                        <!-- Operational / Green -->
+                        <a href="sites.html?weather_impact=green" class="severity-card low">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper"><span aria-hidden="true">✓</span></div>
+                                <div class="severity-trend down" id="trendLow"><span>All Clear</span></div>
+                            </div>
+                            <div class="severity-count" id="weatherGreen"><span class="loading-spinner"></span></div>
+                            <div class="severity-label">Operational</div>
+                            <div class="severity-sites" id="lowSitesLabel">No active alerts</div>
+                            <div class="sparkline" id="sparklineLow" aria-hidden="true"></div>
+                        </a>
+                    </div>
+                </section>
+                
+                <!-- Main Content Grid -->
+                <div class="content-grid">
+                    <!-- Left Column -->
                     <div>
-                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Sites Requiring Attention</h3>
-                        <p class="text-muted small mb-0">Grouped by highest severity alert</p>
+                        <!-- Sites Requiring Attention -->
+                        <section class="card" aria-labelledby="sites-attention-title">
+                            <div class="card-header">
+                                <h2 id="sites-attention-title" class="card-title">Sites Requiring Attention</h2>
+                                <div class="card-actions">
+                                    <a href="sites.html" class="btn btn-secondary btn-sm">View All</a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="sites-attention-list stagger-children" id="sitesAttentionList">
+                                    <!-- Loading state -->
+                                    <div class="skeleton skeleton-card"></div>
+                                    <div class="skeleton skeleton-card"></div>
+                                    <div class="skeleton skeleton-card"></div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Advisory Distribution Chart -->
+                        <section class="card mt-xl" aria-labelledby="distribution-title">
+                            <div class="card-header">
+                                <h2 id="distribution-title" class="card-title">Advisory Distribution by Severity</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="bar-chart" id="severityBarChart">
+                                    <div class="bar-row">
+                                        <span class="bar-label">Critical</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill critical" id="barCritical" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span class="bar-label">High</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill high" id="barHigh" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span class="bar-label">Moderate</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill moderate" id="barModerate" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span class="bar-label">Low</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill low" id="barLow" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
-                    <div class="quick-actions">
-                        <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
-                            <i class="bi bi-list-ul"></i> View All Sites
-                        </a>
-                        <a href="map.html" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-geo-alt"></i> Map View
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- CRITICAL SITES -->
-        <div id="criticalSitesSection"></div>
-        
-        <!-- ELEVATED SITES -->
-        <div id="elevatedSitesSection"></div>
-        
-        <!-- MONITORING SITES -->
-        <div id="monitoringSitesSection"></div>
-
-        <!-- No Sites Message (shown when no sites need attention) -->
-        <div id="noSitesMessage" class="row mb-4" style="display: none;">
-            <div class="col-12">
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <strong>All Clear!</strong> No sites currently require attention based on your filter settings.
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. WEATHER IMPACT ASSESSMENT -->
-        <div class="row mb-3 mt-4">
-            <div class="col-12">
-                <h3 class="h4"><i class="bi bi-cloud-lightning"></i> Weather Impact Assessment</h3>
-                <p class="text-muted small mb-2">Automatic classification based on active advisory severity</p>
-            </div>
-        </div>
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=red" class="text-decoration-none">
-                    <div class="card text-center weather-card weather-card-clickable impact-red h-100">
-                        <div class="card-body py-3">
-                            <span class="badge weather-red mb-1">🔴 RED</span>
-                            <p class="display-6 fw-bold mb-0 text-danger" id="weatherRed">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </p>
-                            <small class="text-muted">High Impact</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=orange" class="text-decoration-none">
-                    <div class="card text-center weather-card weather-card-clickable impact-orange h-100">
-                        <div class="card-body py-3">
-                            <span class="badge weather-orange mb-1">🟠 ORANGE</span>
-                            <p class="display-6 fw-bold mb-0 text-warning" id="weatherOrange">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </p>
-                            <small class="text-muted">Severe Impact</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=yellow" class="text-decoration-none">
-                    <div class="card text-center weather-card weather-card-clickable impact-yellow h-100">
-                        <div class="card-body py-3">
-                            <span class="badge weather-yellow mb-1">🟡 YELLOW</span>
-                            <p class="display-6 fw-bold mb-0" id="weatherYellow">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </p>
-                            <small class="text-muted">Moderate Impact</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=green" class="text-decoration-none">
-                    <div class="card text-center weather-card weather-card-clickable impact-green h-100">
-                        <div class="card-body py-3">
-                            <span class="badge weather-green mb-1">🟢 GREEN</span>
-                            <p class="display-6 fw-bold mb-0 text-success" id="weatherGreen">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </p>
-                            <small class="text-muted">Low/No Impact</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- 3. OPERATIONAL STATUS -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <h3 class="h4"><i class="bi bi-gear"></i> Operational Status</h3>
-                <p class="text-muted small mb-2">Current site status set by IMT/Operations team</p>
-            </div>
-        </div>
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <div class="card text-center border-danger h-100 static-card">
-                    <div class="card-body py-3">
-                        <span class="badge status-closed mb-1">❌ CLOSED</span>
-                        <p class="display-6 fw-bold mb-0 text-danger" id="statusClosed">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card text-center border-warning h-100 static-card">
-                    <div class="card-body py-3">
-                        <span class="badge status-restricted mb-1">⚠️ RESTRICTED</span>
-                        <p class="display-6 fw-bold mb-0 text-warning" id="statusRestricted">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
+                    
+                    <!-- Right Column -->
+                    <div>
+                        <!-- Site Status Donut Chart -->
+                        <section class="card" aria-labelledby="status-chart-title">
+                            <div class="card-header">
+                                <h2 id="status-chart-title" class="card-title">Operational Status</h2>
+                            </div>
+                            <div class="chart-container">
+                                <div class="donut-chart-wrapper">
+                                    <div class="donut-chart" role="img" aria-label="Site operational status chart">
+                                        <svg viewBox="0 0 100 100" id="donutChart">
+                                            <circle cx="50" cy="50" r="38" fill="none" stroke="var(--color-bg-secondary)" stroke-width="24"/>
+                                        </svg>
+                                        <div class="donut-center">
+                                            <div class="donut-center-value" id="totalSites">--</div>
+                                            <div class="donut-center-label">Total Sites</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color low"></div>
+                                            <span>Open</span>
+                                            <span class="legend-value" id="statusOpen">--</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color high"></div>
+                                            <span>Restricted</span>
+                                            <span class="legend-value" id="statusRestricted">--</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color moderate"></div>
+                                            <span>Pending</span>
+                                            <span class="legend-value" id="statusPending">--</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color critical"></div>
+                                            <span>Closed</span>
+                                            <span class="legend-value" id="statusClosed">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Recent Activity -->
+                        <section class="card mt-xl" aria-labelledby="activity-title">
+                            <div class="card-header">
+                                <h2 id="activity-title" class="card-title">Recent Activity</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-timeline" id="activityTimeline">
+                                    <article class="activity-item">
+                                        <div class="activity-icon update" aria-hidden="true">📡</div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">NOAA Data Updated</div>
+                                            <div class="activity-description" id="lastUpdatedActivity">Last sync: Loading...</div>
+                                        </div>
+                                        <time class="activity-time" id="lastUpdatedTime">--</time>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
-                <div class="card text-center border-info h-100 static-card">
-                    <div class="card-body py-3">
-                        <span class="badge status-pending mb-1">🔄 PENDING</span>
-                        <p class="display-6 fw-bold mb-0" id="statusPending">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card text-center border-success h-100 static-card">
-                    <div class="card-body py-3">
-                        <span class="badge status-open mb-1">✅ OPEN</span>
-                        <p class="display-6 fw-bold mb-0 text-success" id="statusOpen">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. DETAILED STATISTICS (Collapsed) -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detailedStats">
-                    <i class="bi bi-bar-chart"></i> Show Detailed Statistics
-                </button>
-            </div>
-        </div>
-        
-        <div class="collapse" id="detailedStats">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Active Advisories by Severity</h5>
-                        </div>
-                        <div class="card-body" id="severityCounts">
-                            <div class="text-center"><span class="spinner-border"></span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Recently Updated Sites</h5>
-                        </div>
-                        <div class="card-body" id="recentlyUpdatedList">
-                            <div class="text-center"><span class="spinner-border"></span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
-
-    <footer class="bg-light py-3 mt-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="sources.html" class="text-muted text-decoration-none me-3">
-                        <i class="bi bi-info-circle"></i> About & Data Sources
-                    </a>
-                    <a href="filters.html" class="text-muted text-decoration-none">
-                        <i class="bi bi-sliders"></i> Filter Settings
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/alert-filters.js"></script>
     <script src="js/aggregation.js"></script>
+    <script src="js/ui-toggle.js"></script>
     <script>
         let nextUpdateTime = null;
         let countdownInterval = null;
+        let totalUpdateSeconds = 900; // 15 minutes
 
-        // Format timestamp in user's local timezone
+        // Format timestamp
         function formatLocalTime(isoString) {
             if (!isoString) return 'Never';
             const date = new Date(isoString);
             return date.toLocaleString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                second: '2-digit',
+                month: 'short', day: 'numeric',
+                hour: 'numeric', minute: '2-digit',
                 hour12: true
             });
         }
+        
+        function formatTimeAgo(isoString) {
+            if (!isoString) return '--';
+            const now = new Date();
+            const date = new Date(isoString);
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
 
-        // Calculate and display countdown to next update
+        // Update countdown timer
         function updateCountdown() {
             if (!nextUpdateTime) return;
-            
             const now = new Date();
             const diff = nextUpdateTime - now;
             
             if (diff <= 0) {
-                document.getElementById('nextUpdate').textContent = 'Updating now...';
-                // Reload data after a short delay
+                document.getElementById('nextUpdate').textContent = 'Updating...';
                 setTimeout(() => loadOverview(), 2000);
                 return;
             }
             
             const minutes = Math.floor(diff / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
-            document.getElementById('nextUpdate').textContent = `${minutes}m ${seconds}s`;
+            document.getElementById('nextUpdate').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update progress ring
+            const progress = (diff / (totalUpdateSeconds * 1000)) * 75.4;
+            document.getElementById('progressRing').style.strokeDashoffset = 75.4 - progress;
         }
 
-        // Load overview data with filter application
+        // Render critical alerts banner
+        function renderCriticalAlerts(sites) {
+            const criticalSites = sites.filter(s => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe');
+            const banner = document.getElementById('criticalBanner');
+            const grid = document.getElementById('criticalAlertsGrid');
+            const subtitle = document.getElementById('criticalSubtitle');
+            const allClear = document.getElementById('allClearBanner');
+            
+            if (criticalSites.length === 0) {
+                banner.style.display = 'none';
+                if (sites.length === 0) {
+                    allClear.style.display = 'block';
+                } else {
+                    allClear.style.display = 'none';
+                }
+                return;
+            }
+            
+            allClear.style.display = 'none';
+            banner.style.display = 'block';
+            subtitle.textContent = `${criticalSites.length} site${criticalSites.length !== 1 ? 's' : ''} affected by severe weather conditions`;
+            
+            grid.innerHTML = criticalSites.slice(0, 6).map(site => {
+                const severityClass = site.highest_severity === 'Extreme' ? 'critical' : 'high';
+                const advisory = site.highest_severity_advisory || {};
+                return `
+                    <a href="site-detail.html?site=${site.site_code}" class="critical-alert-card ${severityClass}">
+                        <div class="alert-severity-indicator ${severityClass}" aria-hidden="true"></div>
+                        <div class="alert-content">
+                            <div class="alert-type ${severityClass}">${site.highest_severity === 'Extreme' ? 'Critical Alert' : 'High Impact'}</div>
+                            <h3 class="alert-name">${advisory.advisory_type || 'Weather Alert'}</h3>
+                            <p class="alert-location">${site.site_code} - ${site.city}, ${site.state}</p>
+                            <div class="alert-meta">
+                                <span class="alert-sites">📍 ${site.unique_advisory_count} alert${site.unique_advisory_count !== 1 ? 's' : ''}</span>
+                                ${advisory.expires ? `<span>Expires: ${formatLocalTime(advisory.expires)}</span>` : ''}
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Render sites attention list
+        function renderSitesAttention(sites) {
+            const list = document.getElementById('sitesAttentionList');
+            const sortedSites = [...sites].sort((a, b) => {
+                const order = { 'Extreme': 0, 'Severe': 1, 'Moderate': 2, 'Minor': 3 };
+                return (order[a.highest_severity] || 4) - (order[b.highest_severity] || 4);
+            });
+            
+            if (sortedSites.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <div class="empty-state-title">All Clear</div>
+                        <p>No sites require attention based on current filters.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = sortedSites.slice(0, 8).map(site => {
+                const severityClass = site.highest_severity.toLowerCase();
+                return `
+                    <a href="site-detail.html?site=${site.site_code}" class="site-item">
+                        <div class="site-status-indicator ${severityClass}" aria-hidden="true"></div>
+                        <div class="site-info">
+                            <div class="site-name">${site.site_code}</div>
+                            <div class="site-location">${site.city}, ${site.state}</div>
+                        </div>
+                        <span class="site-status-badge ${severityClass}">${site.highest_severity}</span>
+                        <div class="site-alert-count">
+                            <span>⚠️</span>
+                            <span>${site.unique_advisory_count} alert${site.unique_advisory_count !== 1 ? 's' : ''}</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Update severity bar chart
+        function updateBarChart(counts) {
+            const total = Math.max(1, counts.Extreme + counts.Severe + counts.Moderate + counts.Minor);
+            
+            const barCritical = document.getElementById('barCritical');
+            const barHigh = document.getElementById('barHigh');
+            const barModerate = document.getElementById('barModerate');
+            const barLow = document.getElementById('barLow');
+            
+            barCritical.style.width = `${(counts.Extreme / total) * 100}%`;
+            barCritical.innerHTML = counts.Extreme > 0 ? `<span class="bar-value">${counts.Extreme}</span>` : '';
+            
+            barHigh.style.width = `${(counts.Severe / total) * 100}%`;
+            barHigh.innerHTML = counts.Severe > 0 ? `<span class="bar-value">${counts.Severe}</span>` : '';
+            
+            barModerate.style.width = `${(counts.Moderate / total) * 100}%`;
+            barModerate.innerHTML = counts.Moderate > 0 ? `<span class="bar-value">${counts.Moderate}</span>` : '';
+            
+            barLow.style.width = `${(counts.Minor / total) * 100}%`;
+            barLow.innerHTML = counts.Minor > 0 ? `<span class="bar-value">${counts.Minor}</span>` : '';
+        }
+
+        // Update donut chart
+        function updateDonutChart(statusCounts, total) {
+            const svg = document.getElementById('donutChart');
+            const circumference = 2 * Math.PI * 38; // ~238.76
+            
+            const open = statusCounts.find(s => s.operational_status === 'open_normal')?.count || 0;
+            const restricted = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;
+            const pending = statusCounts.find(s => s.operational_status === 'pending')?.count || 0;
+            const closed = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
+            
+            let offset = 0;
+            const segments = [
+                { value: open, color: 'var(--color-low)' },
+                { value: restricted, color: 'var(--color-high)' },
+                { value: pending, color: 'var(--color-moderate)' },
+                { value: closed, color: 'var(--color-critical)' }
+            ];
+            
+            // Remove existing segments
+            svg.querySelectorAll('.donut-segment').forEach(el => el.remove());
+            
+            segments.forEach(seg => {
+                if (seg.value > 0) {
+                    const segLength = (seg.value / total) * circumference;
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('class', 'donut-segment');
+                    circle.setAttribute('cx', '50');
+                    circle.setAttribute('cy', '50');
+                    circle.setAttribute('r', '38');
+                    circle.setAttribute('stroke', seg.color);
+                    circle.setAttribute('stroke-dasharray', `${segLength} ${circumference}`);
+                    circle.setAttribute('stroke-dashoffset', -offset);
+                    svg.appendChild(circle);
+                    offset += segLength;
+                }
+            });
+        }
+
+        // Generate sparkline
+        function generateSparkline(containerId, heights) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = heights.map(h => 
+                `<div class="sparkline-bar" style="height: ${h}%;"></div>`
+            ).join('');
+        }
+
+        // Load overview data
         async function loadOverview() {
             try {
-                // Get all raw data
                 const [overviewData, allAdvisories] = await Promise.all([
                     API.getOverview(),
                     API.getActiveAdvisories()
                 ]);
                 
-                // Update timestamp and countdown
-                document.getElementById('lastUpdated').textContent = formatLocalTime(overviewData.last_updated);
+                // Update timestamps
+                document.getElementById('lastUpdatedActivity').textContent = `Synced ${formatLocalTime(overviewData.last_updated)}`;
+                document.getElementById('lastUpdatedTime').textContent = formatTimeAgo(overviewData.last_updated);
                 
                 if (overviewData.last_updated && overviewData.update_interval_minutes) {
                     const lastUpdate = new Date(overviewData.last_updated);
-                    nextUpdateTime = new Date(lastUpdate.getTime() + overviewData.update_interval_minutes * 60000);
-                    
-                    // Clear existing countdown interval
+                    totalUpdateSeconds = overviewData.update_interval_minutes * 60;
+                    nextUpdateTime = new Date(lastUpdate.getTime() + totalUpdateSeconds * 1000);
                     if (countdownInterval) clearInterval(countdownInterval);
-                    
-                    // Update countdown immediately and then every second
                     updateCountdown();
                     countdownInterval = setInterval(updateCountdown, 1000);
                 }
                 
-                // Apply user's filter preferences
+                // Apply filters
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
-                
-                // Aggregate by site with deduplication
                 const aggregatedSites = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
-                const groupedSites = SiteAggregator.groupBySeverity(aggregatedSites);
                 
-                // Render grouped site summaries
-                renderSiteGroups(groupedSites);
-                
-                // Show/hide "no sites" message
-                const noSitesMsg = document.getElementById('noSitesMessage');
-                if (aggregatedSites.length === 0) {
-                    noSitesMsg.style.display = 'block';
-                } else {
-                    noSitesMsg.style.display = 'none';
-                }
-                
-                // Recalculate counts based on filtered data
+                // Update nav badges
+                document.getElementById('navAdvisoryCount').textContent = filteredAdvisories.length;
+                document.getElementById('navSitesCount').textContent = aggregatedSites.length;
+                document.getElementById('navTotalSites').textContent = overviewData.total_sites;
                 document.getElementById('totalSites').textContent = overviewData.total_sites;
                 
-                // Sites with advisories (after filtering)
-                const sitesWithAdvisories = aggregatedSites.length;
-                document.getElementById('sitesWithAdvisories').textContent = sitesWithAdvisories;
-                
-                // Weather Impact Counts - based on sites with filtered advisories only
-                // Only count sites that have active advisories matching user's filters
-                const weatherImpactCounts = { red: 0, orange: 0, yellow: 0, green: 0 };
-                
-                // Map advisory severity to weather impact level
-                const severityToImpact = { 
-                    'Extreme': 'red', 
-                    'Severe': 'orange', 
-                    'Moderate': 'yellow', 
-                    'Minor': 'green' 
-                };
-                
-                // Count each site with filtered advisories by their highest severity
+                // Weather impact counts
+                const impactCounts = { red: 0, orange: 0, yellow: 0, green: 0 };
+                const severityMap = { 'Extreme': 'red', 'Severe': 'orange', 'Moderate': 'yellow', 'Minor': 'green' };
                 aggregatedSites.forEach(site => {
-                    const level = severityToImpact[site.highest_severity] || 'green';
-                    weatherImpactCounts[level]++;
+                    const level = severityMap[site.highest_severity] || 'green';
+                    impactCounts[level]++;
                 });
                 
-                document.getElementById('weatherRed').textContent = weatherImpactCounts.red;
-                document.getElementById('weatherOrange').textContent = weatherImpactCounts.orange;
-                document.getElementById('weatherYellow').textContent = weatherImpactCounts.yellow;
-                document.getElementById('weatherGreen').textContent = weatherImpactCounts.green;
+                document.getElementById('weatherRed').textContent = impactCounts.red;
+                document.getElementById('weatherOrange').textContent = impactCounts.orange;
+                document.getElementById('weatherYellow').textContent = impactCounts.yellow;
+                document.getElementById('weatherGreen').textContent = overviewData.total_sites - aggregatedSites.length;
                 
-                // Operational Status Counts
+                document.getElementById('criticalSitesLabel').textContent = `${impactCounts.red} site${impactCounts.red !== 1 ? 's' : ''} affected`;
+                document.getElementById('highSitesLabel').textContent = `${impactCounts.orange} site${impactCounts.orange !== 1 ? 's' : ''} affected`;
+                document.getElementById('moderateSitesLabel').textContent = `${impactCounts.yellow} site${impactCounts.yellow !== 1 ? 's' : ''} affected`;
+                document.getElementById('lowSitesLabel').textContent = 'No active alerts';
+                
+                // Update filter pill counts
+                const severityCounts = { Extreme: 0, Severe: 0, Moderate: 0, Minor: 0 };
+                filteredAdvisories.forEach(adv => {
+                    if (severityCounts.hasOwnProperty(adv.severity)) {
+                        severityCounts[adv.severity]++;
+                    }
+                });
+                
+                document.getElementById('filterCritical').textContent = severityCounts.Extreme;
+                document.getElementById('filterHigh').textContent = severityCounts.Severe;
+                document.getElementById('filterModerate').textContent = severityCounts.Moderate;
+                document.getElementById('filterLow').textContent = severityCounts.Minor;
+                
+                // Operational status
                 const statusCounts = overviewData.operational_status_counts || [];
                 document.getElementById('statusClosed').textContent = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
                 document.getElementById('statusRestricted').textContent = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;
                 document.getElementById('statusPending').textContent = statusCounts.find(s => s.operational_status === 'pending')?.count || 0;
                 document.getElementById('statusOpen').textContent = statusCounts.find(s => s.operational_status === 'open_normal')?.count || 0;
                 
-                // Recalculate severity counts from filtered advisories
-                const severityCounts = {};
-                filteredAdvisories.forEach(adv => {
-                    severityCounts[adv.severity] = (severityCounts[adv.severity] || 0) + 1;
-                });
+                // Render components
+                renderCriticalAlerts(aggregatedSites);
+                renderSitesAttention(aggregatedSites);
+                updateBarChart(severityCounts);
+                updateDonutChart(statusCounts, overviewData.total_sites);
                 
-                const severityOrder = ['Extreme', 'Severe', 'Moderate', 'Minor'];
-                const severityHTML = severityOrder
-                    .filter(sev => severityCounts[sev] > 0)
-                    .map(sev => 
-                        `<div class="mb-2">
-                            <a href="advisories.html?severity=${sev}" class="badge ${getSeverityBadge(sev)} me-2 text-decoration-none">${sev}</a>
-                            <strong>${severityCounts[sev]}</strong> advisories
-                        </div>`
-                    ).join('');
-                document.getElementById('severityCounts').innerHTML = severityHTML || '<p class="text-muted">No active advisories</p>';
-                
-                // Sites with advisories (filter to show only sites with active advisories)
-                const sitesWithAdvisoriesData = overviewData.recently_updated
-                    .filter(site => {
-                        // Check if this site has any advisories in the filtered set
-                        return filteredAdvisories.some(adv => adv.site_id === site.site_id);
-                    })
-                    .slice(0, 5);
-                
-                const sitesHTML = sitesWithAdvisoriesData.map(site => {
-                    const weatherBadge = getWeatherBadge(site.weather_impact_level || 'green');
-                    const opsBadge = getOperationalBadge(site.operational_status || 'open_normal');
-                    return `<div class="mb-2">
-                        <a href="sites.html?site=${site.site_code}" class="text-decoration-none fw-bold">${site.site_code}</a> - ${site.name}<br>
-                        <small>
-                            <span class="badge ${weatherBadge} me-1">Weather: ${(site.weather_impact_level || 'green').toUpperCase()}</span>
-                            <span class="badge ${opsBadge}">Ops: ${formatOperationalStatus(site.operational_status || 'open_normal')}</span>
-                        </small>
-                    </div>`;
-                }).join('');
-                document.getElementById('recentlyUpdatedList').innerHTML = sitesHTML || '<p class="text-muted">No sites with advisories</p>';
-                
-                function getWeatherBadge(level) {
-                    const badges = { red: 'weather-red', orange: 'weather-orange', yellow: 'weather-yellow', green: 'weather-green' };
-                    return badges[level] || 'weather-green';
-                }
-                
-                function getOperationalBadge(status) {
-                    const badges = { closed: 'status-closed', open_restricted: 'status-restricted', pending: 'status-pending', open_normal: 'status-open' };
-                    return badges[status] || 'status-open';
-                }
-                
-                function formatOperationalStatus(status) {
-                    const labels = { closed: 'CLOSED', open_restricted: 'RESTRICTED', pending: 'PENDING', open_normal: 'OPEN' };
-                    return labels[status] || 'OPEN';
-                }
+                // Generate sparklines (mock data for visual effect)
+                generateSparkline('sparklineCritical', [20, 15, 10, 25, 20, 35, 45, 30, 55, 70, 85, 100]);
+                generateSparkline('sparklineHigh', [60, 75, 85, 70, 55, 45, 50, 60, 55, 50, 45, 50]);
+                generateSparkline('sparklineModerate', [90, 85, 75, 60, 55, 50, 45, 40, 35, 30, 25, 20]);
+                generateSparkline('sparklineLow', [100, 98, 95, 97, 96, 98, 97, 99, 96, 97, 98, 96]);
                 
             } catch (error) {
                 console.error('Failed to load overview:', error);
-                showError('Failed to load dashboard data');
             }
         }
-        
-        // Render grouped site summaries
-        function renderSiteGroups(groupedSites) {
-            renderSiteGroup('criticalSitesSection', 'critical', '🔴 IMMEDIATE ATTENTION', groupedSites.critical, false);
-            renderSiteGroup('elevatedSitesSection', 'elevated', '🟠 ELEVATED RISK', groupedSites.elevated, true);
-            renderSiteGroup('monitoringSitesSection', 'monitoring', '🟡 MONITORING', groupedSites.monitoring, true);
-        }
-        
-        function renderSiteGroup(containerId, cssClass, title, sites, collapsed) {
-            const container = document.getElementById(containerId);
-            
-            if (!sites || sites.length === 0) {
-                container.innerHTML = '';
-                return;
+
+        // Event listeners
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            this.setAttribute('aria-expanded', document.querySelector('.sidebar').classList.contains('open'));
+        });
+
+        document.getElementById('contrastToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            this.setAttribute('aria-checked', this.classList.contains('active'));
+            document.body.classList.toggle('high-contrast');
+        });
+
+        document.getElementById('contrastToggle').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
             }
-            
-            const collapseId = `collapse${cssClass}`;
-            const showClass = collapsed ? '' : 'show';
-            
-            container.innerHTML = `
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <div class="severity-group-header ${cssClass} ${collapsed ? 'collapsed' : ''}" 
-                             data-bs-toggle="collapse" 
-                             data-bs-target="#${collapseId}">
-                            <h4 class="severity-group-title">${title}</h4>
-                            <span class="severity-group-count">${sites.length}</span>
-                            <span class="severity-group-toggle">▼</span>
-                        </div>
-                        <div class="collapse ${showClass}" id="${collapseId}">
-                            <div class="row mt-3">
-                                ${sites.slice(0, 6).map(site => renderSiteSummary(site)).join('')}
-                            </div>
-                            ${sites.length > 6 ? `
-                            <div class="text-center mt-2">
-                                <a href="sites.html" class="btn btn-sm btn-outline-primary">
-                                    View All ${sites.length} Sites <i class="bi bi-arrow-right"></i>
-                                </a>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function renderSiteSummary(site) {
-            const severityClass = `site-card-${site.highest_severity.toLowerCase()}`;
-            const advisory = site.highest_severity_advisory;
-            
-            return `
-                <div class="col-lg-4 col-md-6 col-12 mb-3">
-                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
-                        <div class="card site-card site-card-clickable ${severityClass}" style="height: 100%;">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="mb-0 text-dark">
-                                        <strong>${site.site_code}</strong><br>
-                                        <small class="text-muted">${site.city}, ${site.state}</small>
-                                    </h6>
-                                    <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
-                                        ${site.highest_severity}
-                                    </span>
-                                </div>
-                                
-                                <div class="mb-2 text-dark">
-                                    <strong>${advisory.advisory_type}</strong>
-                                    ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
-                                </div>
-                                
-                                <small class="text-muted d-block mb-2">
-                                    ${advisory.expires ? 'Expires: ' + formatDate(advisory.expires) : ''}
-                                </small>
-                                
-                                <div class="d-flex gap-2 align-items-center text-dark" style="font-size: 0.85rem;">
-                                    <span>
-                                        <strong>${site.unique_advisory_count}</strong> ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
-                                    </span>
-                                    ${site.total_zone_count !== site.unique_advisory_count ? 
-                                        `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
-                                    ${site.new_count > 0 ? 
-                                        `<span class="badge bg-success">${site.new_count} new</span>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            `;
-        }
-        
-        // Initialize filters then load overview
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', loadOverview);
+
+        // Search functionality
+        document.getElementById('siteSearch').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            if (query.length > 0) {
+                window.location.href = `sites.html?search=${encodeURIComponent(query)}`;
+            }
+        });
+
+        // Initialize
         AlertFilters.init().then(() => {
             loadOverview();
         });

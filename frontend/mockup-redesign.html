@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Weather Advisory Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS CUSTOM PROPERTIES & RESET
+           ============================================ */
+        :root {
+            /* Base Colors */
+            --color-bg-primary: #0a0f1a;
+            --color-bg-secondary: #111827;
+            --color-bg-card: #1a2234;
+            --color-bg-card-hover: #1f2a40;
+            --color-border: rgba(255, 255, 255, 0.08);
+            --color-border-light: rgba(255, 255, 255, 0.12);
+            
+            /* Text Colors */
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #9ca3af;
+            --color-text-muted: #6b7280;
+            
+            /* Severity Colors */
+            --color-critical: #ef4444;
+            --color-critical-bg: rgba(239, 68, 68, 0.15);
+            --color-critical-border: rgba(239, 68, 68, 0.3);
+            --color-critical-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --color-high: #f97316;
+            --color-high-bg: rgba(249, 115, 22, 0.15);
+            --color-high-border: rgba(249, 115, 22, 0.3);
+            --color-high-gradient: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+            
+            --color-moderate: #eab308;
+            --color-moderate-bg: rgba(234, 179, 8, 0.15);
+            --color-moderate-border: rgba(234, 179, 8, 0.3);
+            --color-moderate-gradient: linear-gradient(135deg, #ca8a04 0%, #eab308 100%);
+            
+            --color-low: #22c55e;
+            --color-low-bg: rgba(34, 197, 94, 0.15);
+            --color-low-border: rgba(34, 197, 94, 0.3);
+            --color-low-gradient: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            
+            /* Accent Colors */
+            --color-accent: #3b82f6;
+            --color-accent-hover: #2563eb;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow-critical: 0 0 30px rgba(239, 68, 68, 0.3);
+            --shadow-glow-high: 0 0 30px rgba(249, 115, 22, 0.3);
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-normal: 250ms ease;
+            --transition-slow: 350ms ease;
+        }
+        
+        /* High Contrast Mode */
+        .high-contrast {
+            --color-bg-primary: #000000;
+            --color-bg-secondary: #0a0a0a;
+            --color-bg-card: #111111;
+            --color-border: rgba(255, 255, 255, 0.2);
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #e5e5e5;
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* ============================================
+           LAYOUT STRUCTURE
+           ============================================ */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: var(--color-bg-secondary);
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform var(--transition-normal);
+        }
+        
+        .sidebar-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-accent);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-text span {
+            color: var(--color-accent);
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: var(--space-md);
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-muted);
+            padding: var(--space-sm) var(--space-md);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+        
+        .nav-item:hover, .nav-item:focus {
+            background: var(--color-bg-card);
+            color: var(--color-text-primary);
+            outline: none;
+        }
+        
+        .nav-item:focus-visible {
+            box-shadow: 0 0 0 2px var(--color-accent);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--color-accent);
+        }
+        
+        .nav-item-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            background: var(--color-critical);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .nav-badge.warning {
+            background: var(--color-high);
+        }
+        
+        .nav-badge.info {
+            background: var(--color-accent);
+        }
+        
+        .sidebar-footer {
+            padding: var(--space-md);
+            border-top: 1px solid var(--color-border);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+        
+        /* Top Header Bar */
+        .top-bar {
+            background: var(--color-bg-secondary);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-md) var(--space-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .update-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .update-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--color-low);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .next-update {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        /* Progress Ring for Update Timer */
+        .progress-ring {
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+        
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke: var(--color-border);
+            fill: none;
+            stroke-width: 3;
+        }
+        
+        .progress-ring-progress {
+            stroke: var(--color-accent);
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 75.4;
+            stroke-dashoffset: 18.85;
+            transition: stroke-dashoffset 1s linear;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+        
+        .btn:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+        
+        .btn-primary {
+            background: var(--color-accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--color-bg-card);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--color-bg-card-hover);
+            border-color: var(--color-border-light);
+        }
+        
+        .btn-icon {
+            padding: var(--space-sm);
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: var(--space-xl);
+            max-width: 1600px;
+        }
+        
+        /* ============================================
+           FILTER PILLS / QUICK FILTERS
+           ============================================ */
+        .quick-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .filter-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .filter-pill:hover {
+            background: var(--color-bg-card-hover);
+            border-color: var(--color-border-light);
+        }
+        
+        .filter-pill.active {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+        
+        .filter-pill.critical {
+            background: var(--color-critical-bg);
+            border-color: var(--color-critical-border);
+            color: var(--color-critical);
+        }
+        
+        .filter-pill.high {
+            background: var(--color-high-bg);
+            border-color: var(--color-high-border);
+            color: var(--color-high);
+        }
+        
+        .filter-pill.moderate {
+            background: var(--color-moderate-bg);
+            border-color: var(--color-moderate-border);
+            color: var(--color-moderate);
+        }
+        
+        .filter-pill-count {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .filter-pill.critical .filter-pill-count {
+            background: var(--color-critical);
+            color: white;
+        }
+        
+        .filter-pill.high .filter-pill-count {
+            background: var(--color-high);
+            color: white;
+        }
+        
+        .filter-pill.moderate .filter-pill-count {
+            background: var(--color-moderate);
+            color: #000;
+        }
+        
+        /* Search Box */
+        .search-box {
+            position: relative;
+            width: 280px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            padding-left: 40px;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            color: var(--color-text-primary);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .search-input::placeholder {
+            color: var(--color-text-muted);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+        }
+        
+        /* ============================================
+           CRITICAL ALERTS BANNER
+           ============================================ */
+        .critical-alerts-banner {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 1px solid var(--color-critical-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+            animation: critical-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes critical-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); }
+        }
+        
+        .critical-alerts-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--color-critical-gradient);
+        }
+        
+        .critical-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .critical-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-critical-gradient);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            animation: icon-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes icon-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .critical-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-critical);
+        }
+        
+        .critical-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .critical-alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .critical-alert-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-critical-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            display: flex;
+            gap: var(--space-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .critical-alert-card:hover {
+            background: var(--color-bg-card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .alert-severity-indicator {
+            width: 4px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .alert-severity-indicator.critical { background: var(--color-critical-gradient); }
+        .alert-severity-indicator.high { background: var(--color-high-gradient); }
+        .alert-severity-indicator.moderate { background: var(--color-moderate-gradient); }
+        .alert-severity-indicator.low { background: var(--color-low-gradient); }
+        
+        .alert-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .alert-type {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-critical);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .alert-type.high { color: var(--color-high); }
+        .alert-type.moderate { color: var(--color-moderate); }
+        
+        .alert-name {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            color: var(--color-text-primary);
+        }
+        
+        .alert-location {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .alert-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+        
+        .alert-sites {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .alert-mini-map {
+            width: 80px;
+            height: 60px;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .mini-map-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--color-critical);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 10px var(--color-critical);
+        }
+        
+        /* Map background styling */
+        .alert-mini-map::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.03) 50%, transparent 51%),
+                linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.03) 50%, transparent 51%);
+            background-size: 20px 20px;
+        }
+        
+        /* ============================================
+           SEVERITY OVERVIEW CARDS
+           ============================================ */
+        .severity-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .severity-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-normal);
+        }
+        
+        .severity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .severity-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .severity-card.critical::before { background: var(--color-critical-gradient); }
+        .severity-card.critical:hover { box-shadow: var(--shadow-glow-critical); }
+        
+        .severity-card.high::before { background: var(--color-high-gradient); }
+        .severity-card.high:hover { box-shadow: var(--shadow-glow-high); }
+        
+        .severity-card.moderate::before { background: var(--color-moderate-gradient); }
+        .severity-card.low::before { background: var(--color-low-gradient); }
+        
+        .severity-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+        }
+        
+        .severity-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .severity-card.critical .severity-icon-wrapper {
+            background: var(--color-critical-bg);
+        }
+        .severity-card.high .severity-icon-wrapper {
+            background: var(--color-high-bg);
+        }
+        .severity-card.moderate .severity-icon-wrapper {
+            background: var(--color-moderate-bg);
+        }
+        .severity-card.low .severity-icon-wrapper {
+            background: var(--color-low-bg);
+        }
+        
+        .severity-trend {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+        
+        .severity-trend.up {
+            background: var(--color-critical-bg);
+            color: var(--color-critical);
+        }
+        
+        .severity-trend.down {
+            background: var(--color-low-bg);
+            color: var(--color-low);
+        }
+        
+        .severity-trend.neutral {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-muted);
+        }
+        
+        .severity-count {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+            letter-spacing: -0.02em;
+        }
+        
+        .severity-card.critical .severity-count { color: var(--color-critical); }
+        .severity-card.high .severity-count { color: var(--color-high); }
+        .severity-card.moderate .severity-count { color: var(--color-moderate); }
+        .severity-card.low .severity-count { color: var(--color-low); }
+        
+        .severity-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .severity-sites {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+        
+        /* Sparkline */
+        .sparkline {
+            height: 40px;
+            margin-top: var(--space-md);
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+        }
+        
+        .sparkline-bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: all var(--transition-fast);
+        }
+        
+        .sparkline-bar:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .severity-card.critical .sparkline-bar { background: var(--color-critical-bg); }
+        .severity-card.critical .sparkline-bar:hover { background: var(--color-critical); }
+        .severity-card.high .sparkline-bar { background: var(--color-high-bg); }
+        .severity-card.high .sparkline-bar:hover { background: var(--color-high); }
+        .severity-card.moderate .sparkline-bar { background: var(--color-moderate-bg); }
+        .severity-card.moderate .sparkline-bar:hover { background: var(--color-moderate); }
+        .severity-card.low .sparkline-bar { background: var(--color-low-bg); }
+        .severity-card.low .sparkline-bar:hover { background: var(--color-low); }
+        
+        /* ============================================
+           MAIN CONTENT GRID
+           ============================================ */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-xl);
+        }
+        
+        /* Card Component */
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .card-body {
+            padding: var(--space-lg);
+        }
+        
+        /* ============================================
+           SITES REQUIRING ATTENTION
+           ============================================ */
+        .sites-attention-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .site-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+        
+        .site-item:hover {
+            background: var(--color-bg-card-hover);
+            transform: translateX(4px);
+        }
+        
+        .site-status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .site-status-indicator.closed {
+            background: var(--color-critical);
+            box-shadow: 0 0 8px var(--color-critical);
+        }
+        
+        .site-status-indicator.restricted {
+            background: var(--color-high);
+            box-shadow: 0 0 8px var(--color-high);
+        }
+        
+        .site-status-indicator.pending {
+            background: var(--color-moderate);
+        }
+        
+        .site-status-indicator.open {
+            background: var(--color-low);
+        }
+        
+        .site-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .site-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .site-location {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .site-status-badge {
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        
+        .site-status-badge.closed {
+            background: var(--color-critical-bg);
+            color: var(--color-critical);
+            border: 1px solid var(--color-critical-border);
+        }
+        
+        .site-status-badge.restricted {
+            background: var(--color-high-bg);
+            color: var(--color-high);
+            border: 1px solid var(--color-high-border);
+        }
+        
+        .site-status-badge.pending {
+            background: var(--color-moderate-bg);
+            color: var(--color-moderate);
+            border: 1px solid var(--color-moderate-border);
+        }
+        
+        .site-status-badge.open {
+            background: var(--color-low-bg);
+            color: var(--color-low);
+            border: 1px solid var(--color-low-border);
+        }
+        
+        .site-alert-count {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+        
+        /* ============================================
+           CHARTS & DATA VISUALIZATION
+           ============================================ */
+        .chart-container {
+            padding: var(--space-lg);
+        }
+        
+        .donut-chart-wrapper {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xl);
+        }
+        
+        .donut-chart {
+            width: 160px;
+            height: 160px;
+            position: relative;
+        }
+        
+        .donut-chart svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .donut-segment {
+            fill: none;
+            stroke-width: 24;
+            transition: all var(--transition-fast);
+        }
+        
+        .donut-segment:hover {
+            stroke-width: 28;
+            filter: brightness(1.2);
+        }
+        
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .donut-center-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .donut-center-label {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .legend-color.critical { background: var(--color-critical); }
+        .legend-color.high { background: var(--color-high); }
+        .legend-color.moderate { background: var(--color-moderate); }
+        .legend-color.low { background: var(--color-low); }
+        
+        .legend-value {
+            margin-left: auto;
+            font-weight: 600;
+        }
+        
+        /* Bar Chart */
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .bar-label {
+            width: 80px;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .bar-track {
+            flex: 1;
+            height: 24px;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            transition: width 1s ease-out;
+            display: flex;
+            align-items: center;
+            padding-left: var(--space-sm);
+        }
+        
+        .bar-fill.critical { background: var(--color-critical-gradient); }
+        .bar-fill.high { background: var(--color-high-gradient); }
+        .bar-fill.moderate { background: var(--color-moderate-gradient); }
+        .bar-fill.low { background: var(--color-low-gradient); }
+        
+        .bar-value {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* ============================================
+           RECENT ACTIVITY / TIMELINE
+           ============================================ */
+        .activity-timeline {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--color-border);
+            position: relative;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.alert { background: var(--color-critical-bg); }
+        .activity-icon.update { background: var(--color-accent); background: rgba(59, 130, 246, 0.2); }
+        .activity-icon.resolved { background: var(--color-low-bg); }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .activity-description {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            flex-shrink: 0;
+        }
+        
+        /* ============================================
+           WEATHER FORECAST PREVIEW
+           ============================================ */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-sm);
+        }
+        
+        .forecast-day {
+            text-align: center;
+            padding: var(--space-md);
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .forecast-day:hover {
+            background: var(--color-bg-card-hover);
+        }
+        
+        .forecast-day-name {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .forecast-icon {
+            font-size: 1.5rem;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .forecast-temp {
+            font-weight: 600;
+        }
+        
+        .forecast-temp-low {
+            color: var(--color-text-muted);
+            font-weight: 400;
+        }
+        
+        /* ============================================
+           SKELETON LOADERS
+           ============================================ */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--color-bg-secondary) 25%,
+                var(--color-bg-card) 50%,
+                var(--color-bg-secondary) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .skeleton-text.sm { width: 40%; }
+        .skeleton-text.md { width: 60%; }
+        .skeleton-text.lg { width: 80%; }
+        
+        .skeleton-card {
+            height: 120px;
+        }
+        
+        .skeleton-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+        }
+        
+        /* ============================================
+           ACCESSIBILITY TOGGLE
+           ============================================ */
+        .a11y-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: var(--color-bg-secondary);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all var(--transition-fast);
+        }
+        
+        .toggle-switch.active {
+            background: var(--color-accent);
+        }
+        
+        .toggle-switch.active::after {
+            left: 23px;
+        }
+        
+        /* ============================================
+           MOBILE RESPONSIVE
+           ============================================ */
+        .mobile-menu-btn {
+            display: none;
+            padding: var(--space-sm);
+            background: none;
+            border: none;
+            color: var(--color-text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 1200px) {
+            .severity-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .top-bar {
+                padding: var(--space-md);
+            }
+            
+            .dashboard-content {
+                padding: var(--space-md);
+            }
+            
+            .severity-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .critical-alerts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: var(--space-sm);
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .filter-pill {
+                flex-shrink: 0;
+            }
+            
+            .donut-chart-wrapper {
+                flex-direction: column;
+            }
+            
+            .forecast-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .top-bar-actions {
+                gap: var(--space-sm);
+            }
+            
+            .update-status span:not(.next-update) {
+                display: none;
+            }
+        }
+        
+        /* Touch-friendly sizes */
+        @media (pointer: coarse) {
+            .btn, .filter-pill, .nav-item, .site-item {
+                min-height: 44px;
+            }
+        }
+        
+        /* ============================================
+           ANIMATIONS & TRANSITIONS
+           ============================================ */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Stagger children animation */
+        .stagger-children > * {
+            animation: fadeIn 0.4s ease-out backwards;
+        }
+        
+        .stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+        .stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+        .stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+        .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+        .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+        .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+        
+        /* Screen reader only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-header">
+                <a href="#" class="logo" aria-label="Storm Scout Home">
+                    <div class="logo-icon" aria-hidden="true">⛈️</div>
+                    <div class="logo-text">Storm<span>Scout</span></div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Dashboard</div>
+                    <a href="#" class="nav-item active" aria-current="page">
+                        <span class="nav-item-icon" aria-hidden="true">📊</span>
+                        Overview
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">⚠️</span>
+                        Active Advisories
+                        <span class="nav-badge" aria-label="4 active advisories">4</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📍</span>
+                        Sites Impacted
+                        <span class="nav-badge warning" aria-label="8 sites impacted">8</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">🗺️</span>
+                        Map View
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📋</span>
+                        All Sites
+                        <span class="nav-badge info" aria-label="219 total sites">219</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📜</span>
+                        Government Notices
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">⚙️</span>
+                        Filter Settings
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Information</div>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">📡</span>
+                        Data Sources
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-item-icon" aria-hidden="true">❓</span>
+                        Help
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="a11y-toggle">
+                    <span>High Contrast</span>
+                    <div class="toggle-switch" role="switch" aria-checked="false" tabindex="0" aria-label="Toggle high contrast mode"></div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-bar">
+                <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">☰</button>
+                <h1 class="page-title">Operations Dashboard</h1>
+                
+                <div class="top-bar-actions">
+                    <div class="update-status" aria-live="polite">
+                        <div class="update-dot" aria-hidden="true"></div>
+                        <span>Live</span>
+                        <span>•</span>
+                        <span>Next update in</span>
+                        <span class="next-update">12:34</span>
+                        <div class="progress-ring" aria-hidden="true">
+                            <svg viewBox="0 0 28 28">
+                                <circle class="progress-ring-circle" cx="14" cy="14" r="12"/>
+                                <circle class="progress-ring-progress" cx="14" cy="14" r="12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" aria-label="Refresh data">
+                        <span aria-hidden="true">↻</span>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Quick Filters -->
+                <div class="quick-filters" role="group" aria-label="Quick severity filters">
+                    <button class="filter-pill critical active" aria-pressed="true">
+                        <span aria-hidden="true">🔴</span>
+                        Critical
+                        <span class="filter-pill-count">1</span>
+                    </button>
+                    <button class="filter-pill high active" aria-pressed="true">
+                        <span aria-hidden="true">🟠</span>
+                        High Impact
+                        <span class="filter-pill-count">2</span>
+                    </button>
+                    <button class="filter-pill moderate active" aria-pressed="true">
+                        <span aria-hidden="true">🟡</span>
+                        Moderate
+                        <span class="filter-pill-count">1</span>
+                    </button>
+                    <button class="filter-pill" aria-pressed="false">
+                        <span aria-hidden="true">🟢</span>
+                        Low
+                        <span class="filter-pill-count">0</span>
+                    </button>
+                    
+                    <div class="search-box">
+                        <span class="search-icon" aria-hidden="true">🔍</span>
+                        <input type="search" class="search-input" placeholder="Search sites..." aria-label="Search sites">
+                    </div>
+                </div>
+                
+                <!-- Critical Alerts Banner -->
+                <section class="critical-alerts-banner fade-in" aria-labelledby="critical-alerts-title" role="alert">
+                    <div class="critical-header">
+                        <div class="critical-icon" aria-hidden="true">⚡</div>
+                        <div>
+                            <h2 id="critical-alerts-title" class="critical-title">Sites Requiring Immediate Attention</h2>
+                            <p class="critical-subtitle">3 sites affected by severe weather conditions</p>
+                        </div>
+                    </div>
+                    
+                    <div class="critical-alerts-grid stagger-children">
+                        <!-- Critical Alert 1 -->
+                        <article class="critical-alert-card" aria-label="Flash Flood Warning for Phoenix Testing Center">
+                            <div class="alert-severity-indicator critical" aria-hidden="true"></div>
+                            <div class="alert-content">
+                                <div class="alert-type">Critical Alert</div>
+                                <h3 class="alert-name">Flash Flood Warning</h3>
+                                <p class="alert-location">Phoenix Testing Center, AZ</p>
+                                <div class="alert-meta">
+                                    <span class="alert-sites">
+                                        <span aria-hidden="true">📍</span>
+                                        <span>1 site affected</span>
+                                    </span>
+                                    <span>Expires in 4h 22m</span>
+                                </div>
+                            </div>
+                            <div class="alert-mini-map" aria-hidden="true">
+                                <div class="mini-map-dot" style="top: 45%; left: 35%;"></div>
+                            </div>
+                        </article>
+                        
+                        <!-- High Alert 1 -->
+                        <article class="critical-alert-card" aria-label="Tornado Watch for Dallas Regional Center">
+                            <div class="alert-severity-indicator high" aria-hidden="true"></div>
+                            <div class="alert-content">
+                                <div class="alert-type high">High Impact</div>
+                                <h3 class="alert-name">Tornado Watch</h3>
+                                <p class="alert-location">Dallas Regional Center, TX</p>
+                                <div class="alert-meta">
+                                    <span class="alert-sites">
+                                        <span aria-hidden="true">📍</span>
+                                        <span>3 sites affected</span>
+                                    </span>
+                                    <span>Expires in 6h 15m</span>
+                                </div>
+                            </div>
+                            <div class="alert-mini-map" aria-hidden="true">
+                                <div class="mini-map-dot" style="top: 55%; left: 45%; background: var(--color-high); box-shadow: 0 0 10px var(--color-high);"></div>
+                            </div>
+                        </article>
+                        
+                        <!-- High Alert 2 -->
+                        <article class="critical-alert-card" aria-label="Winter Storm Warning for Denver Metro Hub">
+                            <div class="alert-severity-indicator high" aria-hidden="true"></div>
+                            <div class="alert-content">
+                                <div class="alert-type high">High Impact</div>
+                                <h3 class="alert-name">Winter Storm Warning</h3>
+                                <p class="alert-location">Denver Metro Hub, CO</p>
+                                <div class="alert-meta">
+                                    <span class="alert-sites">
+                                        <span aria-hidden="true">📍</span>
+                                        <span>2 sites affected</span>
+                                    </span>
+                                    <span>Expires in 18h 45m</span>
+                                </div>
+                            </div>
+                            <div class="alert-mini-map" aria-hidden="true">
+                                <div class="mini-map-dot" style="top: 35%; left: 40%; background: var(--color-high); box-shadow: 0 0 10px var(--color-high);"></div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+                
+                <!-- Severity Overview Cards -->
+                <section aria-labelledby="severity-overview-title">
+                    <h2 id="severity-overview-title" class="sr-only">Severity Overview</h2>
+                    <div class="severity-grid stagger-children">
+                        <!-- Critical -->
+                        <div class="severity-card critical" tabindex="0" role="button" aria-label="1 Critical alert affecting 1 site">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper">
+                                    <span aria-hidden="true">🚨</span>
+                                </div>
+                                <div class="severity-trend up" aria-label="Increased from yesterday">
+                                    <span aria-hidden="true">↑</span> +1
+                                </div>
+                            </div>
+                            <div class="severity-count">1</div>
+                            <div class="severity-label">Critical Alerts</div>
+                            <div class="severity-sites">1 site affected</div>
+                            <div class="sparkline" aria-hidden="true">
+                                <div class="sparkline-bar" style="height: 20%;"></div>
+                                <div class="sparkline-bar" style="height: 15%;"></div>
+                                <div class="sparkline-bar" style="height: 10%;"></div>
+                                <div class="sparkline-bar" style="height: 25%;"></div>
+                                <div class="sparkline-bar" style="height: 20%;"></div>
+                                <div class="sparkline-bar" style="height: 35%;"></div>
+                                <div class="sparkline-bar" style="height: 45%;"></div>
+                                <div class="sparkline-bar" style="height: 30%;"></div>
+                                <div class="sparkline-bar" style="height: 55%;"></div>
+                                <div class="sparkline-bar" style="height: 70%;"></div>
+                                <div class="sparkline-bar" style="height: 85%;"></div>
+                                <div class="sparkline-bar" style="height: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- High -->
+                        <div class="severity-card high" tabindex="0" role="button" aria-label="2 High impact alerts affecting 5 sites">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper">
+                                    <span aria-hidden="true">⚠️</span>
+                                </div>
+                                <div class="severity-trend neutral" aria-label="No change from yesterday">
+                                    <span aria-hidden="true">→</span> 0
+                                </div>
+                            </div>
+                            <div class="severity-count">2</div>
+                            <div class="severity-label">High Impact</div>
+                            <div class="severity-sites">5 sites affected</div>
+                            <div class="sparkline" aria-hidden="true">
+                                <div class="sparkline-bar" style="height: 60%;"></div>
+                                <div class="sparkline-bar" style="height: 75%;"></div>
+                                <div class="sparkline-bar" style="height: 85%;"></div>
+                                <div class="sparkline-bar" style="height: 70%;"></div>
+                                <div class="sparkline-bar" style="height: 55%;"></div>
+                                <div class="sparkline-bar" style="height: 45%;"></div>
+                                <div class="sparkline-bar" style="height: 50%;"></div>
+                                <div class="sparkline-bar" style="height: 60%;"></div>
+                                <div class="sparkline-bar" style="height: 55%;"></div>
+                                <div class="sparkline-bar" style="height: 50%;"></div>
+                                <div class="sparkline-bar" style="height: 45%;"></div>
+                                <div class="sparkline-bar" style="height: 50%;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Moderate -->
+                        <div class="severity-card moderate" tabindex="0" role="button" aria-label="1 Moderate alert affecting 2 sites">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper">
+                                    <span aria-hidden="true">⚡</span>
+                                </div>
+                                <div class="severity-trend down" aria-label="Decreased from yesterday">
+                                    <span aria-hidden="true">↓</span> -2
+                                </div>
+                            </div>
+                            <div class="severity-count">1</div>
+                            <div class="severity-label">Moderate</div>
+                            <div class="severity-sites">2 sites affected</div>
+                            <div class="sparkline" aria-hidden="true">
+                                <div class="sparkline-bar" style="height: 90%;"></div>
+                                <div class="sparkline-bar" style="height: 85%;"></div>
+                                <div class="sparkline-bar" style="height: 75%;"></div>
+                                <div class="sparkline-bar" style="height: 60%;"></div>
+                                <div class="sparkline-bar" style="height: 55%;"></div>
+                                <div class="sparkline-bar" style="height: 50%;"></div>
+                                <div class="sparkline-bar" style="height: 45%;"></div>
+                                <div class="sparkline-bar" style="height: 40%;"></div>
+                                <div class="sparkline-bar" style="height: 35%;"></div>
+                                <div class="sparkline-bar" style="height: 30%;"></div>
+                                <div class="sparkline-bar" style="height: 25%;"></div>
+                                <div class="sparkline-bar" style="height: 20%;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- All Clear / Low -->
+                        <div class="severity-card low" tabindex="0" role="button" aria-label="211 sites operational with no alerts">
+                            <div class="severity-header">
+                                <div class="severity-icon-wrapper">
+                                    <span aria-hidden="true">✓</span>
+                                </div>
+                                <div class="severity-trend down" aria-label="Decreased alerts">
+                                    <span aria-hidden="true">↓</span> All Clear
+                                </div>
+                            </div>
+                            <div class="severity-count">211</div>
+                            <div class="severity-label">Sites Operational</div>
+                            <div class="severity-sites">No active alerts</div>
+                            <div class="sparkline" aria-hidden="true">
+                                <div class="sparkline-bar" style="height: 100%;"></div>
+                                <div class="sparkline-bar" style="height: 98%;"></div>
+                                <div class="sparkline-bar" style="height: 95%;"></div>
+                                <div class="sparkline-bar" style="height: 97%;"></div>
+                                <div class="sparkline-bar" style="height: 96%;"></div>
+                                <div class="sparkline-bar" style="height: 98%;"></div>
+                                <div class="sparkline-bar" style="height: 97%;"></div>
+                                <div class="sparkline-bar" style="height: 99%;"></div>
+                                <div class="sparkline-bar" style="height: 96%;"></div>
+                                <div class="sparkline-bar" style="height: 97%;"></div>
+                                <div class="sparkline-bar" style="height: 98%;"></div>
+                                <div class="sparkline-bar" style="height: 96%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Main Content Grid -->
+                <div class="content-grid">
+                    <!-- Left Column -->
+                    <div>
+                        <!-- Sites Requiring Attention -->
+                        <section class="card" aria-labelledby="sites-attention-title">
+                            <div class="card-header">
+                                <h2 id="sites-attention-title" class="card-title">Sites Requiring Attention</h2>
+                                <div class="card-actions">
+                                    <button class="btn btn-secondary">View All</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="sites-attention-list stagger-children">
+                                    <article class="site-item" tabindex="0" aria-label="Phoenix Testing Center - Closed due to Flash Flood Warning">
+                                        <div class="site-status-indicator closed" aria-hidden="true"></div>
+                                        <div class="site-info">
+                                            <div class="site-name">Phoenix Testing Center</div>
+                                            <div class="site-location">Phoenix, AZ</div>
+                                        </div>
+                                        <span class="site-status-badge closed">Closed</span>
+                                        <div class="site-alert-count">
+                                            <span aria-hidden="true">⚠️</span>
+                                            <span>1 alert</span>
+                                        </div>
+                                    </article>
+                                    
+                                    <article class="site-item" tabindex="0" aria-label="Dallas Regional Center - Restricted due to Tornado Watch">
+                                        <div class="site-status-indicator restricted" aria-hidden="true"></div>
+                                        <div class="site-info">
+                                            <div class="site-name">Dallas Regional Center</div>
+                                            <div class="site-location">Dallas, TX</div>
+                                        </div>
+                                        <span class="site-status-badge restricted">Restricted</span>
+                                        <div class="site-alert-count">
+                                            <span aria-hidden="true">⚠️</span>
+                                            <span>1 alert</span>
+                                        </div>
+                                    </article>
+                                    
+                                    <article class="site-item" tabindex="0" aria-label="Fort Worth Assessment Site - Restricted due to Tornado Watch">
+                                        <div class="site-status-indicator restricted" aria-hidden="true"></div>
+                                        <div class="site-info">
+                                            <div class="site-name">Fort Worth Assessment Site</div>
+                                            <div class="site-location">Fort Worth, TX</div>
+                                        </div>
+                                        <span class="site-status-badge restricted">Restricted</span>
+                                        <div class="site-alert-count">
+                                            <span aria-hidden="true">⚠️</span>
+                                            <span>1 alert</span>
+                                        </div>
+                                    </article>
+                                    
+                                    <article class="site-item" tabindex="0" aria-label="Arlington Evaluation Hub - Restricted due to Tornado Watch">
+                                        <div class="site-status-indicator restricted" aria-hidden="true"></div>
+                                        <div class="site-info">
+                                            <div class="site-name">Arlington Evaluation Hub</div>
+                                            <div class="site-location">Arlington, TX</div>
+                                        </div>
+                                        <span class="site-status-badge restricted">Restricted</span>
+                                        <div class="site-alert-count">
+                                            <span aria-hidden="true">⚠️</span>
+                                            <span>1 alert</span>
+                                        </div>
+                                    </article>
+                                    
+                                    <article class="site-item" tabindex="0" aria-label="Denver Metro Hub - Pending decision due to Winter Storm Warning">
+                                        <div class="site-status-indicator pending" aria-hidden="true"></div>
+                                        <div class="site-info">
+                                            <div class="site-name">Denver Metro Hub</div>
+                                            <div class="site-location">Denver, CO</div>
+                                        </div>
+                                        <span class="site-status-badge pending">Pending</span>
+                                        <div class="site-alert-count">
+                                            <span aria-hidden="true">⚠️</span>
+                                            <span>1 alert</span>
+                                        </div>
+                                    </article>
+                                    
+                                    <article class="site-item" tabindex="0" aria-label="Boulder Testing Facility - Pending decision due to Winter Storm Warning">
+                                        <div class="site-status-indicator pending" aria-hidden="true"></div>
+                                        <div class="site-info">
+                                            <div class="site-name">Boulder Testing Facility</div>
+                                            <div class="site-location">Boulder, CO</div>
+                                        </div>
+                                        <span class="site-status-badge pending">Pending</span>
+                                        <div class="site-alert-count">
+                                            <span aria-hidden="true">⚠️</span>
+                                            <span>1 alert</span>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Advisory Distribution Chart -->
+                        <section class="card" style="margin-top: var(--space-xl);" aria-labelledby="distribution-title">
+                            <div class="card-header">
+                                <h2 id="distribution-title" class="card-title">Advisory Distribution by Severity</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="bar-chart">
+                                    <div class="bar-row">
+                                        <span class="bar-label">Critical</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill critical" style="width: 25%;" role="img" aria-label="25% of total alerts">
+                                                <span class="bar-value">1</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span class="bar-label">High</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill high" style="width: 50%;" role="img" aria-label="50% of total alerts">
+                                                <span class="bar-value">2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span class="bar-label">Moderate</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill moderate" style="width: 25%;" role="img" aria-label="25% of total alerts">
+                                                <span class="bar-value">1</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span class="bar-label">Low</span>
+                                        <div class="bar-track">
+                                            <div class="bar-fill low" style="width: 0%;" role="img" aria-label="0% of total alerts">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div>
+                        <!-- Site Status Donut Chart -->
+                        <section class="card" aria-labelledby="status-chart-title">
+                            <div class="card-header">
+                                <h2 id="status-chart-title" class="card-title">Site Operational Status</h2>
+                            </div>
+                            <div class="chart-container">
+                                <div class="donut-chart-wrapper">
+                                    <div class="donut-chart" role="img" aria-label="Site status chart: 211 open, 3 restricted, 2 pending, 1 closed">
+                                        <svg viewBox="0 0 100 100">
+                                            <!-- Background circle -->
+                                            <circle cx="50" cy="50" r="38" fill="none" stroke="var(--color-bg-secondary)" stroke-width="24"/>
+                                            <!-- Segments (dasharray = circumference = 2 * PI * 38 ≈ 238.76) -->
+                                            <!-- Open: 211/219 = 96.3% -->
+                                            <circle class="donut-segment" cx="50" cy="50" r="38" stroke="var(--color-low)" 
+                                                    stroke-dasharray="230 238.76" stroke-dashoffset="0"/>
+                                            <!-- Restricted: 3/219 = 1.4% -->
+                                            <circle class="donut-segment" cx="50" cy="50" r="38" stroke="var(--color-high)" 
+                                                    stroke-dasharray="3.3 238.76" stroke-dashoffset="-230"/>
+                                            <!-- Pending: 2/219 = 0.9% -->
+                                            <circle class="donut-segment" cx="50" cy="50" r="38" stroke="var(--color-moderate)" 
+                                                    stroke-dasharray="2.2 238.76" stroke-dashoffset="-233.3"/>
+                                            <!-- Closed: 1/219 = 0.5% -->
+                                            <circle class="donut-segment" cx="50" cy="50" r="38" stroke="var(--color-critical)" 
+                                                    stroke-dasharray="1.1 238.76" stroke-dashoffset="-235.5"/>
+                                        </svg>
+                                        <div class="donut-center">
+                                            <div class="donut-center-value">219</div>
+                                            <div class="donut-center-label">Total Sites</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color low"></div>
+                                            <span>Open</span>
+                                            <span class="legend-value">211</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color high"></div>
+                                            <span>Restricted</span>
+                                            <span class="legend-value">3</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color moderate"></div>
+                                            <span>Pending</span>
+                                            <span class="legend-value">2</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color critical"></div>
+                                            <span>Closed</span>
+                                            <span class="legend-value">1</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Recent Activity -->
+                        <section class="card" style="margin-top: var(--space-xl);" aria-labelledby="activity-title">
+                            <div class="card-header">
+                                <h2 id="activity-title" class="card-title">Recent Activity</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-timeline">
+                                    <article class="activity-item">
+                                        <div class="activity-icon alert" aria-hidden="true">🚨</div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Flash Flood Warning Issued</div>
+                                            <div class="activity-description">Phoenix Testing Center moved to CLOSED status</div>
+                                        </div>
+                                        <time class="activity-time">2m ago</time>
+                                    </article>
+                                    
+                                    <article class="activity-item">
+                                        <div class="activity-icon update" aria-hidden="true">📡</div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">NOAA Data Updated</div>
+                                            <div class="activity-description">Ingested 847 weather alerts from NWS</div>
+                                        </div>
+                                        <time class="activity-time">15m ago</time>
+                                    </article>
+                                    
+                                    <article class="activity-item">
+                                        <div class="activity-icon alert" aria-hidden="true">⚠️</div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Winter Storm Warning Extended</div>
+                                            <div class="activity-description">Denver area warning extended 12 hours</div>
+                                        </div>
+                                        <time class="activity-time">28m ago</time>
+                                    </article>
+                                    
+                                    <article class="activity-item">
+                                        <div class="activity-icon resolved" aria-hidden="true">✓</div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Advisory Expired</div>
+                                            <div class="activity-description">Wind Advisory cleared for Seattle area</div>
+                                        </div>
+                                        <time class="activity-time">1h ago</time>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- 5-Day Forecast Preview -->
+                        <section class="card" style="margin-top: var(--space-xl);" aria-labelledby="forecast-title">
+                            <div class="card-header">
+                                <h2 id="forecast-title" class="card-title">National Outlook</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="forecast-grid">
+                                    <div class="forecast-day">
+                                        <div class="forecast-day-name">Today</div>
+                                        <div class="forecast-icon" aria-label="Stormy">⛈️</div>
+                                        <div class="forecast-temp">72° <span class="forecast-temp-low">58°</span></div>
+                                    </div>
+                                    <div class="forecast-day">
+                                        <div class="forecast-day-name">Sat</div>
+                                        <div class="forecast-icon" aria-label="Rainy">🌧️</div>
+                                        <div class="forecast-temp">68° <span class="forecast-temp-low">54°</span></div>
+                                    </div>
+                                    <div class="forecast-day">
+                                        <div class="forecast-day-name">Sun</div>
+                                        <div class="forecast-icon" aria-label="Partly cloudy">⛅</div>
+                                        <div class="forecast-temp">65° <span class="forecast-temp-low">52°</span></div>
+                                    </div>
+                                    <div class="forecast-day">
+                                        <div class="forecast-day-name">Mon</div>
+                                        <div class="forecast-icon" aria-label="Sunny">☀️</div>
+                                        <div class="forecast-temp">70° <span class="forecast-temp-low">55°</span></div>
+                                    </div>
+                                    <div class="forecast-day">
+                                        <div class="forecast-day-name">Tue</div>
+                                        <div class="forecast-icon" aria-label="Sunny">☀️</div>
+                                        <div class="forecast-temp">74° <span class="forecast-temp-low">58°</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // High Contrast Toggle
+        document.querySelector('.toggle-switch').addEventListener('click', function() {
+            this.classList.toggle('active');
+            this.setAttribute('aria-checked', this.classList.contains('active'));
+            document.body.classList.toggle('high-contrast');
+        });
+        
+        document.querySelector('.toggle-switch').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+        
+        // Mobile Menu Toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const isOpen = sidebar.classList.toggle('open');
+            this.setAttribute('aria-expanded', isOpen);
+        });
+        
+        // Filter Pill Toggle
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                if (!this.querySelector('input')) { // Skip search box
+                    this.classList.toggle('active');
+                    this.setAttribute('aria-pressed', this.classList.contains('active'));
+                }
+            });
+        });
+        
+        // Countdown Timer Simulation
+        let seconds = 754; // 12:34
+        function updateCountdown() {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.querySelector('.next-update').textContent = 
+                `${mins}:${secs.toString().padStart(2, '0')}`;
+            
+            // Update progress ring (900 seconds = 15 minutes)
+            const progress = (seconds / 900) * 75.4;
+            document.querySelector('.progress-ring-progress').style.strokeDashoffset = 75.4 - progress;
+            
+            seconds = seconds > 0 ? seconds - 1 : 900;
+        }
+        setInterval(updateCountdown, 1000);
+        
+        // Animate bars on load
+        setTimeout(() => {
+            document.querySelectorAll('.bar-fill').forEach(bar => {
+                bar.style.transition = 'width 1s ease-out';
+            });
+        }, 500);
+    </script>
+</body>
+</html>
