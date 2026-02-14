@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/tooltips.css">
+    <link rel="stylesheet" href="css/print.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -93,9 +94,33 @@
                         <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
                             <i class="bi bi-list-ul"></i> View All Sites
                         </a>
-                        <a href="map.html" class="btn btn-sm btn-outline-primary">
+                        <a href="map.html" class="btn btn-sm btn-outline-primary me-1">
                             <i class="bi bi-geo-alt"></i> Map View
                         </a>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-share"></i> Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="StormScoutExport.printToPDF(); return false;">
+                                    <i class="bi bi-printer"></i> Print / Save PDF
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="StormScoutExport.copyShareableLink(); return false;">
+                                    <i class="bi bi-link-45deg"></i> Copy Shareable Link
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Advanced Reports</h6></li>
+                                <li><a class="dropdown-item" href="#" onclick="window.exportCurrentData('executive'); return false;">
+                                    <i class="bi bi-file-earmark-person"></i> Executive Briefing
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="window.exportCurrentData('incident'); return false;">
+                                    <i class="bi bi-file-earmark-text"></i> Incident Report
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="window.exportCurrentData('csv'); return false;">
+                                    <i class="bi bi-filetype-csv"></i> Export CSV
+                                </a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -602,6 +627,55 @@
             updateFilterIndicator();
             loadOverview();
         });
+    </script>
+    <script src="js/export.js"></script>
+    <script>
+        // Helper function to export current dashboard data
+        window.exportCurrentData = async function(type) {
+            try {
+                // Fetch current data
+                const overviewResponse = await fetch('/api/status/overview');
+                const sitesResponse = await fetch('/api/sites/requiring-attention');
+                const advisoriesResponse = await fetch('/api/advisories/active');
+                
+                if (!overviewResponse.ok || !sitesResponse.ok || !advisoriesResponse.ok) {
+                    throw new Error('Failed to fetch data for export');
+                }
+                
+                const overview = await overviewResponse.json();
+                const sitesData = await sitesResponse.json();
+                const advisories = await advisoriesResponse.json();
+                
+                // Extract sites array from the grouped response
+                const sites = [];
+                if (sitesData.grouped) {
+                    if (sitesData.grouped.critical) sites.push(...sitesData.grouped.critical);
+                    if (sitesData.grouped.elevated) sites.push(...sitesData.grouped.elevated);
+                    if (sitesData.grouped.monitoring) sites.push(...sitesData.grouped.monitoring);
+                }
+                
+                // Export based on type
+                switch(type) {
+                    case 'csv':
+                        StormScoutExport.exportSitesToCSV(sites);
+                        break;
+                    case 'executive':
+                        StormScoutExport.generateHTMLReport({ sites, advisories, overview }, 'executive');
+                        break;
+                    case 'incident':
+                        StormScoutExport.generateHTMLReport({ sites, advisories }, 'incident');
+                        break;
+                    case 'summary':
+                        StormScoutExport.generateHTMLReport({ sites }, 'summary');
+                        break;
+                    default:
+                        console.error('Unknown export type:', type);
+                }
+            } catch (error) {
+                console.error('Export failed:', error);
+                StormScoutExport.showNotification('✗ Export failed', 'error');
+            }
+        };
     </script>
     <script src="js/ui-toggle.js"></script>
 </body>
