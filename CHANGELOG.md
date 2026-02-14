@@ -7,11 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Google Analytics (GA4)** - Added tracking to all frontend pages (***REDACTED_GA_ID***)
-  - Enables visitor analytics and usage monitoring
-  - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
-
 ### Planned
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
@@ -19,8 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Redis caching for API responses
 - API rate limiting with express-rate-limit
 - Unit tests with Jest
-- Input validation with joi
 - Database backup automation
+
+## [1.4.1] - 2026-02-14
+
+### Added
+- **Beta UI Notices Page** - Created `frontend/beta/notices.html` with full Beta UI styling
+  - Jurisdiction filter dropdown (Federal, State, County, City)
+  - Dark mode and high contrast support
+  - Mobile responsive design
+- **Google Analytics (GA4)** - Added tracking to all frontend pages (***REDACTED_GA_ID***)
+  - Enables visitor analytics and usage monitoring
+  - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
+
+### Fixed
+- **Severity Validation** (BUG-PROD-002) - `normalizer.js` now defaults invalid/Unknown severity to "Minor"
+  - Logs warning when invalid severity received from NOAA
+  - Prevents "Unknown" severity from breaking UI filters
+- **Database Constraint** (BUG-PROD-008) - Added CHECK constraint `chk_advisories_severity`
+  - Enforces severity IN ('Extreme', 'Severe', 'Moderate', 'Minor') at database level
+  - Prevents invalid data from entering the system
+
+### Performance
+- **Composite Index** (BUG-PROD-005) - Added `idx_advisories_status_severity`
+  - Improves queries filtering by both status AND severity
+  - API response time improved from 676ms to 535ms (21% faster)
+
+### Technical
+- Migration: `20260214-add-severity-constraint-and-index.sql`
+- Updated `schema.sql` with new index and constraint
 
 ## [1.4.0] - 2026-02-14
 
