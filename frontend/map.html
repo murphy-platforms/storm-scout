@@ -76,7 +76,8 @@
         
         .marker-extreme {
             background-color: #dc3545;
-            animation: pulse-marker 2s infinite;
+            /* Animation disabled for accessibility */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 3px rgba(220, 53, 69, 0.4);
         }
         
         .marker-severe {
@@ -90,15 +91,6 @@
         
         .marker-minor {
             background-color: #6c757d;
-        }
-        
-        @keyframes pulse-marker {
-            0%, 100% {
-                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 0 rgba(220, 53, 69, 0.7);
-            }
-            50% {
-                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 15px rgba(220, 53, 69, 0);
-            }
         }
         
         /* Leaflet popup customization */
