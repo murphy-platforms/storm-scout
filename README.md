@@ -32,6 +32,7 @@ Currently monitoring 219 testing centers with real-time NOAA weather data update
 - **Clean, Responsive UI** - Bootstrap 5.3 dashboard optimized for desktop and tablet
 - **6 Dashboard Pages** - Overview, Active Advisories, Sites Impacted, Notices, Filter Settings, Sources
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
+- **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on site detail pages
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 
 ### Performance & Security

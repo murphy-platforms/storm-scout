@@ -23,6 +23,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **In-Memory Caching**: node-cache for fast API responses (~100x faster on cache hits)
 - **API Rate Limiting**: 100 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
+- **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
 
 ---
 
@@ -119,7 +120,7 @@ strom-scout/
     ├── index.html       # Overview dashboard (Classic)
     ├── advisories.html  # Active advisories list
     ├── sites.html       # Sites impacted
-    ├── site-detail.html # Individual site view
+    ├── site-detail.html # Individual site view (with alert detail modal)
     ├── map.html         # Interactive map (future)
     ├── notices.html     # Government notices
     ├── filters.html     # Filter configuration
