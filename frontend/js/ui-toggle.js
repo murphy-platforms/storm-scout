@@ -14,7 +14,7 @@ const UIToggle = {
      * Get current UI version preference
      */
     getVersion() {
-        return localStorage.getItem(this.STORAGE_KEY) || this.VERSIONS.BETA;
+        return localStorage.getItem(this.STORAGE_KEY) || this.VERSIONS.CLASSIC;
     },
     
     /**
@@ -28,14 +28,14 @@ const UIToggle = {
      * Check if currently on Beta UI
      */
     isBeta() {
-        return !window.location.pathname.includes('/classic/');
+        return window.location.pathname.includes('/beta/');
     },
     
     /**
      * Check if currently on Classic UI
      */
     isClassic() {
-        return window.location.pathname.includes('/classic/');
+        return !window.location.pathname.includes('/beta/');
     },
     
     /**
@@ -45,13 +45,13 @@ const UIToggle = {
         const currentPath = window.location.pathname;
         const currentPage = currentPath.split('/').pop() || 'index.html';
         
-        if (this.isClassic()) {
-            // Switch to Beta - go up one directory
-            return currentPath.replace('/classic/', '/').replace('/classic', '/');
+        if (this.isBeta()) {
+            // Switch to Classic - go up from /beta/ to root
+            return currentPath.replace('/beta/', '/').replace('/beta', '/');
         } else {
-            // Switch to Classic - add classic directory
+            // Switch to Beta - add beta directory
             const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-            return `${basePath}classic/${currentPage}`;
+            return `${basePath}beta/${currentPage}`;
         }
     },
     
@@ -104,9 +104,9 @@ const UIToggle = {
         banner.innerHTML = `
             <div class="beta-banner-content">
                 <span class="beta-badge">BETA</span>
-                <span class="beta-message">You're previewing the new Storm Scout interface</span>
+                <span class="beta-message">⚠️ This version may have bugs. <a href="#" onclick="UIToggle.toggle(); return false;" style="color: #60a5fa;">Switch to Classic</a> for a stable experience.</span>
                 <button class="beta-feedback-btn" onclick="UIToggle.openFeedback()">
-                    Send Feedback
+                    Report Issue
                 </button>
                 <button class="beta-dismiss-btn" onclick="UIToggle.dismissBanner()" aria-label="Dismiss banner">
                     ✕
@@ -202,10 +202,21 @@ const UIToggle = {
             .toggle-to-beta {
                 background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
                 color: white;
+                animation: pulse-glow 2s ease-in-out infinite;
             }
             
             .toggle-to-beta:hover {
                 background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                animation: none;
+            }
+            
+            @keyframes pulse-glow {
+                0%, 100% {
+                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                }
+                50% {
+                    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.6);
+                }
             }
             
             /* Beta Banner */
