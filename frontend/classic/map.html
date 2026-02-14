@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE26KTHBDE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZE26KTHBDE');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Map View</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #map {
+            height: calc(100vh - 200px);
+            min-height: 500px;
+            width: 100%;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        
+        .map-legend {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .map-controls {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 1rem;
+        }
+        
+        /* Custom marker styles */
+        .severity-marker {
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            font-weight: bold;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .severity-marker:hover {
+            transform: scale(1.2);
+            z-index: 1000;
+        }
+        
+        .marker-extreme {
+            background-color: #dc3545;
+            animation: pulse-marker 2s infinite;
+        }
+        
+        .marker-severe {
+            background-color: #fd7e14;
+        }
+        
+        .marker-moderate {
+            background-color: #ffc107;
+            color: #000;
+        }
+        
+        .marker-minor {
+            background-color: #6c757d;
+        }
+        
+        @keyframes pulse-marker {
+            0%, 100% {
+                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+            50% {
+                box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 15px rgba(220, 53, 69, 0);
+            }
+        }
+        
+        /* Leaflet popup customization */
+        .leaflet-popup-content-wrapper {
+            border-radius: 0.375rem;
+        }
+        
+        .site-popup {
+            min-width: 250px;
+        }
+        
+        .site-popup h6 {
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .site-popup .badge {
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-cloud-lightning"></i> Storm Scout
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="map.html">Map View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row mb-3">
+            <div class="col-12">
+                <h1 class="h2"><i class="bi bi-geo-alt-fill"></i> Map View</h1>
+                <p class="text-muted">Interactive map showing all sites color-coded by highest severity</p>
+            </div>
+        </div>
+
+        <!-- Map Controls -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <div class="map-controls">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label mb-0 me-2">Filter by Severity:</label>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="checkbox" class="btn-check" id="filterExtreme" checked>
+                                <label class="btn btn-outline-danger" for="filterExtreme">Extreme</label>
+                                
+                                <input type="checkbox" class="btn-check" id="filterSevere" checked>
+                                <label class="btn btn-outline-warning" for="filterSevere">Severe</label>
+                                
+                                <input type="checkbox" class="btn-check" id="filterModerate" checked>
+                                <label class="btn btn-outline-secondary" for="filterModerate">Moderate</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-sm btn-primary" onclick="fitAllMarkers()">
+                                <i class="bi bi-arrows-fullscreen"></i> Fit All Sites
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="resetMap()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </button>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-secondary" id="visibleSiteCount">0 sites visible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="map-legend">
+                    <h6 class="mb-3">Severity Legend</h6>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-extreme"></div>
+                        <span><strong>Extreme</strong> - Immediate action required</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-severe"></div>
+                        <span><strong>Severe</strong> - High impact</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-moderate"></div>
+                        <span><strong>Moderate</strong> - Monitor closely</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon marker-minor"></div>
+                        <span><strong>Minor</strong> - Low impact</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Extreme')" title="Click to toggle Extreme filter">
+                    <div class="card-body">
+                        <h5 class="text-danger" id="extremeCount">0</h5>
+                        <small class="text-muted">Extreme Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Severe')" title="Click to toggle Severe filter">
+                    <div class="card-body">
+                        <h5 class="text-warning" id="severeCount">0</h5>
+                        <small class="text-muted">Severe Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center map-stat-card" onclick="toggleFilter('Moderate')" title="Click to toggle Moderate filter">
+                    <div class="card-body">
+                        <h5 class="text-secondary" id="moderateCount">0</h5>
+                        <small class="text-muted">Moderate Sites</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center static-card">
+                    <div class="card-body">
+                        <h5 id="totalSitesCount">0</h5>
+                        <small class="text-muted">Total Impacted</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/aggregation.js"></script>
+    <script src="js/alert-filters.js"></script>
+    <script>
+        let map;
+        let markers = [];
+        let markerLayer;
+        
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            markerLayer = L.layerGroup().addTo(map);
+        }
+        
+        async function loadMapData() {
+            try {
+                // Initialize filters first
+                await AlertFilters.init();
+                
+                const [allAdvisories, allSites] = await Promise.all([
+                    API.getActiveAdvisories(),
+                    API.getSites()
+                ]);
+                
+                // Apply user's filter preferences
+                const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
+                
+                // Aggregate FILTERED advisories by site
+                const aggregated = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
+                
+                // Create map of aggregated data
+                const aggMap = new Map();
+                aggregated.forEach(site => {
+                    aggMap.set(site.site_id, site);
+                });
+                
+                // Filter to sites with advisories and add coordinates
+                const sitesWithAdvisories = allSites
+                    .filter(site => aggMap.has(site.id))
+                    .map(site => ({
+                        ...site,
+                        ...aggMap.get(site.id)
+                    }));
+                
+                renderMarkers(sitesWithAdvisories);
+                updateStats(aggregated);
+                
+            } catch (error) {
+                console.error('Failed to load map data:', error);
+                alert('Failed to load map data. Please refresh the page.');
+            }
+        }
+        
+        function renderMarkers(sites) {
+            // Clear existing markers
+            markerLayer.clearLayers();
+            markers = [];
+            
+            sites.forEach(site => {
+                if (!site.latitude || !site.longitude) return;
+                
+                const severity = site.highest_severity;
+                const severityClass = `marker-${severity.toLowerCase()}`;
+                
+                // Create custom div icon
+                const iconHtml = `<div class="severity-marker ${severityClass}" style="width: 30px; height: 30px;">${site.unique_advisory_count}</div>`;
+                const customIcon = L.divIcon({
+                    html: iconHtml,
+                    className: '',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15],
+                    popupAnchor: [0, -15]
+                });
+                
+                // Create marker
+                const marker = L.marker([site.latitude, site.longitude], { icon: customIcon });
+                
+                // Create popup content
+                const popupContent = `
+                    <div class="site-popup">
+                        <h6><strong>${site.site_code}</strong> - ${site.name}</h6>
+                        <p class="mb-2">
+                            <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
+                        </p>
+                        <p class="mb-2">
+                            <span class="badge severity-${severity.toLowerCase()}">${severity}</span>
+                            ${site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : ''}
+                        </p>
+                        <p class="mb-2">
+                            <strong>${site.unique_advisory_count}</strong> unique alerts
+                            ${site.total_zone_count !== site.unique_advisory_count ? 
+                                `<small class="text-muted">(${site.total_zone_count} zones)</small>` : ''}
+                        </p>
+                        <p class="mb-2">
+                            <strong>Highest Alert:</strong><br>
+                            ${site.highest_severity_advisory.advisory_type}
+                        </p>
+                        <a href="site-detail.html?site=${site.site_code}" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-arrow-right-circle"></i> View Details
+                        </a>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+                
+                // Add to layer and tracking
+                marker.addTo(markerLayer);
+                markers.push({
+                    marker,
+                    site,
+                    severity
+                });
+            });
+            
+            // Fit map to show all markers
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers.map(m => m.marker));
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+            
+            updateVisibleCount();
+        }
+        
+        function updateStats(sites) {
+            const counts = {
+                extreme: sites.filter(s => s.highest_severity === 'Extreme').length,
+                severe: sites.filter(s => s.highest_severity === 'Severe').length,
+                moderate: sites.filter(s => s.highest_severity === 'Moderate').length
+            };
+            
+            document.getElementById('extremeCount').textContent = counts.extreme;
+            document.getElementById('severeCount').textContent = counts.severe;
+            document.getElementById('moderateCount').textContent = counts.moderate;
+            document.getElementById('totalSitesCount').textContent = sites.length;
+        }
+        
+        function updateVisibleCount() {
+            const visible = markers.filter(m => map.getBounds().contains(m.marker.getLatLng())).length;
+            document.getElementById('visibleSiteCount').textContent = `${visible} sites visible`;
+        }
+        
+        function fitAllMarkers() {
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers.map(m => m.marker));
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+        
+        function resetMap() {
+            map.setView([39.8283, -98.5795], 4);
+            document.getElementById('filterExtreme').checked = true;
+            document.getElementById('filterSevere').checked = true;
+            document.getElementById('filterModerate').checked = true;
+            applyFilters();
+        }
+        
+        function applyFilters() {
+            const showExtreme = document.getElementById('filterExtreme').checked;
+            const showSevere = document.getElementById('filterSevere').checked;
+            const showModerate = document.getElementById('filterModerate').checked;
+            
+            markers.forEach(({ marker, severity }) => {
+                const show = (
+                    (severity === 'Extreme' && showExtreme) ||
+                    (severity === 'Severe' && showSevere) ||
+                    (severity === 'Moderate' && showModerate) ||
+                    severity === 'Minor'
+                );
+                
+                if (show) {
+                    marker.addTo(markerLayer);
+                } else {
+                    markerLayer.removeLayer(marker);
+                }
+            });
+            
+            updateVisibleCount();
+            updateStatCardStyles();
+        }
+        
+        function toggleFilter(severity) {
+            const checkbox = document.getElementById(`filter${severity}`);
+            checkbox.checked = !checkbox.checked;
+            applyFilters();
+        }
+        
+        function updateStatCardStyles() {
+            const filters = ['Extreme', 'Severe', 'Moderate'];
+            filters.forEach(severity => {
+                const checkbox = document.getElementById(`filter${severity}`);
+                const cards = document.querySelectorAll('.map-stat-card');
+                cards.forEach(card => {
+                    if (card.getAttribute('onclick')?.includes(severity)) {
+                        if (checkbox.checked) {
+                            card.classList.remove('filter-disabled');
+                        } else {
+                            card.classList.add('filter-disabled');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('filterExtreme').addEventListener('change', applyFilters);
+        document.getElementById('filterSevere').addEventListener('change', applyFilters);
+        document.getElementById('filterModerate').addEventListener('change', applyFilters);
+        
+        map?.on('moveend', updateVisibleCount);
+        
+        // Initialize
+        initMap();
+        loadMapData();
+    </script>
+    <script src="js/ui-toggle.js"></script>
+</body>
+</html>

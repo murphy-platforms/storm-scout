@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE26KTHBDE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZE26KTHBDE');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Active Advisories</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-cloud-lightning"></i> Storm Scout
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="advisories.html">Active Advisories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="h2">Active Advisories by Site</h1>
+                <p class="text-muted">Current weather advisories affecting testing centers</p>
+            </div>
+        </div>
+
+        <!-- Update Banner -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div id="update-banner-container"></div>
+            </div>
+        </div>
+
+        <!-- Filter Warning Banner -->
+        <div class="row" id="filterWarningContainer"></div>
+
+        <!-- View and Filter Controls -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                    <!-- View Toggle -->
+                    <div class="view-toggle">
+                        <button class="view-toggle-btn active" id="cardViewBtn" onclick="switchView('card')">
+                            <i class="bi bi-grid-3x2"></i> Card View
+                        </button>
+                        <button class="view-toggle-btn" id="tableViewBtn" onclick="switchView('table')">
+                            <i class="bi bi-table"></i> Table View
+                        </button>
+                    </div>
+                    
+                    <!-- Deduplication Toggle -->
+                    <div class="dedup-toggle-container">
+                        <input type="checkbox" class="form-check-input" id="dedupToggle" checked>
+                        <label for="dedupToggle">
+                            <i class="bi bi-layers"></i> Simplify Multi-Zone Alerts
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control" id="searchBox" placeholder="Search by site code or name...">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="alertTypeFilter" title="Filter by impact level">
+                    <option value="">All Alert Types</option>
+                    <option value="CUSTOM" selected>Site Default</option>
+                    <option value="OPERATIONS">Operations View</option>
+                    <option value="EXECUTIVE">Executive Summary</option>
+                    <option value="SAFETY">Safety Focus</option>
+                    <option value="FULL">Full View</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="stateFilter">
+                    <option value="">All States</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="severityFilter">
+                    <option value="">All Severities</option>
+                    <option value="Extreme">Extreme</option>
+                    <option value="Severe">Severe</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Minor">Minor</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="row" id="summaryStatsContainer"></div>
+
+        <!-- Card View -->
+        <div class="row" id="cardViewContainer">
+            <div class="col-12 text-center py-5">
+                <span class="spinner-border"></span>
+                <p class="mt-2">Loading advisories...</p>
+            </div>
+        </div>
+
+        <!-- Table View (hidden by default) -->
+        <div class="row" id="tableViewContainer" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Site Code</th>
+                                        <th>Site Name</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Advisory Type</th>
+                                        <th>Severity</th>
+                                        <th>Action</th>
+                                        <th>Source</th>
+                                        <th>Last Updated</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="advisoriesTable">
+                                    <tr>
+                                        <td colspan="9" class="text-center">
+                                            <span class="spinner-border"></span> Loading...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/alert-filters.js"></script>
+    <script src="js/update-banner.js"></script>
+    <script src="js/aggregation.js"></script>
+    <script>
+        let allAdvisories = [];
+        let allAdvisoriesUnfiltered = [];
+        let currentView = 'card';
+        
+        // Check if alert type should be included
+        function shouldIncludeAlertType(alertType, filterName) {
+            if (!filterName || filterName === '') {
+                return AlertFilters.shouldIncludeAlertType(alertType);
+            }
+            
+            const config = AlertFilters.filterConfigs[filterName];
+            if (!config) return true;
+            
+            if (config.excludeTypes && config.excludeTypes.includes(alertType)) {
+                return false;
+            }
+            
+            let impactLevel = null;
+            for (const [level, types] of Object.entries(AlertFilters.alertTypesByLevel)) {
+                if (types.includes(alertType)) {
+                    impactLevel = level;
+                    break;
+                }
+            }
+            
+            if (!impactLevel) return true;
+            return config.includeCategories && config.includeCategories.includes(impactLevel);
+        }
+        
+        async function loadAdvisories() {
+            try {
+                const data = await API.getActiveAdvisories();
+                allAdvisoriesUnfiltered = data;
+                allAdvisories = data;
+                
+                // Populate state filter
+                const states = [...new Set(data.map(a => a.state))].sort();
+                const stateSelect = document.getElementById('stateFilter');
+                stateSelect.innerHTML = '<option value="">All States</option>';
+                states.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    stateSelect.appendChild(option);
+                });
+                
+                // Initial render
+                renderAll();
+            } catch (error) {
+                document.getElementById('cardViewContainer').innerHTML = 
+                    '<div class="col-12"><div class="alert alert-danger">Failed to load advisories</div></div>';
+                document.getElementById('advisoriesTable').innerHTML = 
+                    '<tr><td colspan="9" class="text-center text-danger">Failed to load advisories</td></tr>';
+            }
+        }
+        
+        function getActionBadge(action) {
+            if (!action) {
+                return '<span class="badge bg-secondary" title="No VTEC action code">-</span>';
+            }
+            
+            const actionConfig = {
+                'NEW': { label: 'NEW', class: 'bg-success', icon: '🆕', title: 'New alert issued' },
+                'CON': { label: 'CONTINUED', class: 'bg-primary', icon: '🔄', title: 'Alert continuing' },
+                'EXT': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert time extended' },
+                'EXA': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert extended (A)' },
+                'EXB': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert extended (B)' },
+                'UPG': { label: 'UPGRADED', class: 'bg-warning text-dark', icon: '⚠️', title: 'Alert upgraded' },
+                'EXP': { label: 'EXPIRED', class: 'bg-secondary', icon: '❌', title: 'Alert expired' },
+                'CAN': { label: 'CANCELLED', class: 'bg-dark', icon: '🚫', title: 'Alert cancelled' },
+                'COR': { label: 'CORRECTED', class: 'bg-warning text-dark', icon: '✏️', title: 'Correction issued' },
+                'ROU': { label: 'ROUTINE', class: 'bg-secondary', icon: '📋', title: 'Routine update' }
+            };
+            
+            const config = actionConfig[action] || { 
+                label: action, 
+                class: 'bg-secondary', 
+                icon: '', 
+                title: `Action: ${action}` 
+            };
+            
+            return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
+        }
+        
+        function renderAdvisories(advisories) {
+            const tbody = document.getElementById('advisoriesTable');
+            if (advisories.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center">No active advisories</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = advisories.map(adv => `
+                <tr>
+                    <td><strong>${adv.site_code}</strong></td>
+                    <td>${adv.site_name}</td>
+                    <td>${adv.city}</td>
+                    <td>${adv.state}</td>
+                    <td>${adv.advisory_type}</td>
+                    <td><span class="badge ${getSeverityBadge(adv.severity)}">${adv.severity}</span></td>
+                    <td>${getActionBadge(adv.vtec_action)}</td>
+                    <td>${adv.source}</td>
+                    <td>${formatDate(adv.last_updated)}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Render everything
+        function renderAll() {
+            filterAndRender();
+        }
+        
+        // Main filter and render function
+        function filterAndRender() {
+            const search = document.getElementById('searchBox').value.toLowerCase();
+            const alertTypeFilter = document.getElementById('alertTypeFilter').value;
+            const state = document.getElementById('stateFilter').value;
+            const severity = document.getElementById('severityFilter').value;
+            const dedupEnabled = document.getElementById('dedupToggle').checked;
+            
+            // Filter advisories
+            let filtered = allAdvisories.filter(adv => {
+                if (search && !(adv.site_code.toLowerCase().includes(search) || adv.site_name.toLowerCase().includes(search))) return false;
+                if (alertTypeFilter && !shouldIncludeAlertType(adv.advisory_type, alertTypeFilter)) return false;
+                if (state && adv.state !== state) return false;
+                if (severity && adv.severity !== severity) return false;
+                return true;
+            });
+            
+            // Show filter warning
+            renderFilterWarning(allAdvisoriesUnfiltered, filtered);
+            
+            // Aggregate by site
+            const aggregatedSites = SiteAggregator.aggregateBySite(filtered, { deduplicateZones: dedupEnabled });
+            
+            // Render based on current view
+            if (currentView === 'card') {
+                renderCardView(aggregatedSites, filtered);
+            } else {
+                renderAdvisories(filtered);
+            }
+        }
+        
+        // Render filter warning banner
+        function renderFilterWarning(allAdv, filteredAdv) {
+            const warning = SiteAggregator.getFilterWarning(allAdv, filteredAdv);
+            const container = document.getElementById('filterWarningContainer');
+            
+            if (!warning) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const criticalClass = warning.has_critical ? 'filter-warning-critical' : '';
+            const criticalText = warning.has_critical ? ` (${warning.critical_hidden} CRITICAL)` : '';
+            
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="filter-warning-banner ${criticalClass}">
+                        <div class="filter-warning-content">
+                            <div class="filter-warning-text">
+                                <span class="filter-warning-icon">⚠️</span>
+                                <span>
+                                    <strong>Filters Active:</strong> ${warning.hidden_count} alerts hidden${criticalText}
+                                </span>
+                            </div>
+                            <div class="filter-warning-actions">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showAllAlerts()">
+                                    <i class="bi bi-eye"></i> Show All Alerts
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render card view
+        function renderCardView(sites, originalAdvisories) {
+            const container = document.getElementById('cardViewContainer');
+            const statsContainer = document.getElementById('summaryStatsContainer');
+            
+            if (sites.length === 0) {
+                container.innerHTML = '<div class="col-12"><div class="alert alert-info">No advisories match your filters</div></div>';
+                statsContainer.innerHTML = '';
+                return;
+            }
+            
+            // Render summary stats
+            const stats = SiteAggregator.getSummaryStats(originalAdvisories, sites);
+            statsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-stat-value">${stats.unique_sites}</span>
+                            <span class="summary-stat-label">Sites Impacted</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-value" style="color: #dc3545;">${stats.critical_sites}</span>
+                            <span class="summary-stat-label">Critical/Severe</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_sites}</span>
+                            <span class="summary-stat-label">Moderate</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-value" style="color: #28a745;">${stats.new_alerts}</span>
+                            <span class="summary-stat-label">New Alerts</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Render site cards
+            container.innerHTML = sites.map(site => renderSiteCard(site)).join('');
+        }
+        
+        // Render individual site card
+        function renderSiteCard(site) {
+            const severityClass = `site-card-${site.highest_severity.toLowerCase()}`;
+            const highestAlert = site.highest_severity_advisory;
+            
+            return `
+                <div class="col-lg-6 col-12">
+                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                        <div class="card site-card site-card-clickable ${severityClass}">
+                            <div class="site-card-header">
+                                <div>
+                                    <h5 class="site-card-title text-dark">
+                                        <strong>${site.site_code}</strong> - ${site.site_name}
+                                    </h5>
+                                    <div class="site-card-location">
+                                        <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
+                                    </div>
+                                </div>
+                                <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                    ${site.highest_severity}
+                                </span>
+                            </div>
+                            <div class="site-card-body">
+                                <!-- Highest severity alert -->
+                                <div style="margin-bottom: 0.75rem;">
+                                    <strong class="text-dark">${highestAlert.advisory_type}</strong>
+                                    ${highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : ''}
+                                    <br>
+                                    <small class="text-muted">
+                                        ${highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : ''}
+                                    </small>
+                                </div>
+                                
+                                <!-- Alert summary -->
+                                <div class="alert-summary">
+                                    <div class="alert-stat">
+                                        <span class="alert-stat-icon">📊</span>
+                                        <span class="text-dark">
+                                            <span class="alert-stat-value">${site.unique_advisory_count}</span>
+                                            unique ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
+                                            ${site.total_zone_count !== site.unique_advisory_count ? 
+                                                `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
+                                        </span>
+                                    </div>
+                                    ${site.new_count > 0 ? `
+                                    <div class="alert-stat">
+                                        <span class="alert-stat-icon">🆕</span>
+                                        <span class="text-dark"><span class="alert-stat-value">${site.new_count}</span> new</span>
+                                    </div>
+                                    ` : ''}
+                                    ${site.continued_count > 0 ? `
+                                    <div class="alert-stat">
+                                        <span class="alert-stat-icon">🔄</span>
+                                        <span class="text-dark"><span class="alert-stat-value">${site.continued_count}</span> continued</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <!-- Advisory types -->
+                                <div class="advisory-type-list">
+                                    ${site.type_groups.map(group => `
+                                        <div class="advisory-type-item">
+                                            <span class="advisory-type-name">${group.type}</span>
+                                            <div class="advisory-type-meta">
+                                                <span class="badge ${getSeverityBadge(group.severity)}">${group.severity}</span>
+                                                ${group.zone_count > 1 ? 
+                                                    `<span class="zone-badge zone-badge-multi" title="${group.zone_count} NWS zones">
+                                                        <i class="bi bi-layers"></i> ${group.zone_count} zones
+                                                    </span>` : 
+                                                    `<span class="zone-badge">${group.representative.source || 'NWS'}</span>`
+                                                }
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+        
+        // View switching
+        function switchView(view) {
+            currentView = view;
+            
+            if (view === 'card') {
+                document.getElementById('cardViewBtn').classList.add('active');
+                document.getElementById('tableViewBtn').classList.remove('active');
+                document.getElementById('cardViewContainer').style.display = 'flex';
+                document.getElementById('tableViewContainer').style.display = 'none';
+            } else {
+                document.getElementById('cardViewBtn').classList.remove('active');
+                document.getElementById('tableViewBtn').classList.add('active');
+                document.getElementById('cardViewContainer').style.display = 'none';
+                document.getElementById('tableViewContainer').style.display = 'block';
+            }
+            
+            renderAll();
+        }
+        
+        // Show all alerts (disable filters)
+        function showAllAlerts() {
+            document.getElementById('searchBox').value = '';
+            document.getElementById('alertTypeFilter').value = 'FULL';
+            document.getElementById('stateFilter').value = '';
+            document.getElementById('severityFilter').value = '';
+            renderAll();
+        }
+        
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', renderAll);
+        document.getElementById('alertTypeFilter').addEventListener('change', renderAll);
+        document.getElementById('stateFilter').addEventListener('change', renderAll);
+        document.getElementById('severityFilter').addEventListener('change', renderAll);
+        document.getElementById('dedupToggle').addEventListener('change', renderAll);
+        
+        // Check for URL parameters on page load
+        function applyURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const severityParam = urlParams.get('severity');
+            
+            if (severityParam) {
+                // Auto-select severity dropdown with value from URL
+                const severityFilter = document.getElementById('severityFilter');
+                severityFilter.value = severityParam;
+                // Trigger filtering
+                renderAll();
+            }
+        }
+        
+        // Initialize: Load filter configs then load advisories
+        AlertFilters.init().then(() => {
+            loadAdvisories();
+            // Apply URL parameters after advisories are loaded
+            setTimeout(() => applyURLParameters(), 100);
+        });
+    </script>
+    <script src="js/ui-toggle.js"></script>
+</body>
+</html>
