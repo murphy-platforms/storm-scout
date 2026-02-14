@@ -104,17 +104,18 @@ INSERT INTO advisories (site_id, advisory_type, severity, status, source, headli
 
 -- Sample site status data
 -- Sites with active high-severity advisories should be marked accordingly
+-- Using new 4-category system: open_normal, open_restricted, pending, closed
 REPLACE INTO site_status (site_id, operational_status, reason, last_updated) VALUES
-((SELECT id FROM sites WHERE site_code = '0382'), 'Closed', 'Hurricane Warning - Site evacuated', NOW()),
-((SELECT id FROM sites WHERE site_code = '0610'), 'Closed', 'Hurricane Warning - Site evacuated', NOW()),
-((SELECT id FROM sites WHERE site_code = '3251'), 'At Risk', 'Winter Storm Warning - Monitoring conditions', NOW()),
-((SELECT id FROM sites WHERE site_code = '5194'), 'At Risk', 'Winter Weather Advisory - Reduced operations', NOW()),
-((SELECT id FROM sites WHERE site_code = '0051'), 'Open', 'Severe Thunderstorm Watch - Operations normal with precautions', NOW()),
-((SELECT id FROM sites WHERE site_code = '0024'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0001'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0062'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0015'), 'Open', 'No active advisories', NOW()),
-((SELECT id FROM sites WHERE site_code = '0080'), 'Open', 'No active advisories', NOW());
+((SELECT id FROM sites WHERE site_code = '0382'), 'closed', 'Hurricane Warning - Site evacuated', NOW()),
+((SELECT id FROM sites WHERE site_code = '0610'), 'closed', 'Hurricane Warning - Site evacuated', NOW()),
+((SELECT id FROM sites WHERE site_code = '3251'), 'open_restricted', 'Winter Storm Warning - Monitoring conditions', NOW()),
+((SELECT id FROM sites WHERE site_code = '5194'), 'pending', 'Winter Weather Advisory - Reduced operations', NOW()),
+((SELECT id FROM sites WHERE site_code = '0051'), 'open_normal', 'Severe Thunderstorm Watch - Operations normal with precautions', NOW()),
+((SELECT id FROM sites WHERE site_code = '0024'), 'open_normal', 'No active advisories', NOW()),
+((SELECT id FROM sites WHERE site_code = '0001'), 'open_normal', 'No active advisories', NOW()),
+((SELECT id FROM sites WHERE site_code = '0062'), 'open_normal', 'No active advisories', NOW()),
+((SELECT id FROM sites WHERE site_code = '0015'), 'open_normal', 'No active advisories', NOW()),
+((SELECT id FROM sites WHERE site_code = '0080'), 'open_normal', 'No active advisories', NOW());
 
 -- Sample government/emergency notices
 INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, description, affected_states, effective_time, expiration_time, source_url) VALUES
@@ -168,5 +169,5 @@ INSERT IGNORE INTO sites (site_code, name, city, state, latitude, longitude, reg
 
 -- Set default status for new sites
 INSERT IGNORE INTO site_status (site_id, operational_status, reason) 
-SELECT id, 'Open', 'No active advisories' FROM sites 
+SELECT id, 'open_normal', 'No active advisories' FROM sites 
 WHERE id NOT IN (SELECT site_id FROM site_status);
