@@ -5,9 +5,10 @@
  * Retains 3 days of data (12 snapshots)
  */
 
-const pool = require('../config/database');
+const { getDatabase } = require('../config/database');
 
 async function captureSnapshot() {
+    const pool = getDatabase();
     const connection = await pool.getConnection();
     console.log('[Snapshot] Starting historical snapshot capture...');
     

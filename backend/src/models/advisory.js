@@ -12,7 +12,7 @@ const AdvisoryModel = {
    * @returns {Promise<Array>} Array of advisory objects with site data
    */
   async getAll(filters = {}) {
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = `
       SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
       FROM advisories a
@@ -67,7 +67,7 @@ const AdvisoryModel = {
    * @returns {Promise<Object|null>} Advisory object or null
    */
   async getById(id) {
-    const db = await getDatabase();
+    const db = getDatabase();
     try {
       const [rows] = await db.query(`
         SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
@@ -89,7 +89,7 @@ const AdvisoryModel = {
    * @returns {Promise<Array>} Array of advisory objects
    */
   async getBySite(siteId, activeOnly = false) {
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT * FROM advisories WHERE site_id = ?';
     const params = [siteId];
     
@@ -118,7 +118,7 @@ const AdvisoryModel = {
   async findByExternalID(externalId) {
     if (!externalId) return null;
     
-    const db = await getDatabase();
+    const db = getDatabase();
     const query = 'SELECT * FROM advisories WHERE external_id = ? LIMIT 1';
     
     try {
@@ -142,7 +142,7 @@ const AdvisoryModel = {
   async findByVTECEventID(vtecEventId, siteId, advisoryType = null) {
     if (!vtecEventId) return null;
     
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT * FROM advisories WHERE vtec_event_id = ? AND site_id = ? AND status = ?';
     const params = [vtecEventId, siteId, 'active'];
     
@@ -170,7 +170,7 @@ const AdvisoryModel = {
   async findByVTEC(vtecCode, siteId, advisoryType = null) {
     if (!vtecCode) return null;
     
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT * FROM advisories WHERE vtec_code = ? AND site_id = ?';
     const params = [vtecCode, siteId];
     
@@ -200,7 +200,7 @@ const AdvisoryModel = {
    * @returns {Promise<Object>} Created/updated advisory with ID
    */
   async create(advisory) {
-    const db = await getDatabase();
+    const db = getDatabase();
     try {
       // Extract external_id early for deduplication check
       let externalId = advisory.external_id;
@@ -314,7 +314,7 @@ const AdvisoryModel = {
    * @returns {Promise<Object|null>} Updated advisory or null
    */
   async update(id, updates) {
-    const db = await getDatabase();
+    const db = getDatabase();
     const fields = [];
     const params = [];
 
@@ -353,7 +353,7 @@ const AdvisoryModel = {
    * @returns {Promise<boolean>} Success status
    */
   async delete(id) {
-    const db = await getDatabase();
+    const db = getDatabase();
     try {
       const [result] = await db.query('DELETE FROM advisories WHERE id = ?', [id]);
       return result.affectedRows > 0;
@@ -369,7 +369,7 @@ const AdvisoryModel = {
    * @returns {Promise<Array>} Array of {severity, count} objects
    */
   async getCountBySeverity(activeOnly = true) {
-    const db = await getDatabase();
+    const db = getDatabase();
     let query = 'SELECT severity, COUNT(*) as count FROM advisories';
     if (activeOnly) {
       query += " WHERE status = 'active'";
@@ -391,7 +391,7 @@ const AdvisoryModel = {
    * @returns {Promise<Array>} Array of advisory objects
    */
   async getRecentlyUpdated(limit = 10) {
-    const db = await getDatabase();
+    const db = getDatabase();
     try {
       const [rows] = await db.query(`
         SELECT a.*, s.site_code, s.name as site_name, s.city, s.state
@@ -413,7 +413,7 @@ const AdvisoryModel = {
    * @returns {Promise<number>} Number of advisories marked as expired
    */
   async markExpired() {
-    const db = await getDatabase();
+    const db = getDatabase();
     try {
       const [result] = await db.query(`
         UPDATE advisories
