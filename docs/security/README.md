@@ -24,7 +24,7 @@ Point-in-time security assessments and vulnerability reports.
 | [#3](https://github.com/Prometric-Site-Engineering/storm-scout/issues/3) | N/A | Medium | Security Headers | Open |
 | [#4](https://github.com/Prometric-Site-Engineering/storm-scout/issues/4) | N/A | Medium | CDN SRI | Open |
 | [#5](https://github.com/Prometric-Site-Engineering/storm-scout/issues/5) | N/A | Medium | Rate Limiting | Open |
-| [#6](https://github.com/Prometric-Site-Engineering/storm-scout/issues/6) | CVE-2026-2391 | Low | qs (dependency) | Open |
+| [#6](https://github.com/Prometric-Site-Engineering/storm-scout/issues/6) | CVE-2026-2391 | Low | qs (dependency) | ✅ Closed |
 
 ### `/policies` (Future)
 Security policies and procedures specific to Storm Scout.
