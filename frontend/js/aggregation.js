@@ -187,12 +187,14 @@ const SiteAggregator = {
 
     /**
      * Group sites by severity level for dashboard
+     * Each severity maps to its own color matching Weather Impact Assessment
      */
     groupBySeverity(sites) {
         return {
-            critical: sites.filter(s => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'),
-            elevated: sites.filter(s => s.highest_severity === 'Moderate'),
-            monitoring: sites.filter(s => s.highest_severity === 'Minor')
+            extreme: sites.filter(s => s.highest_severity === 'Extreme'),    // 🔴 RED
+            severe: sites.filter(s => s.highest_severity === 'Severe'),      // 🟠 ORANGE
+            moderate: sites.filter(s => s.highest_severity === 'Moderate'),  // 🟡 YELLOW
+            minor: sites.filter(s => s.highest_severity === 'Minor')         // 🟢 GREEN
         };
     },
 
