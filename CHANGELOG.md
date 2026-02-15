@@ -24,6 +24,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Deleted `/beta/` directory from production server
   - Beta files archived locally to `frontend/archive/beta-2026-02-15/`
 
+### Fixed
+- **Weather Impact Drill-Down** - Dashboard Weather Impact cards now correctly filter Sites page
+  - Added `weather_impact_level` calculation from `highest_severity` (Extreme→red, Severe→orange, Moderate→yellow, Minor→green)
+  - Fixed race condition: URL parameters now applied after data loads (was using 100ms timeout)
+  - Fixed data source: Changed from `API.getImpactedSites()` (3 closed sites) to `API.getSites()` (all 219 sites)
+  - Fixed key mismatch: Sites API uses `id`, advisories use `site_id`
+- **Export Dropdown** - Disabled broken Advanced Reports buttons
+  - Executive Briefing, Incident Report, Export CSV marked as "Coming Soon"
+  - Print/Save PDF and Copy Shareable Link still functional
+  - Removed dead reference to archived `ui-toggle.js`
+
 ### Security
 - **CSP Compliance** - Fixed all inline event handlers blocked by `script-src-attr 'none'`
   - Replaced `onclick` attributes with `addEventListener` across 15 HTML files
