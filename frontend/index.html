@@ -111,14 +111,14 @@
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><h6 class="dropdown-header">Advanced Reports</h6></li>
-                                <li><a class="dropdown-item" href="#" id="exportExecutive">
-                                    <i class="bi bi-file-earmark-person"></i> Executive Briefing
+                                <li><a class="dropdown-item disabled text-muted" href="#">
+                                    <i class="bi bi-file-earmark-person"></i> Executive Briefing <span class="badge bg-secondary ms-1">Coming Soon</span>
                                 </a></li>
-                                <li><a class="dropdown-item" href="#" id="exportIncident">
-                                    <i class="bi bi-file-earmark-text"></i> Incident Report
+                                <li><a class="dropdown-item disabled text-muted" href="#">
+                                    <i class="bi bi-file-earmark-text"></i> Incident Report <span class="badge bg-secondary ms-1">Coming Soon</span>
                                 </a></li>
-                                <li><a class="dropdown-item" href="#" id="exportCSV">
-                                    <i class="bi bi-filetype-csv"></i> Export CSV
+                                <li><a class="dropdown-item disabled text-muted" href="#">
+                                    <i class="bi bi-filetype-csv"></i> Export CSV <span class="badge bg-secondary ms-1">Coming Soon</span>
                                 </a></li>
                             </ul>
                         </div>
@@ -678,10 +678,7 @@
         // Event listeners for export buttons (CSP-compliant)
         document.getElementById('exportPrintPDF').addEventListener('click', (e) => { e.preventDefault(); StormScoutExport.printToPDF(); });
         document.getElementById('exportShareLink').addEventListener('click', (e) => { e.preventDefault(); StormScoutExport.copyShareableLink(); });
-        document.getElementById('exportExecutive').addEventListener('click', (e) => { e.preventDefault(); window.exportCurrentData('executive'); });
-        document.getElementById('exportIncident').addEventListener('click', (e) => { e.preventDefault(); window.exportCurrentData('incident'); });
-        document.getElementById('exportCSV').addEventListener('click', (e) => { e.preventDefault(); window.exportCurrentData('csv'); });
+        // Advanced export features coming soon
     </script>
-    <script src="js/ui-toggle.js"></script>
 </body>
 </html>
