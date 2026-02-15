@@ -37,6 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dead Script References** - Removed obsolete `ui-toggle.js` script tags from 5 HTML files
   - Affected: map.html, site-detail.html, sources.html, filters.html, advisories.html
   - Script was archived with Beta UI but references remained
+- **Severity Group Color Alignment** - Sites Requiring Attention now matches Weather Impact colors
+  - Changed from 3-tier to 4-tier grouping (one per severity level)
+  - 🔴 EXTREME - High Impact (previously combined with Severe as "critical")
+  - 🟠 SEVERE - Severe Impact (previously combined with Extreme as "critical")
+  - 🟡 MODERATE - Moderate Impact (was "elevated" displayed with orange)
+  - 🟢 MINOR - Low Impact (was "monitoring" displayed with yellow)
+  - Fixes visual inconsistency where Moderate alerts appeared orange in site groups but yellow in Weather Impact
 
 ### Verified
 - **Frontend/API Mismatch Audit** - Comprehensive analysis of all frontend files
