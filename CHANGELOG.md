@@ -66,9 +66,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MODERATE category → Moderate (🟡 YELLOW)
   - LOW/INFO category → Minor (🟢 GREEN)
   - Example: Winter Storm Watch now shows as Moderate/Yellow (was Severe/Orange from NOAA)
+  - Ran one-time database migration to update 126 existing alerts to new severity values
   - Aligns with IMT operational practices
-- **Default Alert Filters** - Reduced enabled alert types from 18 to 12
-  - Disabled: Flash Flood Warning, Tornado Watch, Flood Warning, Heavy Freezing Spray Warning, Winter Weather Advisory, High Surf Warning
+- **Default Alert Filters** - Reduced Site Default from 19 to 11 enabled alert types
+  - Added to disabled list: Lake Effect Snow Warning, Lake Effect Snow Watch, High Wind Watch,
+    Coastal Flood Watch, Lakeshore Flood Watch, Excessive Heat Watch, Hard Freeze Warning, Freeze Watch
+  - Site Default now focuses on most operationally relevant alerts
 
 ## [1.5.0] - 2026-02-14
 
