@@ -11,9 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
 - Predictive analytics based on historical patterns
-- API rate limiting with express-rate-limit
 - Unit tests with Jest
 - Database backup automation
+
+## [1.6.0] - 2026-02-15
+
+### Removed
+- **Beta UI** - Temporarily removed from production due to UI/UX bugs
+  - Removed "Try Beta UI" nav link from all 8 Classic HTML pages
+  - Removed footer Beta badge from index.html
+  - Removed floating "Try Beta" button (`ui-toggle.js`)
+  - Deleted `/beta/` directory from production server
+  - Beta files archived locally to `frontend/archive/beta-2026-02-15/`
+
+### Security
+- **CSP Compliance** - Fixed all inline event handlers blocked by `script-src-attr 'none'`
+  - Replaced `onclick` attributes with `addEventListener` across 15 HTML files
+  - Used event delegation for dynamically generated content
+  - All pages now fully compliant with Content Security Policy
+
+### Changed
+- **Default Alert Filters** - Reduced enabled alert types from 18 to 12
+  - Disabled: Flash Flood Warning, Tornado Watch, Flood Warning, Heavy Freezing Spray Warning, Winter Weather Advisory, High Surf Warning
 
 ## [1.5.0] - 2026-02-14
 
