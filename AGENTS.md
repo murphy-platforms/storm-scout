@@ -642,8 +642,29 @@ container.innerHTML = html`<div>${userData}</div>`;
 container.innerHTML = html`<div>${raw(getSeverityBadge(severity))}</div>`;
 ```
 
+**IMPORTANT: This applies to ALL files that generate HTML**, including:
+- HTML pages with inline `<script>` tags
+- Standalone JS utility files (e.g., `trends.js`, `export.js`)
+- Any code that uses `innerHTML`, `insertAdjacentHTML`, or similar
+
+**For standalone JS files** that can't import `utils.js` (e.g., files that generate downloadable reports), add a local `escapeHtml()` function:
+
+```javascript
+// Local escapeHtml for standalone files
+escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+```
+
 **Key files:**
 - `frontend/js/utils.js` - Contains `escapeHtml()`, `raw()`, and `html` tagged template
+- `frontend/beta/js/utils.js` - Beta UI version of the same utilities
 - `docs/security/SECURE-TEMPLATES.md` - Full documentation
 
 ### 2. Security Headers (Backend)
@@ -653,6 +674,18 @@ container.innerHTML = html`<div>${raw(getSeverityBadge(severity))}</div>`;
 - Strict-Transport-Security (HSTS) - Forces HTTPS
 - X-Frame-Options - Prevents clickjacking
 - X-Content-Type-Options - Prevents MIME sniffing
+
+**CSP Trade-offs:**
+The CSP uses `'unsafe-inline'` for scripts/styles because:
+- Google Analytics requires inline scripts
+- Bootstrap uses inline styles
+- Static HTML files can't use server-generated nonces
+
+**Mitigations in place:**
+- `script-src-attr 'none'` - **Blocks inline event handlers** (onclick, onerror) - the primary XSS vector
+- `object-src 'none'` - Blocks Flash/plugins
+- `base-uri 'self'` - Prevents base tag hijacking
+- All user-facing HTML uses the `html` tagged template with escaping
 
 **When adding new external resources:**
 1. Add the domain to the appropriate CSP directive in `app.js`
@@ -755,11 +788,35 @@ All security documentation is in `docs/security/`:
 ### Security Checklist for New Features
 
 - [ ] Dynamic HTML uses `html` tagged template (not raw `innerHTML`)
+- [ ] **Standalone JS files** that generate HTML have `escapeHtml()` protection
 - [ ] New API endpoints have input validation
 - [ ] External resources include SRI hashes
 - [ ] New CDN domains added to CSP in `app.js`
 - [ ] No secrets in code (use environment variables)
 - [ ] Dependencies checked with `npm audit`
+
+### Periodic Security Audit Checklist
+
+Run quarterly or after major changes:
+
+```bash
+# 1. Check dependencies
+cd backend && npm audit
+
+# 2. Verify security headers in production
+curl -sI https://teammurphy.rocks | grep -iE "(strict-transport|x-frame|content-security|x-content-type)"
+
+# 3. Search for unsafe innerHTML patterns
+grep -rn "\.innerHTML\s*=" frontend/ --include="*.html" --include="*.js" | grep -v "html\`"
+
+# 4. Verify SRI hashes on CDN resources
+curl -s https://teammurphy.rocks | grep -E 'integrity="sha'
+
+# 5. Test input validation
+curl -s "https://teammurphy.rocks/api/advisories?site_id=abc" | jq .error
+```
+
+**Document findings** in `docs/security/assessments/` with date-stamped reports.
 
 ---
 
