@@ -594,20 +594,21 @@
 
         function renderAlertTypes() {
             const container = document.getElementById('alert-types-container');
-            let html = '';
+            let htmlContent = '';
 
             for (const [level, types] of Object.entries(alertTypesByLevel)) {
                 const colorClass = IMPACT_COLORS[level];
                 const levelName = level.charAt(0) + level.slice(1).toLowerCase();
+                const safeLevel = escapeHtml(level);
 
-                html += `
+                htmlContent += html`
                     <div class="alert-section">
                         <div class="alert-section-header">
-                            <span class="impact-badge ${colorClass}">${levelName}</span>
+                            <span class="impact-badge ${raw(colorClass)}">${levelName}</span>
                             <h3>${level} Impact Alerts</h3>
                             <div class="section-actions">
-                                <button class="section-btn" onclick="toggleLevel('${level}', true)">Enable All</button>
-                                <button class="section-btn" onclick="toggleLevel('${level}', false)">Disable All</button>
+                                <button class="section-btn" onclick="toggleLevel('${safeLevel}', true)">Enable All</button>
+                                <button class="section-btn" onclick="toggleLevel('${safeLevel}', false)">Disable All</button>
                             </div>
                         </div>
                         <div class="alert-types-grid">
@@ -616,12 +617,13 @@
                 types.forEach(type => {
                     const isEnabled = currentFilters[type] === true;
                     const description = ALERT_DESCRIPTIONS[type] || 'Official NOAA weather alert type.';
+                    const safeType = escapeHtml(type);
 
-                    html += `
-                        <div class="alert-type-card ${isEnabled ? 'enabled' : 'disabled'}" data-alert-type="${type}" onclick="toggleAlertType('${type}')">
+                    htmlContent += html`
+                        <div class="alert-type-card ${raw(isEnabled ? 'enabled' : 'disabled')}" data-alert-type="${type}" onclick="toggleAlertType('${safeType}')">
                             <div class="alert-type-header">
                                 <label class="toggle-switch" onclick="event.stopPropagation()">
-                                    <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="toggleAlertType('${type}')">
+                                    <input type="checkbox" ${raw(isEnabled ? 'checked' : '')} onchange="toggleAlertType('${safeType}')">
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span class="alert-type-name">${type}</span>
@@ -631,10 +633,10 @@
                     `;
                 });
 
-                html += '</div></div>';
+                htmlContent += '</div></div>';
             }
 
-            container.innerHTML = html;
+            container.innerHTML = htmlContent;
         }
 
         function toggleLevel(level, enable) {

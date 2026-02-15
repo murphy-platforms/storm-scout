@@ -204,7 +204,7 @@
                 
                 const states = [...new Set(data.map(a => a.state))].sort();
                 const stateSelect = document.getElementById('stateFilter');
-                stateSelect.innerHTML = '<option value="">All States</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
+                stateSelect.innerHTML = '<option value="">All States</option>' + states.map(s => html`<option value="${s}">${s}</option>`).join('');
                 
                 renderAll();
             } catch (error) {
@@ -282,26 +282,26 @@
             }
 
             container.innerHTML = sites.map(site => {
-                const sevClass = site.highest_severity.toLowerCase();
+                const sevClass = escapeHtml(site.highest_severity.toLowerCase());
                 const alert = site.highest_severity_advisory;
-                return `
-                    <a href="site-detail.html?site=${site.site_code}" class="advisory-card ${sevClass}">
+                return html`
+                    <a href="site-detail.html?site=${site.site_code}" class="advisory-card ${raw(sevClass)}">
                         <div class="advisory-card-header">
                             <div>
                                 <div class="advisory-card-title">${site.site_code} - ${site.site_name}</div>
                                 <div class="advisory-card-location">📍 ${site.city}, ${site.state}</div>
                             </div>
-                            <span class="site-status-badge ${sevClass}">${site.highest_severity}</span>
+                            <span class="site-status-badge ${raw(sevClass)}">${site.highest_severity}</span>
                         </div>
                         <div class="advisory-card-body">
                             <div style="margin-bottom: var(--space-sm);">
                                 <strong>${alert.advisory_type}</strong>
-                                ${alert.vtec_action === 'NEW' ? '<span class="action-badge new" style="margin-left:8px;">🆕 NEW</span>' : ''}
-                                <div class="text-muted" style="font-size:0.85rem;">${alert.expires ? 'Expires: ' + formatDate(alert.expires) : ''}</div>
+                                ${raw(alert.vtec_action === 'NEW' ? '<span class="action-badge new" style="margin-left:8px;">🆕 NEW</span>' : '')}
+                                <div class="text-muted" style="font-size:0.85rem;">${raw(alert.expires ? 'Expires: ' + formatDate(alert.expires) : '')}</div>
                             </div>
                             <div style="display:flex;gap:var(--space-md);font-size:0.85rem;color:var(--color-text-secondary);">
-                                <span>📊 ${site.unique_advisory_count} alert${site.unique_advisory_count !== 1 ? 's' : ''}</span>
-                                ${site.new_count > 0 ? `<span>🆕 ${site.new_count} new</span>` : ''}
+                                <span>📊 ${site.unique_advisory_count} alert${raw(site.unique_advisory_count !== 1 ? 's' : '')}</span>
+                                ${raw(site.new_count > 0 ? `<span>🆕 ${site.new_count} new</span>` : '')}
                             </div>
                         </div>
                     </a>
@@ -315,14 +315,14 @@
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:var(--space-xl);">No active advisories</td></tr>';
                 return;
             }
-            tbody.innerHTML = advisories.map(adv => `
+            tbody.innerHTML = advisories.map(adv => html`
                 <tr onclick="window.location='site-detail.html?site=${adv.site_code}'" style="cursor:pointer;">
                     <td><strong>${adv.site_code}</strong></td>
                     <td>${adv.city}, ${adv.state}</td>
                     <td>${adv.advisory_type}</td>
-                    <td><span class="site-status-badge ${getSeverityBadge(adv.severity)}">${adv.severity}</span></td>
-                    <td>${getActionBadge(adv.vtec_action)}</td>
-                    <td>${formatDate(adv.last_updated)}</td>
+                    <td>${raw(`<span class="site-status-badge ${getSeverityBadge(adv.severity)}">${escapeHtml(adv.severity)}</span>`)}</td>
+                    <td>${raw(getActionBadge(adv.vtec_action))}</td>
+                    <td>${raw(formatDate(adv.last_updated))}</td>
                 </tr>
             `).join('');
         }

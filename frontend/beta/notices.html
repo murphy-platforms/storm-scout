@@ -437,38 +437,38 @@
                 return;
             }
 
-            container.innerHTML = notices.map(notice => `
+            container.innerHTML = notices.map(notice => html`
                 <div class="notice-card">
                     <div class="notice-header">
                         <div class="notice-title">
                             <span class="notice-icon">📢</span>
-                            ${escapeHtml(notice.title)}
+                            ${notice.title}
                         </div>
-                        <span class="jurisdiction-badge ${(notice.jurisdiction_type || '').toLowerCase()}">${escapeHtml(notice.jurisdiction_type || 'Unknown')}</span>
+                        <span class="jurisdiction-badge ${raw(escapeHtml((notice.jurisdiction_type || '').toLowerCase()))}">${notice.jurisdiction_type || 'Unknown'}</span>
                     </div>
                     <div class="notice-body">
                         <div class="notice-meta">
-                            <span>${escapeHtml(notice.jurisdiction || 'Unknown Jurisdiction')}</span>
+                            <span>${notice.jurisdiction || 'Unknown Jurisdiction'}</span>
                             <span>•</span>
-                            <span>${escapeHtml(notice.notice_type || 'Notice')}</span>
+                            <span>${notice.notice_type || 'Notice'}</span>
                         </div>
-                        <p class="notice-description">${escapeHtml(notice.description || 'No description available')}</p>
+                        <p class="notice-description">${notice.description || 'No description available'}</p>
                         <div class="notice-details">
                             <div class="notice-detail">
                                 <span class="notice-detail-icon">📅</span>
-                                Effective: ${formatDate(notice.effective_time)}
+                                Effective: ${raw(formatDate(notice.effective_time))}
                             </div>
                             <div class="notice-detail">
                                 <span class="notice-detail-icon">🗺️</span>
-                                ${escapeHtml(notice.affected_states || 'N/A')}
+                                ${notice.affected_states || 'N/A'}
                             </div>
                         </div>
-                        ${notice.source_url ? `
+                        ${raw(notice.source_url ? `
                             <a href="${escapeHtml(notice.source_url)}" target="_blank" rel="noopener noreferrer" class="notice-link">
                                 View Source
                                 <span>↗</span>
                             </a>
-                        ` : ''}
+                        ` : '')}
                     </div>
                 </div>
             `).join('');

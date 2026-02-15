@@ -780,47 +780,47 @@
         }
 
         function createSiteCard(site) {
-            const severity = site.highestSeverity || 'low';
+            const severity = escapeHtml(site.highestSeverity || 'low');
             const advisoryBySeverity = getAdvisoryCountsBySeverity(site.advisories);
 
-            return `
-                <div class="site-card ${severity}" onclick="goToSiteDetail('${site.site_id}')">
+            return html`
+                <div class="site-card ${raw(severity)}" onclick="goToSiteDetail('${site.site_id}')">
                     <div class="site-card-header">
                         <div class="site-info">
                             <h3>${site.name || 'Unknown Site'}</h3>
                             <div class="site-location">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                ${raw(`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
                                     <circle cx="12" cy="10" r="3"/>
-                                </svg>
+                                </svg>`)}
                                 ${site.city || ''}, ${site.state || ''}
                             </div>
                         </div>
                         <div class="site-status">
-                            <span class="status-badge ${site.advisoryCount > 0 ? 'impacted' : 'active'}">
-                                ${site.advisoryCount > 0 ? 'Impacted' : 'Active'}
+                            <span class="status-badge ${raw(site.advisoryCount > 0 ? 'impacted' : 'active')}">
+                                ${raw(site.advisoryCount > 0 ? 'Impacted' : 'Active')}
                             </span>
                         </div>
                     </div>
-                    ${site.weatherTypes?.length > 0 ? `
+                    ${raw(site.weatherTypes?.length > 0 ? `
                         <div class="weather-impacts">
                             ${site.weatherTypes.slice(0, 3).map(type => `
-                                <span class="impact-tag">${formatWeatherType(type)}</span>
+                                <span class="impact-tag">${escapeHtml(formatWeatherType(type))}</span>
                             `).join('')}
                             ${site.weatherTypes.length > 3 ? `<span class="impact-tag">+${site.weatherTypes.length - 3} more</span>` : ''}
                         </div>
-                    ` : ''}
+                    ` : '')}
                     <div class="site-metrics">
                         <div class="metric-item">
-                            <div class="metric-value ${advisoryBySeverity.critical > 0 ? 'critical' : ''}">${advisoryBySeverity.critical}</div>
+                            <div class="metric-value ${raw(advisoryBySeverity.critical > 0 ? 'critical' : '')}">${advisoryBySeverity.critical}</div>
                             <div class="metric-label">Critical</div>
                         </div>
                         <div class="metric-item">
-                            <div class="metric-value ${advisoryBySeverity.high > 0 ? 'high' : ''}">${advisoryBySeverity.high}</div>
+                            <div class="metric-value ${raw(advisoryBySeverity.high > 0 ? 'high' : '')}">${advisoryBySeverity.high}</div>
                             <div class="metric-label">High</div>
                         </div>
                         <div class="metric-item">
-                            <div class="metric-value ${advisoryBySeverity.moderate > 0 ? 'moderate' : ''}">${advisoryBySeverity.moderate + advisoryBySeverity.low}</div>
+                            <div class="metric-value ${raw(advisoryBySeverity.moderate > 0 ? 'moderate' : '')}">${advisoryBySeverity.moderate + advisoryBySeverity.low}</div>
                             <div class="metric-label">Other</div>
                         </div>
                     </div>
@@ -829,14 +829,14 @@
         }
 
         function createSiteRow(site) {
-            const severity = site.highestSeverity || 'low';
+            const severity = escapeHtml(site.highestSeverity || 'low');
             const advisoryBySeverity = getAdvisoryCountsBySeverity(site.advisories);
 
-            return `
+            return html`
                 <tr onclick="goToSiteDetail('${site.site_id}')">
                     <td>
                         <div class="site-name-cell">
-                            <div class="severity-indicator ${severity}"></div>
+                            <div class="severity-indicator ${raw(severity)}"></div>
                             <div class="site-name-info">
                                 <h4>${site.name || 'Unknown Site'}</h4>
                                 <span>${site.city || ''}</span>
@@ -845,20 +845,20 @@
                     </td>
                     <td>${site.state || '-'}</td>
                     <td>
-                        ${site.weatherTypes?.slice(0, 2).map(type => `<span class="impact-tag">${formatWeatherType(type)}</span>`).join(' ') || '-'}
+                        ${raw(site.weatherTypes?.slice(0, 2).map(type => `<span class="impact-tag">${escapeHtml(formatWeatherType(type))}</span>`).join(' ') || '-')}
                     </td>
                     <td>
                         <div class="advisory-counts">
-                            ${advisoryBySeverity.critical > 0 ? `<span class="advisory-count critical">${advisoryBySeverity.critical}</span>` : ''}
-                            ${advisoryBySeverity.high > 0 ? `<span class="advisory-count high">${advisoryBySeverity.high}</span>` : ''}
-                            ${advisoryBySeverity.moderate > 0 ? `<span class="advisory-count moderate">${advisoryBySeverity.moderate}</span>` : ''}
-                            ${advisoryBySeverity.low > 0 ? `<span class="advisory-count low">${advisoryBySeverity.low}</span>` : ''}
-                            ${site.advisoryCount === 0 ? '<span style="color: var(--color-text-muted);">None</span>' : ''}
+                            ${raw(advisoryBySeverity.critical > 0 ? `<span class="advisory-count critical">${advisoryBySeverity.critical}</span>` : '')}
+                            ${raw(advisoryBySeverity.high > 0 ? `<span class="advisory-count high">${advisoryBySeverity.high}</span>` : '')}
+                            ${raw(advisoryBySeverity.moderate > 0 ? `<span class="advisory-count moderate">${advisoryBySeverity.moderate}</span>` : '')}
+                            ${raw(advisoryBySeverity.low > 0 ? `<span class="advisory-count low">${advisoryBySeverity.low}</span>` : '')}
+                            ${raw(site.advisoryCount === 0 ? '<span style="color: var(--color-text-muted);">None</span>' : '')}
                         </div>
                     </td>
                     <td>
-                        <span class="status-badge ${severity === 'critical' || severity === 'high' ? 'impacted' : severity === 'moderate' ? 'monitoring' : 'active'}">
-                            ${severity.charAt(0).toUpperCase() + severity.slice(1)}
+                        <span class="status-badge ${raw(severity === 'critical' || severity === 'high' ? 'impacted' : severity === 'moderate' ? 'monitoring' : 'active')}">
+                            ${raw(severity.charAt(0).toUpperCase() + severity.slice(1))}
                         </span>
                     </td>
                 </tr>
