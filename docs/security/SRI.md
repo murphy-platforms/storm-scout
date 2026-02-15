@@ -39,6 +39,13 @@ Storm Scout uses SRI for all CDN-hosted resources:
       crossorigin="anonymous">
 ```
 
+### Leaflet.js (1.9.4)
+```html
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+        crossorigin="anonymous"></script>
+```
+
 ## Hash Verification
 
 SRI hashes were generated using SHA-384 (recommended algorithm):
