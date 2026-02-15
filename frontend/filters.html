@@ -340,22 +340,23 @@
         // Render all alert types
         function renderAlertTypes() {
             const container = document.getElementById('alertTypesContainer');
-            let html = '';
+            let htmlContent = '';
             
             for (const [level, types] of Object.entries(alertTypesByLevel)) {
                 const color = IMPACT_COLORS[level];
                 const levelName = level.charAt(0) + level.slice(1).toLowerCase();
+                const safeLevel = escapeHtml(level);
                 
-                html += `
+                htmlContent += html`
                     <div class="row mb-4">
                         <div class="col-12">
                             <h4 class="border-bottom pb-2">
-                                <span class="badge bg-${color} impact-badge">${levelName}</span>
+                                <span class="badge bg-${raw(color)} impact-badge">${levelName}</span>
                                 ${level} Impact Alerts
-                                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleLevel('${level}', true)">
+                                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleLevel('${safeLevel}', true)">
                                     Enable All
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleLevel('${level}', false)">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleLevel('${safeLevel}', false)">
                                     Disable All
                                 </button>
                             </h4>
@@ -365,17 +366,19 @@
                 types.forEach(type => {
                     const isEnabled = currentFilters[type] === true;
                     const description = ALERT_DESCRIPTIONS[type] || 'Official NOAA weather alert type.';
+                    const safeType = escapeHtml(type);
+                    const safeTypeId = escapeHtml(type.replace(/\s+/g, '_'));
                     
-                    html += `
+                    htmlContent += html`
                         <div class="col-md-6 col-lg-4 mb-3">
-                            <div class="card alert-type-card ${!isEnabled ? 'disabled' : ''}">
+                            <div class="card alert-type-card ${raw(!isEnabled ? 'disabled' : '')}">
                                 <div class="card-body">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" 
-                                               id="alert_${type.replace(/\s+/g, '_')}" 
-                                               ${isEnabled ? 'checked' : ''}
-                                               onchange="toggleAlertType('${type}')">
-                                        <label class="form-check-label" for="alert_${type.replace(/\s+/g, '_')}">
+                                               id="alert_${safeTypeId}" 
+                                               ${raw(isEnabled ? 'checked' : '')}
+                                               onchange="toggleAlertType('${safeType}')">
+                                        <label class="form-check-label" for="alert_${safeTypeId}">
                                             <strong>${type}</strong>
                                         </label>
                                     </div>
@@ -386,10 +389,10 @@
                     `;
                 });
                 
-                html += '</div>';
+                htmlContent += '</div>';
             }
             
-            container.innerHTML = html;
+            container.innerHTML = htmlContent;
         }
         
         // Toggle all alerts in a level

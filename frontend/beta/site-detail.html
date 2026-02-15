@@ -936,27 +936,27 @@
 
         function renderHighestAlert(aggData) {
             const advisory = aggData.highest_severity_advisory;
-            const severity = (advisory.severity || 'moderate').toLowerCase();
+            const severity = escapeHtml((advisory.severity || 'moderate').toLowerCase());
             const card = document.getElementById('highest-alert');
             card.className = `alert-card ${severity}`;
 
-            card.innerHTML = `
+            card.innerHTML = html`
                 <div class="alert-card-header">
                     <span class="alert-type">${advisory.advisory_type}</span>
                     <div class="alert-badges">
-                        <span class="alert-badge severity ${severity}">${advisory.severity}</span>
-                        ${getActionBadge(advisory)}
+                        <span class="alert-badge severity ${raw(severity)}">${advisory.severity}</span>
+                        ${raw(getActionBadge(advisory))}
                     </div>
                 </div>
                 <div class="alert-meta">
                     <div class="alert-meta-item">
                         <label>Issued</label>
-                        <span>${formatDate(advisory.last_updated)}</span>
+                        <span>${raw(formatDate(advisory.last_updated))}</span>
                     </div>
                     <div class="alert-meta-item">
                         <label>Expires</label>
-                        <span>${advisory.expires ? formatDate(advisory.expires) : 'Unknown'}
-                            ${advisory.expires ? `<span class="time-remaining">(${getTimeRemaining(advisory.expires)})</span>` : ''}
+                        <span>${raw(advisory.expires ? formatDate(advisory.expires) : 'Unknown')}
+                            ${raw(advisory.expires ? `<span class="time-remaining">(${getTimeRemaining(advisory.expires)})</span>` : '')}
                         </span>
                     </div>
                     <div class="alert-meta-item">
@@ -965,7 +965,7 @@
                     </div>
                 </div>
                 <div class="alert-links">
-                    ${getExternalLinks(advisory)}
+                    ${raw(getExternalLinks(advisory))}
                 </div>
             `;
         }
@@ -973,17 +973,17 @@
         function renderImpactSummary(aggData) {
             const container = document.getElementById('impact-grid');
             container.innerHTML = aggData.type_groups.map(group => {
-                const severity = (group.severity || 'moderate').toLowerCase();
-                return `
+                const severity = escapeHtml((group.severity || 'moderate').toLowerCase());
+                return html`
                     <div class="impact-card">
                         <div class="impact-card-header">
                             <span class="impact-type">${group.type}</span>
-                            <span class="alert-badge severity ${severity}">${group.severity}</span>
+                            <span class="alert-badge severity ${raw(severity)}">${group.severity}</span>
                         </div>
                         <div class="impact-count">
                             <span class="count">${group.count}</span>
-                            <span class="label">${group.count === 1 ? 'alert' : 'alerts'}</span>
-                            ${group.zone_count > 1 ? `<span class="zone-badge">${group.zone_count} zones</span>` : ''}
+                            <span class="label">${raw(group.count === 1 ? 'alert' : 'alerts')}</span>
+                            ${raw(group.zone_count > 1 ? `<span class="zone-badge">${group.zone_count} zones</span>` : '')}
                         </div>
                     </div>
                 `;
@@ -1002,17 +1002,17 @@
                     hoursAgo === 1 ? '1 hour ago' :
                     hoursAgo < 24 ? `${hoursAgo} hours ago` :
                     `${Math.round(hoursAgo/24)} days ago`;
-                const severity = (adv.severity || 'moderate').toLowerCase();
+                const severity = escapeHtml((adv.severity || 'moderate').toLowerCase());
 
-                return `
+                return html`
                     <div class="timeline-item">
                         <div class="timeline-marker"></div>
                         <div class="timeline-content">
-                            <div class="timeline-time">${formatDate(adv.last_updated)} (${timeText})</div>
+                            <div class="timeline-time">${raw(formatDate(adv.last_updated))} (${timeText})</div>
                             <div class="timeline-title">
                                 ${adv.advisory_type}
-                                ${getActionBadge(adv)}
-                                <span class="alert-badge severity ${severity}">${adv.severity}</span>
+                                ${raw(getActionBadge(adv))}
+                                <span class="alert-badge severity ${raw(severity)}">${adv.severity}</span>
                             </div>
                         </div>
                     </div>
@@ -1025,27 +1025,27 @@
             const container = document.getElementById('advisory-list');
 
             container.innerHTML = aggData.type_groups.map(group => {
-                const severity = (group.severity || 'moderate').toLowerCase();
-                return `
+                const severity = escapeHtml((group.severity || 'moderate').toLowerCase());
+                return html`
                     <div class="advisory-item">
                         <div class="advisory-item-header">
                             <span class="alert-type">${group.type}</span>
-                            <span class="alert-badge severity ${severity}">${group.severity}</span>
+                            <span class="alert-badge severity ${raw(severity)}">${group.severity}</span>
                         </div>
                         <div class="advisory-item-body">
                             <div class="alert-badges" style="margin-bottom: 0.75rem;">
-                                ${getActionBadge(group.representative)}
-                                ${group.zone_count > 1 ? `<span class="zone-badge">${group.zone_count} NWS zones</span>` : ''}
+                                ${raw(getActionBadge(group.representative))}
+                                ${raw(group.zone_count > 1 ? `<span class="zone-badge">${group.zone_count} NWS zones</span>` : '')}
                             </div>
                             <div class="alert-meta">
                                 <div class="alert-meta-item">
                                     <label>Expires</label>
-                                    <span>${group.expires ? formatDate(group.expires) + ' (' + getTimeRemaining(group.expires) + ')' : 'Unknown'}</span>
+                                    <span>${raw(group.expires ? formatDate(group.expires) + ' (' + getTimeRemaining(group.expires) + ')' : 'Unknown')}</span>
                                 </div>
                             </div>
-                            ${group.zone_count > 1 ? `<p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">This alert covers multiple NWS forecast zones for this location.</p>` : ''}
+                            ${raw(group.zone_count > 1 ? `<p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">This alert covers multiple NWS forecast zones for this location.</p>` : '')}
                             <div class="alert-links">
-                                ${getExternalLinks(group.representative)}
+                                ${raw(getExternalLinks(group.representative))}
                             </div>
                         </div>
                     </div>

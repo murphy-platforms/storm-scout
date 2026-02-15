@@ -264,17 +264,17 @@
                 return;
             }
             
-            tbody.innerHTML = advisories.map(adv => `
+            tbody.innerHTML = advisories.map(adv => html`
                 <tr>
                     <td><strong>${adv.site_code}</strong></td>
                     <td>${adv.site_name}</td>
                     <td>${adv.city}</td>
                     <td>${adv.state}</td>
                     <td>${adv.advisory_type}</td>
-                    <td><span class="badge ${getSeverityBadge(adv.severity)}">${adv.severity}</span></td>
-                    <td>${getActionBadge(adv.vtec_action)}</td>
+                    <td>${raw(`<span class="badge ${getSeverityBadge(adv.severity)}">${escapeHtml(adv.severity)}</span>`)}</td>
+                    <td>${raw(getActionBadge(adv.vtec_action))}</td>
                     <td>${adv.source}</td>
-                    <td>${formatDate(adv.last_updated)}</td>
+                    <td>${raw(formatDate(adv.last_updated))}</td>
                 </tr>
             `).join('');
         }
@@ -391,13 +391,13 @@
         
         // Render individual site card
         function renderSiteCard(site) {
-            const severityClass = `site-card-${site.highest_severity.toLowerCase()}`;
+            const severityClass = `site-card-${escapeHtml(site.highest_severity.toLowerCase())}`;
             const highestAlert = site.highest_severity_advisory;
             
-            return `
+            return html`
                 <div class="col-lg-6 col-12">
                     <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
-                        <div class="card site-card site-card-clickable ${severityClass}">
+                        <div class="card site-card site-card-clickable ${raw(severityClass)}">
                             <div class="site-card-header">
                                 <div>
                                     <h5 class="site-card-title text-dark">
@@ -407,7 +407,7 @@
                                         <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
                                     </div>
                                 </div>
-                                <span class="badge severity-badge-large severity-${site.highest_severity.toLowerCase()}">
+                                <span class="badge severity-badge-large severity-${raw(escapeHtml(site.highest_severity.toLowerCase()))}">
                                     ${site.highest_severity}
                                 </span>
                             </div>
@@ -415,10 +415,10 @@
                                 <!-- Highest severity alert -->
                                 <div style="margin-bottom: 0.75rem;">
                                     <strong class="text-dark">${highestAlert.advisory_type}</strong>
-                                    ${highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : ''}
+                                    ${raw(highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : '')}
                                     <br>
                                     <small class="text-muted">
-                                        ${highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : ''}
+                                        ${raw(highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : '')}
                                     </small>
                                 </div>
                                 
@@ -428,41 +428,41 @@
                                         <span class="alert-stat-icon">📊</span>
                                         <span class="text-dark">
                                             <span class="alert-stat-value">${site.unique_advisory_count}</span>
-                                            unique ${site.unique_advisory_count === 1 ? 'alert' : 'alerts'}
-                                            ${site.total_zone_count !== site.unique_advisory_count ? 
-                                                `<span class="text-muted">(${site.total_zone_count} zones)</span>` : ''}
+                                            unique ${raw(site.unique_advisory_count === 1 ? 'alert' : 'alerts')}
+                                            ${raw(site.total_zone_count !== site.unique_advisory_count ? 
+                                                `<span class="text-muted">(${site.total_zone_count} zones)</span>` : '')}
                                         </span>
                                     </div>
-                                    ${site.new_count > 0 ? `
+                                    ${raw(site.new_count > 0 ? `
                                     <div class="alert-stat">
                                         <span class="alert-stat-icon">🆕</span>
                                         <span class="text-dark"><span class="alert-stat-value">${site.new_count}</span> new</span>
                                     </div>
-                                    ` : ''}
-                                    ${site.continued_count > 0 ? `
+                                    ` : '')}
+                                    ${raw(site.continued_count > 0 ? `
                                     <div class="alert-stat">
                                         <span class="alert-stat-icon">🔄</span>
                                         <span class="text-dark"><span class="alert-stat-value">${site.continued_count}</span> continued</span>
                                     </div>
-                                    ` : ''}
+                                    ` : '')}
                                 </div>
                                 
                                 <!-- Advisory types -->
                                 <div class="advisory-type-list">
-                                    ${site.type_groups.map(group => `
+                                    ${raw(site.type_groups.map(group => html`
                                         <div class="advisory-type-item">
                                             <span class="advisory-type-name">${group.type}</span>
                                             <div class="advisory-type-meta">
-                                                <span class="badge ${getSeverityBadge(group.severity)}">${group.severity}</span>
-                                                ${group.zone_count > 1 ? 
+                                                ${raw(`<span class="badge ${getSeverityBadge(group.severity)}">${escapeHtml(group.severity)}</span>`)}
+                                                ${raw(group.zone_count > 1 ? 
                                                     `<span class="zone-badge zone-badge-multi" title="${group.zone_count} NWS zones">
                                                         <i class="bi bi-layers"></i> ${group.zone_count} zones
                                                     </span>` : 
-                                                    `<span class="zone-badge">${group.representative.source || 'NWS'}</span>`
-                                                }
+                                                    `<span class="zone-badge">${escapeHtml(group.representative.source || 'NWS')}</span>`
+                                                )}
                                             </div>
                                         </div>
-                                    `).join('')}
+                                    `).join(''))}
                                 </div>
                             </div>
                         </div>
