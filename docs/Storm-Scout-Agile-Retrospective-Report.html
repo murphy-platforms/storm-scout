@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Executive Agile Retrospective Report</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 11pt;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            table, figure {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Header */
+        .report-header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .report-title {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+        }
+        
+        .report-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin: 0;
+        }
+        
+        .report-meta {
+            margin-top: 20px;
+            font-size: 0.95em;
+            color: #666;
+        }
+        
+        .report-meta p {
+            margin: 5px 0;
+        }
+        
+        /* Headings */
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-top: 30px;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 25px;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--secondary-color);
+            margin: 20px 0;
+            padding: 15px 20px;
+            background-color: var(--light-gray);
+            font-style: italic;
+        }
+        
+        /* Key points box */
+        .key-points {
+            background-color: #e8f4f8;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .key-points h4 {
+            margin-top: 0;
+            color: var(--secondary-color);
+        }
+        
+        /* Risk table colors */
+        .risk-high {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .risk-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .risk-low {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        /* Comparison table */
+        .comparison-table th:first-child {
+            width: 25%;
+        }
+        
+        /* Footer */
+        .report-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        /* Section numbers */
+        .section-number {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+        
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .highlight-box h4 {
+            margin-top: 0;
+        }
+        
+        /* Epic cards */
+        .epic-card {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .epic-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            font-weight: 600;
+        }
+        
+        .epic-content {
+            padding: 15px;
+        }
+        
+        .user-story {
+            background-color: var(--light-gray);
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid var(--secondary-color);
+        }
+        
+        .acceptance-criteria {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <h1 class="report-title">Storm Scout</h1>
+        <p class="report-subtitle">Executive Agile Retrospective Report</p>
+        <div class="report-meta">
+            <p><strong>Prepared for:</strong> Director of Technology Services</p>
+            <p><strong>Date:</strong> February 15, 2026</p>
+            <p><strong>Subject:</strong> Agile Project Analysis – Storm Scout Weather Advisory Dashboard</p>
+        </div>
+    </div>
+
+    <h1><span class="section-number">1.</span> Executive Summary (Non-Technical)</h1>
+    
+    <p>Storm Scout is a web-based operational dashboard that consolidates weather alerts from the National Oceanic and Atmospheric Administration (NOAA) and maps them to 219 APC testing center locations across the United States. The tool provides Incident Management Teams (IMT) and Operations staff with a single, continuously updated view of which testing centers may be affected by severe weather—enabling faster, more informed go/no-go decisions during weather events.</p>
+    
+    <p>Prior to this tool, monitoring weather impacts across 219 geographically dispersed sites required manually checking multiple NOAA sources, correlating alerts to specific locations, and communicating findings through ad-hoc means. Storm Scout automates this entire workflow: ingesting NOAA data every 15 minutes, classifying alerts by severity, and presenting an at-a-glance dashboard showing which sites require immediate attention, which are at elevated risk, and which are clear.</p>
+    
+    <p>If Storm Scout had been developed through a formal Agile process at an enterprise organization—with standard roles, documentation, security review, and quality assurance—it would typically require <strong>a team of 3–5 people working for 8–12 weeks</strong> (approximately 16–40 person-weeks of effort depending on scope and compliance requirements). The actual implementation, delivered as a rapid "vibe coding" prototype by a single developer, reached production in approximately <strong>12 calendar days</strong>.</p>
+
+    <div class="key-points">
+        <h4>Key Benefits and Strategic Value</h4>
+        <ul>
+            <li><strong>Consolidated Situational Awareness:</strong> Single dashboard replaces monitoring of multiple NOAA feeds across 50 states</li>
+            <li><strong>Reduced Manual Effort:</strong> Automated alert ingestion and site matching eliminates repetitive manual checking</li>
+            <li><strong>Faster Decision-Making:</strong> Color-coded severity groupings enable rapid identification of sites requiring action</li>
+            <li><strong>Operational Consistency:</strong> Standardized weather impact assessment across all 219 locations</li>
+            <li><strong>Audit Trail Potential:</strong> Historical snapshot system supports trend analysis and post-incident review</li>
+        </ul>
+    </div>
+
+    <h1 class="page-break"><span class="section-number">2.</span> Product Vision and Scope (Agile Lens)</h1>
+    
+    <h3>Product Vision Statement</h3>
+    <blockquote>
+        "For IMT and Operations teams who need to make timely go/no-go decisions during severe weather events, Storm Scout is a monitoring dashboard that consolidates NOAA weather alerts by testing center location—unlike manual monitoring of multiple weather sources, Storm Scout automatically surfaces which sites are impacted, grouped by severity, with updates every 15 minutes."
+    </blockquote>
+
+    <h3>Success Metrics / Outcomes</h3>
+    <ol>
+        <li><strong>Reduction in Alert Discovery Time:</strong> Time from NOAA alert issuance to staff awareness reduced from hours to &lt;15 minutes</li>
+        <li><strong>Decision Support Coverage:</strong> 100% of 219 US testing centers monitored automatically</li>
+        <li><strong>Filter Efficiency:</strong> Users can customize alert views to their operational focus (Operations, Executive, Safety) with preferences persisted</li>
+        <li><strong>System Reliability:</strong> 99%+ uptime during weather events; automated ingestion runs successfully every 15 minutes</li>
+        <li><strong>User Adoption:</strong> Dashboard becomes the primary tool for weather-related operational decisions</li>
+    </ol>
+
+    <h3>Scope Definition</h3>
+    
+    <h4>In-Scope (MVP):</h4>
+    <ul>
+        <li>NOAA/NWS weather alert ingestion (federal data source)</li>
+        <li>219 testing center locations with geographic mapping</li>
+        <li>Dashboard showing sites by severity (Critical, Elevated, Monitoring)</li>
+        <li>Filter presets for different user roles</li>
+        <li>Automatic site status calculation based on alert severity</li>
+        <li>Map view for geographic awareness</li>
+        <li>Mobile-responsive design</li>
+    </ul>
+
+    <h4>Out-of-Scope (Deferred):</h4>
+    <ul>
+        <li>State/local emergency management feeds</li>
+        <li>Email/SMS notifications</li>
+        <li>Real-time WebSocket updates (currently uses polling)</li>
+        <li>Historical analytics and trend visualization</li>
+        <li>Multi-tenant support for multiple organizations</li>
+        <li>Native mobile application</li>
+        <li>Integration with external systems (facility management, scheduling)</li>
+    </ul>
+
+    <h1 class="page-break"><span class="section-number">3.</span> Backlog: Epics, Features, and Sample User Stories</h1>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 1: Alert Ingestion & Data Pipeline</div>
+        <div class="epic-content">
+            <p><em>Automated collection and normalization of weather alerts from NOAA.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Operations user, I want weather alerts to be automatically updated every 15 minutes so that I always have current information without manual refresh.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Ingestion runs on 15-minute schedule • Alerts appear within 2 minutes of ingestion completion
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As a system administrator, I want duplicate alerts to be automatically detected and merged so that users see one entry per weather event per site.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • VTEC event IDs used for deduplication • Duplicate count reduced by 90%+
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Operations user, I want expired alerts to be automatically removed so that the dashboard only shows currently relevant information.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Alerts marked expired when end_time passes • Expired alerts not shown in default views
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 2: Alert Display & Filtering</div>
+        <div class="epic-content">
+            <p><em>User-facing dashboard for viewing and filtering weather alerts.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an IMT member, I want to see sites grouped by alert severity (Critical, Elevated, Monitoring) so that I can quickly identify which locations need immediate attention.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Sites with Extreme severity appear in "Immediate Attention" section • Grouping updates dynamically as alerts change
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Operations user, I want to customize which alert types I see so that I can focus on weather events relevant to my role.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Filter settings page with 80+ alert types • Preferences saved to browser and persist across sessions
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Executive, I want a preset filter that shows only high-severity alerts so that I can get a quick summary without configuration.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • "Executive Summary" preset shows Critical + High only • One-click preset selection
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 3: Site Management & Status</div>
+        <div class="epic-content">
+            <p><em>Mapping of testing centers to alerts and operational status tracking.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Operations user, I want to see each testing center's location matched to relevant weather alerts so that I know exactly which facilities are affected.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Alerts matched using UGC codes, county, and state • Each site shows its active alerts
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an IMT member, I want to drill down to a specific site to see all active alerts and their full details so that I can assess the situation before making a decision.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Site detail page shows all alerts for that location • Full NOAA narrative description accessible
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 4: Map & Visualization</div>
+        <div class="epic-content">
+            <p><em>Geographic visualization of impacted sites.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Operations user, I want to see all sites on a map with color-coded markers so that I can understand geographic distribution of weather impacts.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Interactive map showing all 219 sites • Marker color reflects highest severity alert
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 5: Reliability & Monitoring</div>
+        <div class="epic-content">
+            <p><em>System health, observability, and error handling.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As a system administrator, I want ingestion failures to trigger alerts so that I know immediately if data is stale.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Webhook/Slack notification on ingestion failure • Alert throttling to prevent spam
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As an Operations user, I want to see when data was last updated so that I know how current the information is.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • "Last Updated" timestamp visible on all pages • Countdown to next update shown
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 6: Security & Compliance</div>
+        <div class="epic-content">
+            <p><em>Access control, data protection, and security hardening.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As a security reviewer, I want all user input validated and sanitized so that the system is protected from injection attacks.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • All API endpoints use input validation • Invalid input returns 400 error
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As a security reviewer, I want security headers configured so that the application follows web security best practices.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • CSP, HSTS, X-Frame-Options headers present • Verified with security header scanner
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="epic-card">
+        <div class="epic-header">Epic 7: Documentation & Knowledge Transfer</div>
+        <div class="epic-content">
+            <p><em>Operational documentation and onboarding materials.</em></p>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As a new team member, I want deployment documentation so that I can deploy updates independently.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • Step-by-step deployment guide exists • Rollback procedure documented
+                </div>
+            </div>
+            
+            <div class="user-story">
+                <strong>User Story:</strong> As a developer, I want API documentation so that I can build integrations or troubleshoot issues.
+                <div class="acceptance-criteria">
+                    <strong>Acceptance Criteria:</strong> • All endpoints documented with request/response examples • Error codes explained
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="page-break"><span class="section-number">4.</span> Agile Delivery Approach and Phasing</h1>
+
+    <h3>Phase Plan Overview</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Phase</th>
+                <th>Duration</th>
+                <th>Key Objectives</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Discovery & Inception</td>
+                <td>1–2 weeks</td>
+                <td>Validate requirements, define MVP scope, identify risks</td>
+            </tr>
+            <tr>
+                <td>Architecture & Environment</td>
+                <td>1–2 weeks</td>
+                <td>Technical design, infrastructure setup, CI/CD pipeline</td>
+            </tr>
+            <tr>
+                <td>Core Feature Delivery</td>
+                <td>4–6 weeks</td>
+                <td>Build ingestion, dashboard, filtering, site management</td>
+            </tr>
+            <tr>
+                <td>Hardening & UAT</td>
+                <td>2–3 weeks</td>
+                <td>Security review, performance testing, user acceptance</td>
+            </tr>
+            <tr>
+                <td>Launch & Knowledge Transfer</td>
+                <td>1 week</td>
+                <td>Production deployment, documentation, training</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Phase 1: Discovery & Inception (1–2 weeks)</h3>
+    <ul>
+        <li><strong>Objectives:</strong> Confirm stakeholder requirements; define MVP scope; identify data sources and integration points</li>
+        <li><strong>Key Activities:</strong> Stakeholder interviews (IMT, Operations, IT Security); Review NOAA API documentation; Create initial backlog; Risk assessment</li>
+        <li><strong>Risks/Dependencies:</strong> Stakeholder availability; clarity on operational decision workflows; access to NOAA API documentation</li>
+    </ul>
+
+    <h3>Phase 2: Architecture & Environment Setup (1–2 weeks)</h3>
+    <ul>
+        <li><strong>Objectives:</strong> Establish technical foundation; define architecture; configure environments</li>
+        <li><strong>Key Activities:</strong> Select technology stack; Design database schema; Set up dev/staging/prod environments; Configure CI/CD; Establish security baseline</li>
+        <li><strong>Risks/Dependencies:</strong> Hosting environment access; database provisioning; security review timeline</li>
+    </ul>
+
+    <h3>Phase 3: Core Feature Delivery (4–6 weeks, 3–4 sprints)</h3>
+    <ul>
+        <li><strong>Sprint 1:</strong> NOAA API integration, alert ingestion, database models</li>
+        <li><strong>Sprint 2:</strong> Site data loading, alert-to-site matching, basic dashboard</li>
+        <li><strong>Sprint 3:</strong> Filtering system, severity classification, site detail views</li>
+        <li><strong>Sprint 4:</strong> Map visualization, export features, UX refinements</li>
+    </ul>
+
+    <h3>Phase 4: Hardening, Testing & UAT (2–3 weeks)</h3>
+    <ul>
+        <li><strong>Objectives:</strong> Ensure production readiness; address security and performance</li>
+        <li><strong>Key Activities:</strong> Security review and penetration testing; Performance testing; User acceptance testing; Bug fixing; Documentation finalization</li>
+    </ul>
+
+    <h3>Phase 5: Launch & Knowledge Transfer (1 week)</h3>
+    <ul>
+        <li><strong>Objectives:</strong> Successful production deployment; operational handoff</li>
+        <li><strong>Key Activities:</strong> Production deployment and verification; Monitoring configuration; User training; Operations runbook delivery</li>
+    </ul>
+
+    <h1 class="page-break"><span class="section-number">5.</span> Level of Effort (Optimistic but Realistic)</h1>
+
+    <h3>Assumptions</h3>
+    <ul>
+        <li><strong>Team Composition:</strong> 1 Full-Stack Developer, 0.5 FTE Front-End/UX, 0.5 FTE Product Owner, 0.5 FTE QA/DevOps</li>
+        <li><strong>Equivalent:</strong> ~2.5 FTE over project duration</li>
+        <li><strong>Sprint Length:</strong> 2 weeks</li>
+        <li><strong>No major blockers:</strong> Timely stakeholder access, NOAA API performs as documented, hosting available</li>
+    </ul>
+
+    <h3>Effort by Phase</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Phase</th>
+                <th>Duration</th>
+                <th>Effort (Person-Weeks)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Discovery & Inception</td>
+                <td>1–2 weeks</td>
+                <td>3–5</td>
+            </tr>
+            <tr>
+                <td>Architecture & Environment</td>
+                <td>1–2 weeks</td>
+                <td>3–5</td>
+            </tr>
+            <tr>
+                <td>Core Feature Delivery</td>
+                <td>4–6 weeks</td>
+                <td>10–18</td>
+            </tr>
+            <tr>
+                <td>Hardening & UAT</td>
+                <td>2–3 weeks</td>
+                <td>4–7</td>
+            </tr>
+            <tr>
+                <td>Launch & Knowledge Transfer</td>
+                <td>1 week</td>
+                <td>2–3</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #e8f4f8;">
+                <td>Total</td>
+                <td>8–14 weeks</td>
+                <td>22–38 person-weeks</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Effort by Epic</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Epic</th>
+                <th>Optimistic</th>
+                <th>Typical</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Alert Ingestion & Data Pipeline</td>
+                <td>3 p-weeks</td>
+                <td>5 p-weeks</td>
+            </tr>
+            <tr>
+                <td>Alert Display & Filtering</td>
+                <td>4 p-weeks</td>
+                <td>6 p-weeks</td>
+            </tr>
+            <tr>
+                <td>Site Management & Status</td>
+                <td>3 p-weeks</td>
+                <td>5 p-weeks</td>
+            </tr>
+            <tr>
+                <td>Map & Visualization</td>
+                <td>2 p-weeks</td>
+                <td>3 p-weeks</td>
+            </tr>
+            <tr>
+                <td>Reliability & Monitoring</td>
+                <td>2 p-weeks</td>
+                <td>4 p-weeks</td>
+            </tr>
+            <tr>
+                <td>Security & Compliance</td>
+                <td>2 p-weeks</td>
+                <td>4 p-weeks</td>
+            </tr>
+            <tr>
+                <td>Documentation & Knowledge Transfer</td>
+                <td>2 p-weeks</td>
+                <td>3 p-weeks</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="highlight-box">
+        <h4>Summary Range</h4>
+        <ul>
+            <li><strong>Optimistic Scenario:</strong> 8–10 weeks, ~22 person-weeks (minimal security overhead, experienced team, clear requirements)</li>
+            <li><strong>Typical Enterprise Scenario:</strong> 12–14 weeks, ~35–40 person-weeks (includes security review, compliance documentation, broader UAT)</li>
+        </ul>
+    </div>
+
+    <h1 class="page-break"><span class="section-number">6.</span> Required Roles and Knowledge Domains</h1>
+
+    <h3>Key Roles</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Allocation</th>
+                <th>Responsibilities</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Product Owner</strong></td>
+                <td>0.5 FTE</td>
+                <td>Define MVP scope; prioritize backlog; represent IMT/Operations stakeholders; accept completed work</td>
+            </tr>
+            <tr>
+                <td><strong>Scrum Master / Delivery Lead</strong></td>
+                <td>0.25 FTE</td>
+                <td>Facilitate ceremonies; remove blockers; track progress; coordinate dependencies</td>
+            </tr>
+            <tr>
+                <td><strong>Full-Stack Developer</strong></td>
+                <td>1.0 FTE</td>
+                <td>Build backend (Node.js, Express, MySQL); implement NOAA integration; develop API endpoints</td>
+            </tr>
+            <tr>
+                <td><strong>Front-End Developer / UX</strong></td>
+                <td>0.5 FTE</td>
+                <td>Build responsive dashboard (Bootstrap); implement filtering UI; ensure accessibility</td>
+            </tr>
+            <tr>
+                <td><strong>DevOps / Cloud Engineer</strong></td>
+                <td>0.25 FTE</td>
+                <td>Set up hosting; configure CI/CD; manage deployments; implement monitoring</td>
+            </tr>
+            <tr>
+                <td><strong>QA Engineer</strong></td>
+                <td>0.5 FTE</td>
+                <td>Write and execute test cases; perform regression testing; validate security and performance</td>
+            </tr>
+            <tr>
+                <td><strong>Security Partner</strong></td>
+                <td>As needed</td>
+                <td>Review architecture; conduct security assessment; advise on data handling</td>
+            </tr>
+            <tr>
+                <td><strong>Domain SME (IMT/Operations)</strong></td>
+                <td>As needed</td>
+                <td>Validate alert relevance; define severity thresholds; participate in UAT</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Knowledge Domains</h3>
+    
+    <h4>Technical Domains:</h4>
+    <ul>
+        <li><strong>Node.js / Express Backend Development:</strong> REST API design, async/await patterns, middleware</li>
+        <li><strong>MySQL / MariaDB:</strong> Schema design, query optimization, connection pooling, UPSERT operations</li>
+        <li><strong>Front-End Development (Bootstrap 5.3):</strong> Responsive layouts, interactive components, localStorage</li>
+        <li><strong>API Integration:</strong> NOAA Weather API, CAP/ATOM feeds, rate limiting, retry logic</li>
+        <li><strong>Data Normalization:</strong> VTEC code parsing, UGC geographic codes, severity classification</li>
+        <li><strong>DevOps Fundamentals:</strong> Environment configuration, SSH deployment, SSL/TLS</li>
+    </ul>
+
+    <h4>Domain & Operational Knowledge:</h4>
+    <ul>
+        <li><strong>NOAA / NWS Alert Products:</strong> Understanding of 80+ alert types, severity levels, VTEC lifecycle</li>
+        <li><strong>APC Testing Center Operations:</strong> Site locations, operational decision workflows</li>
+        <li><strong>IMT / Emergency Management:</strong> Incident management processes, escalation procedures</li>
+        <li><strong>Business Continuity:</strong> Risk assessment, operational resilience</li>
+    </ul>
+
+    <h1 class="page-break"><span class="section-number">7.</span> Risks, Assumptions, and Dependencies</h1>
+
+    <h3>Key Assumptions</h3>
+    <ol>
+        <li>Hosting platform (cPanel/Passenger) is available and configured</li>
+        <li>NOAA Weather API is publicly accessible without authentication</li>
+        <li>Testing center location data (219 sites) is provided and accurate</li>
+        <li>No integration with internal authentication systems required for MVP</li>
+        <li>Users access the tool via web browser (no native mobile requirement)</li>
+        <li>Data classification allows storage on standard hosting</li>
+    </ol>
+
+    <h3>Notable Risks</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Risk</th>
+                <th>Likelihood</th>
+                <th>Impact</th>
+                <th>Mitigation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>NOAA API changes or rate limits</td>
+                <td class="risk-medium">Medium</td>
+                <td class="risk-high">High</td>
+                <td>Implement robust retry logic; cache responses; monitor for API changes</td>
+            </tr>
+            <tr>
+                <td>Geographic matching inaccuracy</td>
+                <td class="risk-medium">Medium</td>
+                <td class="risk-medium">Medium</td>
+                <td>Use hierarchical matching (UGC → County → State); validate with Operations</td>
+            </tr>
+            <tr>
+                <td>Alert volume spikes during storms</td>
+                <td class="risk-high">High</td>
+                <td class="risk-medium">Medium</td>
+                <td>Implement caching; batch database operations; monitor performance</td>
+            </tr>
+            <tr>
+                <td>Single point of failure (solo dev)</td>
+                <td class="risk-high">High</td>
+                <td class="risk-high">High</td>
+                <td>Document all decisions; ensure knowledge transfer; code reviews</td>
+            </tr>
+            <tr>
+                <td>Security vulnerabilities</td>
+                <td class="risk-medium">Medium</td>
+                <td class="risk-high">High</td>
+                <td>Conduct security review; implement OWASP best practices</td>
+            </tr>
+            <tr>
+                <td>User adoption challenges</td>
+                <td class="risk-medium">Medium</td>
+                <td class="risk-medium">Medium</td>
+                <td>Involve users in UAT; provide training; iterate on UX</td>
+            </tr>
+            <tr>
+                <td>Hosting reliability</td>
+                <td class="risk-low">Low</td>
+                <td class="risk-high">High</td>
+                <td>Implement health monitoring; document recovery procedures</td>
+            </tr>
+            <tr>
+                <td>Scope creep</td>
+                <td class="risk-medium">Medium</td>
+                <td class="risk-medium">Medium</td>
+                <td>Strict MVP definition; defer nice-to-have features</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>External Dependencies</h3>
+    <ul>
+        <li><strong>NOAA Weather API availability</strong> — federal government data source, generally reliable but occasionally experiences outages</li>
+        <li><strong>Hosting provider SLA</strong> — cPanel/shared hosting may have limitations during high-traffic periods</li>
+        <li><strong>Security review scheduling</strong> — enterprise security teams often have multi-week lead times</li>
+        <li><strong>Stakeholder availability</strong> — IMT/Operations staff may have competing priorities during actual weather events</li>
+    </ul>
+
+    <h1 class="page-break"><span class="section-number">8.</span> Comparison: "Vibe Coding" vs. Formal Agile Delivery</h1>
+
+    <h3>Side-by-Side Comparison</h3>
+    <table class="comparison-table">
+        <thead>
+            <tr>
+                <th>Dimension</th>
+                <th>Vibe Coding (Actual)</th>
+                <th>Formal Agile (Projected)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Time to Initial Prototype</strong></td>
+                <td>~5 days</td>
+                <td>3–4 weeks</td>
+            </tr>
+            <tr>
+                <td><strong>Time to Production</strong></td>
+                <td>~12 days</td>
+                <td>8–14 weeks</td>
+            </tr>
+            <tr>
+                <td><strong>Team Size</strong></td>
+                <td>1 developer</td>
+                <td>3–5 people</td>
+            </tr>
+            <tr>
+                <td><strong>Total Effort</strong></td>
+                <td>~2–3 person-weeks</td>
+                <td>22–38 person-weeks</td>
+            </tr>
+            <tr>
+                <td><strong>Documentation</strong></td>
+                <td>AGENTS.md, README, inline comments</td>
+                <td>Full technical docs, architecture diagrams, runbooks</td>
+            </tr>
+            <tr>
+                <td><strong>Testing</strong></td>
+                <td>Manual testing, production observation</td>
+                <td>Unit tests, integration tests, UAT, load testing</td>
+            </tr>
+            <tr>
+                <td><strong>Security Review</strong></td>
+                <td>Self-implemented best practices</td>
+                <td>Formal security assessment, penetration testing</td>
+            </tr>
+            <tr>
+                <td><strong>Risk Management</strong></td>
+                <td>Implicit, developer judgment</td>
+                <td>Explicit risk register, mitigation plans</td>
+            </tr>
+            <tr>
+                <td><strong>Knowledge Continuity</strong></td>
+                <td>High bus-factor risk</td>
+                <td>Documentation + multiple team members</td>
+            </tr>
+            <tr>
+                <td><strong>Maintainability</strong></td>
+                <td>Developer-dependent</td>
+                <td>Team-transferable</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="key-points">
+        <h4>Talking Points for Leadership</h4>
+        <ol>
+            <li><strong>Demonstrated Value with Minimal Investment</strong><br>
+            Storm Scout was delivered to production in approximately 12 days by a single developer, demonstrating that the core concept is viable and valuable. This rapid prototype proves the operational need and establishes a working baseline.</li>
+            
+            <li><strong>10–15x Effort Multiplier for Enterprise Process</strong><br>
+            A formal Agile delivery with standard enterprise controls (security review, documentation, testing, multiple roles) would require 22–38 person-weeks versus the ~2–3 person-weeks invested. This multiplier reflects the cost of reducing risk, not inefficiency—it buys documentation, test coverage, security validation, and knowledge distribution.</li>
+            
+            <li><strong>Technical Debt is Manageable, Not Prohibitive</strong><br>
+            The current implementation follows reasonable patterns (async/await, connection pooling, input validation). The ROADMAP.md shows the developer is aware of gaps (unit tests, structured logging, CI/CD). This is not throwaway code—it's a solid MVP that can evolve.</li>
+            
+            <li><strong>Knowledge Transfer Risk Requires Attention</strong><br>
+            The primary risk with the vibe-coded approach is knowledge concentration. The detailed AGENTS.md mitigates this significantly, but formalizing with additional documentation and potentially onboarding a second contributor would reduce bus-factor risk.</li>
+            
+            <li><strong>Hybrid Approach May Be Optimal</strong><br>
+            Rather than rebuilding from scratch with a formal team, consider a "hardening phase" that adds the missing enterprise elements (tests, security review, ops runbook) to the existing codebase. This captures the value of rapid prototyping while addressing enterprise requirements—estimated at 8–12 person-weeks of incremental investment.</li>
+        </ol>
+    </div>
+
+    <div class="report-footer">
+        <p><strong>Report Prepared By:</strong> Agile Delivery Analysis</p>
+        <p><strong>Classification:</strong> Internal Use Only</p>
+        <p><strong>Production URL:</strong> <a href="https://teammurphy.rocks">https://teammurphy.rocks</a></p>
+    </div>
+
+</body>
+</html>
