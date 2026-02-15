@@ -37,12 +37,14 @@ app.use(helmet({
         "'self'",
         "'unsafe-inline'",  // Required for Google Analytics inline script
         "cdn.jsdelivr.net",
+        "unpkg.com",  // Leaflet maps
         "www.googletagmanager.com"
       ],
       styleSrc: [
         "'self'",
         "'unsafe-inline'",  // Bootstrap uses inline styles
-        "cdn.jsdelivr.net"
+        "cdn.jsdelivr.net",
+        "unpkg.com"  // Leaflet CSS
       ],
       fontSrc: [
         "'self'",
@@ -51,7 +53,8 @@ app.use(helmet({
       imgSrc: [
         "'self'",
         "data:",  // For inline images and icons
-        "www.googletagmanager.com"
+        "www.googletagmanager.com",
+        "*.tile.openstreetmap.org"  // Map tiles for Leaflet
       ],
       connectSrc: [
         "'self'",
