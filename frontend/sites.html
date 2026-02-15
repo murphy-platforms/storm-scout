@@ -164,6 +164,9 @@
                 siteMap.set(site.site_id, site);
             });
             
+            // Map severity to weather impact level (matches dashboard)
+            const severityToImpact = { 'Extreme': 'red', 'Severe': 'orange', 'Moderate': 'yellow', 'Minor': 'green' };
+            
             // Enhance original sites with aggregation data
             return sites
                 .map(site => {
@@ -176,7 +179,8 @@
                         highest_severity: aggData.highest_severity,
                         highest_severity_advisory: aggData.highest_severity_advisory,
                         new_count: aggData.new_count,
-                        total_zone_count: aggData.total_zone_count
+                        total_zone_count: aggData.total_zone_count,
+                        weather_impact_level: severityToImpact[aggData.highest_severity] || 'green'
                     };
                 })
                 .filter(site => site !== null); // Remove sites without advisories
@@ -319,6 +323,5 @@
             setTimeout(() => applyURLParameters(), 100);
         });
     </script>
-    <script src="js/ui-toggle.js"></script>
 </body>
 </html>
