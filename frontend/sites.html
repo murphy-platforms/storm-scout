@@ -122,9 +122,9 @@
         
         async function loadSites() {
             try {
-                // Load both site status and all advisories
+                // Load all sites and all advisories
                 const [sites, advisories] = await Promise.all([
-                    API.getImpactedSites(),
+                    API.getSites(),
                     API.getActiveAdvisories()
                 ]);
                 
@@ -132,6 +132,7 @@
                 allAdvisories = advisories;
                 
                 // Apply filters and recalculate advisory counts
+                // This will filter to only show sites WITH advisories
                 const filteredData = applyFiltersToSites(sites, advisories);
                 renderSites(filteredData);
                 
