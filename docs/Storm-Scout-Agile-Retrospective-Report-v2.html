@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Executive Agile Retrospective Report</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 11pt;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            table, figure {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Header */
+        .report-header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .report-title {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+        }
+        
+        .report-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin: 0;
+        }
+        
+        .report-meta {
+            margin-top: 20px;
+            font-size: 0.95em;
+            color: #666;
+        }
+        
+        .report-meta p {
+            margin: 5px 0;
+        }
+        
+        /* Headings */
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-top: 30px;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 25px;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--secondary-color);
+            margin: 20px 0;
+            padding: 15px 20px;
+            background-color: var(--light-gray);
+            font-style: italic;
+        }
+        
+        /* Key points box */
+        .key-points {
+            background-color: #e8f4f8;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .key-points h4 {
+            margin-top: 0;
+            color: var(--secondary-color);
+        }
+        
+        /* Risk table colors */
+        .risk-high {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .risk-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .risk-low {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        /* Comparison table */
+        .comparison-table th:first-child {
+            width: 25%;
+        }
+        
+        /* Footer */
+        .report-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        /* Section numbers */
+        .section-number {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+        
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .highlight-box h4 {
+            margin-top: 0;
+        }
+
+        /* Recommendation box */
+        .recommendation-box {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .recommendation-box h4 {
+            margin-top: 0;
+            color: #155724;
+        }
+
+        /* Definition */
+        .definition {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+        
+        /* Epic summary */
+        .epic-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .epic-item {
+            background-color: var(--light-gray);
+            border-left: 4px solid var(--secondary-color);
+            padding: 12px;
+        }
+        
+        .epic-item strong {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <h1 class="report-title">Storm Scout</h1>
+        <p class="report-subtitle">Executive Agile Retrospective Report</p>
+        <div class="report-meta">
+            <p><strong>Prepared for:</strong> Director of Technology Services</p>
+            <p><strong>Date:</strong> February 15, 2026</p>
+            <p><strong>Subject:</strong> Demonstrating AI-Assisted Development for Internal Operational Tools</p>
+            <p><strong>Version:</strong> 2.0</p>
+        </div>
+    </div>
+
+    <h1><span class="section-number">1.</span> Executive Summary</h1>
+    
+    <p><strong>Storm Scout</strong> is a web-based operational dashboard that consolidates weather alerts from the National Oceanic and Atmospheric Administration (NOAA) and maps them to 219 testing center locations across the United States. The tool provides Incident Management Teams (IMT) and Operations staff with a single, continuously updated view of which testing centers may be affected by severe weather—enabling faster, more informed go/no-go decisions during weather events.</p>
+
+    <div class="definition">
+        <strong>What is "Vibe Coding"?</strong><br>
+        Vibe coding is AI-assisted software development where the developer describes what they want in natural language, and AI tools generate the working code. This approach enables non-developers or developers working outside their specialty to rapidly create functional applications.
+    </div>
+    
+    <p>Storm Scout was built as a <strong>demonstration project</strong> using vibe coding techniques by a single non-developer over approximately <strong>12 calendar days</strong>. The purpose of this report is to illustrate the opportunity to create small, custom internal applications that deliver measurable operational efficiencies—applications that would not typically justify the investment of a formal development project.</p>
+
+    <p>For comparison, if Storm Scout had been built through a traditional Agile process—with standard roles, documentation, security review, and quality assurance—it would typically require <strong>a team of 3–5 people working for 8–12 weeks</strong>, at an estimated cost of <strong>$130K–$230K</strong>. The vibe-coded version required roughly <strong>$12K–$18K equivalent effort</strong>.</p>
+
+    <div class="key-points">
+        <h4>Key Takeaways</h4>
+        <ul>
+            <li><strong>10–15x faster delivery:</strong> 12 days vs. 8–14 weeks for formal development</li>
+            <li><strong>10–15x lower cost:</strong> ~$15K equivalent effort vs. $130K–$230K formal project</li>
+            <li><strong>Production-ready:</strong> Live system monitoring 219 sites with 15-minute data updates</li>
+            <li><strong>Right-sized approach:</strong> The business value doesn't justify formal development, but easily exceeds the vibe coding investment</li>
+            <li><strong>Opportunity signal:</strong> Internal operational tools are prime candidates for this approach</li>
+        </ul>
+    </div>
+
+    <h1 class="page-break"><span class="section-number">2.</span> The Opportunity: Right-Sizing Tool Development</h1>
+    
+    <h3>The Problem with Traditional Approaches</h3>
+    <p>Many internal operational tools never get built because they fall into an "awkward middle ground":</p>
+    <ul>
+        <li>Too complex for spreadsheets or manual processes</li>
+        <li>Not valuable enough to justify a formal development project ($100K+ investment)</li>
+        <li>Not strategic enough to compete for Product & Technology resources</li>
+    </ul>
+    
+    <p>These tools create real operational value—reduced manual effort, faster decisions, better consistency—but the value typically doesn't clear the threshold for traditional software investment.</p>
+
+    <h3>Vibe Coding Changes the Economics</h3>
+    <p>AI-assisted development fundamentally changes this equation by:</p>
+    <ul>
+        <li>Reducing the required technical skill level (non-developers can build functional applications)</li>
+        <li>Compressing development timelines (days instead of months)</li>
+        <li>Lowering the cost threshold (making smaller-value tools economically viable)</li>
+    </ul>
+    
+    <p>Storm Scout demonstrates that tools which create <strong>modest but measurable business value</strong> can now be built cost-effectively—without competing for Product & Technology team resources or formal project budgets.</p>
+
+    <div class="key-points">
+        <h4>Where This Approach Fits</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Approach</th>
+                    <th>Best For</th>
+                    <th>Not Suitable For</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Vibe Coding</strong></td>
+                    <td>Internal operational tools, dashboards, automation, reporting</td>
+                    <td>Customer-facing products, security-critical systems, high-scale applications</td>
+                </tr>
+                <tr>
+                    <td><strong>Formal Agile</strong></td>
+                    <td>Customer-facing products, revenue-generating systems, regulated applications</td>
+                    <td>Small internal tools (overkill)</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><em>Note: This approach is not intended for the Product & Technology team's customer-facing codebases, which require formal processes.</em></p>
+    </div>
+
+    <h1 class="page-break"><span class="section-number">3.</span> What Storm Scout Does</h1>
+    
+    <h3>Product Overview</h3>
+    <blockquote>
+        Storm Scout is a monitoring dashboard that consolidates NOAA weather alerts by testing center location, enabling IMT and Operations teams to quickly identify which sites are impacted by severe weather—with automatic updates every 15 minutes.
+    </blockquote>
+
+    <h3>Core Capabilities</h3>
+    <ul>
+        <li><strong>Automatic Data Ingestion:</strong> Pulls weather alerts from NOAA every 15 minutes</li>
+        <li><strong>Site Mapping:</strong> Matches alerts to 219 testing center locations using geographic codes</li>
+        <li><strong>Severity Classification:</strong> Categorizes sites as Critical (Red), Elevated (Orange), Monitoring (Yellow), or Clear (Green)</li>
+        <li><strong>Customizable Filters:</strong> 68 NOAA alert types with 5 filter presets (Operations, Executive, Safety, etc.)</li>
+        <li><strong>Map Visualization:</strong> Geographic view of all sites with color-coded status</li>
+        <li><strong>Mobile Responsive:</strong> Accessible from desktop, tablet, or phone</li>
+    </ul>
+
+    <h3>What It Replaced</h3>
+    <p>Before Storm Scout, monitoring weather impacts across 219 sites required:</p>
+    <ul>
+        <li>Manually checking multiple NOAA websites and feeds</li>
+        <li>Correlating alerts to specific testing center locations</li>
+        <li>Communicating findings through ad-hoc means (email, calls)</li>
+        <li>Re-checking periodically for updates</li>
+    </ul>
+    <p>Storm Scout automates this entire workflow, reducing alert discovery time from hours to under 15 minutes.</p>
+
+    <h1 class="page-break"><span class="section-number">4.</span> Effort Comparison: Vibe Coding vs. Formal Agile</h1>
+
+    <h3>Side-by-Side Comparison</h3>
+    <table class="comparison-table">
+        <thead>
+            <tr>
+                <th>Dimension</th>
+                <th>Vibe Coding (Actual)</th>
+                <th>Formal Agile (Estimated)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Time to Production</strong></td>
+                <td>~12 days</td>
+                <td>8–14 weeks</td>
+            </tr>
+            <tr>
+                <td><strong>Team Size</strong></td>
+                <td>1 person (non-developer)</td>
+                <td>3–5 people</td>
+            </tr>
+            <tr>
+                <td><strong>Total Effort</strong></td>
+                <td>2–3 person-weeks</td>
+                <td>22–38 person-weeks</td>
+            </tr>
+            <tr>
+                <td><strong>Estimated Cost</strong></td>
+                <td>$12K–$18K</td>
+                <td>$132K–$228K</td>
+            </tr>
+            <tr>
+                <td><strong>Documentation</strong></td>
+                <td>AI-generated docs (AGENTS.md), README</td>
+                <td>Full technical docs, architecture diagrams, runbooks</td>
+            </tr>
+            <tr>
+                <td><strong>Testing</strong></td>
+                <td>Manual testing, production observation</td>
+                <td>Unit tests, integration tests, UAT, load testing</td>
+            </tr>
+            <tr>
+                <td><strong>Security Review</strong></td>
+                <td>Self-implemented best practices</td>
+                <td>Formal security assessment</td>
+            </tr>
+            <tr>
+                <td><strong>Maintainability</strong></td>
+                <td>Creator-dependent</td>
+                <td>Team-transferable</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><em>Cost estimates based on $6,000/week blended FTE rate.</em></p>
+
+    <h3>Formal Agile Effort Breakdown</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Phase</th>
+                <th>Duration</th>
+                <th>Effort</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Discovery & Inception</td>
+                <td>1–2 weeks</td>
+                <td>3–5 person-weeks</td>
+                <td>$18K–$30K</td>
+            </tr>
+            <tr>
+                <td>Architecture & Environment</td>
+                <td>1–2 weeks</td>
+                <td>3–5 person-weeks</td>
+                <td>$18K–$30K</td>
+            </tr>
+            <tr>
+                <td>Core Feature Delivery</td>
+                <td>4–6 weeks</td>
+                <td>10–18 person-weeks</td>
+                <td>$60K–$108K</td>
+            </tr>
+            <tr>
+                <td>Hardening & UAT</td>
+                <td>2–3 weeks</td>
+                <td>4–7 person-weeks</td>
+                <td>$24K–$42K</td>
+            </tr>
+            <tr>
+                <td>Launch & Knowledge Transfer</td>
+                <td>1 week</td>
+                <td>2–3 person-weeks</td>
+                <td>$12K–$18K</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #e8f4f8;">
+                <td>Total</td>
+                <td>8–14 weeks</td>
+                <td>22–38 person-weeks</td>
+                <td>$132K–$228K</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>What the Formal Process Buys You</h3>
+    <p>The 10–15x effort multiplier is not waste—it purchases:</p>
+    <ul>
+        <li><strong>Reduced risk:</strong> Security review, testing, multiple reviewers</li>
+        <li><strong>Knowledge distribution:</strong> Multiple team members understand the system</li>
+        <li><strong>Documentation:</strong> Formal architecture docs, runbooks, training materials</li>
+        <li><strong>Long-term maintainability:</strong> Code standards, test coverage, CI/CD</li>
+    </ul>
+    <p>For customer-facing products, this investment is justified. For internal operational tools with limited scope, it often is not.</p>
+
+    <h1 class="page-break"><span class="section-number">5. </span> What a Formal Project Would Have Required</h1>
+
+    <h3>Team Composition</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Allocation</th>
+                <th>Responsibilities</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Product Owner</td>
+                <td>0.5 FTE</td>
+                <td>Define scope, prioritize backlog, represent stakeholders</td>
+            </tr>
+            <tr>
+                <td>Scrum Master</td>
+                <td>0.25 FTE</td>
+                <td>Facilitate ceremonies, remove blockers, track progress</td>
+            </tr>
+            <tr>
+                <td>Full-Stack Developer</td>
+                <td>1.0 FTE</td>
+                <td>Build backend and API, integrate with NOAA</td>
+            </tr>
+            <tr>
+                <td>Front-End Developer</td>
+                <td>0.5 FTE</td>
+                <td>Build responsive dashboard UI</td>
+            </tr>
+            <tr>
+                <td>DevOps Engineer</td>
+                <td>0.25 FTE</td>
+                <td>Set up hosting, CI/CD, monitoring</td>
+            </tr>
+            <tr>
+                <td>QA Engineer</td>
+                <td>0.5 FTE</td>
+                <td>Testing, validation, quality assurance</td>
+            </tr>
+            <tr>
+                <td>Security Partner</td>
+                <td>As needed</td>
+                <td>Architecture review, security assessment</td>
+            </tr>
+            <tr>
+                <td>Domain SME</td>
+                <td>As needed</td>
+                <td>Validate requirements, participate in UAT</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Major Work Streams (Epics)</h3>
+    <div class="epic-summary">
+        <div class="epic-item">
+            <strong>1. Alert Ingestion</strong><br>
+            Automated NOAA data collection, parsing, and deduplication
+        </div>
+        <div class="epic-item">
+            <strong>2. Alert Display</strong><br>
+            Dashboard UI with severity grouping and filtering
+        </div>
+        <div class="epic-item">
+            <strong>3. Site Management</strong><br>
+            Location mapping and operational status tracking
+        </div>
+        <div class="epic-item">
+            <strong>4. Map Visualization</strong><br>
+            Geographic view with color-coded site markers
+        </div>
+        <div class="epic-item">
+            <strong>5. Reliability</strong><br>
+            Health monitoring, alerting, and error handling
+        </div>
+        <div class="epic-item">
+            <strong>6. Security</strong><br>
+            Input validation, security headers, access controls
+        </div>
+        <div class="epic-item">
+            <strong>7. Documentation</strong><br>
+            Technical docs, runbooks, training materials
+        </div>
+    </div>
+
+    <h1 class="page-break"><span class="section-number">6.</span> Trade-offs and Considerations</h1>
+
+    <h3>What Vibe Coding Trades Away</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Trade-off</th>
+                <th>Impact</th>
+                <th>Mitigation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Knowledge concentration</strong></td>
+                <td>Single person understands the system</td>
+                <td>AI-generated documentation (AGENTS.md) provides comprehensive context</td>
+            </tr>
+            <tr>
+                <td><strong>Limited testing</strong></td>
+                <td>No automated test suite</td>
+                <td>Acceptable for internal tools with low failure cost</td>
+            </tr>
+            <tr>
+                <td><strong>No formal security review</strong></td>
+                <td>Potential vulnerabilities</td>
+                <td>Best practices implemented; formal review can be added if needed</td>
+            </tr>
+            <tr>
+                <td><strong>Technical debt</strong></td>
+                <td>May require refactoring to extend</td>
+                <td>Code follows reasonable patterns; documented roadmap exists</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>When These Trade-offs Are Acceptable</h3>
+    <ul>
+        <li>Internal operational tools (not customer-facing)</li>
+        <li>Limited blast radius if something breaks</li>
+        <li>Business value is real but modest</li>
+        <li>Tool can be rebuilt or replaced if needed</li>
+        <li>No sensitive data or regulatory requirements</li>
+    </ul>
+
+    <h3>When They Are NOT Acceptable</h3>
+    <ul>
+        <li>Customer-facing products</li>
+        <li>Revenue-generating systems</li>
+        <li>Regulated or compliance-critical applications</li>
+        <li>High-scale or high-availability requirements</li>
+        <li>Systems handling sensitive data</li>
+    </ul>
+
+    <h1 class="page-break"><span class="section-number">7.</span> Assumptions and Dependencies</h1>
+
+    <h3>Key Assumptions</h3>
+    <ol>
+        <li>NOAA Weather API remains publicly accessible (no authentication required)</li>
+        <li>Hosting platform is available and appropriately configured</li>
+        <li>Testing center location data is provided and accurate</li>
+        <li>Users access the tool via web browser (no native mobile requirement)</li>
+        <li>Tool is used for situational awareness, not as system of record</li>
+    </ol>
+
+    <h3>External Dependencies</h3>
+    <ul>
+        <li><strong>NOAA Weather API:</strong> Federal government data source; generally reliable but occasionally experiences outages</li>
+        <li><strong>Hosting Provider:</strong> Shared hosting environment with standard SLA</li>
+    </ul>
+
+    <h3>Ongoing Considerations</h3>
+    <ul>
+        <li><strong>Data freshness:</strong> System updates every 15 minutes; users should understand this cadence</li>
+        <li><strong>Creator availability:</strong> Current knowledge is concentrated in one person; documentation mitigates but doesn't eliminate this risk</li>
+    </ul>
+
+    <h1 class="page-break"><span class="section-number">8.</span> Recommendation</h1>
+
+    <div class="recommendation-box">
+        <h4>Recommendation: Continue As-Is</h4>
+        <p>Storm Scout should continue operating in its current form as a <strong>demonstration project</strong>. The tool is:</p>
+        <ul>
+            <li>✅ Live and operational (monitoring 219 sites)</li>
+            <li>✅ Delivering value (automated weather monitoring)</li>
+            <li>✅ Appropriately scoped (internal operational tool)</li>
+            <li>✅ Well-documented (AGENTS.md, README, ROADMAP)</li>
+        </ul>
+        <p><strong>No additional investment is recommended at this time.</strong> The purpose of this project is to demonstrate the art of the possible—illustrating that small custom applications can create measurable internal operational efficiencies through AI-assisted development.</p>
+    </div>
+
+    <h3>Future Considerations</h3>
+    <p>If Storm Scout proves valuable and the organization wants to extend or formalize it, potential next steps include:</p>
+    <ul>
+        <li><strong>Hardening phase (8–12 person-weeks):</strong> Add automated tests, formal security review, and operational runbooks</li>
+        <li><strong>Knowledge transfer:</strong> Onboard a second contributor to reduce single-point-of-failure risk</li>
+        <li><strong>Feature expansion:</strong> Email notifications, historical analytics, additional data sources</li>
+    </ul>
+    <p>However, these investments should only be made if the tool's value justifies them—which is a decision for a later date based on actual usage and feedback.</p>
+
+    <h1><span class="section-number">9.</span> Talking Points for Leadership</h1>
+
+    <div class="key-points">
+        <h4>Key Messages</h4>
+        <ol>
+            <li><strong>This is a demonstration of opportunity, not a proposal.</strong><br>
+            Storm Scout illustrates what's possible with AI-assisted development for internal tools. The goal is to show the art of the possible, not to change how we build customer-facing products.</li>
+            
+            <li><strong>The economics have changed.</strong><br>
+            Tools that were previously "not worth building" can now be created cost-effectively. Storm Scout delivered in ~$15K equivalent effort what would have cost $130K–$230K through traditional means.</li>
+            
+            <li><strong>This approach has a specific use case.</strong><br>
+            Vibe coding is appropriate for internal operational tools with modest value and limited risk. It is NOT appropriate for customer-facing products, which should continue using formal development processes.</li>
+            
+            <li><strong>The tool is live and working.</strong><br>
+            Storm Scout is not a mockup—it's a production system monitoring 219 testing centers with real NOAA data updated every 15 minutes.</li>
+            
+            <li><strong>The trade-offs are understood and acceptable.</strong><br>
+            Yes, there are trade-offs (knowledge concentration, limited testing). These are acceptable for an internal tool of this scope and value.</li>
+        </ol>
+    </div>
+
+    <div class="report-footer">
+        <p><strong>Report Prepared By:</strong> Technology Services</p>
+        <p><strong>Classification:</strong> Internal Use Only</p>
+        <p><strong>Production URL:</strong> <a href="https://teammurphy.rocks">https://teammurphy.rocks</a></p>
+        <p><strong>Version:</strong> 2.0 | February 15, 2026</p>
+    </div>
+
+</body>
+</html>
