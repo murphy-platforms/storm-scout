@@ -3,8 +3,46 @@
  * Normalizes weather data from various sources into our schema
  */
 
+const { NOAA_ALERT_TYPES } = require('../../config/noaa-alert-types');
+
 /**
- * Map NOAA severity to our severity levels
+ * Get severity based on internal alert type category (IMT operational alignment)
+ * Maps our curated categories to severity levels:
+ * - CRITICAL → Extreme (🔴 RED)
+ * - HIGH → Severe (🟠 ORANGE)  
+ * - MODERATE → Moderate (🟡 YELLOW)
+ * - LOW/INFO → Minor (🟢 GREEN)
+ * 
+ * @param {string} alertType - The alert type name (e.g., "Winter Storm Warning")
+ * @returns {string} Severity level based on internal category
+ */
+function getSeverityFromAlertType(alertType) {
+  if (!alertType) return 'Minor';
+  
+  // Check each category for the alert type
+  if (NOAA_ALERT_TYPES.CRITICAL && NOAA_ALERT_TYPES.CRITICAL.includes(alertType)) {
+    return 'Extreme';
+  }
+  if (NOAA_ALERT_TYPES.HIGH && NOAA_ALERT_TYPES.HIGH.includes(alertType)) {
+    return 'Severe';
+  }
+  if (NOAA_ALERT_TYPES.MODERATE && NOAA_ALERT_TYPES.MODERATE.includes(alertType)) {
+    return 'Moderate';
+  }
+  if (NOAA_ALERT_TYPES.LOW && NOAA_ALERT_TYPES.LOW.includes(alertType)) {
+    return 'Minor';
+  }
+  if (NOAA_ALERT_TYPES.INFO && NOAA_ALERT_TYPES.INFO.includes(alertType)) {
+    return 'Minor';
+  }
+  
+  // Unknown alert type - log and default to Minor
+  console.warn(`Unknown alert type "${alertType}" not in categories, defaulting to Minor`);
+  return 'Minor';
+}
+
+/**
+ * Map NOAA severity to our severity levels (legacy - kept for reference)
  * @param {string} noaaSeverity - NOAA severity (Extreme, Severe, Moderate, Minor, Unknown)
  * @returns {string} Normalized severity (defaults to 'Minor' for unknown/invalid values)
  */
@@ -123,10 +161,13 @@ function extractVTECAction(vtecCode) {
 function normalizeNOAAAlert(noaaAlert) {
   const properties = noaaAlert.properties;
   const vtecCode = extractVTEC(noaaAlert);
+  const alertType = properties.event || 'Weather Advisory';
   
   return {
-    advisory_type: properties.event || 'Weather Advisory',
-    severity: normalizeSeverity(properties.severity),
+    advisory_type: alertType,
+    // Use internal category-based severity (IMT operational alignment)
+    // instead of NOAA's raw severity field
+    severity: getSeverityFromAlertType(alertType),
     status: properties.status === 'Actual' ? 'active' : 'expired',
     source: `NOAA/${properties.senderName || 'NWS'}`,
     headline: properties.headline || properties.event,
@@ -231,6 +272,7 @@ module.exports = {
   calculateWeatherImpact,
   calculateHighestWeatherImpact,
   formatStatusReason,
+  getSeverityFromAlertType,
   // Legacy export for backward compatibility
   calculateOperationalStatus: calculateWeatherImpact
 };
