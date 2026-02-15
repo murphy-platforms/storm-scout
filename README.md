@@ -39,6 +39,9 @@ Currently monitoring 219 testing centers with real-time NOAA weather data update
 - **In-Memory Caching** - node-cache for ~100x faster API responses on cache hits
 - **API Rate Limiting** - 100 requests/15 min general, 20/15 min for write operations
 - **Input Validation** - All API endpoints validated and sanitized with express-validator
+- **Security Headers** - helmet.js with CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+- **XSS Prevention** - Secure `html` tagged template for safe dynamic HTML rendering
+- **CDN Integrity** - Subresource Integrity (SRI) hashes on all external resources
 
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
@@ -191,6 +194,22 @@ rsync -avz -e "ssh -p 21098" frontend/ mwqtiakilx@teammurphy.rocks:~/public_html
 ```
 
 See `DEPLOY.md` for detailed deployment instructions.
+
+## Security
+
+Storm Scout implements multiple security controls:
+
+| Control | Implementation | Documentation |
+|---------|---------------|---------------|
+| XSS Prevention | `html` tagged template in `js/utils.js` | `docs/security/SECURE-TEMPLATES.md` |
+| Security Headers | helmet.js in `app.js` | CSP, HSTS, X-Frame-Options |
+| CDN Integrity | SRI hashes on Bootstrap resources | `docs/security/SRI.md` |
+| Input Validation | express-validator on all endpoints | `backend/src/validators/` |
+| Rate Limiting | express-rate-limit (100 req/15 min) | `backend/src/middleware/rateLimiter.js` |
+
+**Reporting vulnerabilities:** See `.github/SECURITY.md` for our security policy.
+
+**Security documentation:** See `docs/security/` for detailed guides and vulnerability tracking.
 
 ## License
 

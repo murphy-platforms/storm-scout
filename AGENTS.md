@@ -4,7 +4,7 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://teammurphy.rocks  
 **Status**: Phase 1 Complete, Production Deployed  
-**Last Updated**: 2026-02-14
+**Last Updated**: 2026-02-15
 
 ---
 
@@ -597,6 +597,10 @@ Co-Authored-By: Warp <agent@warp.dev>
 - `DEPLOY.md` - Deployment instructions
 - `backend/README.md` - Backend API documentation
 - `CHANGELOG.md` - Version history
+- `docs/security/README.md` - Security vulnerability tracking
+- `docs/security/SECURE-TEMPLATES.md` - XSS prevention guide
+- `docs/security/SRI.md` - CDN integrity hashes
+- `docs/security/TRUST-PROXY.md` - Proxy configuration
 
 ### Useful Commands
 ```bash
@@ -616,6 +620,146 @@ GROUP BY s.id ORDER BY alert_count DESC LIMIT 10;
 # Log monitoring
 ssh -p 21098 mwqtiakilx@teammurphy.rocks "tail -f ~/logs/storm-scout.log"
 ```
+
+---
+
+## Security Best Practices
+
+Storm Scout follows these security patterns established during the February 2026 security remediation. **All new code should adhere to these practices.**
+
+### 1. XSS Prevention (Frontend)
+
+**Never use raw `innerHTML` with dynamic data.** Use the secure `html` tagged template function from `js/utils.js`:
+
+```javascript
+// ❌ WRONG - XSS vulnerable
+container.innerHTML = `<div>${userData}</div>`;
+
+// ✅ CORRECT - Auto-escaped
+container.innerHTML = html`<div>${userData}</div>`;
+
+// ✅ For trusted HTML (badges, icons), use raw()
+container.innerHTML = html`<div>${raw(getSeverityBadge(severity))}</div>`;
+```
+
+**Key files:**
+- `frontend/js/utils.js` - Contains `escapeHtml()`, `raw()`, and `html` tagged template
+- `docs/security/SECURE-TEMPLATES.md` - Full documentation
+
+### 2. Security Headers (Backend)
+
+**helmet.js is configured in `app.js`** with:
+- Content-Security-Policy (CSP) - Restricts script/style sources
+- Strict-Transport-Security (HSTS) - Forces HTTPS
+- X-Frame-Options - Prevents clickjacking
+- X-Content-Type-Options - Prevents MIME sniffing
+
+**When adding new external resources:**
+1. Add the domain to the appropriate CSP directive in `app.js`
+2. Test locally before deploying
+3. Check browser console for CSP violations
+
+```javascript
+// Example: Adding a new CDN to CSP
+scriptSrc: [
+  "'self'",
+  "cdn.jsdelivr.net",
+  "new-cdn.example.com"  // Add new sources here
+]
+```
+
+### 3. Subresource Integrity (Frontend)
+
+**All CDN resources must include SRI hashes.** When updating Bootstrap or other CDN libraries:
+
+```bash
+# Generate SRI hash for any URL
+curl -s <URL> | openssl dgst -sha384 -binary | openssl base64 -A
+```
+
+```html
+<!-- Always include integrity and crossorigin attributes -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+```
+
+**Key files:**
+- `docs/security/SRI.md` - Current hashes and update procedures
+
+### 4. Trust Proxy Configuration
+
+**Storm Scout runs behind LiteSpeed proxy.** The `trust proxy` setting in `app.js` ensures:
+- Rate limiter sees real client IPs (not proxy IP)
+- Logging shows actual user IPs
+- IP-based security controls work correctly
+
+```javascript
+// Already configured - do not remove
+app.set('trust proxy', 1);
+```
+
+**Key files:**
+- `docs/security/TRUST-PROXY.md` - Configuration details
+
+### 5. Input Validation (Backend)
+
+**All API endpoints use express-validator.** When adding new routes:
+
+```javascript
+// In routes/example.js
+const { param, query } = require('express-validator');
+const validate = require('../middleware/validate');
+
+router.get('/:id',
+  param('id').isInt({ min: 1 }),
+  validate,  // Always include validation middleware
+  async (req, res) => { ... }
+);
+```
+
+**Key files:**
+- `backend/src/validators/` - Validation rules by route
+- `backend/src/middleware/validate.js` - Error handler
+
+### 6. Rate Limiting
+
+**API endpoints are rate-limited:**
+- General: 100 requests / 15 minutes
+- Write operations: 20 requests / 15 minutes
+
+Rate limits are enforced in `middleware/rateLimiter.js`. Adjust thresholds there if needed.
+
+### 7. Dependency Security
+
+**Regularly check for vulnerabilities:**
+
+```bash
+cd backend && npm audit
+```
+
+**When vulnerabilities are found:**
+1. Check if it affects Storm Scout's usage
+2. Update to patched version if available
+3. Document in commit message with CVE reference
+
+### Security Documentation
+
+All security documentation is in `docs/security/`:
+- `README.md` - Vulnerability tracking table
+- `SECURE-TEMPLATES.md` - XSS prevention guide
+- `SRI.md` - Subresource Integrity hashes
+- `TRUST-PROXY.md` - Proxy configuration
+- `assessments/` - Point-in-time security assessments
+
+### Security Checklist for New Features
+
+- [ ] Dynamic HTML uses `html` tagged template (not raw `innerHTML`)
+- [ ] New API endpoints have input validation
+- [ ] External resources include SRI hashes
+- [ ] New CDN domains added to CSP in `app.js`
+- [ ] No secrets in code (use environment variables)
+- [ ] Dependencies checked with `npm audit`
 
 ---
 
