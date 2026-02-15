@@ -125,13 +125,8 @@ strom-scout/
     ├── notices.html     # Government notices
     ├── filters.html     # Filter configuration
     ├── sources.html     # Data sources
-    ├── beta/            # Beta UI (modern design)
-    │   ├── index.html   # Operations Dashboard
-    │   ├── advisories.html
-    │   ├── sites.html
-    │   ├── notices.html # Government notices
-    │   ├── filters.html
-    │   └── css/style.css
+    ├── archive/         # Archived features
+    │   └── beta-2026-02-15/  # Beta UI (removed from production)
     ├── css/style.css
     └── js/
         ├── api.js           # API client (shared by Classic & Beta)
@@ -211,13 +206,22 @@ NOAA uses VTEC codes to uniquely identify weather events. Example:
 Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
 ### Filter System
-- **Site Default (CUSTOM)**: 18 of 80 alert types enabled (most relevant for operations)
+- **Site Default (CUSTOM)**: 11 of 76 alert types enabled (most relevant for operations)
 - **Operations View**: High severity only
 - **Executive Summary**: Critical + High severity
 - **Safety Focus**: All safety-related alerts
-- **Full View**: All 80+ alert types
+- **Full View**: All 76+ alert types
 
 Filters are applied **client-side** in the frontend. The API returns all data; frontend filters based on localStorage preferences.
+
+### IMT Severity Alignment
+Severity is determined by internal alert type categories, NOT NOAA's raw severity field:
+- **CRITICAL** category → Extreme (🔴 RED) - Tornado Warning, Blizzard Warning, etc.
+- **HIGH** category → Severe (🟠 ORANGE) - Winter Storm Warning, Flood Warning, etc.
+- **MODERATE** category → Moderate (🟡 YELLOW) - Winter Storm Watch, Wind Advisory, etc.
+- **LOW/INFO** category → Minor (🟢 GREEN) - Beach Hazards, Rip Current, etc.
+
+This aligns with IMT operational practices. Example: NOAA classifies Winter Storm Watch as "Severe", but Storm Scout displays it as Moderate/Yellow because it's in the MODERATE category.
 
 ---
 
@@ -308,10 +312,11 @@ ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com "touch ~/storm-scout/
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
 - ✅ Composite index for status+severity queries
-- ✅ Beta UI with all pages including notices.html
 - ✅ In-memory caching with node-cache (status/overview, sites, advisories/active)
 - ✅ API rate limiting with express-rate-limit (100 req/15 min, 20 writes/15 min)
 - ✅ Input validation with express-validator (all endpoints)
+- ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
+- ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities

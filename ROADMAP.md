@@ -2,10 +2,10 @@
 
 This document outlines planned improvements, features, and technical debt for Storm Scout.
 
-## Current Version: 1.4.1
+## Current Version: 1.6.0
 
 **Production URL**: https://your-domain.example.com  
-**Last Updated**: February 14, 2026
+**Last Updated**: February 15, 2026
 
 ---
 
