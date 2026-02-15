@@ -20,7 +20,7 @@ Point-in-time security assessments and vulnerability reports.
 | Issue | CVE | Severity | Package | Status |
 |-------|-----|----------|---------|--------|
 | [#1](https://github.com/Prometric-Site-Engineering/storm-scout/issues/1) | N/A | Critical | Backend Auth | ✅ Closed |
-| [#2](https://github.com/Prometric-Site-Engineering/storm-scout/issues/2) | N/A | High | Frontend XSS | Open |
+| [#2](https://github.com/Prometric-Site-Engineering/storm-scout/issues/2) | N/A | High | Frontend XSS | 🔄 Phase 1 Complete |
 | [#3](https://github.com/Prometric-Site-Engineering/storm-scout/issues/3) | N/A | Medium | Security Headers | Open |
 | [#4](https://github.com/Prometric-Site-Engineering/storm-scout/issues/4) | N/A | Medium | CDN SRI | Open |
 | [#5](https://github.com/Prometric-Site-Engineering/storm-scout/issues/5) | N/A | Medium | Rate Limiting | Open |
