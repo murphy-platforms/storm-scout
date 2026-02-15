@@ -317,10 +317,10 @@
         }
         
         // Initialize filters then load sites
-        AlertFilters.init().then(() => {
-            loadSites();
+        AlertFilters.init().then(async () => {
+            await loadSites();
             // Apply URL parameters after sites are loaded
-            setTimeout(() => applyURLParameters(), 100);
+            applyURLParameters();
         });
     </script>
 </body>
