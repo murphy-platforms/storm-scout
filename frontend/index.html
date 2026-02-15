@@ -127,14 +127,17 @@
             </div>
         </div>
         
-        <!-- CRITICAL SITES -->
-        <div id="criticalSitesSection"></div>
+        <!-- EXTREME SITES (RED) -->
+        <div id="extremeSitesSection"></div>
         
-        <!-- ELEVATED SITES -->
-        <div id="elevatedSitesSection"></div>
+        <!-- SEVERE SITES (ORANGE) -->
+        <div id="severeSitesSection"></div>
         
-        <!-- MONITORING SITES -->
-        <div id="monitoringSitesSection"></div>
+        <!-- MODERATE SITES (YELLOW) -->
+        <div id="moderateSitesSection"></div>
+        
+        <!-- MINOR SITES (GREEN) -->
+        <div id="minorSitesSection"></div>
 
         <!-- No Sites Message (shown when no sites need attention) -->
         <div id="noSitesMessage" class="row mb-4" style="display: none;">
@@ -510,10 +513,12 @@
         }
         
         // Render grouped site summaries
+        // Colors now align with Weather Impact Assessment
         function renderSiteGroups(groupedSites) {
-            renderSiteGroup('criticalSitesSection', 'critical', '🔴 IMMEDIATE ATTENTION', groupedSites.critical, false);
-            renderSiteGroup('elevatedSitesSection', 'elevated', '🟠 ELEVATED RISK', groupedSites.elevated, true);
-            renderSiteGroup('monitoringSitesSection', 'monitoring', '🟡 MONITORING', groupedSites.monitoring, true);
+            renderSiteGroup('extremeSitesSection', 'extreme', '🔴 EXTREME - High Impact', groupedSites.extreme, false);
+            renderSiteGroup('severeSitesSection', 'severe', '🟠 SEVERE - Severe Impact', groupedSites.severe, false);
+            renderSiteGroup('moderateSitesSection', 'moderate', '🟡 MODERATE - Moderate Impact', groupedSites.moderate, true);
+            renderSiteGroup('minorSitesSection', 'minor', '🟢 MINOR - Low Impact', groupedSites.minor, true);
         }
         
         function renderSiteGroup(containerId, cssClass, title, sites, collapsed) {
