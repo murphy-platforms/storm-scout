@@ -127,11 +127,14 @@ const DEFAULT_FILTERS = {
       'Excessive Heat Warning', 'Tornado Watch', 'Flood Warning',
       'Heavy Freezing Spray Warning',
       
-      // MODERATE exclusions (most OFF, 3 enabled)
+      // MODERATE exclusions (most OFF, few enabled)
       'Flood Watch', 'Wind Advisory', 'Heat Advisory', 'Dense Fog Advisory',
       'Freeze Warning', 'Frost Advisory', 'Blowing Dust Advisory',
       'Coastal Flood Warning', 'Lakeshore Flood Warning',
       'Winter Weather Advisory', 'High Surf Warning',
+      'Lake Effect Snow Warning', 'Lake Effect Snow Watch',
+      'High Wind Watch', 'Coastal Flood Watch', 'Lakeshore Flood Watch',
+      'Excessive Heat Watch', 'Hard Freeze Warning', 'Freeze Watch',
       
       // All LOW excluded (entire category OFF)
       'Wind Chill Advisory', 'Wind Chill Watch', 'Small Craft Advisory',
