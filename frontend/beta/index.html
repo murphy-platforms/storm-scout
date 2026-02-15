@@ -117,10 +117,10 @@
                             </svg>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="StormScoutExport.copyShareableLink()" aria-label="Copy shareable link" title="Copy shareable link">
+                    <button class="btn btn-secondary" id="shareBtn" aria-label="Copy shareable link" title="Copy shareable link">
                         <span aria-hidden="true">🔗</span>
                     </button>
-                    <button class="btn btn-secondary" onclick="StormScoutExport.printToPDF()" aria-label="Print / Save PDF" title="Print / Save PDF">
+                    <button class="btn btn-secondary" id="printBtn" aria-label="Print / Save PDF" title="Print / Save PDF">
                         <span aria-hidden="true">🖨️</span>
                     </button>
                     <button class="btn btn-primary" id="refreshBtn" aria-label="Refresh data">
@@ -897,6 +897,10 @@
                 indicator.style.display = 'none';
             }
         }
+        
+        // Export buttons
+        document.getElementById('shareBtn').addEventListener('click', () => StormScoutExport.copyShareableLink());
+        document.getElementById('printBtn').addEventListener('click', () => StormScoutExport.printToPDF());
         
         // Initialize
         AlertFilters.init().then(() => {

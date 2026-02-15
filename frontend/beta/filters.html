@@ -377,33 +377,33 @@
                 <h2>Quick Presets</h2>
                 <p>Apply a preset filter configuration or customize individual alert types below</p>
                 <div class="preset-buttons">
-                    <button class="preset-btn" onclick="applyPreset('CUSTOM')">
+                    <button class="preset-btn" data-preset="CUSTOM">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="3"/>
                             <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4"/>
                         </svg>
                         Site Default
                     </button>
-                    <button class="preset-btn" onclick="applyPreset('OPERATIONS')">
+                    <button class="preset-btn" data-preset="OPERATIONS">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
                             <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
                         </svg>
                         Operations View
                     </button>
-                    <button class="preset-btn" onclick="applyPreset('EXECUTIVE')">
+                    <button class="preset-btn" data-preset="EXECUTIVE">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
                         Executive Summary
                     </button>
-                    <button class="preset-btn" onclick="applyPreset('SAFETY')">
+                    <button class="preset-btn" data-preset="SAFETY">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
                         Safety Focus
                     </button>
-                    <button class="preset-btn" onclick="applyPreset('FULL')">
+                    <button class="preset-btn" data-preset="FULL">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="8" y1="6" x2="21" y2="6"/>
                             <line x1="8" y1="12" x2="21" y2="12"/>
@@ -414,14 +414,14 @@
                         </svg>
                         Full View
                     </button>
-                    <button class="preset-btn" onclick="resetToDefaults()">
+                    <button class="preset-btn" id="resetDefaultsBtn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="1 4 1 10 7 10"/>
                             <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
                         </svg>
                         Reset Defaults
                     </button>
-                    <button class="preset-btn save" onclick="savePreferences()">
+                    <button class="preset-btn save" id="savePrefsBtn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
@@ -503,6 +503,27 @@
             loadData();
             document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
                 document.getElementById('sidebar').classList.toggle('open');
+            });
+            document.getElementById('resetDefaultsBtn')?.addEventListener('click', resetToDefaults);
+            document.getElementById('savePrefsBtn')?.addEventListener('click', savePreferences);
+            
+            // Event delegation for presets, level toggles, and alert type cards
+            document.addEventListener('click', (e) => {
+                const presetBtn = e.target.closest('[data-preset]');
+                if (presetBtn) applyPreset(presetBtn.dataset.preset);
+                
+                const levelBtn = e.target.closest('[data-toggle-level]');
+                if (levelBtn) toggleLevel(levelBtn.dataset.toggleLevel, levelBtn.dataset.enable === 'true');
+                
+                const alertCard = e.target.closest('.alert-type-card[data-alert-type]');
+                if (alertCard && !e.target.closest('.toggle-switch')) toggleAlertType(alertCard.dataset.alertType);
+            });
+            
+            document.addEventListener('change', (e) => {
+                if (e.target.closest('.toggle-switch input')) {
+                    const card = e.target.closest('.alert-type-card[data-alert-type]');
+                    if (card) toggleAlertType(card.dataset.alertType);
+                }
             });
         });
 
@@ -607,8 +628,8 @@
                             <span class="impact-badge ${raw(colorClass)}">${levelName}</span>
                             <h3>${level} Impact Alerts</h3>
                             <div class="section-actions">
-                                <button class="section-btn" onclick="toggleLevel('${safeLevel}', true)">Enable All</button>
-                                <button class="section-btn" onclick="toggleLevel('${safeLevel}', false)">Disable All</button>
+                                <button class="section-btn" data-toggle-level="${safeLevel}" data-enable="true">Enable All</button>
+                                <button class="section-btn" data-toggle-level="${safeLevel}" data-enable="false">Disable All</button>
                             </div>
                         </div>
                         <div class="alert-types-grid">
@@ -620,10 +641,10 @@
                     const safeType = escapeHtml(type);
 
                     htmlContent += html`
-                        <div class="alert-type-card ${raw(isEnabled ? 'enabled' : 'disabled')}" data-alert-type="${type}" onclick="toggleAlertType('${safeType}')">
+                        <div class="alert-type-card ${raw(isEnabled ? 'enabled' : 'disabled')}" data-alert-type="${type}">
                             <div class="alert-type-header">
-                                <label class="toggle-switch" onclick="event.stopPropagation()">
-                                    <input type="checkbox" ${raw(isEnabled ? 'checked' : '')} onchange="toggleAlertType('${safeType}')">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${raw(isEnabled ? 'checked' : '')}>
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span class="alert-type-name">${type}</span>

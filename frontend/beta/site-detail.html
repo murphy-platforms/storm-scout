@@ -613,7 +613,7 @@
                     <span class="live-dot"></span>
                     Live Updates
                 </div>
-                <button class="btn btn-secondary" onclick="loadSiteDetail()">
+                <button class="btn btn-secondary" id="refreshBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="23 4 23 10 17 10"/>
                         <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
@@ -771,6 +771,7 @@
             document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
                 document.getElementById('sidebar').classList.toggle('open');
             });
+            document.getElementById('refreshBtn')?.addEventListener('click', loadSiteDetail);
         });
 
         async function loadSiteDetail() {

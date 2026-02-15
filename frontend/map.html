@@ -164,10 +164,10 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <button class="btn btn-sm btn-primary" onclick="fitAllMarkers()">
+                            <button class="btn btn-sm btn-primary" id="fitAllBtn">
                                 <i class="bi bi-arrows-fullscreen"></i> Fit All Sites
                             </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="resetMap()">
+                            <button class="btn btn-sm btn-outline-secondary" id="resetMapBtn">
                                 <i class="bi bi-arrow-counterclockwise"></i> Reset
                             </button>
                         </div>
@@ -210,7 +210,7 @@
         <!-- Summary Stats -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card text-center map-stat-card" onclick="toggleFilter('Extreme')" title="Click to toggle Extreme filter">
+                <div class="card text-center map-stat-card" id="toggleExtreme" data-severity="Extreme" title="Click to toggle Extreme filter">
                     <div class="card-body">
                         <h5 class="text-danger" id="extremeCount">0</h5>
                         <small class="text-muted">Extreme Sites</small>
@@ -218,7 +218,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center map-stat-card" onclick="toggleFilter('Severe')" title="Click to toggle Severe filter">
+                <div class="card text-center map-stat-card" id="toggleSevere" data-severity="Severe" title="Click to toggle Severe filter">
                     <div class="card-body">
                         <h5 class="text-warning" id="severeCount">0</h5>
                         <small class="text-muted">Severe Sites</small>
@@ -226,7 +226,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center map-stat-card" onclick="toggleFilter('Moderate')" title="Click to toggle Moderate filter">
+                <div class="card text-center map-stat-card" id="toggleModerate" data-severity="Moderate" title="Click to toggle Moderate filter">
                     <div class="card-body">
                         <h5 class="text-secondary" id="moderateCount">0</h5>
                         <small class="text-muted">Moderate Sites</small>
@@ -449,16 +449,14 @@
             const filters = ['Extreme', 'Severe', 'Moderate'];
             filters.forEach(severity => {
                 const checkbox = document.getElementById(`filter${severity}`);
-                const cards = document.querySelectorAll('.map-stat-card');
-                cards.forEach(card => {
-                    if (card.getAttribute('onclick')?.includes(severity)) {
-                        if (checkbox.checked) {
-                            card.classList.remove('filter-disabled');
-                        } else {
-                            card.classList.add('filter-disabled');
-                        }
+                const card = document.querySelector(`.map-stat-card[data-severity="${severity}"]`);
+                if (card) {
+                    if (checkbox.checked) {
+                        card.classList.remove('filter-disabled');
+                    } else {
+                        card.classList.add('filter-disabled');
                     }
-                });
+                }
             });
         }
         
@@ -466,6 +464,11 @@
         document.getElementById('filterExtreme').addEventListener('change', applyFilters);
         document.getElementById('filterSevere').addEventListener('change', applyFilters);
         document.getElementById('filterModerate').addEventListener('change', applyFilters);
+        document.getElementById('fitAllBtn').addEventListener('click', fitAllMarkers);
+        document.getElementById('resetMapBtn').addEventListener('click', resetMap);
+        document.getElementById('toggleExtreme').addEventListener('click', () => toggleFilter('Extreme'));
+        document.getElementById('toggleSevere').addEventListener('click', () => toggleFilter('Severe'));
+        document.getElementById('toggleModerate').addEventListener('click', () => toggleFilter('Moderate'));
         
         map?.on('moveend', updateVisibleCount);
         

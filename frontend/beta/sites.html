@@ -404,7 +404,7 @@
                     <span class="live-dot"></span>
                     Live Updates
                 </div>
-                <button class="btn btn-secondary" onclick="loadData()">
+                <button class="btn btn-secondary" id="refreshBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="23 4 23 10 17 10"/>
                         <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
@@ -468,7 +468,7 @@
                         <option value="low">Low</option>
                     </select>
                     <div class="view-toggle">
-                        <button class="active" id="grid-view-btn" onclick="setView('grid')">
+                        <button class="active" id="grid-view-btn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="7" height="7"/>
                                 <rect x="14" y="3" width="7" height="7"/>
@@ -477,7 +477,7 @@
                             </svg>
                             Grid
                         </button>
-                        <button id="list-view-btn" onclick="setView('list')">
+                        <button id="list-view-btn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="8" y1="6" x2="21" y2="6"/>
                                 <line x1="8" y1="12" x2="21" y2="12"/>
@@ -561,10 +561,21 @@
             document.getElementById('state-filter').addEventListener('change', filterSites);
             document.getElementById('impact-filter').addEventListener('change', filterSites);
             document.getElementById('severity-filter').addEventListener('change', filterSites);
+            document.getElementById('refreshBtn')?.addEventListener('click', loadData);
+            document.getElementById('grid-view-btn')?.addEventListener('click', () => setView('grid'));
+            document.getElementById('list-view-btn')?.addEventListener('click', () => setView('list'));
 
             // Mobile menu
             document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
                 document.getElementById('sidebar').classList.toggle('open');
+            });
+            
+            // Event delegation for site cards and rows
+            document.addEventListener('click', (e) => {
+                const card = e.target.closest('.site-card[data-site-id]');
+                const row = e.target.closest('tr[data-site-id]');
+                if (card) goToSiteDetail(card.dataset.siteId);
+                if (row) goToSiteDetail(row.dataset.siteId);
             });
         }
 
@@ -786,7 +797,7 @@
             const advisoryBySeverity = getAdvisoryCountsBySeverity(site.advisories);
 
             return html`
-                <div class="site-card ${raw(severity)}" onclick="goToSiteDetail('${site.site_id}')">
+                <div class="site-card ${raw(severity)}" data-site-id="${site.site_id}">
                     <div class="site-card-header">
                         <div class="site-info">
                             <h3>${site.name || 'Unknown Site'}</h3>
@@ -835,7 +846,7 @@
             const advisoryBySeverity = getAdvisoryCountsBySeverity(site.advisories);
 
             return html`
-                <tr onclick="goToSiteDetail('${site.site_id}')">
+                <tr data-site-id="${site.site_id}">
                     <td>
                         <div class="site-name-cell">
                             <div class="severity-indicator ${raw(severity)}"></div>
