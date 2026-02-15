@@ -54,11 +54,18 @@ const NOAA_ALERT_TYPES = {
     'Freeze Warning',
     'Frost Advisory',
     'Lake Effect Snow Warning',
+    'Lake Effect Snow Watch',
     'Blowing Dust Advisory',
     'Tropical Storm Watch',
+    'High Wind Watch',
     'High Surf Warning',
     'Coastal Flood Warning',
-    'Lakeshore Flood Warning'
+    'Coastal Flood Watch',
+    'Lakeshore Flood Warning',
+    'Lakeshore Flood Watch',
+    'Excessive Heat Watch',
+    'Hard Freeze Warning',
+    'Freeze Watch'
   ],
 
   // LOW - Minor conditions or precautionary information
@@ -89,6 +96,7 @@ const NOAA_ALERT_TYPES = {
     'Short Term Forecast',
     'Administrative Message',
     'Test',
+    'Test Message',
     'Child Abduction Emergency',
     'Civil Danger Warning',
     'Civil Emergency Message',
