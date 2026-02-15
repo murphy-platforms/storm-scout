@@ -5,6 +5,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 const config = require('./config/config');
 const { apiLimiter, writeLimiter } = require('./middleware/rateLimiter');
@@ -23,6 +24,48 @@ const historyRouter = require('./routes/history');
 const app = express();
 
 // Middleware
+// Security headers via helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",  // Required for Google Analytics inline script
+        "cdn.jsdelivr.net",
+        "www.googletagmanager.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",  // Bootstrap uses inline styles
+        "cdn.jsdelivr.net"
+      ],
+      fontSrc: [
+        "'self'",
+        "cdn.jsdelivr.net"  // Bootstrap Icons
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",  // For inline images and icons
+        "www.googletagmanager.com"
+      ],
+      connectSrc: [
+        "'self'",
+        "www.google-analytics.com",
+        "region1.google-analytics.com",
+        "*.google-analytics.com"
+      ],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: config.env === 'production' ? [] : null
+    }
+  },
+  // HSTS: enforce HTTPS in production
+  strictTransportSecurity: config.env === 'production' ? {
+    maxAge: 31536000,  // 1 year
+    includeSubDomains: true
+  } : false
+}));
+
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
