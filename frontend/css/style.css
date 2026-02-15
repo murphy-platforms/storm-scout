@@ -692,16 +692,24 @@ a.badge:hover {
     background: #e9ecef;
 }
 
-.severity-group-header.critical {
+.severity-group-header.extreme {
     border-left-color: #dc3545;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
 }
 
-.severity-group-header.elevated {
+.severity-group-header.severe {
+    border-left-color: #fd7e14;
+    background: linear-gradient(135deg, #fff9db 0%, #ffec99 100%);
+}
+
+.severity-group-header.moderate {
     border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fffde7 0%, #fff59d 100%);
 }
 
-.severity-group-header.monitoring {
-    border-left-color: #6c757d;
+.severity-group-header.minor {
+    border-left-color: #28a745;
+    background: linear-gradient(135deg, #f0fff4 0%, #c3fae8 100%);
 }
 
 .severity-group-title {
