@@ -34,6 +34,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Executive Briefing, Incident Report, Export CSV marked as "Coming Soon"
   - Print/Save PDF and Copy Shareable Link still functional
   - Removed dead reference to archived `ui-toggle.js`
+- **Dead Script References** - Removed obsolete `ui-toggle.js` script tags from 5 HTML files
+  - Affected: map.html, site-detail.html, sources.html, filters.html, advisories.html
+  - Script was archived with Beta UI but references remained
+
+### Verified
+- **Frontend/API Mismatch Audit** - Comprehensive analysis of all frontend files
+  - All 7 active HTML pages verified against backend API endpoints
+  - ID matching logic confirmed correct (`id` vs `site_id` handling)
+  - No broken API calls or missing endpoints found
+  - All XSS-protected `html` tagged templates in place
+  - All CDN resources have SRI hashes
 
 ### Security
 - **CSP Compliance** - Fixed all inline event handlers blocked by `script-src-attr 'none'`
