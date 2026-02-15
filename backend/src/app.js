@@ -23,6 +23,10 @@ const historyRouter = require('./routes/history');
 // Create Express app
 const app = express();
 
+// Trust proxy for proper client IP detection behind LiteSpeed
+// Required for rate limiting to work correctly on cPanel shared hosting
+app.set('trust proxy', 1);
+
 // Middleware
 // Security headers via helmet
 app.use(helmet({
