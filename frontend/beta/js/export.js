@@ -1,9 +1,26 @@
 /**
  * Export and Reporting System - Phase 3
  * Handles CSV, PDF, and Excel exports
+ * 
+ * SECURITY: Uses escapeHtml() for XSS prevention in generated HTML reports
+ * Note: Generated reports open in new windows, so we include a local escapeHtml function
  */
 
 const StormScoutExport = {
+    /**
+     * Escape HTML special characters to prevent XSS
+     * @param {*} unsafe - Value to escape
+     * @returns {string} Escaped string
+     */
+    escapeHtml(unsafe) {
+        if (unsafe == null) return '';
+        return String(unsafe)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    },
     /**
      * Export sites data to CSV
      * @param {Array} sites - Array of site objects
@@ -172,13 +189,13 @@ const StormScoutExport = {
         </thead>
         <tbody>
             ${sites.map(site => `
-                <tr class="severity-${(site.highest_severity || '').toLowerCase()}">
-                    <td><strong>${site.site_code}</strong></td>
-                    <td>${site.name}</td>
-                    <td>${site.city}, ${site.state}</td>
-                    <td>${site.highest_severity || 'N/A'}</td>
-                    <td>${site.advisory_count || 0}</td>
-                    <td>${site.operational_status || 'Unknown'}</td>
+                <tr class="severity-${this.escapeHtml((site.highest_severity || '').toLowerCase())}">
+                    <td><strong>${this.escapeHtml(site.site_code)}</strong></td>
+                    <td>${this.escapeHtml(site.name)}</td>
+                    <td>${this.escapeHtml(site.city)}, ${this.escapeHtml(site.state)}</td>
+                    <td>${this.escapeHtml(site.highest_severity || 'N/A')}</td>
+                    <td>${parseInt(site.advisory_count) || 0}</td>
+                    <td>${this.escapeHtml(site.operational_status || 'Unknown')}</td>
                 </tr>
             `).join('')}
         </tbody>
@@ -198,11 +215,11 @@ const StormScoutExport = {
         <tbody>
             ${advisories.slice(0, 50).map(adv => `
                 <tr>
-                    <td><strong>${adv.site_code}</strong> - ${adv.site_name}</td>
-                    <td>${adv.advisory_type}</td>
-                    <td>${adv.severity}</td>
-                    <td>${this.formatDateTime(adv.start_time)}</td>
-                    <td>${this.formatDateTime(adv.end_time)}</td>
+                    <td><strong>${this.escapeHtml(adv.site_code)}</strong> - ${this.escapeHtml(adv.site_name)}</td>
+                    <td>${this.escapeHtml(adv.advisory_type)}</td>
+                    <td>${this.escapeHtml(adv.severity)}</td>
+                    <td>${this.escapeHtml(this.formatDateTime(adv.start_time))}</td>
+                    <td>${this.escapeHtml(this.formatDateTime(adv.end_time))}</td>
                 </tr>
             `).join('')}
         </tbody>
@@ -279,10 +296,10 @@ const StormScoutExport = {
     
     ${Object.entries(bySeverity).map(([severity, sitesInCat]) => 
         sitesInCat.length > 0 ? `
-        <h2>${severity} Impact Sites (${sitesInCat.length})</h2>
+        <h2>${this.escapeHtml(severity)} Impact Sites (${sitesInCat.length})</h2>
         <ul>
             ${sitesInCat.map(site => `
-                <li><strong>${site.site_code}</strong> - ${site.name} (${site.city}, ${site.state}) - ${site.advisory_count} alerts</li>
+                <li><strong>${this.escapeHtml(site.site_code)}</strong> - ${this.escapeHtml(site.name)} (${this.escapeHtml(site.city)}, ${this.escapeHtml(site.state)}) - ${parseInt(site.advisory_count) || 0} alerts</li>
             `).join('')}
         </ul>
         ` : ''
@@ -343,10 +360,10 @@ const StormScoutExport = {
         <h2>⚠️ Critical Sites Requiring Immediate Attention</h2>
         <ul>
             ${criticalSites.map(site => `
-                <li><strong>${site.site_code}</strong> - ${site.name}, ${site.state} 
-                    <br>Status: <strong>${site.highest_severity}</strong> | 
-                    ${site.advisory_count} active alerts | 
-                    Ops Status: ${site.operational_status || 'Pending'}
+                <li><strong>${this.escapeHtml(site.site_code)}</strong> - ${this.escapeHtml(site.name)}, ${this.escapeHtml(site.state)} 
+                    <br>Status: <strong>${this.escapeHtml(site.highest_severity)}</strong> | 
+                    ${parseInt(site.advisory_count) || 0} active alerts | 
+                    Ops Status: ${this.escapeHtml(site.operational_status || 'Pending')}
                 </li>
             `).join('')}
         </ul>

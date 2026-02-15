@@ -1,6 +1,9 @@
 /**
  * Trends Component for Phase 3
  * Displays historical trends and analysis
+ * 
+ * SECURITY: Uses escapeHtml() and html tagged template from utils.js for XSS prevention
+ * Requires: utils.js to be loaded before this file
  */
 
 const Trends = {
@@ -34,11 +37,11 @@ const Trends = {
         
         const icon = icons[trend.trend] || '';
         const badgeClass = classes[trend.trend] || 'bg-secondary';
-        const label = labels[trend.trend] || trend.trend;
+        const label = labels[trend.trend] || escapeHtml(trend.trend);
         
-        const title = `${trend.first_severity} → ${trend.last_severity} (${trend.duration_hours}h)`;
+        const title = `${escapeHtml(trend.first_severity)} → ${escapeHtml(trend.last_severity)} (${parseInt(trend.duration_hours) || 0}h)`;
         
-        return `<span class="badge ${badgeClass}" title="${title}">${icon} ${label}</span>`;
+        return `<span class="badge ${escapeHtml(badgeClass)}" title="${title}">${icon} ${escapeHtml(label)}</span>`;
     },
     
     /**
@@ -52,13 +55,14 @@ const Trends = {
         }
         
         const trendIcon = this.renderTrendBadge(trend);
-        const changeText = trend.advisory_change > 0 ? 
-            `+${trend.advisory_change} alerts` : 
-            trend.advisory_change < 0 ? 
-            `${trend.advisory_change} alerts` : 
+        const change = parseInt(trend.advisory_change) || 0;
+        const changeText = change > 0 ? 
+            `+${change} alerts` : 
+            change < 0 ? 
+            `${change} alerts` : 
             'No change in alert count';
         
-        return `
+        return html`
             <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card">
                     <div class="card-body">
@@ -66,13 +70,13 @@ const Trends = {
                             <h5 class="card-title mb-0">
                                 <strong>${trend.site.site_code}</strong> - ${trend.site.name}
                             </h5>
-                            ${trendIcon}
+                            ${raw(trendIcon)}
                         </div>
                         <p class="card-text">
-                            <i class="bi bi-geo-alt"></i> ${trend.site.city}, ${trend.site.state}<br>
-                            <i class="bi bi-arrow-right-circle"></i> ${trend.first_severity} → ${trend.last_severity}<br>
-                            <i class="bi bi-clock"></i> ${trend.duration_hours} hours<br>
-                            <i class="bi bi-bar-chart"></i> ${changeText}
+                            ${raw('<i class="bi bi-geo-alt"></i>')} ${trend.site.city}, ${trend.site.state}<br>
+                            ${raw('<i class="bi bi-arrow-right-circle"></i>')} ${trend.first_severity} → ${trend.last_severity}<br>
+                            ${raw('<i class="bi bi-clock"></i>')} ${parseInt(trend.duration_hours) || 0} hours<br>
+                            ${raw('<i class="bi bi-bar-chart"></i>')} ${changeText}
                         </p>
                     </div>
                 </div>
@@ -102,14 +106,15 @@ const Trends = {
         history.forEach((snapshot, index) => {
             const rank = severityRank[snapshot.highest_severity] || 0;
             const height = (rank / maxRank) * 100;
-            const severityClass = snapshot.highest_severity.toLowerCase();
+            const severityClass = escapeHtml((snapshot.highest_severity || '').toLowerCase());
             const date = new Date(snapshot.snapshot_time).toLocaleDateString();
+            const alertCount = parseInt(snapshot.advisory_count) || 0;
             
-            chartHTML += `
+            chartHTML += html`
                 <div class="chart-bar-container">
-                    <div class="chart-bar severity-${severityClass}" 
-                         style="height: ${height}%" 
-                         title="${snapshot.highest_severity} - ${snapshot.advisory_count} alerts (${date})">
+                    <div class="chart-bar severity-${raw(severityClass)}" 
+                         style="height: ${raw(height)}%" 
+                         title="${snapshot.highest_severity} - ${alertCount} alerts (${date})">
                     </div>
                     <div class="chart-label">${date}</div>
                 </div>
@@ -148,11 +153,12 @@ const Trends = {
             
             const badge = this.renderTrendBadge(trendData);
             
-            container.innerHTML = `
+            const change = parseInt(trendData.advisory_change) || 0;
+            container.innerHTML = html`
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-graph-up-arrow"></i> ${days}-Day Trend ${badge}
+                            ${raw('<i class="bi bi-graph-up-arrow"></i>')} ${parseInt(days) || 7}-Day Trend ${raw(badge)}
                         </h5>
                         <div class="row">
                             <div class="col-md-6">
@@ -162,15 +168,15 @@ const Trends = {
                                 </p>
                                 <p class="mb-2">
                                     <strong>Alert Count Change:</strong><br>
-                                    ${trendData.first_count} → ${trendData.last_count} 
-                                    (${trendData.advisory_change > 0 ? '+' : ''}${trendData.advisory_change})
+                                    ${parseInt(trendData.first_count) || 0} → ${parseInt(trendData.last_count) || 0} 
+                                    (${change > 0 ? '+' : ''}${change})
                                 </p>
                                 <p class="mb-0">
-                                    <strong>Duration:</strong> ${trendData.duration_hours} hours
+                                    <strong>Duration:</strong> ${parseInt(trendData.duration_hours) || 0} hours
                                 </p>
                             </div>
                             <div class="col-md-6">
-                                <div id="trendChartContainer"></div>
+                                ${raw('<div id="trendChartContainer"></div>')}
                             </div>
                         </div>
                     </div>
