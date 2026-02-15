@@ -203,9 +203,11 @@ Storm Scout implements multiple security controls:
 |---------|---------------|---------------|
 | XSS Prevention | `html` tagged template in `js/utils.js` | `docs/security/SECURE-TEMPLATES.md` |
 | Security Headers | helmet.js in `app.js` | CSP, HSTS, X-Frame-Options |
-| CDN Integrity | SRI hashes on Bootstrap resources | `docs/security/SRI.md` |
+| CDN Integrity | SRI hashes on all CDN resources | `docs/security/SRI.md` |
 | Input Validation | express-validator on all endpoints | `backend/src/validators/` |
 | Rate Limiting | express-rate-limit (100 req/15 min) | `backend/src/middleware/rateLimiter.js` |
+
+**Security Assessments:** Point-in-time security audits are stored in `docs/security/assessments/`.
 
 **Reporting vulnerabilities:** See `.github/SECURITY.md` for our security policy.
 
