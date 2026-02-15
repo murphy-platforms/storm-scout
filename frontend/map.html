@@ -251,7 +251,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/aggregation.js"></script>
@@ -323,8 +323,8 @@
                 const severity = site.highest_severity;
                 const severityClass = `marker-${severity.toLowerCase()}`;
                 
-                // Create custom div icon
-                const iconHtml = `<div class="severity-marker ${severityClass}" style="width: 30px; height: 30px;">${site.unique_advisory_count}</div>`;
+                // Create custom div icon with escaped values
+                const iconHtml = `<div class="severity-marker ${escapeHtml(severityClass)}" style="width: 30px; height: 30px;">${parseInt(site.unique_advisory_count) || 0}</div>`;
                 const customIcon = L.divIcon({
                     html: iconHtml,
                     className: '',
@@ -336,28 +336,28 @@
                 // Create marker
                 const marker = L.marker([site.latitude, site.longitude], { icon: customIcon });
                 
-                // Create popup content
-                const popupContent = `
+                // Create popup content using html tagged template for XSS prevention
+                const popupContent = html`
                     <div class="site-popup">
                         <h6><strong>${site.site_code}</strong> - ${site.name}</h6>
                         <p class="mb-2">
-                            <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
+                            ${raw('<i class="bi bi-geo-alt"></i>')} ${site.city}, ${site.state}
                         </p>
                         <p class="mb-2">
-                            <span class="badge severity-${severity.toLowerCase()}">${severity}</span>
-                            ${site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : ''}
+                            ${raw(`<span class="badge severity-${escapeHtml(severity.toLowerCase())}">${escapeHtml(severity)}</span>`)}
+                            ${raw(site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : '')}
                         </p>
                         <p class="mb-2">
                             <strong>${site.unique_advisory_count}</strong> unique alerts
-                            ${site.total_zone_count !== site.unique_advisory_count ? 
-                                `<small class="text-muted">(${site.total_zone_count} zones)</small>` : ''}
+                            ${raw(site.total_zone_count !== site.unique_advisory_count ? 
+                                `<small class="text-muted">(${site.total_zone_count} zones)</small>` : '')}
                         </p>
                         <p class="mb-2">
                             <strong>Highest Alert:</strong><br>
                             ${site.highest_severity_advisory.advisory_type}
                         </p>
-                        <a href="site-detail.html?site=${site.site_code}" class="btn btn-sm btn-primary w-100">
-                            <i class="bi bi-arrow-right-circle"></i> View Details
+                        <a href="site-detail.html?site=${encodeURIComponent(site.site_code)}" class="btn btn-sm btn-primary w-100">
+                            ${raw('<i class="bi bi-arrow-right-circle"></i>')} View Details
                         </a>
                     </div>
                 `;
