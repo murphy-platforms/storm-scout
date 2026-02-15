@@ -60,6 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All pages now fully compliant with Content Security Policy
 
 ### Changed
+- **IMT Severity Alignment** - Severity now based on internal alert categories instead of NOAA's raw severity
+  - CRITICAL category → Extreme (🔴 RED)
+  - HIGH category → Severe (🟠 ORANGE)
+  - MODERATE category → Moderate (🟡 YELLOW)
+  - LOW/INFO category → Minor (🟢 GREEN)
+  - Example: Winter Storm Watch now shows as Moderate/Yellow (was Severe/Orange from NOAA)
+  - Aligns with IMT operational practices
 - **Default Alert Filters** - Reduced enabled alert types from 18 to 12
   - Disabled: Flash Flood Warning, Tornado Watch, Flood Warning, Heavy Freezing Spray Warning, Winter Weather Advisory, High Surf Warning
 
