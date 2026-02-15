@@ -239,9 +239,7 @@
                 <div class="card text-center border-danger h-100 static-card">
                     <div class="card-body py-3">
                         <span class="badge status-closed mb-1">❌ CLOSED</span>
-                        <p class="display-6 fw-bold mb-0 text-danger" id="statusClosed">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
                     </div>
                 </div>
             </div>
@@ -249,9 +247,7 @@
                 <div class="card text-center border-warning h-100 static-card">
                     <div class="card-body py-3">
                         <span class="badge status-restricted mb-1">⚠️ RESTRICTED</span>
-                        <p class="display-6 fw-bold mb-0 text-warning" id="statusRestricted">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
                     </div>
                 </div>
             </div>
@@ -259,9 +255,7 @@
                 <div class="card text-center border-info h-100 static-card">
                     <div class="card-body py-3">
                         <span class="badge status-pending mb-1">🔄 PENDING</span>
-                        <p class="display-6 fw-bold mb-0" id="statusPending">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
                     </div>
                 </div>
             </div>
@@ -269,9 +263,7 @@
                 <div class="card text-center border-success h-100 static-card">
                     <div class="card-body py-3">
                         <span class="badge status-open mb-1">✅ OPEN</span>
-                        <p class="display-6 fw-bold mb-0 text-success" id="statusOpen">
-                            <span class="spinner-border spinner-border-sm"></span>
-                        </p>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
                     </div>
                 </div>
             </div>
@@ -446,12 +438,12 @@
                 document.getElementById('weatherYellow').textContent = weatherImpactCounts.yellow;
                 document.getElementById('weatherGreen').textContent = weatherImpactCounts.green;
                 
-                // Operational Status Counts
-                const statusCounts = overviewData.operational_status_counts || [];
-                document.getElementById('statusClosed').textContent = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
-                document.getElementById('statusRestricted').textContent = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;
-                document.getElementById('statusPending').textContent = statusCounts.find(s => s.operational_status === 'pending')?.count || 0;
-                document.getElementById('statusOpen').textContent = statusCounts.find(s => s.operational_status === 'open_normal')?.count || 0;
+                // Operational Status Counts - Coming Soon (manual IMT tracking not yet implemented)
+                // const statusCounts = overviewData.operational_status_counts || [];
+                // document.getElementById('statusClosed').textContent = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
+                // document.getElementById('statusRestricted').textContent = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;
+                // document.getElementById('statusPending').textContent = statusCounts.find(s => s.operational_status === 'pending')?.count || 0;
+                // document.getElementById('statusOpen').textContent = statusCounts.find(s => s.operational_status === 'open_normal')?.count || 0;
                 
                 // Recalculate severity counts from filtered advisories
                 const severityCounts = {};
