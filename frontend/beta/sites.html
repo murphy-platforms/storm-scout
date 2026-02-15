@@ -740,7 +740,9 @@
         function createFilterPill(text, onRemove) {
             const pill = document.createElement('button');
             pill.className = 'filter-pill';
-            pill.innerHTML = `${text} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            // Escape text to prevent XSS from user search input
+            const escapedText = text.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+            pill.innerHTML = `${escapedText} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
             pill.onclick = onRemove;
             return pill;
         }
