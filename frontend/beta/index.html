@@ -487,16 +487,16 @@
             grid.innerHTML = criticalSites.slice(0, 6).map(site => {
                 const severityClass = site.highest_severity === 'Extreme' ? 'critical' : 'high';
                 const advisory = site.highest_severity_advisory || {};
-                return `
-                    <a href="site-detail.html?site=${site.site_code}" class="critical-alert-card ${severityClass}">
-                        <div class="alert-severity-indicator ${severityClass}" aria-hidden="true"></div>
+                return html`
+                    <a href="site-detail.html?site=${site.site_code}" class="critical-alert-card ${raw(severityClass)}">
+                        <div class="alert-severity-indicator ${raw(severityClass)}" aria-hidden="true"></div>
                         <div class="alert-content">
-                            <div class="alert-type ${severityClass}">${site.highest_severity === 'Extreme' ? 'Critical Alert' : 'High Impact'}</div>
+                            <div class="alert-type ${raw(severityClass)}">${raw(site.highest_severity === 'Extreme' ? 'Critical Alert' : 'High Impact')}</div>
                             <h3 class="alert-name">${advisory.advisory_type || 'Weather Alert'}</h3>
                             <p class="alert-location">${site.site_code} - ${site.city}, ${site.state}</p>
                             <div class="alert-meta">
-                                <span class="alert-sites">📍 ${site.unique_advisory_count} alert${site.unique_advisory_count !== 1 ? 's' : ''}</span>
-                                ${advisory.expires ? `<span>Expires: ${formatLocalTime(advisory.expires)}</span>` : ''}
+                                <span class="alert-sites">📍 ${site.unique_advisory_count} alert${raw(site.unique_advisory_count !== 1 ? 's' : '')}</span>
+                                ${raw(advisory.expires ? `<span>Expires: ${formatLocalTime(advisory.expires)}</span>` : '')}
                             </div>
                         </div>
                     </a>
@@ -524,18 +524,18 @@
             }
             
             list.innerHTML = sortedSites.slice(0, 8).map(site => {
-                const severityClass = site.highest_severity.toLowerCase();
-                return `
+                const severityClass = escapeHtml(site.highest_severity.toLowerCase());
+                return html`
                     <a href="site-detail.html?site=${site.site_code}" class="site-item">
-                        <div class="site-status-indicator ${severityClass}" aria-hidden="true"></div>
+                        <div class="site-status-indicator ${raw(severityClass)}" aria-hidden="true"></div>
                         <div class="site-info">
                             <div class="site-name">${site.site_code}</div>
                             <div class="site-location">${site.city}, ${site.state}</div>
                         </div>
-                        <span class="site-status-badge ${severityClass}">${site.highest_severity}</span>
+                        <span class="site-status-badge ${raw(severityClass)}">${site.highest_severity}</span>
                         <div class="site-alert-count">
                             <span>⚠️</span>
-                            <span>${site.unique_advisory_count} alert${site.unique_advisory_count !== 1 ? 's' : ''}</span>
+                            <span>${site.unique_advisory_count} alert${raw(site.unique_advisory_count !== 1 ? 's' : '')}</span>
                         </div>
                     </a>
                 `;
@@ -617,7 +617,7 @@
             const heights = dataPoints.map(val => Math.max((val / max) * 100, 5)); // Min 5% visibility
             
             container.innerHTML = heights.map(h => 
-                `<div class="sparkline-bar" style="height: ${h}%;"></div>`
+                html`<div class="sparkline-bar" style="height: ${h}%;"></div>`
             ).join('');
         }
         
@@ -686,10 +686,10 @@
             
             if (direction === 'up') {
                 element.classList.add('up');
-                element.innerHTML = `<span>↑ +${changePercent}%</span>`;
+                element.innerHTML = html`<span>↑ +${changePercent}%</span>`;
             } else if (direction === 'down') {
                 element.classList.add('down');
-                element.innerHTML = `<span>↓ ${changePercent}%</span>`;
+                element.innerHTML = html`<span>↓ ${changePercent}%</span>`;
             } else {
                 element.classList.add('neutral');
                 element.innerHTML = '<span>→ Stable</span>';
