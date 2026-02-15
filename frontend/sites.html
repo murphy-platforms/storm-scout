@@ -169,9 +169,10 @@
             const severityToImpact = { 'Extreme': 'red', 'Severe': 'orange', 'Moderate': 'yellow', 'Minor': 'green' };
             
             // Enhance original sites with aggregation data
+            // Note: Sites API uses 'id', advisories use 'site_id'
             return sites
                 .map(site => {
-                    const aggData = siteMap.get(site.site_id);
+                    const aggData = siteMap.get(site.id);
                     if (!aggData) return null;
                     
                     return {
