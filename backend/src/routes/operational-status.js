@@ -12,140 +12,38 @@ const SiteModel = require('../models/site');
 /**
  * POST /api/operational-status/sites/:id
  * Set operational status for a specific site
- * Body: { operational_status, decision_by, decision_reason }
+ * 
+ * STATUS: DISABLED - Returns 501 Not Implemented
+ * REASON: Manual status override feature planned for future release.
+ *         Status is currently calculated automatically from weather data.
+ * SECURITY: Endpoint disabled to prevent unauthorized modifications (Issue #1)
  */
-router.post('/sites/:id', async (req, res) => {
-  try {
-    const siteId = parseInt(req.params.id, 10);
-    const { operational_status, decision_by, decision_reason } = req.body;
-    
-    // Validate inputs
-    if (!operational_status) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'operational_status is required' 
-      });
-    }
-    
-    const validStatuses = ['open_normal', 'open_restricted', 'closed', 'pending'];
-    if (!validStatuses.includes(operational_status)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: `operational_status must be one of: ${validStatuses.join(', ')}` 
-      });
-    }
-    
-    if (!decision_by) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'decision_by is required (who made this decision)' 
-      });
-    }
-    
-    if (!decision_reason) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'decision_reason is required' 
-      });
-    }
-    
-    // Verify site exists
-    const site = await SiteModel.getById(siteId);
-    if (!site) {
-      return res.status(404).json({ 
-        success: false, 
-        error: `Site ${siteId} not found` 
-      });
-    }
-    
-    // Update operational status
-    const updatedStatus = await SiteStatusModel.setOperationalStatus(
-      siteId,
-      operational_status,
-      decision_by,
-      decision_reason
-    );
-    
-    res.json({ 
-      success: true, 
-      data: updatedStatus,
-      message: `Site ${site.site_code} operational status set to ${operational_status}`
-    });
-    
-  } catch (error) {
-    console.error('Error setting operational status:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+router.post('/sites/:id', (req, res) => {
+  res.status(501).json({
+    success: false,
+    error: 'Manual status updates not yet implemented',
+    message: 'Operational status is currently calculated automatically from weather advisory data. Manual override feature is planned for a future release.',
+    feature_status: 'planned',
+    documentation: 'https://github.com/Prometric-Site-Engineering/storm-scout/issues/1'
+  });
 });
 
 /**
  * POST /api/operational-status/bulk-update
- * Update operational status for multiple sites at once
- * Body: { site_ids: [1, 2, 3], operational_status, decision_by, decision_reason }
+ * Bulk update operational status for multiple sites
+ * 
+ * STATUS: DISABLED - Returns 501 Not Implemented
+ * REASON: Manual status override feature planned for future release.
+ * SECURITY: Endpoint disabled to prevent unauthorized modifications (Issue #1)
  */
-router.post('/bulk-update', async (req, res) => {
-  try {
-    const { site_ids, operational_status, decision_by, decision_reason } = req.body;
-    
-    // Validate inputs
-    if (!site_ids || !Array.isArray(site_ids) || site_ids.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'site_ids must be a non-empty array' 
-      });
-    }
-    
-    if (!operational_status) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'operational_status is required' 
-      });
-    }
-    
-    const validStatuses = ['open_normal', 'open_restricted', 'closed', 'pending'];
-    if (!validStatuses.includes(operational_status)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: `operational_status must be one of: ${validStatuses.join(', ')}` 
-      });
-    }
-    
-    if (!decision_by) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'decision_by is required (who made this decision)' 
-      });
-    }
-    
-    if (!decision_reason) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'decision_reason is required' 
-      });
-    }
-    
-    // Update all sites
-    const affectedRows = await SiteStatusModel.bulkSetOperationalStatus(
-      site_ids,
-      operational_status,
-      decision_by,
-      decision_reason
-    );
-    
-    res.json({ 
-      success: true, 
-      data: {
-        sites_updated: affectedRows,
-        operational_status,
-        decision_by
-      },
-      message: `Updated operational status for ${affectedRows} site(s)`
-    });
-    
-  } catch (error) {
-    console.error('Error bulk updating operational status:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+router.post('/bulk-update', (req, res) => {
+  res.status(501).json({
+    success: false,
+    error: 'Bulk status updates not yet implemented',
+    message: 'Operational status is currently calculated automatically from weather advisory data. Manual bulk override feature is planned for a future release.',
+    feature_status: 'planned',
+    documentation: 'https://github.com/Prometric-Site-Engineering/storm-scout/issues/1'
+  });
 });
 
 /**
