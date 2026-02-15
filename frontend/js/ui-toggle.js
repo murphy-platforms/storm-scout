@@ -104,15 +104,20 @@ const UIToggle = {
         banner.innerHTML = `
             <div class="beta-banner-content">
                 <span class="beta-badge">BETA</span>
-                <span class="beta-message">⚠️ This version may have bugs. <a href="#" onclick="UIToggle.toggle(); return false;" style="color: #60a5fa;">Switch to Classic</a> for a stable experience.</span>
-                <button class="beta-feedback-btn" onclick="UIToggle.openFeedback()">
+                <span class="beta-message">⚠️ This version may have bugs. <a href="#" class="beta-classic-link" style="color: #60a5fa;">Switch to Classic</a> for a stable experience.</span>
+                <button class="beta-feedback-btn">
                     Report Issue
                 </button>
-                <button class="beta-dismiss-btn" onclick="UIToggle.dismissBanner()" aria-label="Dismiss banner">
+                <button class="beta-dismiss-btn" aria-label="Dismiss banner">
                     ✕
                 </button>
             </div>
         `;
+        
+        // Add event listeners for banner buttons
+        banner.querySelector('.beta-classic-link').addEventListener('click', (e) => { e.preventDefault(); this.toggle(); });
+        banner.querySelector('.beta-feedback-btn').addEventListener('click', () => this.openFeedback());
+        banner.querySelector('.beta-dismiss-btn').addEventListener('click', () => this.dismissBanner());
         
         // Check if banner was dismissed this session
         if (!sessionStorage.getItem('beta_banner_dismissed')) {
