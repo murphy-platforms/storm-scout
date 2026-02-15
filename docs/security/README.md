@@ -15,6 +15,7 @@ Point-in-time security assessments and vulnerability reports.
 |------|------|------|--------|
 | `2026-02-15-security-assessment.html` | Feb 15, 2026 | Application Security Review | Active |
 | `SRI.md` | Feb 15, 2026 | Subresource Integrity Guide | Active |
+| `TRUST-PROXY.md` | Feb 15, 2026 | Trust Proxy Configuration | Active |
 
 ### Active Vulnerability Tracking
 
@@ -24,7 +25,7 @@ Point-in-time security assessments and vulnerability reports.
 | [#2](https://github.com/Prometric-Site-Engineering/storm-scout/issues/2) | N/A | High | Frontend XSS | ✅ Closed |
 | [#3](https://github.com/Prometric-Site-Engineering/storm-scout/issues/3) | N/A | Medium | Security Headers | ✅ Closed |
 | [#4](https://github.com/Prometric-Site-Engineering/storm-scout/issues/4) | N/A | Medium | CDN SRI | ✅ Closed |
-| [#5](https://github.com/Prometric-Site-Engineering/storm-scout/issues/5) | N/A | Medium | Rate Limiting | Open |
+| [#5](https://github.com/Prometric-Site-Engineering/storm-scout/issues/5) | N/A | Medium | Trust Proxy | ✅ Closed |
 | [#6](https://github.com/Prometric-Site-Engineering/storm-scout/issues/6) | CVE-2026-2391 | Low | qs (dependency) | ✅ Closed |
 
 ### `/policies` (Future)
