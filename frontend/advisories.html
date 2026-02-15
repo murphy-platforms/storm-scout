@@ -65,10 +65,10 @@
                 <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
                     <!-- View Toggle -->
                     <div class="view-toggle">
-                        <button class="view-toggle-btn active" id="cardViewBtn" onclick="switchView('card')">
+                        <button class="view-toggle-btn active" id="cardViewBtn">
                             <i class="bi bi-grid-3x2"></i> Card View
                         </button>
-                        <button class="view-toggle-btn" id="tableViewBtn" onclick="switchView('table')">
+                        <button class="view-toggle-btn" id="tableViewBtn">
                             <i class="bi bi-table"></i> Table View
                         </button>
                     </div>
@@ -339,7 +339,7 @@
                                 </span>
                             </div>
                             <div class="filter-warning-actions">
-                                <button class="btn btn-sm btn-outline-primary" onclick="showAllAlerts()">
+                                <button class="btn btn-sm btn-outline-primary" id="showAllAlertsBtn">
                                     <i class="bi bi-eye"></i> Show All Alerts
                                 </button>
                             </div>
@@ -347,6 +347,9 @@
                     </div>
                 </div>
             `;
+            
+            // Attach event listener after inserting HTML
+            document.getElementById('showAllAlertsBtn').addEventListener('click', showAllAlerts);
         }
         
         // Render card view
@@ -505,6 +508,8 @@
         document.getElementById('stateFilter').addEventListener('change', renderAll);
         document.getElementById('severityFilter').addEventListener('change', renderAll);
         document.getElementById('dedupToggle').addEventListener('change', renderAll);
+        document.getElementById('cardViewBtn').addEventListener('click', () => switchView('card'));
+        document.getElementById('tableViewBtn').addEventListener('click', () => switchView('table'));
         
         // Check for URL parameters on page load
         function applyURLParameters() {

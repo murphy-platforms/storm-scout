@@ -97,7 +97,7 @@
                 <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
                 <h1 class="page-title">Active Advisories</h1>
                 <div class="top-bar-actions">
-                    <button class="btn btn-primary" onclick="loadAdvisories()"><span>↻</span> Refresh</button>
+                    <button class="btn btn-primary" id="refreshBtn"><span>↻</span> Refresh</button>
                 </div>
             </header>
 
@@ -139,8 +139,8 @@
                     </div>
                     <div class="control-group">
                         <div class="view-toggle">
-                            <button class="view-btn active" id="cardViewBtn" onclick="switchView('card')">🗂️ Cards</button>
-                            <button class="view-btn" id="tableViewBtn" onclick="switchView('table')">📋 Table</button>
+                            <button class="view-btn active" id="cardViewBtn">🗂️ Cards</button>
+                            <button class="view-btn" id="tableViewBtn">📋 Table</button>
                         </div>
                         <label class="checkbox-toggle">
                             <input type="checkbox" id="dedupToggle" checked>
@@ -264,7 +264,8 @@
             const warning = SiteAggregator.getFilterWarning(allAdv, filteredAdv);
             const container = document.getElementById('filterWarningContainer');
             if (!warning) { container.innerHTML = ''; return; }
-            container.innerHTML = `<div class="filter-warning"><div class="filter-warning-text">⚠️ <strong>Filters Active:</strong> ${warning.hidden_count} alerts hidden${warning.has_critical ? ` (${warning.critical_hidden} CRITICAL)` : ''}</div><button class="btn btn-secondary btn-sm" onclick="showAllAlerts()">Show All</button></div>`;
+            container.innerHTML = `<div class="filter-warning"><div class="filter-warning-text">⚠️ <strong>Filters Active:</strong> ${warning.hidden_count} alerts hidden${warning.has_critical ? ` (${warning.critical_hidden} CRITICAL)` : ''}</div><button class="btn btn-secondary btn-sm" id="showAllBtn">Show All</button></div>`;
+            document.getElementById('showAllBtn').addEventListener('click', showAllAlerts);
         }
 
         function renderCardView(sites, originalAdvisories) {
@@ -316,7 +317,7 @@
                 return;
             }
             tbody.innerHTML = advisories.map(adv => html`
-                <tr onclick="window.location='site-detail.html?site=${adv.site_code}'" style="cursor:pointer;">
+                <tr class="clickable-row" data-site="${adv.site_code}" style="cursor:pointer;">
                     <td><strong>${adv.site_code}</strong></td>
                     <td>${adv.city}, ${adv.state}</td>
                     <td>${adv.advisory_type}</td>
@@ -351,6 +352,13 @@
         document.getElementById('dedupToggle').addEventListener('change', renderAll);
         document.getElementById('mobileMenuBtn').addEventListener('click', () => document.querySelector('.sidebar').classList.toggle('open'));
         document.getElementById('contrastToggle').addEventListener('click', function() { this.classList.toggle('active'); document.body.classList.toggle('high-contrast'); });
+        document.getElementById('refreshBtn').addEventListener('click', loadAdvisories);
+        document.getElementById('cardViewBtn').addEventListener('click', () => switchView('card'));
+        document.getElementById('tableViewBtn').addEventListener('click', () => switchView('table'));
+        document.addEventListener('click', (e) => {
+            const row = e.target.closest('.clickable-row');
+            if (row && row.dataset.site) window.location = `site-detail.html?site=${row.dataset.site}`;
+        });
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('severity')) document.getElementById('severityFilter').value = urlParams.get('severity');

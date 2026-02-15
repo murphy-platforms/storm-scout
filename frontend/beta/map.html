@@ -440,7 +440,7 @@
             </div>
             <div class="top-bar-right">
                 <span class="filter-count" id="visible-count">0 sites visible</span>
-                <button class="btn btn-secondary" onclick="loadMapData()">
+                <button class="btn btn-secondary" id="refreshMapBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="23 4 23 10 17 10"/>
                         <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
@@ -454,15 +454,15 @@
         <div class="dashboard-content">
             <!-- Stats Row -->
             <div class="map-stats">
-                <div class="map-stat-card" onclick="toggleFilter('Extreme')">
+                <div class="map-stat-card" data-toggle="Extreme">
                     <div class="map-stat-value critical" id="extreme-count">0</div>
                     <div class="map-stat-label">Extreme Sites</div>
                 </div>
-                <div class="map-stat-card" onclick="toggleFilter('Severe')">
+                <div class="map-stat-card" data-toggle="Severe">
                     <div class="map-stat-value high" id="severe-count">0</div>
                     <div class="map-stat-label">Severe Sites</div>
                 </div>
-                <div class="map-stat-card" onclick="toggleFilter('Moderate')">
+                <div class="map-stat-card" data-toggle="Moderate">
                     <div class="map-stat-value moderate" id="moderate-count">0</div>
                     <div class="map-stat-label">Moderate Sites</div>
                 </div>
@@ -476,7 +476,7 @@
             <div class="map-container">
                 <div class="map-main">
                     <div class="map-actions">
-                        <button class="map-btn" onclick="fitAllMarkers()">
+                        <button class="map-btn" id="fitAllBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="15 3 21 3 21 9"/>
                                 <polyline points="9 21 3 21 3 15"/>
@@ -485,7 +485,7 @@
                             </svg>
                             Fit All Sites
                         </button>
-                        <button class="map-btn" onclick="resetMap()">
+                        <button class="map-btn" id="resetMapBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="1 4 1 10 7 10"/>
                                 <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
@@ -501,7 +501,7 @@
                     <div class="map-controls">
                         <h3>Filter by Severity</h3>
                         <div class="filter-toggle">
-                            <input type="checkbox" id="filterExtreme" checked onchange="applyFilters()">
+                            <input type="checkbox" id="filterExtreme" checked>
                             <label for="filterExtreme">
                                 <span class="filter-dot critical"></span>
                                 Extreme
@@ -509,7 +509,7 @@
                             <span class="filter-count" id="filter-extreme-count">0</span>
                         </div>
                         <div class="filter-toggle">
-                            <input type="checkbox" id="filterSevere" checked onchange="applyFilters()">
+                            <input type="checkbox" id="filterSevere" checked>
                             <label for="filterSevere">
                                 <span class="filter-dot high"></span>
                                 Severe
@@ -517,7 +517,7 @@
                             <span class="filter-count" id="filter-severe-count">0</span>
                         </div>
                         <div class="filter-toggle">
-                            <input type="checkbox" id="filterModerate" checked onchange="applyFilters()">
+                            <input type="checkbox" id="filterModerate" checked>
                             <label for="filterModerate">
                                 <span class="filter-dot moderate"></span>
                                 Moderate
@@ -525,7 +525,7 @@
                             <span class="filter-count" id="filter-moderate-count">0</span>
                         </div>
                         <div class="filter-toggle">
-                            <input type="checkbox" id="filterMinor" checked onchange="applyFilters()">
+                            <input type="checkbox" id="filterMinor" checked>
                             <label for="filterMinor">
                                 <span class="filter-dot low"></span>
                                 Minor
@@ -572,8 +572,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             initMap();
             loadMapData();
+            
+            // Event listeners
             document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
                 document.getElementById('sidebar').classList.toggle('open');
+            });
+            document.getElementById('refreshMapBtn')?.addEventListener('click', loadMapData);
+            document.getElementById('fitAllBtn')?.addEventListener('click', fitAllMarkers);
+            document.getElementById('resetMapBtn')?.addEventListener('click', resetMap);
+            document.getElementById('filterExtreme')?.addEventListener('change', applyFilters);
+            document.getElementById('filterSevere')?.addEventListener('change', applyFilters);
+            document.getElementById('filterModerate')?.addEventListener('change', applyFilters);
+            document.getElementById('filterMinor')?.addEventListener('change', applyFilters);
+            
+            // Event delegation for stat cards
+            document.querySelectorAll('.map-stat-card[data-toggle]').forEach(card => {
+                card.addEventListener('click', () => toggleFilter(card.dataset.toggle));
             });
         });
 

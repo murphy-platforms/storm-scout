@@ -104,21 +104,21 @@
                                 <i class="bi bi-share"></i> Export
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#" onclick="StormScoutExport.printToPDF(); return false;">
+                                <li><a class="dropdown-item" href="#" id="exportPrintPDF">
                                     <i class="bi bi-printer"></i> Print / Save PDF
                                 </a></li>
-                                <li><a class="dropdown-item" href="#" onclick="StormScoutExport.copyShareableLink(); return false;">
+                                <li><a class="dropdown-item" href="#" id="exportShareLink">
                                     <i class="bi bi-link-45deg"></i> Copy Shareable Link
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><h6 class="dropdown-header">Advanced Reports</h6></li>
-                                <li><a class="dropdown-item" href="#" onclick="window.exportCurrentData('executive'); return false;">
+                                <li><a class="dropdown-item" href="#" id="exportExecutive">
                                     <i class="bi bi-file-earmark-person"></i> Executive Briefing
                                 </a></li>
-                                <li><a class="dropdown-item" href="#" onclick="window.exportCurrentData('incident'); return false;">
+                                <li><a class="dropdown-item" href="#" id="exportIncident">
                                     <i class="bi bi-file-earmark-text"></i> Incident Report
                                 </a></li>
-                                <li><a class="dropdown-item" href="#" onclick="window.exportCurrentData('csv'); return false;">
+                                <li><a class="dropdown-item" href="#" id="exportCSV">
                                     <i class="bi bi-filetype-csv"></i> Export CSV
                                 </a></li>
                             </ul>
@@ -678,6 +678,13 @@
                 StormScoutExport.showNotification('✗ Export failed', 'error');
             }
         };
+        
+        // Event listeners for export buttons (CSP-compliant)
+        document.getElementById('exportPrintPDF').addEventListener('click', (e) => { e.preventDefault(); StormScoutExport.printToPDF(); });
+        document.getElementById('exportShareLink').addEventListener('click', (e) => { e.preventDefault(); StormScoutExport.copyShareableLink(); });
+        document.getElementById('exportExecutive').addEventListener('click', (e) => { e.preventDefault(); window.exportCurrentData('executive'); });
+        document.getElementById('exportIncident').addEventListener('click', (e) => { e.preventDefault(); window.exportCurrentData('incident'); });
+        document.getElementById('exportCSV').addEventListener('click', (e) => { e.preventDefault(); window.exportCurrentData('csv'); });
     </script>
     <script src="js/ui-toggle.js"></script>
 </body>

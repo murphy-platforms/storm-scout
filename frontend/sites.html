@@ -64,7 +64,7 @@
                         <i class="bi bi-funnel-fill"></i>
                         <strong>Filtered:</strong> Showing <span id="activeFilterLabel"></span> sites
                     </span>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="clearWeatherFilter()">
+                    <button class="btn btn-sm btn-outline-secondary" id="clearFilterBtn">
                         <i class="bi bi-x-lg"></i> Clear Filter
                     </button>
                 </div>
@@ -286,6 +286,7 @@
             filterSites();
         });
         document.getElementById('statusFilter').addEventListener('change', filterSites);
+        document.getElementById('clearFilterBtn').addEventListener('click', clearWeatherFilter);
         
         // Check for URL parameters on page load
         function applyURLParameters() {
