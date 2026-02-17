@@ -37,7 +37,7 @@ Currently monitoring 219 testing centers with real-time NOAA weather data update
 
 ### Performance & Security
 - **In-Memory Caching** - node-cache for ~100x faster API responses on cache hits
-- **API Rate Limiting** - 100 requests/15 min general, 20/15 min for write operations
+- **API Rate Limiting** - 500 requests/15 min general, 20/15 min for write operations
 - **Input Validation** - All API endpoints validated and sanitized with express-validator
 - **Security Headers** - helmet.js with CSP, HSTS, X-Frame-Options, X-Content-Type-Options
 - **XSS Prevention** - Secure `html` tagged template for safe dynamic HTML rendering
@@ -205,7 +205,7 @@ Storm Scout implements multiple security controls:
 | Security Headers | helmet.js in `app.js` | CSP, HSTS, X-Frame-Options |
 | CDN Integrity | SRI hashes on all CDN resources | `docs/security/SRI.md` |
 | Input Validation | express-validator on all endpoints | `backend/src/validators/` |
-| Rate Limiting | express-rate-limit (100 req/15 min) | `backend/src/middleware/rateLimiter.js` |
+| Rate Limiting | express-rate-limit (500 req/15 min) | `backend/src/middleware/rateLimiter.js` |
 
 **Security Assessments:** Point-in-time security audits are stored in `docs/security/assessments/`.
 
