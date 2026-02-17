@@ -206,11 +206,11 @@ NOAA uses VTEC codes to uniquely identify weather events. Example:
 Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
 ### Filter System
-- **Site Default (CUSTOM)**: 11 of 76 alert types enabled (most relevant for operations)
+- **Site Default (CUSTOM)**: 12 of 78 alert types enabled (most relevant for operations)
 - **Operations View**: High severity only
 - **Executive Summary**: Critical + High severity
 - **Safety Focus**: All safety-related alerts
-- **Full View**: All 76+ alert types
+- **Full View**: All 78 alert types
 
 Filters are applied **client-side** in the frontend. The API returns all data; frontend filters based on localStorage preferences.
 
