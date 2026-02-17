@@ -24,7 +24,7 @@ This document outlines planned improvements, features, and technical debt for St
 
 - [x] **Implement API Rate Limiting** ✅ (Completed 2026-02-14)
   - Protects against abuse and DDoS
-  - 100 requests/15 min for general API
+  - 500 requests/15 min for general API
   - 20 requests/15 min for write operations
   - Health checks exempt from limiting
   - Returns 429 with retry info when exceeded
@@ -271,7 +271,7 @@ This document outlines planned improvements, features, and technical debt for St
 - ✅ Auto-invalidation after NOAA ingestion
 - ✅ ~100x faster response times on cache hits
 - ✅ Input validation with express-validator
-- ✅ API rate limiting (100 req/15 min)
+- ✅ API rate limiting (500 req/15 min)
 - ✅ Removed all flashing animations for accessibility
 
 ### v1.4.1 (February 14, 2026)
