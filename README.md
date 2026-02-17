@@ -170,13 +170,13 @@ See `backend/README.md` for complete API documentation.
 
 ## Filter Configuration
 
-The default filter preset is **"Site Default" (CUSTOM)** with 12 of 68 alert types enabled:
+The default filter preset is **"Site Default" (CUSTOM)** with 12 of 78 alert types enabled:
 
 - **CRITICAL**: 5/12 enabled (Hurricane Warning, Typhoon Warning, Tsunami Warning, Blizzard Warning, Ice Storm Warning)
-- **HIGH**: 4/14 enabled (Hurricane Watch, Typhoon Watch, Winter Storm Warning, Tropical Storm Warning)
-- **MODERATE**: 3/14 enabled (Winter Storm Watch, Lake Effect Snow Warning, Tropical Storm Watch)
-- **LOW**: 0/15 enabled (all disabled)
-- **INFO**: 0/13 enabled (all disabled)
+- **HIGH**: 4/15 enabled (Hurricane Watch, Typhoon Watch, Winter Storm Warning, Tropical Storm Warning)
+- **MODERATE**: 3/21 enabled (Winter Storm Watch, Lake Effect Snow Warning, Tropical Storm Watch)
+- **LOW**: 0/16 enabled (all disabled)
+- **INFO**: 0/14 enabled (all disabled)
 
 Users can customize their filter preferences at **/filters.html**, and changes are automatically applied across all dashboard pages.
 
