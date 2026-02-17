@@ -4,7 +4,7 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://your-domain.example.com  
 **Status**: Phase 1 Complete, Production Deployed  
-**Last Updated**: 2026-02-15
+**Last Updated**: 2026-02-17
 
 ---
 
@@ -21,7 +21,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Filter Presets**: Site Default, Operations View, Executive Summary, Safety Focus, Full View
 - **Data Integrity**: Database CHECK constraint enforces valid severity values
 - **In-Memory Caching**: node-cache for fast API responses (~100x faster on cache hits)
-- **API Rate Limiting**: 100 requests/15 min general, 20/15 min for writes (express-rate-limit)
+- **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
 
@@ -93,7 +93,7 @@ strom-scout/
 │   │   │       ├── api-client.js     # NOAA API with rate limiting/retry
 │   │   │       └── normalizer.js     # Alert normalization & VTEC parsing
 │   │   ├── middleware/              # Express middleware
-│   │   │   ├── rateLimiter.js       # API rate limiting (100/15min, 20/15min writes)
+│   │   │   ├── rateLimiter.js       # API rate limiting (500/15min, 20/15min writes)
 │   │   │   └── validate.js          # Input validation error handler
 │   │   ├── validators/              # Route validation rules
 │   │   │   ├── common.js            # Shared rules (id, state, limit)
@@ -313,7 +313,7 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ Database CHECK constraint on severity
 - ✅ Composite index for status+severity queries
 - ✅ In-memory caching with node-cache (status/overview, sites, advisories/active)
-- ✅ API rate limiting with express-rate-limit (100 req/15 min, 20 writes/15 min)
+- ✅ API rate limiting with express-rate-limit (500 req/15 min, 20 writes/15 min)
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
@@ -763,7 +763,7 @@ router.get('/:id',
 ### 6. Rate Limiting
 
 **API endpoints are rate-limited:**
-- General: 100 requests / 15 minutes
+- General: 500 requests / 15 minutes
 - Write operations: 20 requests / 15 minutes
 
 Rate limits are enforced in `middleware/rateLimiter.js`. Adjust thresholds there if needed.

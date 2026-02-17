@@ -11,7 +11,7 @@ const rateLimit = require('express-rate-limit');
  */
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
-  max: 100,                   // 100 requests per window
+  max: 500,                   // 500 requests per window
   message: {
     success: false,
     error: 'Too many requests, please try again later',
@@ -22,6 +22,13 @@ const apiLimiter = rateLimit({
   skip: (req) => {
     // Skip rate limiting for health checks
     return req.path === '/health';
+  },
+  // Log when rate limit is hit (temporary debugging)
+  handler: (req, res, next, options) => {
+    const clientIp = req.ip || req.connection.remoteAddress;
+    const forwardedFor = req.headers['x-forwarded-for'];
+    console.error(`[RATE LIMIT] IP: ${clientIp} | X-Forwarded-For: ${forwardedFor} | Path: ${req.path} | User-Agent: ${req.headers['user-agent']?.substring(0, 100)}`);
+    res.status(options.statusCode).json(options.message);
   },
   // Use default keyGenerator (handles IPv6 properly)
   // Behind proxy: set app.set('trust proxy', 1) in app.js
