@@ -4,7 +4,7 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://your-domain.example.com  
 **Status**: Phase 1 Complete, Production Deployed  
-**Last Updated**: 2026-02-17
+**Last Updated**: 2026-02-18
 
 ---
 
@@ -24,6 +24,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
+- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 219 sites
 
 ---
 
@@ -109,7 +110,10 @@ strom-scout/
 │   │   ├── scripts/                  # Maintenance scripts
 │   │   │   ├── scheduled-cleanup.js
 │   │   │   ├── cleanup-duplicates.js
-│   │   │   └── backfill-vtec-event-id.js
+│   │   │   ├── backfill-vtec-event-id.js
+│   │   │   ├── fetch-ugc-codes.js        # Fetch UGC codes from NOAA for all sites
+│   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
+│   │   │   └── generate-ugc-sql.js       # Generate SQL for UGC updates
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
 │   │       ├── sites.json            # 219 testing centers
@@ -202,6 +206,32 @@ NOAA uses VTEC codes to uniquely identify weather events. Example:
 2. **Fallback**: Use `vtec_event_id` (persistent across updates)
 3. **Last Resort**: Use full `vtec_code` for older alerts
 
+### UGC (Universal Geographic Code)
+NOAA uses UGC codes to identify geographic areas in weather alerts.
+
+**Format**: `SSXNNN`
+- **SS**: 2-letter state code (e.g., MN, SD)
+- **X**: Type indicator - `Z` for public forecast zone, `C` for county
+- **NNN**: 3-digit zone/county number
+
+**Examples**:
+- `MNZ060` = Twin Cities Metro zone (Minneapolis area)
+- `MNC053` = Hennepin County, MN
+- `SDZ062` = Sioux Falls zone
+
+**Why both zone AND county?** Different alert types use different codes:
+- Winter Storm Warnings → Zone-based (`MNZ060`)
+- Tornado Warnings → County-based (`MNC053`)
+
+**Matching Logic** (in `noaa-ingestor.js`):
+1. **Level 1**: Match by UGC codes (most precise) - alerts only match sites whose zone/county is explicitly listed
+2. **Level 2**: Match by county name (if no UGC match)
+3. **Level 3**: State fallback (only for sites WITHOUT UGC codes defined)
+
+**To fetch UGC codes for a site's coordinates**:
+```bash
+curl -s "https://api.weather.gov/points/{lat},{lon}" | jq '.properties | {forecastZone, county}'
+```
 ### Multi-Zone Alert Coverage
 Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
@@ -317,6 +347,8 @@ ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com "touch ~/storm-scout/
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
+- ✅ UGC code matching for all 219 sites (precise zone/county geo-targeting)
+- ✅ Fixed state-level fallback to only apply to sites without UGC codes
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
