@@ -98,7 +98,7 @@ if (config.env === 'development') {
   });
 }
 
-// Health check endpoint (enhanced with database and ingestion status)
+// Health check endpoint (enhanced with database, ingestion, and data integrity status)
 app.get('/health', async (req, res) => {
   const fs = require('fs');
   const path = require('path');
@@ -110,7 +110,8 @@ app.get('/health', async (req, res) => {
     environment: config.env,
     checks: {
       database: { status: 'unknown' },
-      ingestion: { status: 'unknown' }
+      ingestion: { status: 'unknown' },
+      data_integrity: { status: 'unknown' }
     }
   };
   
@@ -160,6 +161,55 @@ app.get('/health', async (req, res) => {
     health.checks.ingestion = {
       status: 'error',
       message: `Error checking ingestion status: ${error.message}`
+    };
+  }
+  
+  try {
+    // Check data integrity - UGC codes and county fields
+    const db = getDatabase();
+    
+    // Check for sites missing UGC codes
+    const [missingUgc] = await db.query(
+      "SELECT COUNT(*) as count FROM sites WHERE ugc_codes IS NULL OR ugc_codes = '[]'"
+    );
+    
+    // Check for sites missing county
+    const [missingCounty] = await db.query(
+      "SELECT COUNT(*) as count FROM sites WHERE county IS NULL OR county = ''"
+    );
+    
+    // Validate UGC code format (should match pattern like MNZ060 or MNC053)
+    const [invalidFormat] = await db.query(
+      `SELECT COUNT(*) as count FROM sites 
+       WHERE ugc_codes IS NOT NULL 
+       AND ugc_codes NOT REGEXP '"[A-Z]{2}[ZC][0-9]{3}"'`
+    );
+    
+    const ugcMissing = missingUgc[0]?.count || 0;
+    const countyMissing = missingCounty[0]?.count || 0;
+    const formatInvalid = invalidFormat[0]?.count || 0;
+    
+    if (ugcMissing === 0 && countyMissing === 0 && formatInvalid === 0) {
+      health.checks.data_integrity = {
+        status: 'ok',
+        message: 'All sites have valid UGC codes and county data'
+      };
+    } else {
+      health.status = 'degraded';
+      health.checks.data_integrity = {
+        status: 'warning',
+        message: 'Data integrity issues detected',
+        details: {
+          sites_missing_ugc: ugcMissing,
+          sites_missing_county: countyMissing,
+          sites_invalid_ugc_format: formatInvalid
+        }
+      };
+    }
+  } catch (error) {
+    health.checks.data_integrity = {
+      status: 'error',
+      message: `Error checking data integrity: ${error.message}`
     };
   }
   
