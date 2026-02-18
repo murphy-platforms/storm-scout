@@ -111,11 +111,15 @@ async function ingestNOAAData() {
       }
       
       // Level 3: Fallback to state matching (least precise)
-      // Only if no more specific matches found
+      // Only for sites WITHOUT UGC codes defined - sites with UGC codes
+      // should only match alerts that explicitly include their zone/county
       if (matchedSites.size === 0) {
         for (const state of states) {
-          const sites = sitesByState.get(state) || [];
-          sites.forEach(site => matchedSites.add(site));
+          const stateSites = sitesByState.get(state) || [];
+          // Only add sites that don't have UGC codes (legacy fallback)
+          stateSites
+            .filter(site => !site.ugc_codes)
+            .forEach(site => matchedSites.add(site));
         }
       }
       
