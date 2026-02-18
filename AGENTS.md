@@ -395,6 +395,75 @@ Set in cPanel → Node.js app interface:
 - **Database**: phpMyAdmin in cPanel
 - **Ingestion Status**: Check `last_updated` in advisories table
 
+### Database Access
+
+**Connection Details**:
+- **Host**: localhost (from server) 
+- **Port**: 3306
+- **Database**: `mwqtiakilx_stormscout`
+- **User**: `mwqtiakilx_stormscout`
+- **Password**: Stored in `~/storm-scout/.env` on production server
+
+**Access Methods**:
+
+1. **Via SSH (Command Line)**:
+   ```bash
+   # Connect to server
+   ssh -p 21098 mwqtiakilx@teammurphy.rocks
+   
+   # Access MySQL (password from .env file)
+   mysql -u mwqtiakilx_stormscout -p mwqtiakilx_stormscout
+   
+   # Or with password inline (get from .env)
+   mysql -u mwqtiakilx_stormscout -p"$(grep DB_PASSWORD ~/storm-scout/.env | cut -d= -f2)" mwqtiakilx_stormscout
+   
+   # Run a single query
+   mysql -u mwqtiakilx_stormscout -p"$DB_PASS" mwqtiakilx_stormscout -e "SELECT COUNT(*) FROM sites;"
+   ```
+
+2. **Via phpMyAdmin (GUI)**:
+   - Go to https://server37.shared.spaceship.host:2083 (cPanel)
+   - Click **phpMyAdmin** in the Databases section
+   - Select `mwqtiakilx_stormscout` from the left sidebar
+   - Use SQL tab to run queries
+
+3. **Via Local SSH Tunnel** (for GUI tools like TablePlus, DBeaver):
+   ```bash
+   # Create SSH tunnel (run locally)
+   ssh -p 21098 -L 3307:localhost:3306 mwqtiakilx@teammurphy.rocks
+   
+   # Then connect your GUI tool to:
+   # Host: 127.0.0.1
+   # Port: 3307
+   # User: mwqtiakilx_stormscout
+   # Password: (from .env)
+   # Database: mwqtiakilx_stormscout
+   ```
+
+**Common Queries**:
+```sql
+-- Check active advisory count
+SELECT COUNT(*) FROM advisories WHERE status = 'active';
+
+-- Sites with most alerts
+SELECT s.site_code, s.name, s.state, COUNT(*) as alert_count 
+FROM sites s JOIN advisories a ON s.id = a.site_id 
+WHERE a.status = 'active' 
+GROUP BY s.id ORDER BY alert_count DESC LIMIT 10;
+
+-- Check UGC codes for a site
+SELECT site_code, name, state, ugc_codes, county FROM sites WHERE site_code = '0064';
+
+-- View alerts for a specific site
+SELECT advisory_type, severity, headline, start_time, end_time 
+FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') AND status = 'active';
+```
+
+**⚠️ Security Notes**:
+- Never commit database credentials to git
+- Password is stored in `.env` file on server (not in version control)
+- Use SSH key authentication when possible (key configured at `~/.ssh/id_ed25519`)
+
 ### Database Backup & Disaster Recovery
 
 **Critical Data**: The Storm Scout database (`mwqtiakilx_stormscout`) contains:
