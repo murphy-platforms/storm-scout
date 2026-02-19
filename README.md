@@ -8,12 +8,12 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 **https://your-domain.example.com**
 
-Currently monitoring 219 testing centers with real-time NOAA weather data updated every 15 minutes.
+Currently monitoring 220 testing centers with real-time NOAA weather data updated every 15 minutes.
 
 ## ✨ Features
 
 ### Core Functionality
-- **219 US Testing Center Locations** - Monitors sites across all 50 states and US territories
+- **220 US Testing Center Locations** - Monitors sites across all 50 states and US territories
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes (v1.2.1)

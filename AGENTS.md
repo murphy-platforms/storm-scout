@@ -4,17 +4,17 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://your-domain.example.com  
 **Status**: Phase 1 Complete, Production Deployed  
-**Last Updated**: 2026-02-18
+**Last Updated**: 2026-02-19
 
 ---
 
 ## Project Overview
 
-Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 219 US testing centers may be impacted during severe weather events.
+Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 220 US testing centers may be impacted during severe weather events.
 
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
-- **219 Testing Centers**: Monitoring sites across all 50 US states and territories
+- **220 Testing Centers**: Monitoring sites across all 50 US states and territories
 - **Smart Filtering**: 80+ NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
@@ -24,7 +24,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
-- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 219 sites
+- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 220 sites
 
 ---
 
@@ -116,7 +116,7 @@ strom-scout/
 │   │   │   └── generate-ugc-sql.js       # Generate SQL for UGC updates
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── sites.json            # 219 testing centers
+│   │       ├── sites.json            # 220 testing centers
 │   │       └── migrations/
 │   └── package.json
 │
@@ -142,7 +142,7 @@ strom-scout/
 ### Database Schema
 
 **4 Main Tables**:
-1. **sites** - 219 testing center locations (static data)
+1. **sites** - 220 testing center locations (static data)
 2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
 3. **site_status** - Operational status tracking (manual overrides + auto-calculation)
 4. **notices** - Government/emergency notices (future feature)
@@ -154,6 +154,7 @@ strom-scout/
 - `vtec_code` (advisories) - Full VTEC string for deduplication
 - `vtec_action` (advisories) - Action code (NEW, CON, EXT, EXP, CAN, UPG)
 - `ugc_codes` (sites) - JSON array of UGC codes for precise matching
+- `cwa` (sites) - NWS County Warning Area office code (e.g., "IND", "GYX")
 
 ---
 
@@ -230,8 +231,19 @@ NOAA uses UGC codes to identify geographic areas in weather alerts.
 
 **To fetch UGC codes for a site's coordinates**:
 ```bash
-curl -s "https://api.weather.gov/points/{lat},{lon}" | jq '.properties | {forecastZone, county}'
+curl -s "https://api.weather.gov/points/{lat},{lon}" | jq '.properties | {forecastZone, county, cwa}'
 ```
+
+### CWA (County Warning Area)
+CWA is the 3-letter NWS office code responsible for a geographic area. Used for direct links to regional NWS office homepages.
+
+**Format**: 3-letter code (e.g., IND, GYX, MFL)
+
+**URL Pattern**: `https://www.weather.gov/{cwa}` (lowercase)
+- Example: `https://www.weather.gov/ind` for Indianapolis NWS office
+
+**Usage**: Site detail page "NWS Forecast" button links to the regional office homepage.
+
 ### Multi-Zone Alert Coverage
 Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
@@ -265,7 +277,7 @@ npm run dev            # Start with nodemon (auto-restart)
 
 # Database
 npm run init-db        # Initialize schema
-npm run seed-db        # Load 219 sites
+npm run seed-db        # Load 220 sites
 
 # Data Operations
 npm run ingest         # Manual NOAA ingestion
@@ -337,7 +349,7 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ External ID unique constraint
 - ✅ Automated cleanup system
 - ✅ Production deployment
-- ✅ 219 testing centers loaded
+- ✅ 220 testing centers loaded
 - ✅ 15-minute NOAA ingestion working
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
@@ -347,7 +359,7 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
-- ✅ UGC code matching for all 219 sites (precise zone/county geo-targeting)
+- ✅ UGC code matching for all 220 sites (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to sites without UGC codes
 
 ### High Priority (Next)
