@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS sites (
     state VARCHAR(2) NOT NULL,
     county VARCHAR(100),                  -- County name for UGC matching
     ugc_codes TEXT,                       -- JSON array of UGC codes for this site
+    cwa VARCHAR(10),                      -- NWS County Warning Area office code (e.g., IND, GYX)
     latitude DECIMAL(10, 7) NOT NULL,
     longitude DECIMAL(10, 7) NOT NULL,
     region VARCHAR(50),
