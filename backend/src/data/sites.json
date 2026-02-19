@@ -195,6 +195,7 @@
   {"site_code": "4211", "name": "Syracuse Testing Center", "city": "Syracuse", "state": "NY", "latitude": 43.09301, "longitude": -76.07717, "region": "Mid-Atlantic"},
   {"site_code": "4218", "name": "Rochester Testing Center", "city": "Rochester", "state": "NY", "latitude": 43.10382, "longitude": -77.53897, "region": "Mid-Atlantic"},
   {"site_code": "5323", "name": "Madison Testing Center", "city": "Madison", "state": "WI", "latitude": 43.12246, "longitude": -89.31271, "region": "Midwest"},
+  {"site_code": "5148", "name": "Concord Testing Center", "city": "Concord", "state": "NH", "county": "Merrimack", "latitude": 43.28899, "longitude": -71.58154, "region": "Northeast", "ugc_codes": ["NHZ008", "NHC013"]},
   {"site_code": "4400", "name": "Sioux Falls Testing Center", "city": "Sioux Falls", "state": "SD", "latitude": 43.50111, "longitude": -96.77396, "region": "Midwest"},
   {"site_code": "2002", "name": "Boise Testing Center", "city": "Boise", "state": "ID", "latitude": 43.5962, "longitude": -116.3779, "region": "Mountain"},
   {"site_code": "3403", "name": "Portsmouth Testing Center", "city": "Portsmouth", "state": "NH", "latitude": 43.63772, "longitude": -70.32905, "region": "Northeast"},
