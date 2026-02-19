@@ -14,6 +14,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.6.1] - 2026-02-19
+
+### Added
+- **New Site: Concord, NH (5148)** - 220th testing center added
+  - Location: 2 Whitney Rd, Concord, NH 03301
+  - UGC Codes: NHZ008, NHC013 (Merrimack County)
+  - Region: Northeast
+- **CWA Field** - Added NWS County Warning Area office code to all sites
+  - New `cwa` column in sites table (e.g., "IND", "GYX", "MFL")
+  - Populated for all 220 sites from NOAA /points API data
+  - Stored in sites.json for future seeding
+
+### Changed
+- **NWS Forecast Links** - Updated from lat/lon MapClick to CWA office URLs
+  - Old: `https://forecast.weather.gov/MapClick.php?lat=X&lon=Y`
+  - New: `https://www.weather.gov/{cwa}` (e.g., `https://www.weather.gov/ind`)
+  - Provides operations team with direct access to regional NWS office pages
+  - Links include local forecasts, active alerts, and radar for the region
+
 ## [1.6.0] - 2026-02-15
 
 ### Removed
