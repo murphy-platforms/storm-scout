@@ -527,15 +527,15 @@
         function getExternalLinks(advisory) {
             const links = [];
             
-            // Local forecast page with alerts (most useful - shows alerts for exact location)
-            if (siteData && siteData.latitude && siteData.longitude) {
-                const forecastUrl = `https://forecast.weather.gov/MapClick.php?lat=${siteData.latitude}&lon=${siteData.longitude}`;
+            // NWS office homepage (shows local forecasts, alerts, and radar for the region)
+            if (siteData && siteData.cwa) {
+                const nwsUrl = `https://www.weather.gov/${siteData.cwa.toLowerCase()}`;
                 links.push(`
-                    <a href="${forecastUrl}" 
+                    <a href="${nwsUrl}" 
                        target="_blank" 
                        rel="noopener noreferrer"
                        class="btn btn-sm btn-outline-primary me-2"
-                       title="View NWS forecast and active alerts for this location">
+                       title="View NWS office homepage for this region">
                         <i class="bi bi-cloud-sun"></i> NWS Forecast
                     </a>
                 `);
