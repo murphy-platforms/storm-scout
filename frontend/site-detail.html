@@ -355,6 +355,17 @@
         }
         
         /**
+         * Extract the *WHAT... block from a NOAA alert description
+         * @param {string} description - Full alert description text
+         * @returns {string|null} The WHAT text, or null if not found
+         */
+        function extractWhat(description) {
+            if (!description) return null;
+            const match = description.match(/\* WHAT\.\.\.(.+?)(?=\n\n|\n\* |$)/s);
+            return match ? match[1].replace(/\s+/g, ' ').trim() : null;
+        }
+        
+        /**
          * Extract the *WHEN... block from a NOAA alert description
          * @param {string} description - Full alert description text
          * @returns {string|null} The WHEN text, or null if not found
@@ -370,6 +381,7 @@
             const card = document.getElementById('highestAlertCard');
             const advisoryJson = JSON.stringify(advisory).replace(/'/g, '&#39;');
             
+            const whatText = extractWhat(advisory.description);
             const whenText = extractWhen(advisory.description);
             
             card.innerHTML = html`
@@ -379,11 +391,12 @@
                     ${raw(getActionBadgeWithTime(advisory))}
                 </p>
                 <p class="card-text">${advisory.headline || advisory.advisory_type}</p>
+                ${raw(whatText ? `<p class="card-text"><strong>What:</strong> ${escapeHtml(whatText)}</p>` : '')}
+                ${raw(whenText ? `<p class="card-text"><strong>When:</strong> ${escapeHtml(whenText)}</p>` : '')}
                 <p class="card-text">
                     <strong>Issued:</strong> ${raw(formatDate(advisory.last_updated))}<br>
                     <strong>Source:</strong> ${advisory.source}
                 </p>
-                ${raw(whenText ? `<p class="card-text"><strong>When:</strong> ${escapeHtml(whenText)}</p>` : '')}
                 <div class="mt-3">
                     ${raw(`<button class="btn btn-sm btn-outline-info me-2 view-alert-btn" data-advisory='${advisoryJson}'>
                         <i class="bi bi-file-text"></i> View Full Alert
@@ -478,11 +491,12 @@
                                     `<span class="badge zone-badge ms-2">${escapeHtml(group.representative.source)}</span>`)}
                             </p>
                             <p class="mb-1">${group.representative.headline || group.type}</p>
+                            ${raw((() => { const t = extractWhat(group.representative.description); return t ? `<p class="mb-1"><strong>What:</strong> ${escapeHtml(t)}</p>` : ''; })())}
+                            ${raw((() => { const w = extractWhen(group.representative.description); return w ? `<p class="mb-1"><strong>When:</strong> ${escapeHtml(w)}</p>` : ''; })())}
                             <p class="mb-1">
                                 <strong>Issued:</strong> ${raw(formatDate(group.representative.last_updated))}<br>
                                 <strong>Source:</strong> ${group.representative.source}
                             </p>
-                            ${raw((() => { const w = extractWhen(group.representative.description); return w ? `<p class="mb-1"><strong>When:</strong> ${escapeHtml(w)}</p>` : ''; })())}
                             ${raw(group.zone_count > 1 ? 
                                 `<small class="text-muted d-block mb-2">
                                     This alert covers multiple NWS forecast zones for this location.

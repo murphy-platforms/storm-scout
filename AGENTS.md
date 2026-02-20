@@ -380,7 +380,7 @@ ssh -p 21098 mwqtiakilx@teammurphy.rocks "touch ~/storm-scout/tmp/restart.txt"
 - ✅ ProInsights reference import/sync workflow (site_reference table, import + sync scripts)
 - ✅ Site names synced from ProInsights MetroAreaName, normalized to UPPER CASE
 - ✅ Dashboard cards show site_code + site_name (index.html, advisories.html, sites.html)
-- ✅ Site detail alert cards show headline, issued, source, and *WHEN timing (expires removed)
+- ✅ Site detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
