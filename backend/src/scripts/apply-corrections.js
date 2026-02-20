@@ -1,0 +1,138 @@
+#!/usr/bin/env node
+/**
+ * apply-corrections.js
+ * Applies verified coordinate corrections, updates Miami UGC zone,
+ * removes child site 6753, and generates deployment SQL.
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const dataDir = path.join(__dirname, '..', 'data');
+const sitesPath = path.join(dataDir, 'sites.json');
+
+// Corrections from verification
+const corrections = {
+  '0383': { latitude: 32.8379303, longitude: -97.0124383 },
+  '0624': { latitude: 25.7832367, longitude: -80.3003754, ugc_codes: ['FLZ074', 'FLC086'] },
+  '5298': { latitude: 33.8579818, longitude: -98.563651 },
+  '6752': { latitude: 40.7071357, longitude: -74.007455 },
+};
+
+const REMOVE_SITE = '6753';
+
+// Load sites
+let sites = JSON.parse(fs.readFileSync(sitesPath, 'utf8'));
+console.log(`Loaded ${sites.length} sites\n`);
+
+// Apply corrections
+const sqlStatements = [];
+for (const [code, updates] of Object.entries(corrections)) {
+  const site = sites.find(s => s.site_code === code);
+  if (!site) {
+    console.error(`Site ${code} not found!`);
+    continue;
+  }
+
+  const changes = [];
+  const setClauses = [];
+
+  if (updates.latitude !== undefined) {
+    changes.push(`lat: ${site.latitude} → ${updates.latitude}`);
+    site.latitude = updates.latitude;
+    setClauses.push(`latitude = ${updates.latitude}`);
+  }
+  if (updates.longitude !== undefined) {
+    changes.push(`lon: ${site.longitude} → ${updates.longitude}`);
+    site.longitude = updates.longitude;
+    setClauses.push(`longitude = ${updates.longitude}`);
+  }
+  if (updates.ugc_codes !== undefined) {
+    changes.push(`ugc: ${JSON.stringify(site.ugc_codes)} → ${JSON.stringify(updates.ugc_codes)}`);
+    site.ugc_codes = updates.ugc_codes;
+    setClauses.push(`ugc_codes = '${JSON.stringify(updates.ugc_codes)}'`);
+  }
+
+  console.log(`[${code}] ${site.name}: ${changes.join(', ')}`);
+
+  if (setClauses.length > 0) {
+    sqlStatements.push(
+      `UPDATE sites SET ${setClauses.join(', ')}, updated_at = NOW() WHERE site_code = '${code}';`
+    );
+  }
+}
+
+// Remove child site 6753
+const removeIdx = sites.findIndex(s => s.site_code === REMOVE_SITE);
+if (removeIdx >= 0) {
+  console.log(`\nRemoving site ${REMOVE_SITE}: ${sites[removeIdx].name}`);
+  sites.splice(removeIdx, 1);
+  sqlStatements.push(`DELETE FROM sites WHERE site_code = '${REMOVE_SITE}';`);
+} else {
+  console.error(`Site ${REMOVE_SITE} not found for removal!`);
+}
+
+// Re-sort by latitude (ascending, matching existing sort order)
+sites.sort((a, b) => a.latitude - b.latitude);
+
+// Write updated sites.json
+fs.writeFileSync(sitesPath, JSON.stringify(sites, null, 2) + '\n');
+console.log(`\nWrote ${sites.length} sites to sites.json`);
+
+// Write SQL file
+const sqlHeader = `-- Storm Scout: Site corrections and cleanup
+-- Generated: ${new Date().toISOString()}
+-- Updates coordinates for 4 sites verified against physical addresses
+-- Removes child site 6753 (parent: 6752, same physical address)
+
+`;
+const sqlContent = sqlHeader + sqlStatements.join('\n\n') + '\n';
+const sqlPath = path.join(dataDir, 'site-corrections.sql');
+fs.writeFileSync(sqlPath, sqlContent);
+console.log(`Wrote SQL to site-corrections.sql`);
+
+// Regenerate new-sites-output.json (9 sites, no 6753)
+const newSiteCodes = ['0313', '0383', '0624', '1908', '1910', '3700', '3702', '5298', '6752'];
+const newSites = newSiteCodes.map(code => {
+  const s = sites.find(x => x.site_code === code);
+  return {
+    site_code: s.site_code,
+    name: s.name,
+    city: s.city,
+    state: s.state,
+    latitude: s.latitude,
+    longitude: s.longitude,
+    region: s.region,
+    cwa: s.cwa,
+    county: s.county,
+    ugc_codes: s.ugc_codes
+  };
+});
+fs.writeFileSync(
+  path.join(dataDir, 'new-sites-output.json'),
+  JSON.stringify(newSites, null, 2) + '\n'
+);
+console.log('Regenerated new-sites-output.json (9 sites)');
+
+// Regenerate new-sites-insert.sql (9 sites, no 6753)
+const insertHeader = `-- Storm Scout: INSERT new sites (corrected)
+-- Generated: ${new Date().toISOString()}
+-- 9 sites (6753 removed as child of 6752)
+
+`;
+const inserts = newSites.map(s => {
+  const ugc = JSON.stringify(s.ugc_codes).replace(/"/g, '\\"');
+  return `INSERT IGNORE INTO sites (site_code, name, city, state, county, ugc_codes, cwa, latitude, longitude, region)
+VALUES ('${s.site_code}', '${s.name}', '${s.city}', '${s.state}', '${s.county}', '${JSON.stringify(s.ugc_codes)}', '${s.cwa}', ${s.latitude}, ${s.longitude}, '${s.region}');`;
+}).join('\n\n');
+fs.writeFileSync(path.join(dataDir, 'new-sites-insert.sql'), insertHeader + inserts + '\n');
+console.log('Regenerated new-sites-insert.sql (9 sites)');
+
+// Summary
+console.log('\n=== SUMMARY ===');
+console.log(`Total sites: ${sites.length}`);
+console.log(`Sites updated: ${Object.keys(corrections).length}`);
+console.log(`Sites removed: 1 (${REMOVE_SITE})`);
+console.log(`SQL statements: ${sqlStatements.length}`);
+console.log('\nSQL to deploy:');
+sqlStatements.forEach(s => console.log(`  ${s}`));

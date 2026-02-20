@@ -1,20 +1,5 @@
 [
   {
-    "site_code": "0313",
-    "name": "Waco Testing Center",
-    "city": "Waco",
-    "state": "TX",
-    "latitude": 31.51962,
-    "longitude": -97.18002,
-    "region": "South Central",
-    "cwa": "FWD",
-    "county": "McLennan",
-    "ugc_codes": [
-      "TXZ159",
-      "TXC309"
-    ]
-  },
-  {
     "site_code": "0383",
     "name": "Irving Testing Center",
     "city": "Irving",
@@ -34,14 +19,59 @@
     "name": "Miami Testing Center",
     "city": "Miami",
     "state": "FL",
-    "latitude": 25.7832367,
-    "longitude": -80.3003754,
+    "latitude": 25.77416,
+    "longitude": -80.1936,
     "region": "Southeast",
     "cwa": "MFL",
     "county": "Miami-Dade",
     "ugc_codes": [
-      "FLZ074",
+      "FLZ173",
       "FLC086"
+    ]
+  },
+  {
+    "site_code": "5298",
+    "name": "Wichita Falls Testing Center",
+    "city": "Wichita Falls",
+    "state": "TX",
+    "latitude": 33.8579818,
+    "longitude": -98.563651,
+    "region": "South Central",
+    "cwa": "OUN",
+    "county": "Wichita",
+    "ugc_codes": [
+      "TXZ086",
+      "TXC485"
+    ]
+  },
+  {
+    "site_code": "6752",
+    "name": "NYC Downtown Testing Center",
+    "city": "New York",
+    "state": "NY",
+    "latitude": 40.7071357,
+    "longitude": -74.007455,
+    "region": "Mid-Atlantic",
+    "cwa": "OKX",
+    "county": "New York (Manhattan)",
+    "ugc_codes": [
+      "NYZ072",
+      "NYC061"
+    ]
+  },
+  {
+    "site_code": "0313",
+    "name": "Waco Testing Center",
+    "city": "Waco",
+    "state": "TX",
+    "latitude": 31.51962,
+    "longitude": -97.18002,
+    "region": "South Central",
+    "cwa": "FWD",
+    "county": "McLennan",
+    "ugc_codes": [
+      "TXZ159",
+      "TXC309"
     ]
   },
   {
@@ -102,36 +132,6 @@
     "ugc_codes": [
       "MTZ319",
       "MTC049"
-    ]
-  },
-  {
-    "site_code": "5298",
-    "name": "Wichita Falls Testing Center",
-    "city": "Wichita Falls",
-    "state": "TX",
-    "latitude": 33.8579818,
-    "longitude": -98.563651,
-    "region": "South Central",
-    "cwa": "OUN",
-    "county": "Wichita",
-    "ugc_codes": [
-      "TXZ086",
-      "TXC485"
-    ]
-  },
-  {
-    "site_code": "6752",
-    "name": "NYC Downtown Testing Center",
-    "city": "New York",
-    "state": "NY",
-    "latitude": 40.7071357,
-    "longitude": -74.007455,
-    "region": "Mid-Atlantic",
-    "cwa": "OKX",
-    "county": "New York (Manhattan)",
-    "ugc_codes": [
-      "NYZ072",
-      "NYC061"
     ]
   }
 ]

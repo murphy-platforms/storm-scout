@@ -44,13 +44,13 @@
     "name": "Miami Testing Center",
     "city": "Miami",
     "state": "FL",
-    "latitude": 25.77416,
-    "longitude": -80.1936,
+    "latitude": 25.7832367,
+    "longitude": -80.3003754,
     "region": "Southeast",
     "cwa": "MFL",
     "county": "Miami-Dade",
     "ugc_codes": [
-      "FLZ173",
+      "FLZ074",
       "FLC086"
     ]
   },
@@ -454,8 +454,8 @@
     "name": "Irving Testing Center",
     "city": "Irving",
     "state": "TX",
-    "latitude": 32.82952,
-    "longitude": -96.94422,
+    "latitude": 32.8379303,
+    "longitude": -97.0124383,
     "region": "South Central",
     "cwa": "FWD",
     "county": "Dallas",
@@ -595,6 +595,21 @@
     "cwa": "ILM"
   },
   {
+    "site_code": "5298",
+    "name": "Wichita Falls Testing Center",
+    "city": "Wichita Falls",
+    "state": "TX",
+    "latitude": 33.8579818,
+    "longitude": -98.563651,
+    "region": "South Central",
+    "cwa": "OUN",
+    "county": "Wichita",
+    "ugc_codes": [
+      "TXZ086",
+      "TXC485"
+    ]
+  },
+  {
     "site_code": "0081",
     "name": "Riverside Testing Center",
     "city": "Riverside",
@@ -603,21 +618,6 @@
     "longitude": -117.81365,
     "region": "West",
     "cwa": "SGX"
-  },
-  {
-    "site_code": "5298",
-    "name": "Wichita Falls Testing Center",
-    "city": "Wichita Falls",
-    "state": "TX",
-    "latitude": 33.87755,
-    "longitude": -98.51857,
-    "region": "South Central",
-    "cwa": "OUN",
-    "county": "Wichita",
-    "ugc_codes": [
-      "TXZ086",
-      "TXC485"
-    ]
   },
   {
     "site_code": "0024",
@@ -1554,23 +1554,8 @@
     "name": "NYC Downtown Testing Center",
     "city": "New York",
     "state": "NY",
-    "latitude": 40.71273,
-    "longitude": -74.00602,
-    "region": "Mid-Atlantic",
-    "cwa": "OKX",
-    "county": "New York (Manhattan)",
-    "ugc_codes": [
-      "NYZ072",
-      "NYC061"
-    ]
-  },
-  {
-    "site_code": "6753",
-    "name": "NYC Downtown Testing Center 2",
-    "city": "New York",
-    "state": "NY",
-    "latitude": 40.71273,
-    "longitude": -74.00602,
+    "latitude": 40.7071357,
+    "longitude": -74.007455,
     "region": "Mid-Atlantic",
     "cwa": "OKX",
     "county": "New York (Manhattan)",
