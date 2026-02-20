@@ -20,9 +20,9 @@ const ObservationModel = {
         site_id, station_id, temperature_c, relative_humidity, dewpoint_c,
         wind_speed_kmh, wind_direction_deg, wind_gust_kmh,
         barometric_pressure_pa, visibility_m, wind_chill_c, heat_index_c,
-        precipitation_last_6h_m, cloud_layers, text_description,
+        cloud_layers, text_description,
         observed_at, ingested_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
       ON DUPLICATE KEY UPDATE
         station_id = VALUES(station_id),
         temperature_c = VALUES(temperature_c),
@@ -35,7 +35,6 @@ const ObservationModel = {
         visibility_m = VALUES(visibility_m),
         wind_chill_c = VALUES(wind_chill_c),
         heat_index_c = VALUES(heat_index_c),
-        precipitation_last_6h_m = VALUES(precipitation_last_6h_m),
         cloud_layers = VALUES(cloud_layers),
         text_description = VALUES(text_description),
         observed_at = VALUES(observed_at),
@@ -53,7 +52,6 @@ const ObservationModel = {
       data.visibility_m,
       data.wind_chill_c,
       data.heat_index_c,
-      data.precipitation_last_6h_m,
       data.cloud_layers,
       data.text_description,
       data.observed_at
