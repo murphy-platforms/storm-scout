@@ -1,6 +1,6 @@
 -- Storm Scout Database Schema
 -- MySQL/MariaDB compatible
--- Updated: 2026-02-13
+-- Updated: 2026-02-20
 
 -- Sites table: static list of testing center locations
 CREATE TABLE IF NOT EXISTS sites (
@@ -15,6 +15,13 @@ CREATE TABLE IF NOT EXISTS sites (
     latitude DECIMAL(10, 7) NOT NULL,
     longitude DECIMAL(10, 7) NOT NULL,
     region VARCHAR(50),
+    -- ProInsights reference data columns
+    metro_area_name VARCHAR(255),
+    reference_site_name VARCHAR(255),
+    channel_engagement_manager VARCHAR(100),
+    management_type VARCHAR(100),
+    workstations_active INT DEFAULT 0,
+    ta_workstations_active INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -132,3 +139,29 @@ CREATE TABLE IF NOT EXISTS advisory_history (
 CREATE INDEX idx_advisory_history_site ON advisory_history(site_id);
 CREATE INDEX idx_advisory_history_time ON advisory_history(snapshot_time);
 CREATE INDEX idx_advisory_history_site_time ON advisory_history(site_id, snapshot_time);
+
+-- Site reference table: staging table for ProInsights CSV imports
+CREATE TABLE IF NOT EXISTS site_reference (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    site_code VARCHAR(10) NOT NULL,
+    parent_site_code VARCHAR(10) NOT NULL,
+    metro_area_name VARCHAR(255),
+    site_name VARCHAR(255),
+    city VARCHAR(100),
+    state_province VARCHAR(100),
+    state VARCHAR(2),
+    channel_engagement_manager VARCHAR(100),
+    country VARCHAR(100),
+    sub_region VARCHAR(100),
+    region VARCHAR(100),
+    site_status VARCHAR(50),
+    channel VARCHAR(50),
+    management_type VARCHAR(100),
+    delivery_type VARCHAR(50),
+    cost_center VARCHAR(20),
+    workstations_active INT DEFAULT 0,
+    ta_workstations_active INT DEFAULT 0,
+    imported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE INDEX idx_site_ref_site_code (site_code),
+    INDEX idx_site_ref_parent_code (parent_site_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
