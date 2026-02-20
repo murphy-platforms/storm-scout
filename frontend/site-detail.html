@@ -92,9 +92,6 @@
                 </div>
             </div>
 
-            <!-- Decision Helper -->
-            <div class="row mb-4" id="decisionHelperContainer"></div>
-
             <!-- Highest Severity Alert -->
             <div class="row mb-4">
                 <div class="col-12">
@@ -217,7 +214,6 @@
                 
                 // Render the page
                 renderSiteHeader(siteData, siteAggData);
-                renderDecisionHelper(siteData, siteAggData);
                 renderHighestAlert(siteAggData);
                 renderImpactSummary(siteAggData);
                 renderTimeline(siteAggData);
@@ -251,107 +247,6 @@
             
             const headerCard = document.getElementById('siteHeaderCard');
             headerCard.className = `card site-card site-card-${severity.toLowerCase()}`;
-        }
-        
-        function renderDecisionHelper(site, aggData) {
-            const container = document.getElementById('decisionHelperContainer');
-            const decision = calculateDecision(aggData);
-            
-            const decisionClass = {
-                'CLOSE': 'danger',
-                'RESTRICTED': 'warning',
-                'MONITOR': 'info',
-                'OPEN': 'success'
-            }[decision.recommendation] || 'secondary';
-            
-            container.innerHTML = html`
-                <div class="col-12">
-                    <div class="alert alert-${raw(decisionClass)} border-2">
-                        <h5 class="alert-heading">
-                            <i class="bi bi-lightbulb-fill"></i> Decision Recommendation
-                        </h5>
-                        <p class="mb-2">
-                            <strong>Recommendation:</strong> 
-                            <span class="badge bg-${raw(decisionClass)}" style="font-size: 1.1rem; padding: 0.5rem 0.75rem;">
-                                ${decision.recommendation}
-                            </span>
-                        </p>
-                        <p class="mb-2"><strong>Reason:</strong> ${decision.reason}</p>
-                        <p class="mb-2"><strong>Safety Risk:</strong> ${decision.safetyRisk}</p>
-                        <p class="mb-0"><strong>Estimated Duration:</strong> ${decision.duration}</p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function calculateDecision(aggData) {
-            const severity = aggData.highest_severity;
-            const advisory = aggData.highest_severity_advisory;
-            const alertCount = aggData.unique_advisory_count;
-            
-            // Calculate time to expiration
-            let duration = 'Unknown';
-            if (advisory.expires) {
-                const hours = Math.round((new Date(advisory.expires) - new Date()) / 3600000);
-                duration = hours > 24 ? `${Math.round(hours/24)} days` : `${hours} hours`;
-            }
-            
-            // Decision logic
-            if (severity === 'Extreme') {
-                return {
-                    recommendation: 'CLOSE',
-                    reason: `Extreme severity alert (${advisory.advisory_type}). Immediate action required.`,
-                    safetyRisk: 'EXTREME',
-                    duration
-                };
-            }
-            
-            if (severity === 'Severe') {
-                // Check for travel/safety impacting alerts
-                const travelImpacting = ['Blizzard', 'Ice Storm', 'Flood', 'Hurricane', 'Tornado'];
-                const isTravelImpact = travelImpacting.some(t => advisory.advisory_type.includes(t));
-                
-                if (isTravelImpact) {
-                    return {
-                        recommendation: 'CLOSE',
-                        reason: `Severe weather (${advisory.advisory_type}) with high travel/safety impact.`,
-                        safetyRisk: 'HIGH',
-                        duration
-                    };
-                } else {
-                    return {
-                        recommendation: 'RESTRICTED',
-                        reason: `Severe weather (${advisory.advisory_type}). Monitor closely.`,
-                        safetyRisk: 'MODERATE',
-                        duration
-                    };
-                }
-            }
-            
-            if (severity === 'Moderate') {
-                if (alertCount >= 5) {
-                    return {
-                        recommendation: 'RESTRICTED',
-                        reason: `Multiple moderate alerts (${alertCount} active). Conditions may worsen.`,
-                        safetyRisk: 'MODERATE',
-                        duration
-                    };
-                } else {
-                    return {
-                        recommendation: 'MONITOR',
-                        reason: `Moderate weather (${advisory.advisory_type}). Continue monitoring.`,
-                        safetyRisk: 'LOW',
-                        duration
-                    };
-                }
-            }
-            
-            return {
-                recommendation: 'MONITOR',
-                reason: `Minor weather impacts. Normal operations with awareness.`,
-                safetyRisk: 'LOW',
-                duration
-            };
         }
         
         /**

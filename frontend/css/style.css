@@ -777,7 +777,7 @@ a.badge:hover {
     flex: 1;
 }
 
-/* Decision Helper Enhancement */
+/* Alert badge sizing */
 .alert .badge {
     font-size: inherit;
 }
