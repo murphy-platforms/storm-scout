@@ -441,11 +441,18 @@ async function ingestObservations(sites) {
         visibility_m: obs.visibility?.value ?? null,
         wind_chill_c: obs.windChill?.value ?? null,
         heat_index_c: obs.heatIndex?.value ?? null,
-        precipitation_last_6h_m: obs.precipitationLast6Hours?.value ?? null,
         cloud_layers: obs.cloudLayers ? JSON.stringify(obs.cloudLayers) : null,
         text_description: obs.textDescription || null,
         observed_at: obs.timestamp ? new Date(obs.timestamp) : null
       };
+      
+      // Warn if observation is stale (older than 2 hours)
+      if (data.observed_at) {
+        const ageMinutes = (Date.now() - data.observed_at.getTime()) / 60000;
+        if (ageMinutes > 120) {
+          console.warn(`  ⚠️  Station ${stationId}: observation is ${Math.round(ageMinutes)} min old (stale)`);
+        }
+      }
       
       // Upsert for each site mapped to this station
       for (const site of stationSites) {

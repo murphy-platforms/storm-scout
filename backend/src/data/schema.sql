@@ -156,7 +156,6 @@ CREATE TABLE IF NOT EXISTS site_observations (
     visibility_m DECIMAL(10,2),                 -- Visibility in meters
     wind_chill_c DECIMAL(5,2),                  -- Wind chill in °C
     heat_index_c DECIMAL(5,2),                  -- Heat index in °C
-    precipitation_last_6h_m DECIMAL(8,6),       -- Precipitation in meters
     cloud_layers TEXT,                          -- JSON string of cloud layer data
     text_description VARCHAR(255),              -- e.g., "Cloudy", "Partly Sunny"
     observed_at DATETIME,                       -- When the station recorded the observation

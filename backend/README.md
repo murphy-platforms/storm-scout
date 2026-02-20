@@ -6,7 +6,7 @@ Node.js + Express backend for Storm Scout weather advisory dashboard.
 
 - **Runtime**: Node.js 20 LTS (recommended) or 18+
 - **Framework**: Express.js
-- **Database**: MySQL 8.0+ / MariaDB 10.5+ (async/await with mysql2)
+- **Database**: MySQL 8.0+ / MariaDB 11.4+ (async/await with mysql2)
 - **Scheduling**: node-cron
 - **HTTP Client**: axios (with rate limiting and retry logic)
 
@@ -78,7 +78,7 @@ This creates all tables with proper indexes.
 npm run seed-db
 ```
 
-This loads all 219 US testing center locations into the database.
+This loads all 229 US testing center locations into the database.
 
 ### 6. Start the Server
 
@@ -115,6 +115,13 @@ npm run dev
 - `GET /api/status/overview` - Get dashboard overview statistics
 - `GET /api/status/sites-impacted` - Get impacted sites (Closed/At Risk)
 - `GET /api/status/sites` - Get all site statuses
+
+### Observations
+
+- `GET /api/observations` - Get current weather observations for all sites
+- `GET /api/observations/:siteCode` - Get current weather observation for a specific site
+
+Observation data includes temperature, humidity, dewpoint, wind speed/direction/gust, barometric pressure, visibility, wind chill, heat index, cloud layers, and text description. Data is sourced from the nearest NWS observation station and updated every 15 minutes.
 
 ### Notices
 
@@ -170,10 +177,12 @@ Cleanup features:
 
 Currently implemented:
 - **NOAA Weather API** - 80+ alert types covering all official weather alerts
+- **NWS Observation Stations** - Current conditions from 223 unique stations mapped to 229 sites by lat/lon
 - **Alert Taxonomy** - 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
 - **UPSERT Operations** - Prevents duplicate advisories using unique external_id index
 - **Rate Limiting** - 500ms between NOAA API requests to prevent throttling
 - **Retry Logic** - Automatic retries with exponential backoff for transient failures
+- **Staleness Detection** - Warns when observation data is >2 hours old
 
 ### Geo-Matching
 
@@ -204,31 +213,37 @@ backend/
 │   │   ├── site.js
 │   │   ├── advisory.js
 │   │   ├── advisoryHistory.js  # Trend analysis snapshots
+│   │   ├── observation.js      # Current weather observations (upsert/query)
 │   │   ├── notice.js
 │   │   └── siteStatus.js
 │   ├── routes/            # API routes
 │   │   ├── sites.js
 │   │   ├── advisories.js
+│   │   ├── observations.js     # Weather observation endpoints
 │   │   ├── notices.js
 │   │   ├── status.js
 │   │   └── filters.js      # Filter configuration API
 │   ├── ingestion/         # Weather data ingestion
-│   │   ├── noaa-ingestor.js    # Main ingestion with transactions
+│   │   ├── noaa-ingestor.js    # Main ingestion (alerts + observations)
 │   │   ├── scheduler.js        # Cron scheduler with alerting
 │   │   └── utils/
-│   │       ├── api-client.js   # NOAA API with rate limiting/retry
+│   │       ├── api-client.js   # NOAA API with rate limiting/retry (alerts + observations)
 │   │       └── normalizer.js   # Alert normalization & VTEC parsing
 │   ├── utils/
 │   │   ├── cleanup-advisories.js # Unified cleanup module
+│   │   ├── cache.js              # In-memory caching with node-cache
 │   │   └── alerting.js          # Failure notification system
 │   ├── scripts/           # Maintenance scripts
 │   │   ├── scheduled-cleanup.js    # Cron-friendly cleanup
+│   │   ├── import-reference.js     # Import ProInsights CSV
+│   │   ├── sync-reference.js       # Sync reference data to sites
+│   │   ├── fetch-observation-stations.js  # Map sites to nearest NWS stations
 │   │   ├── cleanup-duplicates.js   # (deprecated - uses unified module)
 │   │   └── cleanup-event-id-duplicates.js # (deprecated)
 │   └── data/              # Static data and schema
 │       ├── schema.sql     # Full schema with all columns
 │       ├── migrations/    # SQL migration files
-│       └── sites.json     # 219 testing centers
+│       └── sites.json     # 229 testing centers
 ├── package.json
 └── README.md
 ```

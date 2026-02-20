@@ -184,7 +184,7 @@ strom-scout/
 ### Database Patterns
 - **Connection Pool**: Single pool exported from `config/database.js`
 - **Transactions**: Use for multi-step operations (especially ingestion)
-- **UPSERT**: Use `ON DUPLICATE KEY UPDATE` for advisory updates
+- **UPSERT**: Use `ON DUPLICATE KEY UPDATE` with `VALUES()` (deprecated in MariaDB 10.3.3+ but still functional; MariaDB 11.4 does NOT support MySQL's `AS alias` syntax yet)
 - **Indexes**: All foreign keys and filter columns have indexes
 
 ### API Conventions
@@ -257,6 +257,17 @@ CWA is the 3-letter NWS office code responsible for a geographic area. Used for 
 - Example: `https://www.weather.gov/ind` for Indianapolis NWS office
 
 **Usage**: Site detail page "NWS Forecast" button links to the regional office homepage.
+
+### NWS Observation Stations
+Each site is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `sites.observation_station`.
+
+**Key facts**:
+- 229 sites map to 223 unique stations (some stations serve multiple nearby sites, e.g., KNYC→3 NYC sites)
+- Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
+- NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
+- Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
+- If a station returns 404, remap to the next-nearest station via `fetch-observation-stations.js --force` or manual DB update
+- Station remapping history: KSVR→KSLC (Salt Lake City), KDKB→KARR (Naperville IL) — originals decommissioned
 
 ### Multi-Zone Alert Coverage
 Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
@@ -397,6 +408,7 @@ ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com "touch ~/storm-scout/
 - ✅ Site detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
 - ✅ Observation station mapping for all 229 sites (223 unique stations)
+- ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
