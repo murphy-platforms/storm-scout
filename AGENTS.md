@@ -51,7 +51,8 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **API Client**: Fetch API with centralized error handling
 
 ### Data Sources
-- **NOAA Weather API**: Primary source for all weather advisories
+- **NOAA Weather API**: Primary source for all weather advisories and current weather observations
+- **NWS Observation Stations**: Current conditions from 223 ICAO weather stations mapped by site lat/lon
 - **VTEC Codes**: Valid Time Event Code parsing for deduplication
 - **UGC Codes**: County/zone codes for precise geo-matching
 
@@ -81,20 +82,23 @@ strom-scout/
 │   │   │   ├── site.js
 │   │   │   ├── advisory.js
 │   │   │   ├── advisoryHistory.js
+│   │   │   ├── observation.js        # Current weather observations (upsert/query)
 │   │   │   ├── notice.js
 │   │   │   └── siteStatus.js
 │   │   ├── routes/              # REST API endpoints
 │   │   │   ├── sites.js
 │   │   │   ├── advisories.js
+│   │   │   ├── observations.js       # GET /api/observations, /api/observations/:siteCode
+│   │   │   ├── operational-status.js
 │   │   │   ├── notices.js
 │   │   │   ├── status.js
 │   │   │   └── filters.js
 │   │   ├── ingestion/           # Weather data ingestion
-│   │   │   ├── noaa-ingestor.js      # Main ingestion with transactions
+│   │   │   ├── noaa-ingestor.js      # Main ingestion (alerts + observations)
 │   │   │   ├── scheduler.js          # Cron scheduler with alerting
 │   │   │   ├── local-ingestor.js     # (Planned: state/local feeds)
 │   │   │   └── utils/
-│   │   │       ├── api-client.js     # NOAA API with rate limiting/retry
+│   │   │       ├── api-client.js     # NOAA API with rate limiting/retry (alerts + observations)
 │   │   │       └── normalizer.js     # Alert normalization & VTEC parsing
 │   │   ├── middleware/              # Express middleware
 │   │   │   ├── rateLimiter.js       # API rate limiting (500/15min, 20/15min writes)
@@ -163,6 +167,8 @@ strom-scout/
 - `vtec_action` (advisories) - Action code (NEW, CON, EXT, EXP, CAN, UPG)
 - `ugc_codes` (sites) - JSON array of UGC codes for precise matching
 - `cwa` (sites) - NWS County Warning Area office code (e.g., "IND", "GYX")
+- `observation_station` (sites) - Nearest NWS observation station ICAO code (e.g., "KORD", "KJFK")
+- `site_id` (site_observations) - UNIQUE FK; one observation row per site, replaced each cycle
 
 ---
 
@@ -285,7 +291,7 @@ npm run dev            # Start with nodemon (auto-restart)
 
 # Database
 npm run init-db        # Initialize schema
-npm run seed-db        # Load 220 sites
+npm run seed-db        # Load 229 sites
 
 # Data Operations
 npm run ingest         # Manual NOAA ingestion
@@ -511,6 +517,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
 **Critical Data**: The Storm Scout database (`***REDACTED***`) contains:
 - **Static**: 229 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
+- **Transient**: Weather observations (site_observations table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
 - **Configuration**: Site status overrides (site_status table) - manual IMT decisions, **CRITICAL** to preserve
 
