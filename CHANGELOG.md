@@ -14,6 +14,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.6.2] - 2026-02-20
+
+### Added
+- **10 New Testing Centers** - Total sites increased from 220 to 230
+  - 0313 Waco, TX (McLennan County, FWD)
+  - 0383 Irving, TX (Dallas County, FWD)
+  - 0624 Miami, FL (Miami-Dade County, MFL)
+  - 1908 Santa Fe, NM (Santa Fe County, ABQ)
+  - 1910 Albuquerque, NM (Bernalillo County, ABQ)
+  - 3700 Billings, MT (Yellowstone County, BYZ)
+  - 3702 Helena, MT (Lewis and Clark County, TFX)
+  - 5298 Wichita Falls, TX (Wichita County, OUN)
+  - 6752 NYC Downtown, NY (New York County, OKX)
+  - 6753 NYC Downtown 2, NY (New York County, OKX)
+  - Montana added as new state (2 sites, Mountain region)
+  - All sites include UGC codes, CWA, and county data
+- **Add New Sites Script** (`backend/src/scripts/add-new-sites.js`)
+  - Geocodes addresses via US Census Geocoder / Nominatim
+  - Fetches UGC codes, CWA, and county from NOAA /points API
+  - Generates sites.json entries and production SQL INSERT statements
+  - Includes verification report with warnings for unconfirmed addresses
+
+### Data Sources
+- Addresses sourced from Prometric public test center lists (NCSF, DSST, ISEE/ERB PDFs)
+- Coordinates from US Census Geocoder (6 sites) and Nominatim/OSM (4 sites)
+- Weather data from NOAA Weather API /points endpoint
+
 ## [1.6.1] - 2026-02-19
 
 ### Added
