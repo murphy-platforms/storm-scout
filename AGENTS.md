@@ -27,6 +27,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 229 sites
 - **ProInsights Reference Import**: Recurring CSV import from ProInsights with sync to sites table
 - **Site Name Normalization**: All site names sourced from ProInsights MetroAreaName, normalized to UPPER CASE
+- **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 
 ---
 
@@ -117,7 +118,8 @@ strom-scout/
 │   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
 │   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
 │   │   │   ├── import-reference.js       # Import ProInsights CSV into site_reference table
-│   │   │   └── sync-reference.js         # Sync reference data to sites table (name, display columns)
+│   │   │   ├── sync-reference.js         # Sync reference data to sites table (name, display columns)
+│   │   │   └── fetch-observation-stations.js  # Map sites to nearest NWS observation stations
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
 │   │       ├── sites.json            # 229 testing centers
@@ -145,13 +147,14 @@ strom-scout/
 
 ### Database Schema
 
-**6 Main Tables**:
-1. **sites** - 229 testing center locations (includes ProInsights display columns: metro_area_name, reference_site_name, channel_engagement_manager, management_type, workstations_active, ta_workstations_active)
+**7 Main Tables**:
+1. **sites** - 229 testing center locations (includes observation_station ICAO code, ProInsights display columns)
 2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
-3. **site_status** - Operational status tracking (manual overrides + auto-calculation)
-4. **site_reference** - Staging table for ProInsights CSV imports (TRUNCATE + INSERT on each import)
-5. **notices** - Government/emergency notices (future feature)
-6. **advisory_history** - Snapshots for trend analysis (future feature)
+3. **site_observations** - Current weather conditions per site (replaced each ingestion cycle, no history)
+4. **site_status** - Operational status tracking (manual overrides + auto-calculation)
+5. **site_reference** - Staging table for ProInsights CSV imports (TRUNCATE + INSERT on each import)
+6. **notices** - Government/emergency notices (future feature)
+7. **advisory_history** - Snapshots for trend analysis (future feature)
 
 **Key Fields**:
 - `external_id` (advisories) - NOAA alert ID, UNIQUE constraint prevents duplicates
@@ -298,6 +301,11 @@ node src/utils/cleanup-advisories.js expired    # Remove expired only
 node src/scripts/import-reference.js /path/to/proinsights.csv   # Import CSV to site_reference
 node src/scripts/sync-reference.js --dry-run                    # Preview changes
 node src/scripts/sync-reference.js                              # Apply: syncs name, display columns to sites
+
+# Weather Observation Stations (one-time setup, or re-run with --force)
+node src/scripts/fetch-observation-stations.js --dry-run        # Preview station mappings
+node src/scripts/fetch-observation-stations.js                  # Apply: maps sites to nearest NWS stations
+node src/scripts/fetch-observation-stations.js --force          # Re-map all (overwrite existing)
 ```
 
 ### ProInsights Reference Workflow
@@ -381,6 +389,8 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ Site names synced from ProInsights MetroAreaName, normalized to UPPER CASE
 - ✅ Dashboard cards show site_code + site_name (index.html, advisories.html, sites.html)
 - ✅ Site detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
+- ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
+- ✅ Observation station mapping for all 229 sites (223 unique stations)
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
