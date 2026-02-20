@@ -1,7 +1,7 @@
 [
   {
     "site_code": "5504",
-    "name": "Guam Testing Center",
+    "name": "GUAM TESTING CENTER",
     "city": "Tamuning",
     "state": "GU",
     "latitude": 13.50914,
@@ -11,7 +11,7 @@
   },
   {
     "site_code": "5253",
-    "name": "St. Thomas Testing Center",
+    "name": "ST. THOMAS TESTING CENTER",
     "city": "Charlotte Amalie",
     "state": "VI",
     "latitude": 18.34397,
@@ -21,7 +21,7 @@
   },
   {
     "site_code": "5221",
-    "name": "San Juan Testing Center",
+    "name": "SAN JUAN TESTING CENTER",
     "city": "San Juan",
     "state": "PR",
     "latitude": 18.41632,
@@ -86,7 +86,7 @@
   },
   {
     "site_code": "5134",
-    "name": "Fort Lauderdale FL",
+    "name": "FORT LAUDERDALE FL",
     "city": "West Palm Beach",
     "state": "FL",
     "latitude": 26.36863,
@@ -106,7 +106,7 @@
   },
   {
     "site_code": "0603",
-    "name": "West Palm Beach FL",
+    "name": "WEST PALM BEACH FL",
     "city": "Boca Raton",
     "state": "FL",
     "latitude": 26.72568,
@@ -116,7 +116,7 @@
   },
   {
     "site_code": "0606",
-    "name": "Sarasota FL",
+    "name": "SARASOTA FL",
     "city": "St. Petersburg",
     "state": "FL",
     "latitude": 27.33716,
@@ -156,7 +156,7 @@
   },
   {
     "site_code": "0622",
-    "name": "Daytona FL",
+    "name": "DAYTONA FL",
     "city": "Daytona Beach",
     "state": "FL",
     "latitude": 29.222,
@@ -266,7 +266,7 @@
   },
   {
     "site_code": "5400",
-    "name": "College Station TX",
+    "name": "COLLEGE STATION TX",
     "city": "College Station",
     "state": "TX",
     "latitude": 30.62211,
@@ -296,7 +296,7 @@
   },
   {
     "site_code": "1313",
-    "name": "Alexandria LA",
+    "name": "ALEXANDRIA LA",
     "city": "Alexandria",
     "state": "LA",
     "latitude": 31.17717,
@@ -431,7 +431,7 @@
   },
   {
     "site_code": "2613",
-    "name": "Auburn AL",
+    "name": "AUBURN AL",
     "city": "Auburn",
     "state": "AL",
     "latitude": 32.60468,
@@ -441,7 +441,7 @@
   },
   {
     "site_code": "0400",
-    "name": "Yuma AZ",
+    "name": "YUMA AZ",
     "city": "Yuma",
     "state": "AZ",
     "latitude": 32.69493,
@@ -586,7 +586,7 @@
   },
   {
     "site_code": "0385",
-    "name": "Florence SC",
+    "name": "FLORENCE SC",
     "city": "Myrtle Beach",
     "state": "SC",
     "latitude": 33.801,
@@ -701,7 +701,7 @@
   },
   {
     "site_code": "0522",
-    "name": "Ventura CA",
+    "name": "VENTURA CA",
     "city": "Santa Barbara",
     "state": "CA",
     "latitude": 34.21686,
@@ -711,7 +711,7 @@
   },
   {
     "site_code": "3001",
-    "name": "Gainesville GA",
+    "name": "GAINESVILLE GA",
     "city": "Gainesville",
     "state": "GA",
     "latitude": 34.53039,
@@ -826,7 +826,7 @@
   },
   {
     "site_code": "0544",
-    "name": "Bakersfield CA",
+    "name": "BAKERSFIELD CA",
     "city": "Bakersfield",
     "state": "CA",
     "latitude": 35.3875,
@@ -866,7 +866,7 @@
   },
   {
     "site_code": "1908",
-    "name": "Santa Fe NM",
+    "name": "SANTA FE NM",
     "city": "Santa Fe",
     "state": "NM",
     "latitude": 35.65926,
@@ -941,7 +941,7 @@
   },
   {
     "site_code": "1011",
-    "name": "Clarksville TN",
+    "name": "CLARKSVILLE TN",
     "city": "Clarksville",
     "state": "TN",
     "latitude": 36.53472,
@@ -951,7 +951,7 @@
   },
   {
     "site_code": "5174",
-    "name": "Bristol VA",
+    "name": "BRISTOL VA",
     "city": "Bristol",
     "state": "VA",
     "latitude": 36.63027,
@@ -971,7 +971,7 @@
   },
   {
     "site_code": "1906",
-    "name": "Farmington NM",
+    "name": "FARMINGTON NM",
     "city": "Farmington",
     "state": "NM",
     "latitude": 36.7717,
@@ -991,7 +991,7 @@
   },
   {
     "site_code": "4511",
-    "name": "ST George UT",
+    "name": "ST GEORGE UT",
     "city": "St. George",
     "state": "UT",
     "latitude": 37.10766,
@@ -1021,7 +1021,7 @@
   },
   {
     "site_code": "0014",
-    "name": "San Jose CA",
+    "name": "SAN JOSE CA",
     "city": "San Jose",
     "state": "CA",
     "latitude": 37.3879,
@@ -1101,7 +1101,7 @@
   },
   {
     "site_code": "0540",
-    "name": "Stockton CA",
+    "name": "STOCKTON CA",
     "city": "Modesto",
     "state": "CA",
     "latitude": 37.98661,
@@ -1151,7 +1151,7 @@
   },
   {
     "site_code": "0515",
-    "name": "Santa Rosa CA",
+    "name": "SANTA ROSA CA",
     "city": "Santa Rosa",
     "state": "CA",
     "latitude": 38.45823,
@@ -1281,7 +1281,7 @@
   },
   {
     "site_code": "0084",
-    "name": "Baltimore MD",
+    "name": "BALTIMORE MD",
     "city": "Columbia",
     "state": "MD",
     "latitude": 39.19558,
@@ -1301,7 +1301,7 @@
   },
   {
     "site_code": "3505",
-    "name": "Baltimore MD",
+    "name": "BALTIMORE MD",
     "city": "Baltimore",
     "state": "MD",
     "latitude": 39.29293,
@@ -1321,7 +1321,7 @@
   },
   {
     "site_code": "0092",
-    "name": "Baltimore MD",
+    "name": "BALTIMORE MD",
     "city": "Towson",
     "state": "MD",
     "latitude": 39.39402,
@@ -1361,7 +1361,7 @@
   },
   {
     "site_code": "5130",
-    "name": "Wilmington DE",
+    "name": "WILMINGTON DE",
     "city": "Newark",
     "state": "DE",
     "latitude": 39.6894,
@@ -1441,7 +1441,7 @@
   },
   {
     "site_code": "1201",
-    "name": "Boulder CO",
+    "name": "BOULDER CO",
     "city": "Boulder",
     "state": "CO",
     "latitude": 40.15254,
@@ -1451,7 +1451,7 @@
   },
   {
     "site_code": "4114",
-    "name": "Central New Jersey NJ",
+    "name": "CENTRAL NEW JERSEY NJ",
     "city": "Trenton",
     "state": "NJ",
     "latitude": 40.20571,
@@ -1461,7 +1461,7 @@
   },
   {
     "site_code": "0090",
-    "name": "Orem UT",
+    "name": "OREM UT",
     "city": "West Valley City",
     "state": "UT",
     "latitude": 40.33134,
@@ -1706,7 +1706,7 @@
   },
   {
     "site_code": "2401",
-    "name": "New Haven CT",
+    "name": "NEW HAVEN CT",
     "city": "New Haven",
     "state": "CT",
     "latitude": 41.39607,
@@ -1716,7 +1716,7 @@
   },
   {
     "site_code": "5164",
-    "name": "Merrillville IN",
+    "name": "MERRILLVILLE IN",
     "city": "Merrillville",
     "state": "IN",
     "latitude": 41.46365,
@@ -1836,7 +1836,7 @@
   },
   {
     "site_code": "3201",
-    "name": "De Kalb IL",
+    "name": "DE KALB IL",
     "city": "Naperville",
     "state": "IL",
     "latitude": 41.96692,
@@ -1906,7 +1906,7 @@
   },
   {
     "site_code": "0005",
-    "name": "Worcester MA",
+    "name": "WORCESTER MA",
     "city": "Worcester",
     "state": "MA",
     "latitude": 42.2888,
@@ -2141,7 +2141,7 @@
   },
   {
     "site_code": "4403",
-    "name": "Rapid City SD",
+    "name": "RAPID CITY SD",
     "city": "Rapid City",
     "state": "SD",
     "latitude": 44.08424,
@@ -2191,7 +2191,7 @@
   },
   {
     "site_code": "5009",
-    "name": "Baker City OR",
+    "name": "BAKER CITY OR",
     "city": "Pendleton",
     "state": "OR",
     "latitude": 45.32289,
@@ -2291,7 +2291,7 @@
   },
   {
     "site_code": "0211",
-    "name": "Tacoma WA",
+    "name": "TACOMA WA",
     "city": "Bellevue",
     "state": "WA",
     "latitude": 47.24689,
@@ -2321,7 +2321,7 @@
   },
   {
     "site_code": "4302",
-    "name": "Grand Forks ND",
+    "name": "GRAND FORKS ND",
     "city": "Grand Forks",
     "state": "ND",
     "latitude": 47.92115,

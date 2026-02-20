@@ -125,7 +125,7 @@ async function importReference() {
     rows.push({
       site_code: fields[colIndex['SiteCode']] || '',
       parent_site_code: fields[colIndex['ParentSiteCode']] || '',
-      metro_area_name: fields[colIndex['MetroAreaName']] || '',
+      metro_area_name: (fields[colIndex['MetroAreaName']] || '').toUpperCase(),
       site_name: fields[colIndex['SiteName']] || '',
       city: fields[colIndex['City']] || '',
       state_province: stateProvince,
