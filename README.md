@@ -35,7 +35,7 @@ Currently monitoring 229 testing centers with real-time NOAA weather data update
 - **6 Dashboard Pages** - Overview, Active Advisories, Sites Impacted, Notices, Filter Settings, Sources
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
 - **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on site detail pages
-- **Enhanced Alert Cards** - Site detail page shows alert headline, issued time, source, and *WHEN timing from NOAA descriptions
+- **Enhanced Alert Cards** - Site detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 
 ### Performance & Security
