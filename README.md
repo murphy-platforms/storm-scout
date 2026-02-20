@@ -8,17 +8,19 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 **https://your-domain.example.com**
 
-Currently monitoring 220 testing centers with real-time NOAA weather data updated every 15 minutes.
+Currently monitoring 229 testing centers with real-time NOAA weather data updated every 15 minutes.
 
 ## ✨ Features
 
 ### Core Functionality
-- **220 US Testing Center Locations** - Monitors sites across all 50 states and US territories
+- **229 US Testing Center Locations** - Monitors sites across all 50 states and US territories
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes (v1.2.1)
 - **Site Operational Status** - Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Live Update Tracking** - Dashboard displays last update timestamp and countdown to next refresh
+- **ProInsights Reference Sync** - Recurring CSV import from ProInsights with automated site name and metadata sync
+- **Site Name Normalization** - All site names sourced from ProInsights MetroAreaName, displayed in UPPER CASE
 
 ### Alert Filtering System
 - **80+ NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
@@ -33,6 +35,7 @@ Currently monitoring 220 testing centers with real-time NOAA weather data update
 - **6 Dashboard Pages** - Overview, Active Advisories, Sites Impacted, Notices, Filter Settings, Sources
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
 - **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on site detail pages
+- **Enhanced Alert Cards** - Site detail page shows alert headline, issued time, source, and *WHEN timing from NOAA descriptions
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 
 ### Performance & Security
@@ -107,7 +110,7 @@ strom-scout/
 │   │   ├── models/      # Data access layer
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA data fetching
-│   │   └── data/        # Schema, sites.json (220 US sites)
+│   │   └── data/        # Schema, sites.json (229 US sites)
 │   ├── package.json
 │   └── README.md
 │
@@ -133,7 +136,7 @@ strom-scout/
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
 **Middleware:** node-cache (caching), express-rate-limit, express-validator  
 **Frontend:** HTML5, Bootstrap 5.3, Vanilla JavaScript, localStorage API  
-**Data:** NOAA Weather API (80+ alert types), 219 US testing centers  
+**Data:** NOAA Weather API (80+ alert types), 229 US testing centers  
 **Deployment:** cPanel with Passenger, SSH/rsync  
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
