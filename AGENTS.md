@@ -10,11 +10,11 @@
 
 ## Project Overview
 
-Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 220 US testing centers may be impacted during severe weather events.
+Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 230 US testing centers may be impacted during severe weather events.
 
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
-- **220 Testing Centers**: Monitoring sites across all 50 US states and territories
+- **230 Testing Centers**: Monitoring sites across all 50 US states and territories
 - **Smart Filtering**: 80+ NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
@@ -116,7 +116,7 @@ strom-scout/
 │   │   │   └── generate-ugc-sql.js       # Generate SQL for UGC updates
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── sites.json            # 220 testing centers
+│   │       ├── sites.json            # 230 testing centers
 │   │       └── migrations/
 │   └── package.json
 │
@@ -142,7 +142,7 @@ strom-scout/
 ### Database Schema
 
 **4 Main Tables**:
-1. **sites** - 220 testing center locations (static data)
+1. **sites** - 230 testing center locations (static data)
 2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
 3. **site_status** - Operational status tracking (manual overrides + auto-calculation)
 4. **notices** - Government/emergency notices (future feature)
@@ -349,7 +349,7 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ External ID unique constraint
 - ✅ Automated cleanup system
 - ✅ Production deployment
-- ✅ 220 testing centers loaded
+- ✅ 230 testing centers loaded
 - ✅ 15-minute NOAA ingestion working
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
@@ -479,7 +479,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
 ### Database Backup & Disaster Recovery
 
 **Critical Data**: The Storm Scout database (`***REDACTED***`) contains:
-- **Static**: 219 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
+- **Static**: 230 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
 - **Configuration**: Site status overrides (site_status table) - manual IMT decisions, **CRITICAL** to preserve
@@ -535,7 +535,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    - Execute
    
    **Post-Restore Steps**:
-   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 219)
+   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 230)
    - Check for active advisories: `SELECT COUNT(*) FROM advisories WHERE status='active';`
    - Restart ingestion: Backend will auto-populate advisories within 15 minutes
    - Verify health: `curl https://your-domain.example.com/health`
@@ -552,7 +552,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    
    | Scenario | Impact | Recovery Time | Steps |
    |----------|--------|---------------|-------|
-   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend |
+   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (230 sites) |
    | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
    | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
    | **Site_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
