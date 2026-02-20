@@ -59,7 +59,29 @@ async function syncReference() {
   }
 
   // =========================================================================
-  // 2. City mismatches
+  // 2. Name mismatches (sites.name vs metro_area_name)
+  // =========================================================================
+  const [nameMismatches] = await db.query(`
+    SELECT s.site_code, s.name AS project_name, r.metro_area_name AS ref_name
+    FROM sites s
+    JOIN site_reference r ON s.site_code = r.parent_site_code
+    WHERE s.name != r.metro_area_name
+    ORDER BY s.site_code
+  `);
+
+  console.log(`\n${'─'.repeat(70)}`);
+  console.log('NAME MISMATCHES (project name != reference metro_area_name)');
+  console.log(`${'─'.repeat(70)}`);
+  if (nameMismatches.length > 0) {
+    for (const m of nameMismatches) {
+      console.log(`  ${m.site_code}: Project=${m.project_name.padEnd(35)} Reference=${m.ref_name}`);
+    }
+  } else {
+    console.log('  None ✓');
+  }
+
+  // =========================================================================
+  // 3. City mismatches
   // =========================================================================
   const [cityMismatches] = await db.query(`
     SELECT s.site_code, s.name, s.city AS project_city, s.state AS project_state,
@@ -82,7 +104,7 @@ async function syncReference() {
   }
 
   // =========================================================================
-  // 3. Unmatched codes
+  // 4. Unmatched codes
   // =========================================================================
   const [unmatchedProject] = await db.query(`
     SELECT s.site_code, s.name, s.city, s.state
@@ -124,7 +146,7 @@ async function syncReference() {
   }
 
   // =========================================================================
-  // 4. Update display columns on sites table
+  // 5. Update display columns on sites table
   // =========================================================================
   console.log(`\n${'─'.repeat(70)}`);
   console.log('DISPLAY COLUMN UPDATES');
@@ -147,7 +169,8 @@ async function syncReference() {
     const updateSql = `
       UPDATE sites s
       JOIN site_reference r ON s.site_code = r.parent_site_code
-      SET s.metro_area_name = r.metro_area_name,
+      SET s.name = r.metro_area_name,
+          s.metro_area_name = r.metro_area_name,
           s.reference_site_name = r.site_name,
           s.channel_engagement_manager = r.channel_engagement_manager,
           s.management_type = r.management_type,
@@ -168,7 +191,7 @@ async function syncReference() {
     `);
     console.log('\n  Sample updated rows:');
     for (const row of sample) {
-      console.log(`    ${row.site_code}: metro=${row.metro_area_name}, mgr=${row.channel_engagement_manager}, ws=${row.workstations_active}`);
+      console.log(`    ${row.site_code}: name=${row.name}, mgr=${row.channel_engagement_manager}, ws=${row.workstations_active}`);
     }
   } else if (dryRun) {
     console.log('  (dry run — no changes applied)');
@@ -181,6 +204,7 @@ async function syncReference() {
   console.log('SUMMARY');
   console.log(`${'='.repeat(70)}`);
   console.log(`  State mismatches:       ${stateMismatches.length}`);
+  console.log(`  Name mismatches:        ${nameMismatches.length}`);
   console.log(`  City mismatches:        ${cityMismatches.length}`);
   console.log(`  Unmatched project:      ${unmatchedProject.length}`);
   console.log(`  Unmatched reference:    ${unmatchedRef.length}`);
