@@ -4,7 +4,7 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://your-domain.example.com  
 **Status**: Phase 1 Complete, Production Deployed  
-**Last Updated**: 2026-02-19
+**Last Updated**: 2026-02-20
 
 ---
 
@@ -25,6 +25,8 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
 - **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 229 sites
+- **ProInsights Reference Import**: Recurring CSV import from ProInsights with sync to sites table
+- **Site Name Normalization**: All site names sourced from ProInsights MetroAreaName, normalized to UPPER CASE
 
 ---
 
@@ -113,7 +115,9 @@ strom-scout/
 │   │   │   ├── backfill-vtec-event-id.js
 │   │   │   ├── fetch-ugc-codes.js        # Fetch UGC codes from NOAA for all sites
 │   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
-│   │   │   └── generate-ugc-sql.js       # Generate SQL for UGC updates
+│   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
+│   │   │   ├── import-reference.js       # Import ProInsights CSV into site_reference table
+│   │   │   └── sync-reference.js         # Sync reference data to sites table (name, display columns)
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
 │   │       ├── sites.json            # 229 testing centers
@@ -141,12 +145,13 @@ strom-scout/
 
 ### Database Schema
 
-**4 Main Tables**:
-1. **sites** - 229 testing center locations (static data)
+**6 Main Tables**:
+1. **sites** - 229 testing center locations (includes ProInsights display columns: metro_area_name, reference_site_name, channel_engagement_manager, management_type, workstations_active, ta_workstations_active)
 2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
 3. **site_status** - Operational status tracking (manual overrides + auto-calculation)
-4. **notices** - Government/emergency notices (future feature)
-5. **advisory_history** - Snapshots for trend analysis (future feature)
+4. **site_reference** - Staging table for ProInsights CSV imports (TRUNCATE + INSERT on each import)
+5. **notices** - Government/emergency notices (future feature)
+6. **advisory_history** - Snapshots for trend analysis (future feature)
 
 **Key Fields**:
 - `external_id` (advisories) - NOAA alert ID, UNIQUE constraint prevents duplicates
@@ -288,7 +293,18 @@ node src/utils/cleanup-advisories.js full       # All cleanup steps
 node src/utils/cleanup-advisories.js vtec       # VTEC duplicates only
 node src/utils/cleanup-advisories.js event_id   # Event ID duplicates only
 node src/utils/cleanup-advisories.js expired    # Remove expired only
+
+# ProInsights Reference (recurring, 2-3x/month)
+node src/scripts/import-reference.js /path/to/proinsights.csv   # Import CSV to site_reference
+node src/scripts/sync-reference.js --dry-run                    # Preview changes
+node src/scripts/sync-reference.js                              # Apply: syncs name, display columns to sites
 ```
+
+### ProInsights Reference Workflow
+ProInsights exports a CSV of ~227 US sites (2-3x/month). The import/sync workflow:
+1. **Import**: `import-reference.js` reads CSV, converts state names to abbreviations, normalizes `metro_area_name` to UPPER CASE, and bulk-inserts into `site_reference` (TRUNCATE first).
+2. **Sync**: `sync-reference.js` compares `site_reference` (keyed by `parent_site_code`) with `sites` (keyed by `site_code`), reports mismatches (state, name, city), and updates display columns including `sites.name = metro_area_name`.
+3. **Seed data**: After syncing production, update `sites.json` to match so seed data stays consistent.
 
 ### Deployment
 ```bash
@@ -359,8 +375,12 @@ ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com "touch ~/storm-scout/
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
-- ✅ UGC code matching for all 220 sites (precise zone/county geo-targeting)
+- ✅ UGC code matching for all 229 sites (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to sites without UGC codes
+- ✅ ProInsights reference import/sync workflow (site_reference table, import + sync scripts)
+- ✅ Site names synced from ProInsights MetroAreaName, normalized to UPPER CASE
+- ✅ Dashboard cards show site_code + site_name (index.html, advisories.html, sites.html)
+- ✅ Site detail alert cards show headline, issued, source, and *WHEN timing (expires removed)
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
