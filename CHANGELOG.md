@@ -14,6 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.6.3] - 2026-02-20
+
+### Fixed
+- **Site Data Verification** - Verified all 9 new sites against physical addresses from operations
+  - 0383 Irving, TX: Corrected coordinates to 4441 W Airport Fwy (was city-center fallback)
+  - 0624 Miami, FL: Corrected coordinates to 6505 Waterford District Dr / Blue Lagoon (was city-center); UGC zone updated FLZ173 → FLZ074
+  - 5298 Wichita Falls, TX: Corrected coordinates to 4701 Southwest Pkwy (was geocoded to wrong address)
+  - 6752 NYC Downtown, NY: Corrected coordinates to 80 Maiden Lane (was city-center fallback)
+  - 5 remaining sites (0313, 1908, 1910, 3700, 3702) verified with no changes needed
+
+### Removed
+- **Site 6753 (NYC Downtown Testing Center 2)** - Removed as child site of 6752
+  - Both sites share same physical address (80 Maiden Lane, Suite 706, New York, NY 10038)
+  - Storm Scout tracks parent site codes only; total sites: 230 → 229
+
+### Data Sources
+- Coordinates verified via US Census Geocoder against operations-provided physical addresses
+- NOAA /points API used to re-verify UGC codes, CWA, and county for all corrected sites
+- Miami alternate address (6505 Blue Lagoon Dr) used when Waterford District Dr not in Census database
+
 ## [1.6.2] - 2026-02-20
 
 ### Added
