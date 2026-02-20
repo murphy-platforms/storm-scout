@@ -31,7 +31,7 @@
   },
   {
     "site_code": "3106",
-    "name": "Honolulu Testing Center",
+    "name": "HONOLULU HI",
     "city": "Honolulu",
     "state": "HI",
     "latitude": 21.3084,
@@ -41,7 +41,7 @@
   },
   {
     "site_code": "0624",
-    "name": "Miami Testing Center",
+    "name": "MIAMI FL",
     "city": "Miami",
     "state": "FL",
     "latitude": 25.7832367,
@@ -56,7 +56,7 @@
   },
   {
     "site_code": "0382",
-    "name": "Miami Beach Testing Center",
+    "name": "MIAMI FL",
     "city": "Miami Beach",
     "state": "FL",
     "latitude": 25.87724,
@@ -66,7 +66,7 @@
   },
   {
     "site_code": "0610",
-    "name": "Fort Lauderdale Testing Center",
+    "name": "MIAMI FL",
     "city": "Fort Lauderdale",
     "state": "FL",
     "latitude": 26.05184,
@@ -76,7 +76,7 @@
   },
   {
     "site_code": "0078",
-    "name": "McAllen Testing Center",
+    "name": "MCALLEN TX",
     "city": "McAllen",
     "state": "TX",
     "latitude": 26.2386,
@@ -86,7 +86,7 @@
   },
   {
     "site_code": "5134",
-    "name": "West Palm Beach Testing Center",
+    "name": "Fort Lauderdale FL",
     "city": "West Palm Beach",
     "state": "FL",
     "latitude": 26.36863,
@@ -96,7 +96,7 @@
   },
   {
     "site_code": "5022",
-    "name": "Fort Myers Testing Center",
+    "name": "FORT MYERS FL",
     "city": "Fort Myers",
     "state": "FL",
     "latitude": 26.60347,
@@ -106,7 +106,7 @@
   },
   {
     "site_code": "0603",
-    "name": "Boca Raton Testing Center",
+    "name": "West Palm Beach FL",
     "city": "Boca Raton",
     "state": "FL",
     "latitude": 26.72568,
@@ -116,7 +116,7 @@
   },
   {
     "site_code": "0606",
-    "name": "St. Petersburg Testing Center",
+    "name": "Sarasota FL",
     "city": "St. Petersburg",
     "state": "FL",
     "latitude": 27.33716,
@@ -126,7 +126,7 @@
   },
   {
     "site_code": "0329",
-    "name": "Corpus Christi Testing Center",
+    "name": "CORPUS CHRISTI TX",
     "city": "Corpus Christi",
     "state": "TX",
     "latitude": 27.69175,
@@ -136,7 +136,7 @@
   },
   {
     "site_code": "5006",
-    "name": "Tampa Testing Center",
+    "name": "TAMPA FL",
     "city": "Tampa",
     "state": "FL",
     "latitude": 27.943,
@@ -146,7 +146,7 @@
   },
   {
     "site_code": "0080",
-    "name": "Orlando Testing Center",
+    "name": "ORLANDO FL",
     "city": "Orlando",
     "state": "FL",
     "latitude": 28.68538,
@@ -156,7 +156,7 @@
   },
   {
     "site_code": "0622",
-    "name": "Daytona Beach Testing Center",
+    "name": "Daytona FL",
     "city": "Daytona Beach",
     "state": "FL",
     "latitude": 29.222,
@@ -166,7 +166,7 @@
   },
   {
     "site_code": "0339",
-    "name": "San Antonio Testing Center",
+    "name": "SAN ANTONIO TX",
     "city": "San Antonio",
     "state": "TX",
     "latitude": 29.59393,
@@ -176,7 +176,7 @@
   },
   {
     "site_code": "0629",
-    "name": "Gainesville Testing Center",
+    "name": "GAINESVILLE FL",
     "city": "Gainesville",
     "state": "FL",
     "latitude": 29.659,
@@ -186,7 +186,7 @@
   },
   {
     "site_code": "0083",
-    "name": "Houston Galleria Testing Center",
+    "name": "HOUSTON TX",
     "city": "Houston",
     "state": "TX",
     "latitude": 29.71762,
@@ -196,7 +196,7 @@
   },
   {
     "site_code": "0384",
-    "name": "Houston Northwest Testing Center",
+    "name": "HOUSTON TX",
     "city": "Houston",
     "state": "TX",
     "latitude": 29.95925,
@@ -206,7 +206,7 @@
   },
   {
     "site_code": "0061",
-    "name": "New Orleans Testing Center",
+    "name": "NEW ORLEANS LA",
     "city": "New Orleans",
     "state": "LA",
     "latitude": 29.99567,
@@ -216,7 +216,7 @@
   },
   {
     "site_code": "5128",
-    "name": "Beaumont Testing Center",
+    "name": "BEAUMONT TX",
     "city": "Beaumont",
     "state": "TX",
     "latitude": 30.11563,
@@ -226,7 +226,7 @@
   },
   {
     "site_code": "0601",
-    "name": "Jacksonville Testing Center",
+    "name": "JACKSONVILLE FL",
     "city": "Jacksonville",
     "state": "FL",
     "latitude": 30.15879,
@@ -236,7 +236,7 @@
   },
   {
     "site_code": "0010",
-    "name": "Austin Testing Center",
+    "name": "AUSTIN TX",
     "city": "Austin",
     "state": "TX",
     "latitude": 30.2274,
@@ -246,7 +246,7 @@
   },
   {
     "site_code": "5233",
-    "name": "Baton Rouge Testing Center",
+    "name": "BATON ROUGE LA",
     "city": "Baton Rouge",
     "state": "LA",
     "latitude": 30.41384,
@@ -256,7 +256,7 @@
   },
   {
     "site_code": "0617",
-    "name": "Tallahassee Testing Center",
+    "name": "TALLAHASSEE FL",
     "city": "Tallahassee",
     "state": "FL",
     "latitude": 30.49196,
@@ -266,7 +266,7 @@
   },
   {
     "site_code": "5400",
-    "name": "College Station Testing Center",
+    "name": "College Station TX",
     "city": "College Station",
     "state": "TX",
     "latitude": 30.62211,
@@ -276,7 +276,7 @@
   },
   {
     "site_code": "2601",
-    "name": "Mobile Testing Center",
+    "name": "MOBILE AL",
     "city": "Mobile",
     "state": "AL",
     "latitude": 30.66205,
@@ -286,7 +286,7 @@
   },
   {
     "site_code": "3024",
-    "name": "Valdosta Testing Center",
+    "name": "VALDOSTA GA",
     "city": "Valdosta",
     "state": "GA",
     "latitude": 30.8706,
@@ -296,7 +296,7 @@
   },
   {
     "site_code": "1313",
-    "name": "Alexandria Testing Center",
+    "name": "Alexandria LA",
     "city": "Alexandria",
     "state": "LA",
     "latitude": 31.17717,
@@ -306,7 +306,7 @@
   },
   {
     "site_code": "2612",
-    "name": "Dothan Testing Center",
+    "name": "DOTHAN AL",
     "city": "Dothan",
     "state": "AL",
     "latitude": 31.20482,
@@ -316,7 +316,7 @@
   },
   {
     "site_code": "3606",
-    "name": "Hattiesburg Testing Center",
+    "name": "HATTIESBURG MS",
     "city": "Hattiesburg",
     "state": "MS",
     "latitude": 31.30689,
@@ -326,7 +326,7 @@
   },
   {
     "site_code": "0313",
-    "name": "Waco Testing Center",
+    "name": "WACO TX",
     "city": "Waco",
     "state": "TX",
     "latitude": 31.51962,
@@ -341,7 +341,7 @@
   },
   {
     "site_code": "0312",
-    "name": "El Paso Testing Center",
+    "name": "EL PASO TX",
     "city": "El Paso",
     "state": "TX",
     "latitude": 31.79405,
@@ -351,7 +351,7 @@
   },
   {
     "site_code": "3007",
-    "name": "Savannah Testing Center",
+    "name": "SAVANNAH GA",
     "city": "Savannah",
     "state": "GA",
     "latitude": 32.00819,
@@ -361,7 +361,7 @@
   },
   {
     "site_code": "0404",
-    "name": "Tucson Testing Center",
+    "name": "TUCSON AZ",
     "city": "Tucson",
     "state": "AZ",
     "latitude": 32.24371,
@@ -371,7 +371,7 @@
   },
   {
     "site_code": "0079",
-    "name": "Tyler Testing Center",
+    "name": "TYLER TX",
     "city": "Tyler",
     "state": "TX",
     "latitude": 32.31267,
@@ -381,7 +381,7 @@
   },
   {
     "site_code": "3605",
-    "name": "Jackson Testing Center",
+    "name": "JACKSON MS",
     "city": "Jackson",
     "state": "MS",
     "latitude": 32.33083,
@@ -391,7 +391,7 @@
   },
   {
     "site_code": "5183",
-    "name": "Las Cruces Testing Center",
+    "name": "LAS CRUCES NM",
     "city": "Las Cruces",
     "state": "NM",
     "latitude": 32.35203,
@@ -401,7 +401,7 @@
   },
   {
     "site_code": "0335",
-    "name": "Abilene Testing Center",
+    "name": "ABILENE TX",
     "city": "Abilene",
     "state": "TX",
     "latitude": 32.41034,
@@ -411,7 +411,7 @@
   },
   {
     "site_code": "5002",
-    "name": "Columbus Testing Center",
+    "name": "COLUMBUS GA",
     "city": "Columbus",
     "state": "GA",
     "latitude": 32.49903,
@@ -421,7 +421,7 @@
   },
   {
     "site_code": "1325",
-    "name": "Shreveport Testing Center",
+    "name": "SHREVEPORT LA",
     "city": "Shreveport",
     "state": "LA",
     "latitude": 32.52838,
@@ -431,7 +431,7 @@
   },
   {
     "site_code": "2613",
-    "name": "Auburn Testing Center",
+    "name": "Auburn AL",
     "city": "Auburn",
     "state": "AL",
     "latitude": 32.60468,
@@ -441,7 +441,7 @@
   },
   {
     "site_code": "0400",
-    "name": "Yuma Testing Center",
+    "name": "Yuma AZ",
     "city": "Yuma",
     "state": "AZ",
     "latitude": 32.69493,
@@ -451,7 +451,7 @@
   },
   {
     "site_code": "0383",
-    "name": "Irving Testing Center",
+    "name": "DALLAS TX",
     "city": "Irving",
     "state": "TX",
     "latitude": 32.8379303,
@@ -466,7 +466,7 @@
   },
   {
     "site_code": "0525",
-    "name": "San Diego Testing Center",
+    "name": "SAN DIEGO CA",
     "city": "San Diego",
     "state": "CA",
     "latitude": 32.85252,
@@ -476,7 +476,7 @@
   },
   {
     "site_code": "3012",
-    "name": "Macon Testing Center",
+    "name": "MACON GA",
     "city": "Macon",
     "state": "GA",
     "latitude": 32.89109,
@@ -486,7 +486,7 @@
   },
   {
     "site_code": "5102",
-    "name": "Charleston Testing Center",
+    "name": "CHARLESTON SC",
     "city": "Charleston",
     "state": "SC",
     "latitude": 32.91598,
@@ -496,7 +496,7 @@
   },
   {
     "site_code": "0051",
-    "name": "Dallas Testing Center",
+    "name": "DALLAS TX",
     "city": "Dallas",
     "state": "TX",
     "latitude": 32.9185,
@@ -506,7 +506,7 @@
   },
   {
     "site_code": "1907",
-    "name": "Roswell Testing Center",
+    "name": "ROSWELL NM",
     "city": "Roswell",
     "state": "NM",
     "latitude": 33.3139,
@@ -516,7 +516,7 @@
   },
   {
     "site_code": "5143",
-    "name": "Mesa Testing Center",
+    "name": "PHOENIX AZ",
     "city": "Mesa",
     "state": "AZ",
     "latitude": 33.4437,
@@ -526,7 +526,7 @@
   },
   {
     "site_code": "0417",
-    "name": "Phoenix West Testing Center",
+    "name": "PHOENIX AZ",
     "city": "Phoenix",
     "state": "AZ",
     "latitude": 33.45035,
@@ -536,7 +536,7 @@
   },
   {
     "site_code": "5123",
-    "name": "Birmingham Testing Center",
+    "name": "BIRMINGHAM AL",
     "city": "Birmingham",
     "state": "AL",
     "latitude": 33.47725,
@@ -546,7 +546,7 @@
   },
   {
     "site_code": "5142",
-    "name": "Augusta Testing Center",
+    "name": "AUGUSTA GA",
     "city": "Augusta",
     "state": "GA",
     "latitude": 33.4877,
@@ -556,7 +556,7 @@
   },
   {
     "site_code": "0074",
-    "name": "Phoenix Testing Center",
+    "name": "PHOENIX AZ",
     "city": "Phoenix",
     "state": "AZ",
     "latitude": 33.50962,
@@ -566,7 +566,7 @@
   },
   {
     "site_code": "0077",
-    "name": "Lubbock Testing Center",
+    "name": "LUBBOCK TX",
     "city": "Lubbock",
     "state": "TX",
     "latitude": 33.53081,
@@ -576,7 +576,7 @@
   },
   {
     "site_code": "0513",
-    "name": "Irvine Testing Center",
+    "name": "ORANGE COUNTY CA",
     "city": "Irvine",
     "state": "CA",
     "latitude": 33.56372,
@@ -586,7 +586,7 @@
   },
   {
     "site_code": "0385",
-    "name": "Myrtle Beach Testing Center",
+    "name": "Florence SC",
     "city": "Myrtle Beach",
     "state": "SC",
     "latitude": 33.801,
@@ -596,7 +596,7 @@
   },
   {
     "site_code": "5298",
-    "name": "Wichita Falls Testing Center",
+    "name": "WICHITA FALLS TX",
     "city": "Wichita Falls",
     "state": "TX",
     "latitude": 33.8579818,
@@ -611,7 +611,7 @@
   },
   {
     "site_code": "0081",
-    "name": "Riverside Testing Center",
+    "name": "ORANGE COUNTY CA",
     "city": "Riverside",
     "state": "CA",
     "latitude": 33.8622,
@@ -621,7 +621,7 @@
   },
   {
     "site_code": "0024",
-    "name": "Atlanta Testing Center",
+    "name": "ATLANTA GA",
     "city": "Atlanta",
     "state": "GA",
     "latitude": 33.89753,
@@ -631,7 +631,7 @@
   },
   {
     "site_code": "5809",
-    "name": "Athens Testing Center",
+    "name": "ATHENS GA",
     "city": "Athens",
     "state": "GA",
     "latitude": 33.94882,
@@ -641,7 +641,7 @@
   },
   {
     "site_code": "0001",
-    "name": "Los Angeles Testing Center",
+    "name": "LOS ANGELES CA",
     "city": "Los Angeles",
     "state": "CA",
     "latitude": 33.9896,
@@ -651,7 +651,7 @@
   },
   {
     "site_code": "0533",
-    "name": "Ontario Testing Center",
+    "name": "LOS ANGELES CA",
     "city": "Ontario",
     "state": "CA",
     "latitude": 34.00008,
@@ -661,7 +661,7 @@
   },
   {
     "site_code": "0049",
-    "name": "Columbia Testing Center",
+    "name": "COLUMBIA SC",
     "city": "Columbia",
     "state": "SC",
     "latitude": 34.03492,
@@ -671,7 +671,7 @@
   },
   {
     "site_code": "0531",
-    "name": "San Bernardino Testing Center",
+    "name": "SAN BERNARDINO CA",
     "city": "San Bernardino",
     "state": "CA",
     "latitude": 34.11995,
@@ -681,7 +681,7 @@
   },
   {
     "site_code": "5308",
-    "name": "Hot Springs Testing Center",
+    "name": "ARKADELPHIA AR",
     "city": "Hot Springs",
     "state": "AR",
     "latitude": 34.12649,
@@ -691,7 +691,7 @@
   },
   {
     "site_code": "1747",
-    "name": "Wilmington Testing Center",
+    "name": "WILMINGTON NC",
     "city": "Wilmington",
     "state": "NC",
     "latitude": 34.21045,
@@ -701,7 +701,7 @@
   },
   {
     "site_code": "0522",
-    "name": "Santa Barbara Testing Center",
+    "name": "Ventura CA",
     "city": "Santa Barbara",
     "state": "CA",
     "latitude": 34.21686,
@@ -711,7 +711,7 @@
   },
   {
     "site_code": "3001",
-    "name": "Gainesville Testing Center",
+    "name": "Gainesville GA",
     "city": "Gainesville",
     "state": "GA",
     "latitude": 34.53039,
@@ -721,7 +721,7 @@
   },
   {
     "site_code": "2618",
-    "name": "Huntsville Testing Center",
+    "name": "HUNTSVILLE AL",
     "city": "Huntsville",
     "state": "AL",
     "latitude": 34.71136,
@@ -731,7 +731,7 @@
   },
   {
     "site_code": "5212",
-    "name": "Little Rock Testing Center",
+    "name": "LITTLE ROCK AR",
     "city": "Little Rock",
     "state": "AR",
     "latitude": 34.74905,
@@ -741,7 +741,7 @@
   },
   {
     "site_code": "2114",
-    "name": "Greenville Testing Center",
+    "name": "GREENVILLE SC",
     "city": "Greenville",
     "state": "SC",
     "latitude": 34.8602,
@@ -751,7 +751,7 @@
   },
   {
     "site_code": "1010",
-    "name": "Chattanooga Testing Center",
+    "name": "CHATTANOOGA TN",
     "city": "Chattanooga",
     "state": "TN",
     "latitude": 35.05785,
@@ -761,7 +761,7 @@
   },
   {
     "site_code": "1910",
-    "name": "Albuquerque Testing Center",
+    "name": "ALBUQUERQUE NM",
     "city": "Albuquerque",
     "state": "NM",
     "latitude": 35.1306,
@@ -776,7 +776,7 @@
   },
   {
     "site_code": "0419",
-    "name": "Flagstaff Testing Center",
+    "name": "FLAGSTAFF AZ",
     "city": "Flagstaff",
     "state": "AZ",
     "latitude": 35.17823,
@@ -786,7 +786,7 @@
   },
   {
     "site_code": "5479",
-    "name": "Memphis Testing Center",
+    "name": "MEMPHIS TN",
     "city": "Memphis",
     "state": "TN",
     "latitude": 35.18504,
@@ -796,7 +796,7 @@
   },
   {
     "site_code": "0045",
-    "name": "Charlotte Testing Center",
+    "name": "CHARLOTTE NC",
     "city": "Charlotte",
     "state": "NC",
     "latitude": 35.18863,
@@ -806,7 +806,7 @@
   },
   {
     "site_code": "0317",
-    "name": "Amarillo Testing Center",
+    "name": "AMARILLO TX",
     "city": "Amarillo",
     "state": "TX",
     "latitude": 35.19662,
@@ -816,7 +816,7 @@
   },
   {
     "site_code": "2801",
-    "name": "Fort Smith Testing Center",
+    "name": "FORT SMITH AR",
     "city": "Fort Smith",
     "state": "AR",
     "latitude": 35.35935,
@@ -826,7 +826,7 @@
   },
   {
     "site_code": "0544",
-    "name": "Bakersfield Testing Center",
+    "name": "Bakersfield CA",
     "city": "Bakersfield",
     "state": "CA",
     "latitude": 35.3875,
@@ -836,7 +836,7 @@
   },
   {
     "site_code": "1610",
-    "name": "Asheville Testing Center",
+    "name": "ASHEVILLE NC",
     "city": "Asheville",
     "state": "NC",
     "latitude": 35.48891,
@@ -846,7 +846,7 @@
   },
   {
     "site_code": "0901",
-    "name": "Oklahoma City Testing Center",
+    "name": "OKLAHOMA CITY OK",
     "city": "Oklahoma City",
     "state": "OK",
     "latitude": 35.53053,
@@ -856,7 +856,7 @@
   },
   {
     "site_code": "1618",
-    "name": "Greenville Testing Center",
+    "name": "GREENVILLE NC",
     "city": "Greenville",
     "state": "NC",
     "latitude": 35.60196,
@@ -866,7 +866,7 @@
   },
   {
     "site_code": "1908",
-    "name": "Santa Fe Testing Center",
+    "name": "Santa Fe NM",
     "city": "Santa Fe",
     "state": "NM",
     "latitude": 35.65926,
@@ -881,7 +881,7 @@
   },
   {
     "site_code": "1602",
-    "name": "Raleigh Testing Center",
+    "name": "RALEIGH NC",
     "city": "Raleigh",
     "state": "NC",
     "latitude": 35.85419,
@@ -891,7 +891,7 @@
   },
   {
     "site_code": "1001",
-    "name": "Knoxville Testing Center",
+    "name": "KNOXVILLE TN",
     "city": "Knoxville",
     "state": "TN",
     "latitude": 35.90682,
@@ -901,7 +901,7 @@
   },
   {
     "site_code": "2202",
-    "name": "Las Vegas Testing Center",
+    "name": "LAS VEGAS NV",
     "city": "Las Vegas",
     "state": "NV",
     "latitude": 36.02816,
@@ -911,7 +911,7 @@
   },
   {
     "site_code": "0058",
-    "name": "Greensboro Testing Center",
+    "name": "GREENSBORO NC",
     "city": "Greensboro",
     "state": "NC",
     "latitude": 36.04961,
@@ -921,7 +921,7 @@
   },
   {
     "site_code": "5472",
-    "name": "Tulsa Testing Center",
+    "name": "TULSA OK",
     "city": "Tulsa",
     "state": "OK",
     "latitude": 36.09095,
@@ -931,7 +931,7 @@
   },
   {
     "site_code": "1015",
-    "name": "Nashville Testing Center",
+    "name": "NASHVILLE TN",
     "city": "Nashville",
     "state": "TN",
     "latitude": 36.09784,
@@ -941,7 +941,7 @@
   },
   {
     "site_code": "1011",
-    "name": "Clarksville Testing Center",
+    "name": "Clarksville TN",
     "city": "Clarksville",
     "state": "TN",
     "latitude": 36.53472,
@@ -951,7 +951,7 @@
   },
   {
     "site_code": "5174",
-    "name": "Bristol Testing Center",
+    "name": "Bristol VA",
     "city": "Bristol",
     "state": "VA",
     "latitude": 36.63027,
@@ -961,7 +961,7 @@
   },
   {
     "site_code": "4709",
-    "name": "Norfolk Testing Center",
+    "name": "HAMPTON ROADS VA",
     "city": "Norfolk",
     "state": "VA",
     "latitude": 36.76672,
@@ -971,7 +971,7 @@
   },
   {
     "site_code": "1906",
-    "name": "Farmington Testing Center",
+    "name": "Farmington NM",
     "city": "Farmington",
     "state": "NM",
     "latitude": 36.7717,
@@ -981,7 +981,7 @@
   },
   {
     "site_code": "5152",
-    "name": "Fresno Testing Center",
+    "name": "FRESNO CA",
     "city": "Fresno",
     "state": "CA",
     "latitude": 36.80913,
@@ -991,7 +991,7 @@
   },
   {
     "site_code": "4511",
-    "name": "St. George Testing Center",
+    "name": "ST George UT",
     "city": "St. George",
     "state": "UT",
     "latitude": 37.10766,
@@ -1001,7 +1001,7 @@
   },
   {
     "site_code": "0700",
-    "name": "Springfield Testing Center",
+    "name": "SPRINGFIELD MO",
     "city": "Springfield",
     "state": "MO",
     "latitude": 37.14258,
@@ -1011,7 +1011,7 @@
   },
   {
     "site_code": "4718",
-    "name": "Blacksburg Testing Center",
+    "name": "ROANOKE VA",
     "city": "Blacksburg",
     "state": "VA",
     "latitude": 37.24369,
@@ -1021,7 +1021,7 @@
   },
   {
     "site_code": "0014",
-    "name": "San Jose Testing Center",
+    "name": "San Jose CA",
     "city": "San Jose",
     "state": "CA",
     "latitude": 37.3879,
@@ -1031,7 +1031,7 @@
   },
   {
     "site_code": "5132",
-    "name": "Pittsburg Testing Center",
+    "name": "PITTSBURG KS",
     "city": "Pittsburg",
     "state": "KS",
     "latitude": 37.3905,
@@ -1041,7 +1041,7 @@
   },
   {
     "site_code": "5115",
-    "name": "Richmond Testing Center",
+    "name": "RICHMOND VA",
     "city": "Richmond",
     "state": "VA",
     "latitude": 37.6881,
@@ -1051,7 +1051,7 @@
   },
   {
     "site_code": "3232",
-    "name": "Cape Girardeau Testing Center",
+    "name": "CARBONDALE IL",
     "city": "Cape Girardeau",
     "state": "IL",
     "latitude": 37.72433,
@@ -1061,7 +1061,7 @@
   },
   {
     "site_code": "0067",
-    "name": "Oakland Testing Center",
+    "name": "SAN FRANCISCO CA",
     "city": "Oakland",
     "state": "CA",
     "latitude": 37.72679,
@@ -1071,7 +1071,7 @@
   },
   {
     "site_code": "1509",
-    "name": "Wichita Testing Center",
+    "name": "WICHITA KS",
     "city": "Wichita",
     "state": "KS",
     "latitude": 37.74219,
@@ -1081,7 +1081,7 @@
   },
   {
     "site_code": "5849",
-    "name": "San Francisco Testing Center",
+    "name": "SAN FRANCISCO CA",
     "city": "San Francisco",
     "state": "CA",
     "latitude": 37.79377,
@@ -1091,7 +1091,7 @@
   },
   {
     "site_code": "1807",
-    "name": "Evansville Testing Center",
+    "name": "EVANSVILLE IN",
     "city": "Evansville",
     "state": "IN",
     "latitude": 37.96377,
@@ -1101,7 +1101,7 @@
   },
   {
     "site_code": "0540",
-    "name": "Modesto Testing Center",
+    "name": "Stockton CA",
     "city": "Modesto",
     "state": "CA",
     "latitude": 37.98661,
@@ -1111,7 +1111,7 @@
   },
   {
     "site_code": "1104",
-    "name": "Lexington Testing Center",
+    "name": "LEXINGTON KY",
     "city": "Lexington",
     "state": "KY",
     "latitude": 38.01188,
@@ -1121,7 +1121,7 @@
   },
   {
     "site_code": "1101",
-    "name": "Louisville Testing Center",
+    "name": "LOUISVILLE KY",
     "city": "Louisville",
     "state": "KY",
     "latitude": 38.25162,
@@ -1131,7 +1131,7 @@
   },
   {
     "site_code": "5224",
-    "name": "Charleston Testing Center",
+    "name": "CHARLESTON WV",
     "city": "Charleston",
     "state": "WV",
     "latitude": 38.33874,
@@ -1141,7 +1141,7 @@
   },
   {
     "site_code": "3504",
-    "name": "Salisbury Testing Center",
+    "name": "SALISBURY MD",
     "city": "Salisbury",
     "state": "MD",
     "latitude": 38.3692,
@@ -1151,7 +1151,7 @@
   },
   {
     "site_code": "0515",
-    "name": "Santa Rosa Testing Center",
+    "name": "Santa Rosa CA",
     "city": "Santa Rosa",
     "state": "CA",
     "latitude": 38.45823,
@@ -1161,7 +1161,7 @@
   },
   {
     "site_code": "0718",
-    "name": "Columbia Testing Center",
+    "name": "COLUMBIA MO",
     "city": "Columbia",
     "state": "MO",
     "latitude": 38.55297,
@@ -1171,7 +1171,7 @@
   },
   {
     "site_code": "0053",
-    "name": "Sacramento Testing Center",
+    "name": "SACRAMENTO CA",
     "city": "Sacramento",
     "state": "CA",
     "latitude": 38.66289,
@@ -1181,7 +1181,7 @@
   },
   {
     "site_code": "0702",
-    "name": "St. Louis Testing Center",
+    "name": "ST LOUIS MO",
     "city": "St. Louis",
     "state": "MO",
     "latitude": 38.6724,
@@ -1191,7 +1191,7 @@
   },
   {
     "site_code": "5116",
-    "name": "Colorado Springs Testing Center",
+    "name": "COLORADO SPRINGS CO",
     "city": "Colorado Springs",
     "state": "CO",
     "latitude": 38.87127,
@@ -1201,7 +1201,7 @@
   },
   {
     "site_code": "5336",
-    "name": "Dodge City Testing Center",
+    "name": "HAYS KS",
     "city": "Dodge City",
     "state": "KS",
     "latitude": 38.87287,
@@ -1211,7 +1211,7 @@
   },
   {
     "site_code": "0028",
-    "name": "Alexandria Testing Center",
+    "name": "WASHINGTON DC",
     "city": "Alexandria",
     "state": "VA",
     "latitude": 38.88763,
@@ -1221,7 +1221,7 @@
   },
   {
     "site_code": "0062",
-    "name": "Washington DC Testing Center",
+    "name": "WASHINGTON DC",
     "city": "Washington",
     "state": "DC",
     "latitude": 38.90291,
@@ -1231,7 +1231,7 @@
   },
   {
     "site_code": "0103",
-    "name": "Kansas City Testing Center",
+    "name": "KANSAS CITY MO",
     "city": "Kansas City",
     "state": "KS",
     "latitude": 38.92982,
@@ -1241,7 +1241,7 @@
   },
   {
     "site_code": "3514",
-    "name": "Bowie Testing Center",
+    "name": "WASHINGTON DC",
     "city": "Bowie",
     "state": "MD",
     "latitude": 38.94929,
@@ -1251,7 +1251,7 @@
   },
   {
     "site_code": "1112",
-    "name": "Florence Testing Center",
+    "name": "CINCINNATI OH",
     "city": "Florence",
     "state": "KY",
     "latitude": 38.96132,
@@ -1261,7 +1261,7 @@
   },
   {
     "site_code": "1504",
-    "name": "Lawrence Testing Center",
+    "name": "TOPEKA KS",
     "city": "Lawrence",
     "state": "KS",
     "latitude": 39.01573,
@@ -1271,7 +1271,7 @@
   },
   {
     "site_code": "5307",
-    "name": "Grand Junction Testing Center",
+    "name": "GRAND JUNCTION CO",
     "city": "Grand Junction",
     "state": "CO",
     "latitude": 39.07781,
@@ -1281,7 +1281,7 @@
   },
   {
     "site_code": "0084",
-    "name": "Columbia Testing Center",
+    "name": "Baltimore MD",
     "city": "Columbia",
     "state": "MD",
     "latitude": 39.19558,
@@ -1291,7 +1291,7 @@
   },
   {
     "site_code": "0007",
-    "name": "Cincinnati Testing Center",
+    "name": "CINCINNATI OH",
     "city": "Cincinnati",
     "state": "OH",
     "latitude": 39.27472,
@@ -1301,7 +1301,7 @@
   },
   {
     "site_code": "3505",
-    "name": "Baltimore Testing Center",
+    "name": "Baltimore MD",
     "city": "Baltimore",
     "state": "MD",
     "latitude": 39.29293,
@@ -1311,7 +1311,7 @@
   },
   {
     "site_code": "1804",
-    "name": "Terre Haute Testing Center",
+    "name": "TERRE HAUTE IN",
     "city": "Terre Haute",
     "state": "IN",
     "latitude": 39.34362,
@@ -1321,7 +1321,7 @@
   },
   {
     "site_code": "0092",
-    "name": "Towson Testing Center",
+    "name": "Baltimore MD",
     "city": "Towson",
     "state": "MD",
     "latitude": 39.39402,
@@ -1331,7 +1331,7 @@
   },
   {
     "site_code": "2205",
-    "name": "Reno Testing Center",
+    "name": "RENO NV",
     "city": "Reno",
     "state": "NV",
     "latitude": 39.47367,
@@ -1341,7 +1341,7 @@
   },
   {
     "site_code": "0054",
-    "name": "Denver Testing Center",
+    "name": "DENVER CO",
     "city": "Denver",
     "state": "CO",
     "latitude": 39.60901,
@@ -1351,7 +1351,7 @@
   },
   {
     "site_code": "5354",
-    "name": "Morgantown Testing Center",
+    "name": "MORGANTOWN WV",
     "city": "Morgantown",
     "state": "WV",
     "latitude": 39.66394,
@@ -1361,7 +1361,7 @@
   },
   {
     "site_code": "5130",
-    "name": "Newark Testing Center",
+    "name": "Wilmington DE",
     "city": "Newark",
     "state": "DE",
     "latitude": 39.6894,
@@ -1371,7 +1371,7 @@
   },
   {
     "site_code": "3419",
-    "name": "Dayton Testing Center",
+    "name": "DAYTON OH",
     "city": "Dayton",
     "state": "OH",
     "latitude": 39.77616,
@@ -1381,7 +1381,7 @@
   },
   {
     "site_code": "3230",
-    "name": "Champaign Testing Center",
+    "name": "SPRINGFIELD IL",
     "city": "Champaign",
     "state": "IL",
     "latitude": 39.89155,
@@ -1391,7 +1391,7 @@
   },
   {
     "site_code": "1826",
-    "name": "Indianapolis Testing Center",
+    "name": "INDIANAPOLIS IN",
     "city": "Indianapolis",
     "state": "IN",
     "latitude": 39.91437,
@@ -1401,7 +1401,7 @@
   },
   {
     "site_code": "0020",
-    "name": "Philadelphia Testing Center",
+    "name": "PHILADELPHIA PA",
     "city": "Philadelphia",
     "state": "PA",
     "latitude": 39.94816,
@@ -1411,7 +1411,7 @@
   },
   {
     "site_code": "1701",
-    "name": "Allentown Testing Center",
+    "name": "PHILADELPHIA PA",
     "city": "Allentown",
     "state": "PA",
     "latitude": 40.10056,
@@ -1421,7 +1421,7 @@
   },
   {
     "site_code": "1409",
-    "name": "Columbus Testing Center",
+    "name": "COLUMBUS OH",
     "city": "Columbus",
     "state": "OH",
     "latitude": 40.11134,
@@ -1431,7 +1431,7 @@
   },
   {
     "site_code": "3003",
-    "name": "Bloomington Testing Center",
+    "name": "CHAMPAIGN IL",
     "city": "Bloomington",
     "state": "IL",
     "latitude": 40.11563,
@@ -1441,7 +1441,7 @@
   },
   {
     "site_code": "1201",
-    "name": "Boulder Testing Center",
+    "name": "Boulder CO",
     "city": "Boulder",
     "state": "CO",
     "latitude": 40.15254,
@@ -1451,7 +1451,7 @@
   },
   {
     "site_code": "4114",
-    "name": "Trenton Testing Center",
+    "name": "Central New Jersey NJ",
     "city": "Trenton",
     "state": "NJ",
     "latitude": 40.20571,
@@ -1461,7 +1461,7 @@
   },
   {
     "site_code": "0090",
-    "name": "West Valley City Testing Center",
+    "name": "Orem UT",
     "city": "West Valley City",
     "state": "UT",
     "latitude": 40.33134,
@@ -1471,7 +1471,7 @@
   },
   {
     "site_code": "1718",
-    "name": "Harrisburg Testing Center",
+    "name": "HARRISBURG PA",
     "city": "Harrisburg",
     "state": "PA",
     "latitude": 40.338,
@@ -1481,7 +1481,7 @@
   },
   {
     "site_code": "1810",
-    "name": "Lafayette Testing Center",
+    "name": "LAFAYETTE IN",
     "city": "Lafayette",
     "state": "IN",
     "latitude": 40.41917,
@@ -1491,7 +1491,7 @@
   },
   {
     "site_code": "1705",
-    "name": "Pittsburgh Testing Center",
+    "name": "PITTSBURGH PA",
     "city": "Pittsburgh",
     "state": "PA",
     "latitude": 40.56386,
@@ -1501,7 +1501,7 @@
   },
   {
     "site_code": "1709",
-    "name": "Reading Testing Center",
+    "name": "ALLENTOWN PA",
     "city": "Reading",
     "state": "PA",
     "latitude": 40.61018,
@@ -1511,7 +1511,7 @@
   },
   {
     "site_code": "5858",
-    "name": "Edison Testing Center",
+    "name": "NYC - NEW JERSEY",
     "city": "Edison",
     "state": "NJ",
     "latitude": 40.63011,
@@ -1521,7 +1521,7 @@
   },
   {
     "site_code": "0086",
-    "name": "Salt Lake City Testing Center",
+    "name": "SALT LAKE CITY UT",
     "city": "Salt Lake City",
     "state": "UT",
     "latitude": 40.65113,
@@ -1531,7 +1531,7 @@
   },
   {
     "site_code": "4235",
-    "name": "New York Midtown Testing Center",
+    "name": "NYC - PROPER",
     "city": "New York",
     "state": "NY",
     "latitude": 40.69203,
@@ -1541,7 +1541,7 @@
   },
   {
     "site_code": "5108",
-    "name": "North Platte Testing Center",
+    "name": "KEARNEY NE",
     "city": "North Platte",
     "state": "NE",
     "latitude": 40.70039,
@@ -1551,7 +1551,7 @@
   },
   {
     "site_code": "6752",
-    "name": "NYC Downtown Testing Center",
+    "name": "NYC - PROPER",
     "city": "New York",
     "state": "NY",
     "latitude": 40.7071357,
@@ -1566,7 +1566,7 @@
   },
   {
     "site_code": "4212",
-    "name": "Queens Testing Center",
+    "name": "NYC - PROPER",
     "city": "Queens",
     "state": "NY",
     "latitude": 40.73481,
@@ -1576,7 +1576,7 @@
   },
   {
     "site_code": "4215",
-    "name": "Garden City Testing Center",
+    "name": "NYC - LONG ISLAND",
     "city": "Garden City",
     "state": "NY",
     "latitude": 40.74475,
@@ -1586,7 +1586,7 @@
   },
   {
     "site_code": "4251",
-    "name": "New York Downtown Testing Center",
+    "name": "NYC - PROPER",
     "city": "New York",
     "state": "NY",
     "latitude": 40.74784,
@@ -1596,7 +1596,7 @@
   },
   {
     "site_code": "3804",
-    "name": "Lincoln Testing Center",
+    "name": "LINCOLN NE",
     "city": "Lincoln",
     "state": "NE",
     "latitude": 40.75467,
@@ -1606,7 +1606,7 @@
   },
   {
     "site_code": "6751",
-    "name": "Melville Testing Center",
+    "name": "NYC - LONG ISLAND",
     "city": "Melville",
     "state": "NY",
     "latitude": 40.7729,
@@ -1616,7 +1616,7 @@
   },
   {
     "site_code": "3207",
-    "name": "Peoria Testing Center",
+    "name": "PEORIA IL",
     "city": "Peoria",
     "state": "IL",
     "latitude": 40.78309,
@@ -1626,7 +1626,7 @@
   },
   {
     "site_code": "1711",
-    "name": "State College Testing Center",
+    "name": "STATE COLLEGE PA",
     "city": "State College",
     "state": "PA",
     "latitude": 40.79493,
@@ -1636,7 +1636,7 @@
   },
   {
     "site_code": "0033",
-    "name": "Paramus Testing Center",
+    "name": "NYC - NEW JERSEY",
     "city": "Paramus",
     "state": "NJ",
     "latitude": 40.92466,
@@ -1646,7 +1646,7 @@
   },
   {
     "site_code": "4203",
-    "name": "Purchase Testing Center",
+    "name": "NYC - NORTH",
     "city": "Purchase",
     "state": "NY",
     "latitude": 41.00638,
@@ -1656,7 +1656,7 @@
   },
   {
     "site_code": "1402",
-    "name": "Cleveland Testing Center",
+    "name": "AKRON OH",
     "city": "Cleveland",
     "state": "OH",
     "latitude": 41.11091,
@@ -1666,7 +1666,7 @@
   },
   {
     "site_code": "1816",
-    "name": "Fort Wayne Testing Center",
+    "name": "FORT WAYNE IN",
     "city": "Fort Wayne",
     "state": "IN",
     "latitude": 41.12333,
@@ -1676,7 +1676,7 @@
   },
   {
     "site_code": "2416",
-    "name": "Norwalk Testing Center",
+    "name": "NYC - CONNECTICUT",
     "city": "Norwalk",
     "state": "CT",
     "latitude": 41.12658,
@@ -1686,7 +1686,7 @@
   },
   {
     "site_code": "1420",
-    "name": "Youngstown Testing Center",
+    "name": "YOUNGSTOWN OH",
     "city": "Youngstown",
     "state": "OH",
     "latitude": 41.19894,
@@ -1696,7 +1696,7 @@
   },
   {
     "site_code": "3811",
-    "name": "Omaha Testing Center",
+    "name": "OMAHA NE",
     "city": "Omaha",
     "state": "NE",
     "latitude": 41.23333,
@@ -1706,7 +1706,7 @@
   },
   {
     "site_code": "2401",
-    "name": "New Haven Testing Center",
+    "name": "New Haven CT",
     "city": "New Haven",
     "state": "CT",
     "latitude": 41.39607,
@@ -1716,7 +1716,7 @@
   },
   {
     "site_code": "5164",
-    "name": "Merrillville Testing Center",
+    "name": "Merrillville IN",
     "city": "Merrillville",
     "state": "IN",
     "latitude": 41.46365,
@@ -1726,7 +1726,7 @@
   },
   {
     "site_code": "1736",
-    "name": "Scranton Testing Center",
+    "name": "SCRANTON PA",
     "city": "Scranton",
     "state": "PA",
     "latitude": 41.46687,
@@ -1736,7 +1736,7 @@
   },
   {
     "site_code": "3301",
-    "name": "Moline Testing Center",
+    "name": "DAVENPORT IA",
     "city": "Moline",
     "state": "IA",
     "latitude": 41.53641,
@@ -1746,7 +1746,7 @@
   },
   {
     "site_code": "3309",
-    "name": "Des Moines Testing Center",
+    "name": "DES MOINES IA",
     "city": "Des Moines",
     "state": "IA",
     "latitude": 41.58748,
@@ -1756,7 +1756,7 @@
   },
   {
     "site_code": "2206",
-    "name": "Parma Testing Center",
+    "name": "CLEVELAND OH",
     "city": "Parma",
     "state": "OH",
     "latitude": 41.67556,
@@ -1766,7 +1766,7 @@
   },
   {
     "site_code": "1811",
-    "name": "South Bend Testing Center",
+    "name": "SOUTH BEND IN",
     "city": "South Bend",
     "state": "IN",
     "latitude": 41.68796,
@@ -1776,7 +1776,7 @@
   },
   {
     "site_code": "4258",
-    "name": "Poughkeepsie Testing Center",
+    "name": "POUGHKEEPSIE NY",
     "city": "Poughkeepsie",
     "state": "NY",
     "latitude": 41.69164,
@@ -1786,7 +1786,7 @@
   },
   {
     "site_code": "5805",
-    "name": "Providence Testing Center",
+    "name": "PROVIDENCE RI",
     "city": "Providence",
     "state": "RI",
     "latitude": 41.6946,
@@ -1796,7 +1796,7 @@
   },
   {
     "site_code": "1414",
-    "name": "Toledo Testing Center",
+    "name": "TOLEDO OH",
     "city": "Toledo",
     "state": "OH",
     "latitude": 41.69894,
@@ -1806,7 +1806,7 @@
   },
   {
     "site_code": "0048",
-    "name": "Hartford Testing Center",
+    "name": "HARTFORD CT",
     "city": "Hartford",
     "state": "CT",
     "latitude": 41.71681,
@@ -1816,7 +1816,7 @@
   },
   {
     "site_code": "3251",
-    "name": "Chicago Testing Center",
+    "name": "CHICAGO IL",
     "city": "Chicago",
     "state": "IL",
     "latitude": 41.88233,
@@ -1826,7 +1826,7 @@
   },
   {
     "site_code": "3803",
-    "name": "Scottsbluff Testing Center",
+    "name": "SCOTTSBLUFF NE",
     "city": "Scottsbluff",
     "state": "NE",
     "latitude": 41.88379,
@@ -1836,7 +1836,7 @@
   },
   {
     "site_code": "3201",
-    "name": "Naperville Testing Center",
+    "name": "De Kalb IL",
     "city": "Naperville",
     "state": "IL",
     "latitude": 41.96692,
@@ -1846,7 +1846,7 @@
   },
   {
     "site_code": "3305",
-    "name": "Cedar Rapids Testing Center",
+    "name": "CEDAR RAPIDS IA",
     "city": "Cedar Rapids",
     "state": "IA",
     "latitude": 42.05084,
@@ -1856,7 +1856,7 @@
   },
   {
     "site_code": "1730",
-    "name": "Erie Testing Center",
+    "name": "ERIE PA",
     "city": "Erie",
     "state": "PA",
     "latitude": 42.05254,
@@ -1866,7 +1866,7 @@
   },
   {
     "site_code": "5194",
-    "name": "Boston Testing Center",
+    "name": "BOSTON MA",
     "city": "Boston",
     "state": "MA",
     "latitude": 42.05611,
@@ -1876,7 +1876,7 @@
   },
   {
     "site_code": "4210",
-    "name": "Binghamton Testing Center",
+    "name": "BINGHAMTON NY",
     "city": "Binghamton",
     "state": "NY",
     "latitude": 42.09246,
@@ -1886,7 +1886,7 @@
   },
   {
     "site_code": "2525",
-    "name": "Springfield Testing Center",
+    "name": "SPRINGFIELD MA",
     "city": "Springfield",
     "state": "MA",
     "latitude": 42.15633,
@@ -1896,7 +1896,7 @@
   },
   {
     "site_code": "0057",
-    "name": "Ann Arbor Testing Center",
+    "name": "ANN ARBOR MI",
     "city": "Ann Arbor",
     "state": "MI",
     "latitude": 42.23929,
@@ -1906,7 +1906,7 @@
   },
   {
     "site_code": "0005",
-    "name": "Worcester Testing Center",
+    "name": "Worcester MA",
     "city": "Worcester",
     "state": "MA",
     "latitude": 42.2888,
@@ -1916,7 +1916,7 @@
   },
   {
     "site_code": "5331",
-    "name": "Cambridge Testing Center",
+    "name": "BOSTON MA",
     "city": "Cambridge",
     "state": "MA",
     "latitude": 42.3513,
@@ -1926,7 +1926,7 @@
   },
   {
     "site_code": "3306",
-    "name": "Sioux City Testing Center",
+    "name": "SIOUX CITY IA",
     "city": "Sioux City",
     "state": "IA",
     "latitude": 42.40021,
@@ -1936,7 +1936,7 @@
   },
   {
     "site_code": "5855",
-    "name": "Lowell Testing Center",
+    "name": "BOSTON MA",
     "city": "Lowell",
     "state": "MA",
     "latitude": 42.48023,
@@ -1946,7 +1946,7 @@
   },
   {
     "site_code": "2331",
-    "name": "Dearborn Testing Center",
+    "name": "DETROIT MI",
     "city": "Dearborn",
     "state": "MI",
     "latitude": 42.59745,
@@ -1956,7 +1956,7 @@
   },
   {
     "site_code": "5110",
-    "name": "Albany Testing Center",
+    "name": "ALBANY NY",
     "city": "Albany",
     "state": "NY",
     "latitude": 42.71548,
@@ -1966,7 +1966,7 @@
   },
   {
     "site_code": "2306",
-    "name": "Lansing Testing Center",
+    "name": "LANSING MI",
     "city": "Lansing",
     "state": "MI",
     "latitude": 42.7595,
@@ -1976,7 +1976,7 @@
   },
   {
     "site_code": "5000",
-    "name": "Casper Testing Center",
+    "name": "CASPER WY",
     "city": "Casper",
     "state": "WY",
     "latitude": 42.86032,
@@ -1986,7 +1986,7 @@
   },
   {
     "site_code": "5004",
-    "name": "Pocatello Testing Center",
+    "name": "IDAHO FALLS ID",
     "city": "Pocatello",
     "state": "ID",
     "latitude": 42.86663,
@@ -1996,7 +1996,7 @@
   },
   {
     "site_code": "2301",
-    "name": "Grand Rapids Testing Center",
+    "name": "GRAND RAPIDS MI",
     "city": "Grand Rapids",
     "state": "MI",
     "latitude": 42.9266,
@@ -2006,7 +2006,7 @@
   },
   {
     "site_code": "4205",
-    "name": "Buffalo Testing Center",
+    "name": "BUFFALO NY",
     "city": "Buffalo",
     "state": "NY",
     "latitude": 42.98754,
@@ -2016,7 +2016,7 @@
   },
   {
     "site_code": "4903",
-    "name": "Milwaukee Testing Center",
+    "name": "MILWAUKEE WI",
     "city": "Milwaukee",
     "state": "WI",
     "latitude": 43.08949,
@@ -2026,7 +2026,7 @@
   },
   {
     "site_code": "4001",
-    "name": "Portland Testing Center",
+    "name": "PORTSMOUTH NH",
     "city": "Portland",
     "state": "NH",
     "latitude": 43.09238,
@@ -2036,7 +2036,7 @@
   },
   {
     "site_code": "4211",
-    "name": "Syracuse Testing Center",
+    "name": "SYRACUSE NY",
     "city": "Syracuse",
     "state": "NY",
     "latitude": 43.09301,
@@ -2046,7 +2046,7 @@
   },
   {
     "site_code": "4218",
-    "name": "Rochester Testing Center",
+    "name": "ROCHESTER NY",
     "city": "Rochester",
     "state": "NY",
     "latitude": 43.10382,
@@ -2056,7 +2056,7 @@
   },
   {
     "site_code": "5323",
-    "name": "Madison Testing Center",
+    "name": "MADISON WI",
     "city": "Madison",
     "state": "WI",
     "latitude": 43.12246,
@@ -2066,7 +2066,7 @@
   },
   {
     "site_code": "5148",
-    "name": "Concord Testing Center",
+    "name": "CONCORD NH",
     "city": "Concord",
     "state": "NH",
     "county": "Merrimack",
@@ -2081,7 +2081,7 @@
   },
   {
     "site_code": "4400",
-    "name": "Sioux Falls Testing Center",
+    "name": "SIOUX FALLS SD",
     "city": "Sioux Falls",
     "state": "SD",
     "latitude": 43.50111,
@@ -2091,7 +2091,7 @@
   },
   {
     "site_code": "2002",
-    "name": "Boise Testing Center",
+    "name": "BOISE ID",
     "city": "Boise",
     "state": "ID",
     "latitude": 43.5962,
@@ -2101,7 +2101,7 @@
   },
   {
     "site_code": "3403",
-    "name": "Portsmouth Testing Center",
+    "name": "PORTLAND ME",
     "city": "Portsmouth",
     "state": "ME",
     "latitude": 43.63772,
@@ -2111,7 +2111,7 @@
   },
   {
     "site_code": "5404",
-    "name": "Rochester Testing Center",
+    "name": "ROCHESTER MN",
     "city": "Rochester",
     "state": "MN",
     "latitude": 44.02175,
@@ -2121,7 +2121,7 @@
   },
   {
     "site_code": "0102",
-    "name": "Eugene Testing Center",
+    "name": "EUGENE OR",
     "city": "Eugene",
     "state": "OR",
     "latitude": 44.07166,
@@ -2131,7 +2131,7 @@
   },
   {
     "site_code": "5007",
-    "name": "Bend Testing Center",
+    "name": "BEND OR",
     "city": "Bend",
     "state": "OR",
     "latitude": 44.0718,
@@ -2141,7 +2141,7 @@
   },
   {
     "site_code": "4403",
-    "name": "Rapid City Testing Center",
+    "name": "Rapid City SD",
     "city": "Rapid City",
     "state": "SD",
     "latitude": 44.08424,
@@ -2151,7 +2151,7 @@
   },
   {
     "site_code": "5209",
-    "name": "Burlington Testing Center",
+    "name": "BURLINGTON VT",
     "city": "Burlington",
     "state": "VT",
     "latitude": 44.45333,
@@ -2161,7 +2161,7 @@
   },
   {
     "site_code": "4913",
-    "name": "Appleton Testing Center",
+    "name": "GREEN BAY WI",
     "city": "Appleton",
     "state": "WI",
     "latitude": 44.50818,
@@ -2171,7 +2171,7 @@
   },
   {
     "site_code": "5119",
-    "name": "Bangor Testing Center",
+    "name": "BANGOR ME",
     "city": "Bangor",
     "state": "ME",
     "latitude": 44.83619,
@@ -2181,7 +2181,7 @@
   },
   {
     "site_code": "0064",
-    "name": "Minneapolis Testing Center",
+    "name": "MINNEAPOLIS MN",
     "city": "Minneapolis",
     "state": "MN",
     "latitude": 44.85662,
@@ -2191,7 +2191,7 @@
   },
   {
     "site_code": "5009",
-    "name": "Pendleton Testing Center",
+    "name": "Baker City OR",
     "city": "Pendleton",
     "state": "OR",
     "latitude": 45.32289,
@@ -2201,7 +2201,7 @@
   },
   {
     "site_code": "0116",
-    "name": "Portland Testing Center",
+    "name": "PORTLAND OR",
     "city": "Portland",
     "state": "OR",
     "latitude": 45.5259,
@@ -2211,7 +2211,7 @@
   },
   {
     "site_code": "3700",
-    "name": "Billings Testing Center",
+    "name": "BILLINGS MT",
     "city": "Billings",
     "state": "MT",
     "latitude": 45.76982,
@@ -2226,7 +2226,7 @@
   },
   {
     "site_code": "2327",
-    "name": "Sault Ste Marie Testing Center",
+    "name": "SAULT STE MARIE MI",
     "city": "Sault Ste Marie",
     "state": "MI",
     "latitude": 46.49016,
@@ -2236,7 +2236,7 @@
   },
   {
     "site_code": "3702",
-    "name": "Helena Testing Center",
+    "name": "HELENA MT",
     "city": "Helena",
     "state": "MT",
     "latitude": 46.59651,
@@ -2251,7 +2251,7 @@
   },
   {
     "site_code": "0207",
-    "name": "Yakima Testing Center",
+    "name": "YAKIMA WA",
     "city": "Yakima",
     "state": "WA",
     "latitude": 46.61345,
@@ -2261,7 +2261,7 @@
   },
   {
     "site_code": "0087",
-    "name": "Duluth Testing Center",
+    "name": "DULUTH MN",
     "city": "Duluth",
     "state": "MN",
     "latitude": 46.80586,
@@ -2271,7 +2271,7 @@
   },
   {
     "site_code": "4303",
-    "name": "Bismarck Testing Center",
+    "name": "BISMARCK ND",
     "city": "Bismarck",
     "state": "ND",
     "latitude": 46.85469,
@@ -2281,7 +2281,7 @@
   },
   {
     "site_code": "4304",
-    "name": "Fargo Testing Center",
+    "name": "FARGO ND",
     "city": "Fargo",
     "state": "ND",
     "latitude": 46.86162,
@@ -2291,7 +2291,7 @@
   },
   {
     "site_code": "0211",
-    "name": "Seattle Bellevue Testing Center",
+    "name": "Tacoma WA",
     "city": "Bellevue",
     "state": "WA",
     "latitude": 47.24689,
@@ -2301,7 +2301,7 @@
   },
   {
     "site_code": "0200",
-    "name": "Spokane Testing Center",
+    "name": "SPOKANE WA",
     "city": "Spokane",
     "state": "WA",
     "latitude": 47.64285,
@@ -2311,7 +2311,7 @@
   },
   {
     "site_code": "0015",
-    "name": "Seattle Testing Center",
+    "name": "SEATTLE WA",
     "city": "Seattle",
     "state": "WA",
     "latitude": 47.78571,
@@ -2321,7 +2321,7 @@
   },
   {
     "site_code": "4302",
-    "name": "Grand Forks Testing Center",
+    "name": "Grand Forks ND",
     "city": "Grand Forks",
     "state": "ND",
     "latitude": 47.92115,
@@ -2331,7 +2331,7 @@
   },
   {
     "site_code": "2703",
-    "name": "Anchorage Testing Center",
+    "name": "ANCHORAGE AK",
     "city": "Anchorage",
     "state": "AK",
     "latitude": 61.14568,
