@@ -201,11 +201,61 @@ async function getUGCZoneInfo(ugcCode) {
   }, `Fetch UGC zone info for ${ugcCode}`);
 }
 
+/**
+ * Get observation stations for a lat/lon point
+ * Calls /points/{lat},{lon} then follows observationStations URL
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @returns {Promise<Array>} Array of station objects (ordered by proximity)
+ */
+async function getObservationStations(lat, lon) {
+  return requestWithRetry(async () => {
+    // Step 1: Get grid point info
+    const pointResponse = await getNoaaClient().get(`/points/${lat},${lon}`);
+    const stationsUrl = pointResponse.data?.properties?.observationStations;
+    
+    if (!stationsUrl) {
+      console.warn(`No observation stations URL for point (${lat},${lon})`);
+      return [];
+    }
+    
+    // Step 2: Fetch the station list (full URL, not relative)
+    await enforceRateLimit();
+    const stationsResponse = await axios.get(stationsUrl, {
+      timeout: 30000,
+      headers: {
+        'User-Agent': config.noaa.userAgent,
+        'Accept': 'application/geo+json'
+      }
+    });
+    
+    if (stationsResponse.data && stationsResponse.data.features) {
+      return stationsResponse.data.features.map(f => f.properties);
+    }
+    
+    return [];
+  }, `Fetch observation stations for point (${lat},${lon})`);
+}
+
+/**
+ * Get latest observation from a specific station
+ * @param {string} stationId - ICAO station identifier (e.g., 'KORD')
+ * @returns {Promise<Object|null>} Observation properties or null
+ */
+async function getLatestObservation(stationId) {
+  return requestWithRetry(async () => {
+    const response = await getNoaaClient().get(`/stations/${stationId}/observations/latest`);
+    return response.data?.properties || null;
+  }, `Fetch latest observation for station ${stationId}`);
+}
+
 module.exports = {
   getNOAAAlerts,
   getNOAAAlertsByPoint,
   getNOAAAlertsByState,
   getUGCZoneInfo,
+  getObservationStations,
+  getLatestObservation,
   // Export for testing
   _internal: {
     requestWithRetry,

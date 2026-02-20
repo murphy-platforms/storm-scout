@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getNOAAAlerts } = require('./utils/api-client');
+const { getNOAAAlerts, getLatestObservation } = require('./utils/api-client');
 const { normalizeNOAAAlert, calculateWeatherImpact, calculateHighestWeatherImpact, formatStatusReason } = require('./utils/normalizer');
 const SiteModel = require('../models/site');
 const AdvisoryModel = require('../models/advisory');
@@ -14,6 +14,7 @@ const SiteStatusModel = require('../models/siteStatus');
 const AdvisoryHistory = require('../models/advisoryHistory');
 const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
 const { alertAnomaly } = require('../utils/alerting');
+const ObservationModel = require('../models/observation');
 const cache = require('../utils/cache');
 
 const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
@@ -360,6 +361,9 @@ async function ingestNOAAData() {
       console.log('✓ No anomalies detected');
     }
     
+    // Step 9: Ingest weather observations from nearest stations
+    const observationResult = await ingestObservations(sites);
+    
     // Invalidate cache to ensure fresh data is served
     cache.invalidateAll();
     
@@ -372,12 +376,95 @@ async function ingestNOAAData() {
     console.log(`Site statuses updated: ${statusesUpdated}`);
     console.log(`Advisories marked expired: ${expiredCount}`);
     console.log(`Old expired removed: ${expiredRemoved}`);
+    console.log(`Observations updated: ${observationResult.updated}/${observationResult.total} sites (${observationResult.uniqueStations} unique stations)`);
     console.log(`═══════════════════════════\n`);
     
   } catch (error) {
     console.error('\n✗ NOAA ingestion failed:', error.message);
     throw error;
   }
+}
+
+/**
+ * Ingest latest weather observations for all sites with mapped observation stations.
+ * Deduplicates station fetches (multiple sites may share a station).
+ * @param {Array} sites - All site objects from database
+ * @returns {Object} { total, updated, failed, uniqueStations }
+ */
+async function ingestObservations(sites) {
+  console.log('\n═══ Weather Observations Ingestion ═══');
+  
+  // Filter to sites with observation_station mapped
+  const mappedSites = sites.filter(s => s.observation_station);
+  
+  if (mappedSites.length === 0) {
+    console.log('No sites have observation stations mapped. Run fetch-observation-stations.js first.');
+    return { total: 0, updated: 0, failed: 0, uniqueStations: 0 };
+  }
+  
+  // Build station -> sites mapping to deduplicate fetches
+  const stationToSites = new Map();
+  for (const site of mappedSites) {
+    const station = site.observation_station;
+    if (!stationToSites.has(station)) {
+      stationToSites.set(station, []);
+    }
+    stationToSites.get(station).push(site);
+  }
+  
+  const uniqueStations = stationToSites.size;
+  console.log(`${mappedSites.length} sites mapped to ${uniqueStations} unique stations`);
+  
+  let updated = 0;
+  let failed = 0;
+  
+  for (const [stationId, stationSites] of stationToSites.entries()) {
+    try {
+      const obs = await getLatestObservation(stationId);
+      
+      if (!obs) {
+        console.warn(`  Station ${stationId}: No observation data`);
+        failed += stationSites.length;
+        continue;
+      }
+      
+      // Extract values from NWS response format { unitCode, value, qualityControl }
+      const data = {
+        station_id: stationId,
+        temperature_c: obs.temperature?.value ?? null,
+        relative_humidity: obs.relativeHumidity?.value ?? null,
+        dewpoint_c: obs.dewpoint?.value ?? null,
+        wind_speed_kmh: obs.windSpeed?.value ?? null,
+        wind_direction_deg: obs.windDirection?.value != null ? Math.round(obs.windDirection.value) : null,
+        wind_gust_kmh: obs.windGust?.value ?? null,
+        barometric_pressure_pa: obs.barometricPressure?.value ?? null,
+        visibility_m: obs.visibility?.value ?? null,
+        wind_chill_c: obs.windChill?.value ?? null,
+        heat_index_c: obs.heatIndex?.value ?? null,
+        precipitation_last_6h_m: obs.precipitationLast6Hours?.value ?? null,
+        cloud_layers: obs.cloudLayers ? JSON.stringify(obs.cloudLayers) : null,
+        text_description: obs.textDescription || null,
+        observed_at: obs.timestamp ? new Date(obs.timestamp) : null
+      };
+      
+      // Upsert for each site mapped to this station
+      for (const site of stationSites) {
+        try {
+          await ObservationModel.upsert(site.id, data);
+          updated++;
+        } catch (dbError) {
+          console.error(`  Error saving observation for site ${site.site_code}: ${dbError.message}`);
+          failed++;
+        }
+      }
+    } catch (error) {
+      console.warn(`  Station ${stationId}: ${error.message}`);
+      failed += stationSites.length;
+    }
+  }
+  
+  console.log(`Observations updated: ${updated}, failed: ${failed}`);
+  return { total: mappedSites.length, updated, failed, uniqueStations };
 }
 
 /**
