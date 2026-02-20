@@ -21,6 +21,7 @@ Currently monitoring 229 testing centers with real-time NOAA weather data update
 - **Live Update Tracking** - Dashboard displays last update timestamp and countdown to next refresh
 - **ProInsights Reference Sync** - Recurring CSV import from ProInsights with automated site name and metadata sync
 - **Site Name Normalization** - All site names sourced from ProInsights MetroAreaName, displayed in UPPER CASE
+- **Weather Observations** - Current conditions from nearest NWS observation station updated every 15 minutes
 
 ### Alert Filtering System
 - **80+ NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
@@ -168,6 +169,8 @@ npm start
 - `GET /api/status/sites-impacted` - Sites with Closed or At Risk status
 - `GET /api/filters` - Available filter presets
 - `GET /api/filters/types/all` - All NOAA alert types by impact level
+- `GET /api/observations` - Current weather observations for all sites
+- `GET /api/observations/:siteCode` - Weather observation for a specific site
 
 See `backend/README.md` for complete API documentation.
 
