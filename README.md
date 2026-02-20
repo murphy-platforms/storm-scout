@@ -90,7 +90,7 @@ cp .env.example .env
 # Initialize database with schema
 npm run init-db
 
-# Load 219 US testing center sites
+# Load 229 US testing center sites
 npm run seed-db
 
 # Start the API server
@@ -108,10 +108,11 @@ strom-scout/
 ├── backend/              # Node.js + Express API
 │   ├── src/
 │   │   ├── config/      # Database & configuration
-│   │   ├── models/      # Data access layer
+│   │   ├── models/      # Data access layer (site, advisory, observation, etc.)
 │   │   ├── routes/      # REST API endpoints
-│   │   ├── ingestion/   # NOAA data fetching
-│   │   └── data/        # Schema, sites.json (229 US sites)
+│   │   ├── ingestion/   # NOAA alert + observation fetching
+│   │   ├── scripts/     # Maintenance scripts (reference import, station mapping)
+│   │   └── data/        # Schema, sites.json (229 US sites), migrations/
 │   ├── package.json
 │   └── README.md
 │
@@ -137,7 +138,7 @@ strom-scout/
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
 **Middleware:** node-cache (caching), express-rate-limit, express-validator  
 **Frontend:** HTML5, Bootstrap 5.3, Vanilla JavaScript, localStorage API  
-**Data:** NOAA Weather API (80+ alert types), 229 US testing centers  
+**Data:** NOAA Weather API (80+ alert types, 223 observation stations), 229 US testing centers  
 **Deployment:** cPanel with Passenger, SSH/rsync  
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
