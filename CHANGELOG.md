@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Headline on Sites Cards** - sites.html cards now show NOAA alert headline below advisory type (closes #25)
 - **Observations API Client** - Added `getObservations()` to frontend `api.js` for fetching current weather data
 - **Temperature on Site Detail** - site-detail.html header card now shows temperature (°F/°C) below severity badge with staleness detection (closes #29)
+- **Temperature on Map Popup** - map.html popup card now shows temperature (°F/°C) right-justified on city/state line with staleness detection (closes #30)
+- **Headline on Map Popup** - map.html popup card now shows NOAA alert headline below severity badge, truncated to 80 chars (closes #31)
+
+### Fixed
+- **Map Popup View Details Button** - Button text was invisible due to Leaflet CSS overriding Bootstrap button color; added specificity fix (closes #32)
 
 ### Changed
 - **Temperature Moved to Card Header** - Temperature display relocated from card body to header right side, below severity badge (closes #19)

@@ -111,6 +111,10 @@
             margin-right: 0.25rem;
             margin-bottom: 0.25rem;
         }
+        
+        .site-popup .btn {
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -259,6 +263,38 @@
         let map;
         let markers = [];
         let markerLayer;
+        let observationsMap = {};
+        
+        // Helper: convert Celsius to Fahrenheit
+        function cToF(tempC) {
+            if (tempC == null) return null;
+            return Math.round((parseFloat(tempC) * 9 / 5) + 32);
+        }
+        
+        // Helper: relative time string
+        function timeAgo(dateString) {
+            if (!dateString) return '';
+            const now = Date.now();
+            const then = new Date(dateString).getTime();
+            const diffMin = Math.round((now - then) / 60000);
+            if (diffMin < 1) return 'just now';
+            if (diffMin < 60) return `${diffMin} min ago`;
+            const diffHrs = Math.round(diffMin / 60);
+            if (diffHrs < 24) return `${diffHrs} hr ago`;
+            return `${Math.round(diffHrs / 24)} day ago`;
+        }
+        
+        // Helper: check if observation is stale (>90 min)
+        function isStale(observedAt) {
+            if (!observedAt) return true;
+            return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
+        }
+        
+        // Helper: truncate string
+        function truncate(str, max) {
+            if (!str) return '';
+            return str.length > max ? str.substring(0, max) + '…' : str;
+        }
         
         // Initialize map
         function initMap() {
@@ -277,10 +313,15 @@
                 // Initialize filters first
                 await AlertFilters.init();
                 
-                const [allAdvisories, allSites] = await Promise.all([
+                const [allAdvisories, allSites, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
-                    API.getSites()
+                    API.getSites(),
+                    API.getObservations().catch(() => [])
                 ]);
+                
+                // Build observations lookup by site_code
+                observationsMap = {};
+                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
                 
                 // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
@@ -336,16 +377,34 @@
                 const marker = L.marker([site.latitude, site.longitude], { icon: customIcon });
                 
                 // Create popup content using html tagged template for XSS prevention
+                // Build temperature HTML
+                const obs = observationsMap[site.site_code];
+                let tempHtml = '';
+                if (obs && obs.temperature_c != null) {
+                    const tempF = cToF(obs.temperature_c);
+                    const tempC = Math.round(parseFloat(obs.temperature_c));
+                    const stale = isStale(obs.observed_at);
+                    if (stale) {
+                        tempHtml = `<span>🌡️ ${tempF}°F / ${tempC}°C <small class="text-danger"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small></span>`;
+                    } else {
+                        tempHtml = `<span>🌡️ ${tempF}°F / ${tempC}°C <small class="text-muted">${timeAgo(obs.observed_at)}</small></span>`;
+                    }
+                }
+                
+                const headlineText = truncate(site.highest_severity_advisory.headline || '', 80);
+                
                 const popupContent = html`
                     <div class="site-popup">
                         <h6><strong>${site.site_code}</strong> - ${site.name}</h6>
-                        <p class="mb-2">
-                            ${raw('<i class="bi bi-geo-alt"></i>')} ${site.city}, ${site.state}
-                        </p>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>${raw('<i class="bi bi-geo-alt"></i>')} ${site.city}, ${site.state}</span>
+                            ${raw(tempHtml ? `<span style="font-size: 0.85rem;">${tempHtml}</span>` : '')}
+                        </div>
                         <p class="mb-2">
                             ${raw(`<span class="badge severity-${escapeHtml(severity.toLowerCase())}">${escapeHtml(severity)}</span>`)}
                             ${raw(site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : '')}
                         </p>
+                        ${raw(headlineText ? `<p class="mb-2"><small class="text-muted">${escapeHtml(headlineText)}</small></p>` : '')}
                         <p class="mb-2">
                             <strong>${site.unique_advisory_count}</strong> unique alerts
                             ${raw(site.total_zone_count !== site.unique_advisory_count ? 
