@@ -360,7 +360,7 @@
             if (currentView === 'card') {
                 renderCardView(aggregatedSites, filtered);
             } else {
-                renderAdvisories(filtered);
+                renderAdvisories([...filtered].sort((a, b) => a.site_code.localeCompare(b.site_code, undefined, { numeric: true })));
             }
         }
         
