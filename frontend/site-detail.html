@@ -85,7 +85,10 @@
                                         <i class="bi bi-geo-alt"></i> <span id="siteLocation"></span>
                                     </p>
                                 </div>
-                                <span class="badge severity-badge-large" id="highestSeverityBadge"></span>
+                                <div style="text-align: right;">
+                                    <span class="badge severity-badge-large" id="highestSeverityBadge"></span>
+                                    <div id="siteTempDisplay" style="margin-top: 0.35rem; font-size: 0.85rem;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -176,6 +179,31 @@
         let siteData = null;
         let siteAdvisories = [];
         
+        // Helper: convert Celsius to Fahrenheit
+        function cToF(tempC) {
+            if (tempC == null) return null;
+            return Math.round((parseFloat(tempC) * 9 / 5) + 32);
+        }
+        
+        // Helper: relative time string
+        function timeAgo(dateString) {
+            if (!dateString) return '';
+            const now = Date.now();
+            const then = new Date(dateString).getTime();
+            const diffMin = Math.round((now - then) / 60000);
+            if (diffMin < 1) return 'just now';
+            if (diffMin < 60) return `${diffMin} min ago`;
+            const diffHrs = Math.round(diffMin / 60);
+            if (diffHrs < 24) return `${diffHrs} hr ago`;
+            return `${Math.round(diffHrs / 24)} day ago`;
+        }
+        
+        // Helper: check if observation is stale (>90 min)
+        function isStale(observedAt) {
+            if (!observedAt) return true;
+            return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
+        }
+        
         async function loadSiteDetail() {
             try {
                 // Get site code from URL
@@ -187,10 +215,11 @@
                     return;
                 }
                 
-                // Load all advisories and sites
-                const [allAdvisories, allSites] = await Promise.all([
+                // Load all advisories, sites, and observations
+                const [allAdvisories, allSites, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
-                    API.getSites()
+                    API.getSites(),
+                    API.getObservations().catch(() => [])
                 ]);
                 
                 // Find the site
@@ -212,8 +241,11 @@
                 const aggregated = SiteAggregator.aggregateBySite(siteAdvisories, { deduplicateZones: true });
                 const siteAggData = aggregated[0]; // Should only be one site
                 
+                // Find observation for this site
+                const siteObs = obsData.find(o => o.site_code === siteCode) || null;
+                
                 // Render the page
-                renderSiteHeader(siteData, siteAggData);
+                renderSiteHeader(siteData, siteAggData, siteObs);
                 renderHighestAlert(siteAggData);
                 renderImpactSummary(siteAggData);
                 renderTimeline(siteAggData);
@@ -235,7 +267,7 @@
             document.getElementById('errorState').style.display = 'block';
         }
         
-        function renderSiteHeader(site, aggData) {
+        function renderSiteHeader(site, aggData, obs) {
             document.getElementById('siteCode').textContent = site.site_code;
             document.getElementById('siteName').textContent = site.name;
             document.getElementById('siteLocation').textContent = `${site.city}, ${site.state}`;
@@ -244,6 +276,21 @@
             const severityBadge = document.getElementById('highestSeverityBadge');
             severityBadge.textContent = severity;
             severityBadge.className = `badge severity-badge-large severity-${severity.toLowerCase()}`;
+            
+            // Temperature display
+            const tempContainer = document.getElementById('siteTempDisplay');
+            if (obs && obs.temperature_c != null) {
+                const tempF = cToF(obs.temperature_c);
+                const tempC = Math.round(parseFloat(obs.temperature_c));
+                const stale = isStale(obs.observed_at);
+                if (stale) {
+                    tempContainer.innerHTML = html`<span class="text-dark">🌡️ ${raw(`${tempF}`)}°F / ${raw(`${tempC}`)}°C</span>
+                        <small class="text-danger ms-2"><strong>${obs.station_id} - OFFLINE</strong></small>`;
+                } else {
+                    tempContainer.innerHTML = html`<span class="text-dark">🌡️ ${raw(`${tempF}`)}°F / ${raw(`${tempC}`)}°C</span>
+                        <small class="text-muted ms-2">${raw(timeAgo(obs.observed_at))}</small>`;
+                }
+            }
             
             const headerCard = document.getElementById('siteHeaderCard');
             headerCard.className = `card site-card site-card-${severity.toLowerCase()}`;
