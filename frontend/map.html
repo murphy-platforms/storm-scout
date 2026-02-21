@@ -404,15 +404,12 @@
                             ${raw(`<span class="badge severity-${escapeHtml(severity.toLowerCase())}">${escapeHtml(severity)}</span>`)}
                             ${raw(site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : '')}
                         </p>
+                        <p class="mb-1"><strong>${site.highest_severity_advisory.advisory_type}</strong></p>
                         ${raw(headlineText ? `<p class="mb-2"><small class="text-muted">${escapeHtml(headlineText)}</small></p>` : '')}
                         <p class="mb-2">
                             <strong>${site.unique_advisory_count}</strong> unique alerts
                             ${raw(site.total_zone_count !== site.unique_advisory_count ? 
                                 `<small class="text-muted">(${site.total_zone_count} zones)</small>` : '')}
-                        </p>
-                        <p class="mb-2">
-                            <strong>Highest Alert:</strong><br>
-                            ${site.highest_severity_advisory.advisory_type}
                         </p>
                         <a href="site-detail.html?site=${encodeURIComponent(site.site_code)}" class="btn btn-sm btn-primary w-100">
                             ${raw('<i class="bi bi-arrow-right-circle"></i>')} View Details
