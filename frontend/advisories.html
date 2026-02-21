@@ -454,12 +454,12 @@
                 const tempF = cToF(obs.temperature_c);
                 const stale = isStale(obs.observed_at);
                 if (stale) {
-                    tempHtml = `<div style="margin-bottom: 0.5rem;">
+                    tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
                         <span class="text-dark">🌡️ ${tempF}°F</span>
                         <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
                     </div>`;
                 } else {
-                    tempHtml = `<div style="margin-bottom: 0.5rem;">
+                    tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
                         <span class="text-dark">🌡️ ${tempF}°F</span>
                         <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
                     </div>`;
@@ -479,9 +479,12 @@
                                         <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
                                     </div>
                                 </div>
-                                <span class="badge severity-badge-large severity-${raw(escapeHtml(site.highest_severity.toLowerCase()))}">
-                                    ${site.highest_severity}
-                                </span>
+                                <div style="text-align: right;">
+                                    <span class="badge severity-badge-large severity-${raw(escapeHtml(site.highest_severity.toLowerCase()))}">
+                                        ${site.highest_severity}
+                                    </span>
+                                    ${raw(tempHtml)}
+                                </div>
                             </div>
                             <div class="site-card-body">
                                 <!-- Highest severity alert -->
@@ -494,8 +497,6 @@
                                         ${raw(highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : '')}
                                     </small>
                                 </div>
-                                <!-- Temperature -->
-                                ${raw(tempHtml)}
                                 
                                 <!-- Alert summary -->
                                 <div class="alert-summary">
