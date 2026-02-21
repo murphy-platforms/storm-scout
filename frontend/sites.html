@@ -119,14 +119,51 @@
     <script>
         let allSites = [];
         let allAdvisories = [];
+        let observationsMap = {};
+        
+        // Helper: convert Celsius to Fahrenheit
+        function cToF(tempC) {
+            if (tempC == null) return null;
+            return Math.round((parseFloat(tempC) * 9 / 5) + 32);
+        }
+        
+        // Helper: relative time string
+        function timeAgo(dateString) {
+            if (!dateString) return '';
+            const now = Date.now();
+            const then = new Date(dateString).getTime();
+            const diffMin = Math.round((now - then) / 60000);
+            if (diffMin < 1) return 'just now';
+            if (diffMin < 60) return `${diffMin} min ago`;
+            const diffHrs = Math.round(diffMin / 60);
+            if (diffHrs < 24) return `${diffHrs} hr ago`;
+            return `${Math.round(diffHrs / 24)} day ago`;
+        }
+        
+        // Helper: check if observation is stale (>90 min)
+        function isStale(observedAt) {
+            if (!observedAt) return true;
+            return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
+        }
+        
+        // Helper: truncate string
+        function truncate(str, max) {
+            if (!str) return '';
+            return str.length > max ? str.substring(0, max) + '…' : str;
+        }
         
         async function loadSites() {
             try {
-                // Load all sites and all advisories
-                const [sites, advisories] = await Promise.all([
+                // Load all sites, advisories, and observations
+                const [sites, advisories, obsData] = await Promise.all([
                     API.getSites(),
-                    API.getActiveAdvisories()
+                    API.getActiveAdvisories(),
+                    API.getObservations().catch(() => [])
                 ]);
+                
+                // Build observations lookup by site_code
+                observationsMap = {};
+                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
                 
                 allSites = sites;
                 allAdvisories = advisories;
@@ -205,6 +242,27 @@
             container.innerHTML = sortedSites.map(site => {
                 const severityClass = site.highest_severity ? `site-card-${escapeHtml(site.highest_severity.toLowerCase())}` : '';
                 const advisory = site.highest_severity_advisory;
+                const headlineText = advisory ? truncate(advisory.headline || '', 120) : '';
+                const obs = observationsMap[site.site_code];
+                
+                // Temperature display
+                let tempHtml = '';
+                if (obs && obs.temperature_c != null) {
+                    const tempF = cToF(obs.temperature_c);
+                    const tempC = Math.round(parseFloat(obs.temperature_c));
+                    const stale = isStale(obs.observed_at);
+                    if (stale) {
+                        tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
+                            <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
+                            <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
+                        </div>`;
+                    } else {
+                        tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
+                            <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
+                            <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
+                        </div>`;
+                    }
+                }
                 
                 return html`
                 <div class="col-md-6 col-lg-4 mb-3">
@@ -212,35 +270,35 @@
                         <div class="card site-card site-card-clickable ${raw(severityClass)}">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h5 class="card-title mb-0 text-dark">
-                                        <strong>${site.site_code}</strong> - ${site.name}
-                                    </h5>
-                                    ${raw(site.highest_severity ? 
-                                        `<span class="badge severity-badge-large severity-${escapeHtml(site.highest_severity.toLowerCase())}">
-                                            ${escapeHtml(site.highest_severity)}
-                                        </span>` : '')}
+                                    <div>
+                                        <h5 class="card-title mb-0 text-dark">
+                                            <strong>${site.site_code}</strong> - ${site.name}
+                                        </h5>
+                                        <small class="text-muted"><i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}</small>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        ${raw(site.highest_severity ? 
+                                            `<span class="badge severity-badge-large severity-${escapeHtml(site.highest_severity.toLowerCase())}">
+                                                ${escapeHtml(site.highest_severity)}
+                                            </span>` : '')}
+                                        ${raw(tempHtml)}
+                                    </div>
                                 </div>
                                 
                                 ${raw(advisory ? `
                                 <div class="mb-2">
                                     <strong style="color: #dc3545;">${escapeHtml(advisory.advisory_type)}</strong>
                                     ${advisory.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-1">🆕 NEW</span>' : ''}
+                                    ${headlineText ? '<br><small class="text-muted" style="line-height: 1.3; display: inline-block; margin-top: 0.25rem;">' + escapeHtml(headlineText) + '</small>' : ''}
                                 </div>
                                 ` : '')}
                                 
                                 <p class="card-text text-dark">
-                                    <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}<br>
                                     <i class="bi bi-exclamation-triangle"></i> <strong>${site.advisory_count}</strong> active ${raw(site.advisory_count === 1 ? 'alert' : 'alerts')}
                                     ${raw(site.total_zone_count !== site.advisory_count ? 
                                         `<span class="text-muted small">(${site.total_zone_count} zones)</span>` : '')}
                                     ${raw(site.new_count > 0 ? `<br><i class="bi bi-bell"></i> <strong>${site.new_count}</strong> new` : '')}
                                 </p>
-                                
-                                <div class="mt-2">
-                                    <span class="badge ${raw(getStatusBadge(site.operational_status))}">
-                                        Ops: ${site.operational_status || 'Unknown'}
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </a>
