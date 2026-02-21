@@ -238,7 +238,7 @@ const StormScoutExport = {
     <title>Storm Scout - Site Impact Summary</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        h1 { color: #333; border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
+        h1 { color: #333; border-bottom: 3px solid #1B2845; padding-bottom: 10px; }
         h2 { color: #555; margin-top: 30px; }
         .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px 0; }
         .summary-card { border: 2px solid #ddd; padding: 20px; text-align: center; border-radius: 8px; }
@@ -309,8 +309,8 @@ const StormScoutExport = {
     <title>Storm Scout - Executive Briefing</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-        h1 { color: #333; border-bottom: 3px solid #0d6efd; padding-bottom: 10px; }
-        .executive-summary { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #0d6efd; }
+        h1 { color: #333; border-bottom: 3px solid #1B2845; padding-bottom: 10px; }
+        .executive-summary { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #1B2845; }
         .key-points { margin: 20px 0; }
         .key-points li { margin: 10px 0; }
         .critical-sites { background: #fdd; padding: 15px; margin: 20px 0; border-left: 4px solid #dc3545; }

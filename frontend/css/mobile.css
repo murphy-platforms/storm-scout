@@ -530,7 +530,7 @@
 /* Larger focus outlines on touch devices */
 @media (pointer: coarse) {
     *:focus-visible {
-        outline: 3px solid #0d6efd;
+        outline: 3px solid #1B2845;
         outline-offset: 3px;
     }
 }
@@ -540,7 +540,7 @@
     position: absolute;
     top: -100px;
     left: 0;
-    background: #0d6efd;
+    background: #1B2845;
     color: white;
     padding: 12px 20px;
     z-index: 9999;
