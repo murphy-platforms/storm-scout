@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.6.4] - 2026-02-21
+
+### Added
+- **Dynamic Critical/Severe Count Color** - Summary stats bar on advisories page now shows count in red when Extreme alerts are present, orange when only Severe (closes #14)
+- **Alert Headline on Site Cards** - NOAA alert headline displayed on each site card below advisory type, truncated to 120 chars (closes #15)
+- **Temperature + Station Status on Site Cards** - Current temperature (°F) from nearest NWS station shown on cards with relative timestamp; stations older than 90 minutes display "OFFLINE" in red (closes #16)
+- **Temperature Column in Table View** - New Temp column between Site Code and Site Name in advisories table view (closes #17)
+- **Headline Column in Table View** - New Headline column between Site Name and City in advisories table view, truncated to 80 chars (closes #18)
+- **Observations API Client** - Added `getObservations()` to frontend `api.js` for fetching current weather data
+
 ## [1.6.3] - 2026-02-20
 
 ### Fixed

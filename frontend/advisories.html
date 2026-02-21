@@ -134,7 +134,9 @@
                                 <thead>
                                     <tr>
                                         <th>Site Code</th>
+                                        <th>Temp</th>
                                         <th>Site Name</th>
+                                        <th>Headline</th>
                                         <th>City</th>
                                         <th>State</th>
                                         <th>Advisory Type</th>
@@ -146,7 +148,7 @@
                                 </thead>
                                 <tbody id="advisoriesTable">
                                     <tr>
-                                        <td colspan="9" class="text-center">
+                                        <td colspan="11" class="text-center">
                                             <span class="spinner-border"></span> Loading...
                                         </td>
                                     </tr>
@@ -174,6 +176,7 @@
     <script>
         let allAdvisories = [];
         let allAdvisoriesUnfiltered = [];
+        let observationsMap = {};
         let currentView = 'card';
         
         // Check if alert type should be included
@@ -201,9 +204,48 @@
             return config.includeCategories && config.includeCategories.includes(impactLevel);
         }
         
+        // Helper: convert Celsius to Fahrenheit
+        function cToF(tempC) {
+            if (tempC == null) return null;
+            return Math.round((parseFloat(tempC) * 9 / 5) + 32);
+        }
+        
+        // Helper: relative time string
+        function timeAgo(dateString) {
+            if (!dateString) return '';
+            const now = Date.now();
+            const then = new Date(dateString).getTime();
+            const diffMin = Math.round((now - then) / 60000);
+            if (diffMin < 1) return 'just now';
+            if (diffMin < 60) return `${diffMin} min ago`;
+            const diffHrs = Math.round(diffMin / 60);
+            if (diffHrs < 24) return `${diffHrs} hr ago`;
+            return `${Math.round(diffHrs / 24)} day ago`;
+        }
+        
+        // Helper: check if observation is stale (>90 min)
+        function isStale(observedAt) {
+            if (!observedAt) return true;
+            return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
+        }
+        
+        // Helper: truncate string
+        function truncate(str, max) {
+            if (!str) return '';
+            return str.length > max ? str.substring(0, max) + '…' : str;
+        }
+        
         async function loadAdvisories() {
             try {
-                const data = await API.getActiveAdvisories();
+                const [data, obsData] = await Promise.all([
+                    API.getActiveAdvisories(),
+                    API.getObservations().catch(() => [])
+                ]);
+                
+                // Build observations lookup by site_code
+                observationsMap = {};
+                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
+                
                 allAdvisoriesUnfiltered = data;
                 allAdvisories = data;
                 
@@ -224,7 +266,7 @@
                 document.getElementById('cardViewContainer').innerHTML = 
                     '<div class="col-12"><div class="alert alert-danger">Failed to load advisories</div></div>';
                 document.getElementById('advisoriesTable').innerHTML = 
-                    '<tr><td colspan="9" class="text-center text-danger">Failed to load advisories</td></tr>';
+                    '<tr><td colspan="11" class="text-center text-danger">Failed to load advisories</td></tr>';
             }
         }
         
@@ -259,14 +301,21 @@
         function renderAdvisories(advisories) {
             const tbody = document.getElementById('advisoriesTable');
             if (advisories.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="text-center">No active advisories</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center">No active advisories</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = advisories.map(adv => html`
+            tbody.innerHTML = advisories.map(adv => {
+                const obs = observationsMap[adv.site_code];
+                const tempF = obs ? cToF(obs.temperature_c) : null;
+                const tempDisplay = tempF != null ? `${tempF}°F` : '—';
+                const headlineShort = truncate(adv.headline || '', 80);
+                return html`
                 <tr>
                     <td><strong>${adv.site_code}</strong></td>
+                    <td>${raw(tempDisplay)}</td>
                     <td>${adv.site_name}</td>
+                    <td><small>${headlineShort}</small></td>
                     <td>${adv.city}</td>
                     <td>${adv.state}</td>
                     <td>${adv.advisory_type}</td>
@@ -275,7 +324,7 @@
                     <td>${adv.source}</td>
                     <td>${raw(formatDate(adv.last_updated))}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
         
         // Render everything
@@ -364,6 +413,8 @@
             
             // Render summary stats
             const stats = SiteAggregator.getSummaryStats(originalAdvisories, sites);
+            const hasExtreme = sites.some(s => s.highest_severity === 'Extreme');
+            const critColor = hasExtreme ? '#dc3545' : '#fd7e14';
             statsContainer.innerHTML = `
                 <div class="col-12">
                     <div class="summary-stats">
@@ -372,7 +423,7 @@
                             <span class="summary-stat-label">Sites Impacted</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #dc3545;">${stats.critical_sites}</span>
+                            <span class="summary-stat-value" style="color: ${critColor};">${stats.critical_sites}</span>
                             <span class="summary-stat-label">Critical/Severe</span>
                         </div>
                         <div class="summary-stat">
@@ -388,13 +439,32 @@
             `;
             
             // Render site cards
-            container.innerHTML = sites.map(site => renderSiteCard(site)).join('');
+            container.innerHTML = sites.map(site => renderSiteCard(site, observationsMap[site.site_code])).join('');
         }
         
         // Render individual site card
-        function renderSiteCard(site) {
+        function renderSiteCard(site, obs) {
             const severityClass = `site-card-${escapeHtml(site.highest_severity.toLowerCase())}`;
             const highestAlert = site.highest_severity_advisory;
+            const headlineText = truncate(highestAlert.headline || '', 120);
+            
+            // Temperature display
+            let tempHtml = '';
+            if (obs && obs.temperature_c != null) {
+                const tempF = cToF(obs.temperature_c);
+                const stale = isStale(obs.observed_at);
+                if (stale) {
+                    tempHtml = `<div style="margin-bottom: 0.5rem;">
+                        <span class="text-dark">🌡️ ${tempF}°F</span>
+                        <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
+                    </div>`;
+                } else {
+                    tempHtml = `<div style="margin-bottom: 0.5rem;">
+                        <span class="text-dark">🌡️ ${tempF}°F</span>
+                        <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
+                    </div>`;
+                }
+            }
             
             return html`
                 <div class="col-lg-6 col-12">
@@ -418,11 +488,14 @@
                                 <div style="margin-bottom: 0.75rem;">
                                     <strong class="text-dark">${highestAlert.advisory_type}</strong>
                                     ${raw(highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : '')}
+                                    ${raw(headlineText ? '<br><small class="text-muted" style="line-height: 1.3; display: inline-block; margin-top: 0.25rem;">' + escapeHtml(headlineText) + '</small>' : '')}
                                     <br>
                                     <small class="text-muted">
                                         ${raw(highestAlert.expires ? 'Expires: ' + formatDate(highestAlert.expires) : '')}
                                     </small>
                                 </div>
+                                <!-- Temperature -->
+                                ${raw(tempHtml)}
                                 
                                 <!-- Alert summary -->
                                 <div class="alert-summary">

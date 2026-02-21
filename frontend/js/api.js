@@ -47,6 +47,16 @@ const API = {
     },
 
     /**
+     * Get all current weather observations
+     */
+    async getObservations() {
+        const response = await fetch(`${API_BASE_URL}/observations`);
+        const json = await response.json();
+        if (!json.success) throw new Error(json.error || 'Failed to fetch observations');
+        return json.data;
+    },
+
+    /**
      * Get all sites
      */
     async getSites() {
