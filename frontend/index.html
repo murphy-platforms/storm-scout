@@ -83,74 +83,8 @@
             </div>
         </div>
 
-        <!-- 1. SITES REQUIRING ATTENTION (Primary Action Area) -->
+        <!-- 1. WEATHER IMPACT ASSESSMENT -->
         <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Sites Requiring Attention</h3>
-                        <p class="text-muted small mb-0">Grouped by highest severity alert</p>
-                    </div>
-                    <div class="quick-actions">
-                        <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
-                            <i class="bi bi-list-ul"></i> View All Sites
-                        </a>
-                        <a href="map.html" class="btn btn-sm btn-outline-primary me-1">
-                            <i class="bi bi-geo-alt"></i> Map View
-                        </a>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-share"></i> Export
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#" id="exportPrintPDF">
-                                    <i class="bi bi-printer"></i> Print / Save PDF
-                                </a></li>
-                                <li><a class="dropdown-item" href="#" id="exportShareLink">
-                                    <i class="bi bi-link-45deg"></i> Copy Shareable Link
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">Advanced Reports</h6></li>
-                                <li><a class="dropdown-item disabled text-muted" href="#">
-                                    <i class="bi bi-file-earmark-person"></i> Executive Briefing <span class="badge bg-secondary ms-1">Coming Soon</span>
-                                </a></li>
-                                <li><a class="dropdown-item disabled text-muted" href="#">
-                                    <i class="bi bi-file-earmark-text"></i> Incident Report <span class="badge bg-secondary ms-1">Coming Soon</span>
-                                </a></li>
-                                <li><a class="dropdown-item disabled text-muted" href="#">
-                                    <i class="bi bi-filetype-csv"></i> Export CSV <span class="badge bg-secondary ms-1">Coming Soon</span>
-                                </a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- EXTREME SITES (RED) -->
-        <div id="extremeSitesSection"></div>
-        
-        <!-- SEVERE SITES (ORANGE) -->
-        <div id="severeSitesSection"></div>
-        
-        <!-- MODERATE SITES (YELLOW) -->
-        <div id="moderateSitesSection"></div>
-        
-        <!-- MINOR SITES (GREEN) -->
-        <div id="minorSitesSection"></div>
-
-        <!-- No Sites Message (shown when no sites need attention) -->
-        <div id="noSitesMessage" class="row mb-4" style="display: none;">
-            <div class="col-12">
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <strong>All Clear!</strong> No sites currently require attention based on your filter settings.
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. WEATHER IMPACT ASSESSMENT -->
-        <div class="row mb-3 mt-4">
             <div class="col-12">
                 <h3 class="h4">
                     <i class="bi bi-cloud-lightning"></i> Weather Impact Assessment
@@ -216,6 +150,72 @@
                         </div>
                     </div>
                 </a>
+            </div>
+        </div>
+
+        <!-- 2. SITES REQUIRING ATTENTION (Primary Action Area) -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Sites Requiring Attention</h3>
+                        <p class="text-muted small mb-0">Grouped by highest severity alert</p>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
+                            <i class="bi bi-list-ul"></i> View All Sites
+                        </a>
+                        <a href="map.html" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="bi bi-geo-alt"></i> Map View
+                        </a>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-share"></i> Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" id="exportPrintPDF">
+                                    <i class="bi bi-printer"></i> Print / Save PDF
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" id="exportShareLink">
+                                    <i class="bi bi-link-45deg"></i> Copy Shareable Link
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Advanced Reports</h6></li>
+                                <li><a class="dropdown-item disabled text-muted" href="#">
+                                    <i class="bi bi-file-earmark-person"></i> Executive Briefing <span class="badge bg-secondary ms-1">Coming Soon</span>
+                                </a></li>
+                                <li><a class="dropdown-item disabled text-muted" href="#">
+                                    <i class="bi bi-file-earmark-text"></i> Incident Report <span class="badge bg-secondary ms-1">Coming Soon</span>
+                                </a></li>
+                                <li><a class="dropdown-item disabled text-muted" href="#">
+                                    <i class="bi bi-filetype-csv"></i> Export CSV <span class="badge bg-secondary ms-1">Coming Soon</span>
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EXTREME SITES (RED) -->
+        <div id="extremeSitesSection"></div>
+        
+        <!-- SEVERE SITES (ORANGE) -->
+        <div id="severeSitesSection"></div>
+        
+        <!-- MODERATE SITES (YELLOW) -->
+        <div id="moderateSitesSection"></div>
+        
+        <!-- MINOR SITES (GREEN) -->
+        <div id="minorSitesSection"></div>
+
+        <!-- No Sites Message (shown when no sites need attention) -->
+        <div id="noSitesMessage" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <strong>All Clear!</strong> No sites currently require attention based on your filter settings.
+                </div>
             </div>
         </div>
 
