@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Summary Panel Label** - Renamed "Sites Impacted" to "Locations Impacted" on advisories page (closes #37)
 - **Critical/Severe Count Split** - Summary panel now shows separate color-coded counts for Critical (red) and Severe (orange) separated by "/" instead of a single combined number (closes #38)
 - **Table View Default Sort** - Table view on advisories page now sorted by site code ascending (lowest to highest) as default; filters still apply before sort (closes #39)
+- **Dashboard Layout Reorder** - Moved Weather Impact Assessment to top of dashboard, directly below heading and above Sites Requiring Attention (closes #40)
 
 ### Removed
 - **City/State from Sites Card Body** - Moved to card header for consistency with advisories.html (closes #26)
