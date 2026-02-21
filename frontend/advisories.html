@@ -414,17 +414,17 @@
             
             // Render summary stats
             const stats = SiteAggregator.getSummaryStats(originalAdvisories, sites);
-            const hasExtreme = sites.some(s => s.highest_severity === 'Extreme');
-            const critColor = hasExtreme ? '#dc3545' : '#fd7e14';
+            const extremeCount = sites.filter(s => s.highest_severity === 'Extreme').length;
+            const severeCount = sites.filter(s => s.highest_severity === 'Severe').length;
             statsContainer.innerHTML = `
                 <div class="col-12">
                     <div class="summary-stats">
                         <div class="summary-stat">
                             <span class="summary-stat-value">${stats.unique_sites}</span>
-                            <span class="summary-stat-label">Sites Impacted</span>
+                            <span class="summary-stat-label">Locations Impacted</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: ${critColor};">${stats.critical_sites}</span>
+                            <span class="summary-stat-value"><span style="color: #dc3545;">${extremeCount}</span> / <span style="color: #fd7e14;">${severeCount}</span></span>
                             <span class="summary-stat-label">Critical/Severe</span>
                         </div>
                         <div class="summary-stat">
