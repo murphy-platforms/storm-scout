@@ -14,6 +14,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.7.0] - 2026-02-21
+
+### Changed
+- **Prometric Visual Alignment** - Updated color palette and design elements to align with Prometric brand identity
+  - Added Prometric brand CSS variables: `--pm-navy` (#1B2845), `--pm-green` (#7AB648), `--pm-text` (#313131) (closes #41)
+  - Navbar changed from Bootstrap black to deep navy across all 8 pages (closes #42)
+  - Sticky update banner on dashboard changed to navy background (closes #43)
+  - Body text color updated to Prometric charcoal #313131 (closes #44)
+  - Section headings (h1-h4) now use deep navy tint (closes #45)
+  - Primary buttons changed from Bootstrap blue to Prometric green; outline-primary buttons follow suit (closes #46)
+  - All interactive accent colors in style.css updated from Bootstrap blue to navy/green variables (closes #47)
+  - Tooltip hover/focus accents updated to navy in tooltips.css (closes #48)
+  - Mobile focus-visible outline and skip-to-content updated to navy in mobile.css (closes #49)
+  - Export report templates (incident, summary, executive) accent colors updated to navy (closes #50)
+  - Footer changed from light gray to dark navy background with light text across all 8 pages (closes #51)
+- Severity indicator colors (red/orange/yellow/green) intentionally unchanged — critical operational signals
+
 ## [1.6.4] - 2026-02-21
 
 ### Added
