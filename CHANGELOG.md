@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Map Popup Layout Reorganized** - Removed "Highest Alert:" label (closes #33); moved NOAA alert type to display directly below severity/status badges (closes #34); alert type now bold (closes #35); headline grouped below alert type (closes #36)
 - **Summary Panel Label** - Renamed "Sites Impacted" to "Locations Impacted" on advisories page (closes #37)
 - **Critical/Severe Count Split** - Summary panel now shows separate color-coded counts for Critical (red) and Severe (orange) separated by "/" instead of a single combined number (closes #38)
+- **Table View Default Sort** - Table view on advisories page now sorted by site code ascending (lowest to highest) as default; filters still apply before sort (closes #39)
 
 ### Removed
 - **City/State from Sites Card Body** - Moved to card header for consistency with advisories.html (closes #26)
