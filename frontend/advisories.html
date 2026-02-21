@@ -308,7 +308,8 @@
             tbody.innerHTML = advisories.map(adv => {
                 const obs = observationsMap[adv.site_code];
                 const tempF = obs ? cToF(obs.temperature_c) : null;
-                const tempDisplay = tempF != null ? `${tempF}°F` : '—';
+                const tempC = obs && obs.temperature_c != null ? Math.round(parseFloat(obs.temperature_c)) : null;
+                const tempDisplay = tempF != null ? `${tempF}°F / ${tempC}°C` : '—';
                 const headlineShort = truncate(adv.headline || '', 80);
                 return html`
                 <tr>
@@ -452,15 +453,16 @@
             let tempHtml = '';
             if (obs && obs.temperature_c != null) {
                 const tempF = cToF(obs.temperature_c);
+                const tempC = Math.round(parseFloat(obs.temperature_c));
                 const stale = isStale(obs.observed_at);
                 if (stale) {
                     tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
-                        <span class="text-dark">🌡️ ${tempF}°F</span>
+                        <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
                         <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
                     </div>`;
                 } else {
                     tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
-                        <span class="text-dark">🌡️ ${tempF}°F</span>
+                        <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
                         <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
                     </div>`;
                 }
