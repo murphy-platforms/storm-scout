@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Temperature on Sites Cards** - sites.html cards restructured with city/state in header + temperature below severity badge (closes #24)
 - **Headline on Sites Cards** - sites.html cards now show NOAA alert headline below advisory type (closes #25)
 - **Observations API Client** - Added `getObservations()` to frontend `api.js` for fetching current weather data
+- **Temperature on Site Detail** - site-detail.html header card now shows temperature (°F/°C) below severity badge with staleness detection (closes #29)
 
 ### Changed
 - **Temperature Moved to Card Header** - Temperature display relocated from card body to header right side, below severity badge (closes #19)
