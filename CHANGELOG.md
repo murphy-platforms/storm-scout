@@ -19,10 +19,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Dynamic Critical/Severe Count Color** - Summary stats bar on advisories page now shows count in red when Extreme alerts are present, orange when only Severe (closes #14)
 - **Alert Headline on Site Cards** - NOAA alert headline displayed on each site card below advisory type, truncated to 120 chars (closes #15)
-- **Temperature + Station Status on Site Cards** - Current temperature (°F) from nearest NWS station shown on cards with relative timestamp; stations older than 90 minutes display "OFFLINE" in red (closes #16)
+- **Temperature + Station Status on Site Cards** - Current temperature (°F/°C) from nearest NWS station shown on cards with relative timestamp; stations older than 90 minutes display "OFFLINE" in red (closes #16)
 - **Temperature Column in Table View** - New Temp column between Site Code and Site Name in advisories table view (closes #17)
 - **Headline Column in Table View** - New Headline column between Site Name and City in advisories table view, truncated to 80 chars (closes #18)
+- **Celsius Added to Temperature** - All temperature displays now show °F / °C (closes #20, closes #21)
+- **Temperature on Dashboard Cards** - index.html site cards now show temperature in header below severity badge (closes #22)
+- **Headline on Dashboard Cards** - index.html site cards now show NOAA alert headline below advisory type (closes #23)
+- **Temperature on Sites Cards** - sites.html cards restructured with city/state in header + temperature below severity badge (closes #24)
+- **Headline on Sites Cards** - sites.html cards now show NOAA alert headline below advisory type (closes #25)
 - **Observations API Client** - Added `getObservations()` to frontend `api.js` for fetching current weather data
+
+### Changed
+- **Temperature Moved to Card Header** - Temperature display relocated from card body to header right side, below severity badge (closes #19)
+- **API Rate Limit Increased** - General API rate limit raised from 500 to 5000 requests per 15 minutes to support additional observations API calls across all pages (closes #28)
+
+### Removed
+- **City/State from Sites Card Body** - Moved to card header for consistency with advisories.html (closes #26)
+- **Ops Status Badge from Sites Cards** - Removed unimplemented "Ops: Unknown" badge (closes #27)
 
 ## [1.6.3] - 2026-02-20
 
@@ -153,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **API Rate Limiting** - Protects against abuse and ensures fair usage
-  - General API: 100 requests per 15 minutes per IP
+  - General API: 5000 requests per 15 minutes per IP
   - Write operations: 20 requests per 15 minutes per IP
   - Health checks exempt from rate limiting
   - Returns 429 Too Many Requests with retry info when exceeded
