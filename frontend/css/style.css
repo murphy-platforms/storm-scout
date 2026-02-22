@@ -161,6 +161,11 @@ h1, h2, h3, h4 {
     color: white;
 }
 
+.weather-total {
+    background-color: var(--pm-navy);
+    color: white;
+}
+
 /* Severity Badge Classes (use for advisories) */
 .severity-extreme,
 .badge-extreme {
@@ -306,6 +311,10 @@ h1, h2, h3, h4 {
 
 .weather-card.impact-green {
     border-left-color: var(--severity-minor);
+}
+
+.weather-card.impact-total {
+    border-left-color: var(--pm-navy);
 }
 
 /* Operational Status Management Page */

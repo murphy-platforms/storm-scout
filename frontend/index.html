@@ -100,6 +100,19 @@
         </div>
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
+                <a href="sites.html" class="text-decoration-none">
+                    <div class="card text-center weather-card weather-card-clickable impact-total h-100">
+                        <div class="card-body py-3">
+                            <span class="badge weather-total mb-1">⚡ TOTAL</span>
+                            <p class="display-6 fw-bold mb-0" style="color: var(--pm-navy);" id="weatherTotal">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </p>
+                            <small class="text-muted">Total Impact</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
                 <a href="sites.html?weather_impact=red" class="text-decoration-none">
                     <div class="card text-center weather-card weather-card-clickable impact-red h-100">
                         <div class="card-body py-3">
@@ -134,19 +147,6 @@
                                 <span class="spinner-border spinner-border-sm"></span>
                             </p>
                             <small class="text-muted">Moderate Impact</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=green" class="text-decoration-none">
-                    <div class="card text-center weather-card weather-card-clickable impact-green h-100">
-                        <div class="card-body py-3">
-                            <span class="badge weather-green mb-1">🟢 GREEN</span>
-                            <p class="display-6 fw-bold mb-0 text-success" id="weatherGreen">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </p>
-                            <small class="text-muted">Low/No Impact</small>
                         </div>
                     </div>
                 </a>
@@ -470,10 +470,10 @@
                     weatherImpactCounts[level]++;
                 });
                 
+                document.getElementById('weatherTotal').textContent = weatherImpactCounts.red + weatherImpactCounts.orange + weatherImpactCounts.yellow;
                 document.getElementById('weatherRed').textContent = weatherImpactCounts.red;
                 document.getElementById('weatherOrange').textContent = weatherImpactCounts.orange;
                 document.getElementById('weatherYellow').textContent = weatherImpactCounts.yellow;
-                document.getElementById('weatherGreen').textContent = weatherImpactCounts.green;
                 
                 // Operational Status Counts - Coming Soon (manual IMT tracking not yet implemented)
                 // const statusCounts = overviewData.operational_status_counts || [];
