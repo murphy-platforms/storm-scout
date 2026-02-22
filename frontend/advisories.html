@@ -298,34 +298,112 @@
             return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
         }
         
-        function renderAdvisories(advisories) {
+        function renderGroupedTable(sites, filteredAdvisories) {
             const tbody = document.getElementById('advisoriesTable');
-            if (advisories.length === 0) {
+            const statsContainer = document.getElementById('summaryStatsContainer');
+            
+            if (sites.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="11" class="text-center">No active advisories</td></tr>';
+                statsContainer.innerHTML = '';
                 return;
             }
             
-            tbody.innerHTML = advisories.map(adv => {
-                const obs = observationsMap[adv.site_code];
+            // Render summary stats (keeps stats updated when filters change in table view)
+            const stats = SiteAggregator.getSummaryStats(filteredAdvisories, sites);
+            const extremeCount = sites.filter(s => s.highest_severity === 'Extreme').length;
+            const severeCount = sites.filter(s => s.highest_severity === 'Severe').length;
+            statsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-stat-value">${stats.unique_sites}</span>
+                            <span class="summary-stat-label">Locations Impacted</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-value"><span style="color: #dc3545;">${extremeCount}</span> / <span style="color: #fd7e14;">${severeCount}</span></span>
+                            <span class="summary-stat-label">Critical/Severe</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_sites}</span>
+                            <span class="summary-stat-label">Moderate</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-value" style="color: #28a745;">${stats.new_alerts}</span>
+                            <span class="summary-stat-label">New Alerts</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Sort sites by site_code ascending
+            const sorted = [...sites].sort((a, b) => 
+                a.site_code.localeCompare(b.site_code, undefined, { numeric: true })
+            );
+            
+            let rowsHtml = '';
+            sorted.forEach(site => {
+                const obs = observationsMap[site.site_code];
                 const tempF = obs ? cToF(obs.temperature_c) : null;
                 const tempC = obs && obs.temperature_c != null ? Math.round(parseFloat(obs.temperature_c)) : null;
-                const tempDisplay = tempF != null ? `${tempF}°F / ${tempC}°C` : '—';
-                const headlineShort = truncate(adv.headline || '', 80);
-                return html`
-                <tr>
-                    <td><strong>${adv.site_code}</strong></td>
-                    <td>${raw(tempDisplay)}</td>
-                    <td>${adv.site_name}</td>
-                    <td><small>${headlineShort}</small></td>
-                    <td>${adv.city}</td>
-                    <td>${adv.state}</td>
-                    <td>${adv.advisory_type}</td>
-                    <td>${raw(`<span class="badge ${getSeverityBadge(adv.severity)}">${escapeHtml(adv.severity)}</span>`)}</td>
-                    <td>${raw(getActionBadge(adv.vtec_action))}</td>
-                    <td>${adv.source}</td>
-                    <td>${raw(formatDate(adv.last_updated))}</td>
-                </tr>
-            `}).join('');
+                let tempSpan = '';
+                if (tempF != null) {
+                    const stale = isStale(obs.observed_at);
+                    if (stale) {
+                        tempSpan = `<span class="text-muted ms-3">🌡️ ${tempF}°F / ${tempC}°C</span> <small class="text-danger"><strong>${escapeHtml(obs.station_id)} OFFLINE</strong></small>`;
+                    } else {
+                        tempSpan = `<span class="text-muted ms-3">🌡️ ${tempF}°F / ${tempC}°C</span>`;
+                    }
+                }
+                const alertCount = site.advisories.length;
+                const sevLower = site.highest_severity.toLowerCase();
+                
+                // Site header row
+                rowsHtml += `<tr class="site-group-header site-group-${escapeHtml(sevLower)}" data-site-code="${escapeHtml(site.site_code)}">
+                    <td colspan="11">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+                            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                                <strong>${escapeHtml(site.site_code)}</strong>
+                                <span>${escapeHtml(site.site_name)}</span>
+                                <span class="text-muted"><i class="bi bi-geo-alt"></i> ${escapeHtml(site.city)}, ${escapeHtml(site.state)}</span>
+                                ${tempSpan}
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;">
+                                <span class="badge bg-light text-dark">${alertCount} alert${alertCount !== 1 ? 's' : ''}</span>
+                                <span class="badge severity-${escapeHtml(sevLower)}">${escapeHtml(site.highest_severity)}</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
+                
+                // Sort alerts: highest severity first
+                const sortedAdvs = [...site.advisories].sort((a, b) => 
+                    SiteAggregator.getSeverityRank(b.severity) - SiteAggregator.getSeverityRank(a.severity)
+                );
+                
+                // Alert sub-rows
+                sortedAdvs.forEach(adv => {
+                    const headlineShort = truncate(adv.headline || '', 80);
+                    rowsHtml += html`<tr class="site-group-row">
+                        <td colspan="6" class="ps-4 text-muted">
+                            <small>${headlineShort}</small>
+                        </td>
+                        <td><strong>${adv.advisory_type}</strong></td>
+                        <td>${raw(`<span class="badge ${getSeverityBadge(adv.severity)}">${escapeHtml(adv.severity)}</span>`)}</td>
+                        <td>${raw(getActionBadge(adv.vtec_action))}</td>
+                        <td>${adv.source}</td>
+                        <td>${raw(formatDate(adv.last_updated))}</td>
+                    </tr>`;
+                });
+            });
+            
+            tbody.innerHTML = rowsHtml;
+            
+            // Click handlers: site header rows navigate to site detail
+            tbody.querySelectorAll('.site-group-header').forEach(row => {
+                row.addEventListener('click', () => {
+                    window.location.href = `site-detail.html?site=${row.dataset.siteCode}`;
+                });
+            });
         }
         
         // Render everything
@@ -360,7 +438,7 @@
             if (currentView === 'card') {
                 renderCardView(aggregatedSites, filtered);
             } else {
-                renderAdvisories([...filtered].sort((a, b) => a.site_code.localeCompare(b.site_code, undefined, { numeric: true })));
+                renderGroupedTable(aggregatedSites, filtered);
             }
         }
         
