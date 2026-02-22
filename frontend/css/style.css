@@ -350,6 +350,51 @@ h1, h2, h3, h4 {
     background-color: rgba(0, 0, 0, 0.025);
 }
 
+/* Table View - Grouped Site Rows */
+.site-group-header {
+    background: #f0f2f5;
+    border-left: 4px solid;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.site-group-header:hover {
+    background: #e4e7ec;
+}
+
+.site-group-header td {
+    padding: 0.75rem 1rem !important;
+}
+
+.site-group-extreme { border-left-color: var(--severity-extreme); background: var(--severity-extreme-bg); }
+.site-group-extreme:hover { background: rgba(239, 68, 68, 0.15); }
+.site-group-severe { border-left-color: var(--severity-severe); background: var(--severity-severe-bg); }
+.site-group-severe:hover { background: rgba(249, 115, 22, 0.15); }
+.site-group-moderate { border-left-color: var(--severity-moderate); background: var(--severity-moderate-bg); }
+.site-group-moderate:hover { background: rgba(234, 179, 8, 0.15); }
+.site-group-minor { border-left-color: var(--severity-minor); background: var(--severity-minor-bg); }
+.site-group-minor:hover { background: rgba(34, 197, 94, 0.15); }
+
+.site-group-row td {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+    font-size: 0.9rem;
+    border-top: none !important;
+}
+
+.site-group-header + .site-group-row td {
+    padding-top: 0.5rem !important;
+}
+
+/* Separator between site groups */
+.site-group-header td {
+    border-top: 2px solid #dee2e6 !important;
+}
+
+.site-group-header:first-child td {
+    border-top: none !important;
+}
+
 /* Navigation Links */
 /* Clickable count links */
 .count-link {
