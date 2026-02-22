@@ -130,16 +130,30 @@ const AdvisoryModel = {
 
   /**
    * Find advisory by external ID (NOAA's unique identifier)
-   * Primary deduplication strategy - external_id is always unique per alert
+   * Primary deduplication strategy - external_id is unique per alert+site
    * @param {string} externalId - External ID from NOAA API
+   * @param {number} siteId - Site ID (required for composite unique lookup)
    * @returns {Promise<Object|null>} Existing advisory or null
    */
-  async findByExternalID(externalId) {
+  async findByExternalID(externalId, siteId) {
     if (!externalId) return null;
     
     const db = getDatabase();
-    const query = 'SELECT * FROM advisories WHERE external_id = ? LIMIT 1';
     
+    // When siteId is provided, look up the specific (external_id, site_id) pair
+    if (siteId) {
+      const query = 'SELECT * FROM advisories WHERE external_id = ? AND site_id = ? LIMIT 1';
+      try {
+        const [rows] = await db.query(query, [externalId, siteId]);
+        return rows[0] || null;
+      } catch (error) {
+        console.error('Error finding advisory by external ID:', error);
+        return null;
+      }
+    }
+    
+    // Fallback: no siteId (legacy callers)
+    const query = 'SELECT * FROM advisories WHERE external_id = ? LIMIT 1';
     try {
       const [rows] = await db.query(query, [externalId]);
       return rows[0] || null;
@@ -230,9 +244,9 @@ const AdvisoryModel = {
         externalId = payload.id || payload.properties?.id;
       }
 
-      // Primary deduplication: Check by external_id first (always present)
+      // Primary deduplication: Check by external_id + site_id (composite unique)
       if (externalId) {
-        const existing = await this.findByExternalID(externalId);
+        const existing = await this.findByExternalID(externalId, advisory.site_id);
         if (existing) {
           const action = advisory.vtec_action || 'UPD';
           console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for site ${advisory.site_id}`);
