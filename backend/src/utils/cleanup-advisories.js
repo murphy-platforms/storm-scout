@@ -47,12 +47,12 @@ async function removeDuplicatesByExternalId() {
   
   console.log('\n=== Removing Duplicates by External ID ===');
   
-  // Find duplicates by external_id
+  // Find duplicates by external_id + site_id (same alert for same site)
   const [duplicates] = await db.query(`
-    SELECT external_id, GROUP_CONCAT(id ORDER BY id DESC) as ids, COUNT(*) as count
+    SELECT external_id, site_id, GROUP_CONCAT(id ORDER BY id DESC) as ids, COUNT(*) as count
     FROM advisories
     WHERE external_id IS NOT NULL
-    GROUP BY external_id
+    GROUP BY external_id, site_id
     HAVING count > 1
   `);
   
@@ -304,13 +304,14 @@ async function populateExternalIds() {
           await connection.beginTransaction();
           
           // Lock the row with FOR UPDATE to prevent race conditions
-          const [existing] = await connection.query(
-            `SELECT id FROM advisories WHERE external_id = ? FOR UPDATE`, 
-            [externalId]
+          // Check for same external_id AND site_id (multi-site alerts are valid)
+          const [sameRow] = await connection.query(
+            `SELECT id FROM advisories WHERE external_id = ? AND site_id = (SELECT site_id FROM advisories WHERE id = ?) FOR UPDATE`, 
+            [externalId, advisory.id]
           );
           
-          if (existing.length > 0) {
-            // Duplicate - delete this one
+          if (sameRow.length > 0) {
+            // Duplicate for same site - delete this one
             await connection.query(`DELETE FROM advisories WHERE id = ?`, [advisory.id]);
             duplicatesRemoved++;
           } else {

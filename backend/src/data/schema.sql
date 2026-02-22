@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS advisories (
     ) STORED,
     raw_payload TEXT,                     -- JSON string of original data for reference
     FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE,
-    UNIQUE INDEX idx_advisories_external_id (external_id),
+    UNIQUE INDEX idx_advisories_external_site (external_id, site_id),
     UNIQUE INDEX idx_vtec_event_unique_active (vtec_event_unique_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
