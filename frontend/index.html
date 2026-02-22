@@ -558,6 +558,9 @@
                 return;
             }
             
+            // Sort by site code ascending within severity group
+            const sorted = [...sites].sort((a, b) => a.site_code.localeCompare(b.site_code, undefined, { numeric: true }));
+            
             const collapseId = `collapse${escapeHtml(cssClass)}`;
             const showClass = collapsed ? '' : 'show';
             
@@ -573,12 +576,12 @@
                         </div>
                         <div class="collapse ${raw(showClass)}" id="${raw(collapseId)}">
                             <div class="row mt-3">
-                                ${raw(sites.slice(0, 6).map(site => renderSiteSummary(site, observationsMap[site.site_code])).join(''))}
+                                ${raw(sorted.slice(0, 6).map(site => renderSiteSummary(site, observationsMap[site.site_code])).join(''))}
                             </div>
-                            ${raw(sites.length > 6 ? `
+                            ${raw(sorted.length > 6 ? `
                             <div class="text-center mt-2">
                                 <a href="sites.html" class="btn btn-sm btn-outline-primary">
-                                    View All ${sites.length} Sites <i class="bi bi-arrow-right"></i>
+                                    View All ${sorted.length} Sites <i class="bi bi-arrow-right"></i>
                                 </a>
                             </div>
                             ` : '')}
