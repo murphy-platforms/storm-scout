@@ -517,8 +517,11 @@
                 </div>
             `;
             
-            // Render site cards
-            container.innerHTML = sites.map(site => renderSiteCard(site, observationsMap[site.site_code])).join('');
+            // Render site cards (sorted by site code ascending)
+            const sorted = [...sites].sort((a, b) => 
+                a.site_code.localeCompare(b.site_code, undefined, { numeric: true })
+            );
+            container.innerHTML = sorted.map(site => renderSiteCard(site, observationsMap[site.site_code])).join('');
         }
         
         // Render individual site card
