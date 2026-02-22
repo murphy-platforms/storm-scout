@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.7.2] - 2026-02-22
 
 ### Changed
+- **Card View Default Sort** - Card view on advisories page now defaults to site code ascending, matching table view (closes #56)
 - **Grouped Table View** - Table view on advisories page now groups alerts by site instead of showing flat duplicate-looking rows (closes #55)
   - Site header rows show site code, name, city/state, temperature, alert count, and highest severity badge
   - Alert sub-rows beneath each header show headline, advisory type, severity, action, source, and last updated
