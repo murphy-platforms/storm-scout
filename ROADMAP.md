@@ -2,10 +2,10 @@
 
 This document outlines planned improvements, features, and technical debt for Storm Scout.
 
-## Current Version: 1.6.0
+## Current Version: 1.7.0
 
 **Production URL**: https://teammurphy.rocks  
-**Last Updated**: February 15, 2026
+**Last Updated**: February 21, 2026
 
 ---
 
@@ -67,16 +67,18 @@ This document outlines planned improvements, features, and technical debt for St
   - Consistent 400 error responses with field-level details
   - **Effort**: Medium | **Impact**: High
 
-- [ ] **Implement Helmet.js**
-  - Add security headers
-  - Protect against common vulnerabilities
-  - CSP, XSS protection, etc.
+- [x] **Implement Helmet.js** ✅ (Completed 2026-02-15)
+  - Security headers configured in `app.js` (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+  - `script-src-attr 'none'` blocks inline event handlers (primary XSS vector)
+  - `object-src 'none'`, `base-uri 'self'` for additional hardening
+  - CSP uses `'unsafe-inline'` for scripts/styles (GA + Bootstrap requirement)
   - **Effort**: Low | **Impact**: Medium
 
-- [ ] **Database Backup Automation**
-  - Setup automated daily backups via cron
-  - Verify backup integrity
-  - Document restore procedures
+- [x] **Database Backup Automation** ✅ (Completed 2026-02-15)
+  - Automated daily backups via cPanel at 2:00 AM EST (7-day retention)
+  - Restore procedures documented in AGENTS.md (full DB, partial table, per-scenario)
+  - Manual weekly backup workflow documented (SSH + phpMyAdmin)
+  - Pre-deployment backup requirement established
   - **Effort**: Low | **Impact**: High
 
 ---
@@ -110,6 +112,14 @@ This document outlines planned improvements, features, and technical debt for St
   - Push new advisories to connected clients
   - Reduce polling load on server
   - **Effort**: High | **Impact**: Medium
+
+- [ ] **Grid.js Data Table Integration** ([#52](https://github.com/Prometric-Site-Engineering/storm-scout/issues/52))
+  - Replace static `<table>` in advisories.html with Grid.js interactive tables
+  - Per-column sorting, global search, pagination via API
+  - ~12KB, framework-agnostic — fits no-heavy-framework architecture
+  - Preserves existing severity colors and filter presets
+  - **Selected over**: Simple-DataTables, List.js, DataTables (jQuery), Tabulator
+  - **Effort**: Medium | **Impact**: Medium
 
 ### Developer Experience
 
@@ -265,6 +275,31 @@ This document outlines planned improvements, features, and technical debt for St
 
 ## Recently Completed
 
+### v1.7.0 (February 21, 2026)
+- ✅ Prometric visual alignment across entire frontend
+- ✅ Brand CSS variables: `--pm-navy`, `--pm-green`, `--pm-text`
+- ✅ Navbar, footer, buttons, accents, tooltips, mobile, export reports updated
+- ✅ Severity indicator colors (red/orange/yellow/green) intentionally preserved
+
+### v1.6.4 (February 21, 2026)
+- ✅ Temperature + station status on site cards, dashboard, map, and table view
+- ✅ NOAA alert headlines on all card types and table view
+- ✅ Celsius added to all temperature displays (°F/°C)
+- ✅ Dashboard layout reorder (Weather Impact Assessment moved to top)
+- ✅ Table view default sort by site code ascending
+- ✅ Summary panel split: separate Critical (red) / Severe (orange) counts
+
+### v1.6.0–1.6.3 (February 15–20, 2026)
+- ✅ Beta UI archived; dead script references cleaned up
+- ✅ IMT severity alignment (internal categories instead of NOAA raw severity)
+- ✅ 4-tier severity grouping aligned across dashboard
+- ✅ Helmet.js security headers (CSP, HSTS, X-Frame-Options)
+- ✅ CSP compliance: all inline event handlers replaced with addEventListener
+- ✅ CWA field added to all sites; NWS Forecast links updated
+- ✅ 10 new testing centers added (220→230), 1 duplicate removed (→229)
+- ✅ Site data verification against physical addresses
+- ✅ Database backup automation via cPanel (daily, 7-day retention)
+
 ### v1.5.0 (February 14, 2026)
 - ✅ In-memory caching with node-cache
 - ✅ Cached endpoints: status/overview, sites, advisories/active
@@ -341,4 +376,4 @@ If you'd like to contribute to any of these items:
 
 **Questions or suggestions?** Open a GitHub issue or contact the IMT Operations team.
 
-**Last Reviewed**: February 14, 2026
+**Last Reviewed**: February 21, 2026

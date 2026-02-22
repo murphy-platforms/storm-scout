@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.7.3] - 2026-02-22
+
+### Fixed
+- **Sites Missing NOAA Alerts** - Fixed critical bug where sites were silently missing alerts due to table-wide UNIQUE constraint on `external_id` (closes #57)
+  - Root cause: When one NOAA alert matched multiple sites via UGC zones, only the first site processed got the advisory row
+  - Changed `UNIQUE(external_id)` to composite `UNIQUE(external_id, site_id)` so the same alert can exist once per site
+  - Updated `findByExternalID()` to filter by site_id (was returning rows for wrong sites)
+  - Updated cleanup module to account for valid multi-site external_ids
+  - Dropped redundant duplicate index `idx_external_id_unique`
+
 ## [1.7.2] - 2026-02-22
 
 ### Changed
