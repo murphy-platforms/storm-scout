@@ -120,6 +120,7 @@
     .impact-orange { border-color: #fd7e14 !important; }
     .impact-yellow { border-color: #ffc107 !important; }
     .impact-green { border-color: #28a745 !important; }
+    .impact-total { border-color: #1B2845 !important; }
     
     /* Badges - keep colors visible */
     .badge {
