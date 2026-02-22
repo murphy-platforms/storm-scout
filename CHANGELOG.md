@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 
+## [1.7.1] - 2026-02-22
+
+### Changed
+- **Total Impact Card** - Replaced "Low/No Impact" (green) card with "Total Impact" aggregate card in Weather Impact Assessment (closes #53)
+  - Displays sum of High Impact + Severe Impact + Moderate Impact site counts
+  - Navy-styled card using Prometric brand color (`--pm-navy`)
+  - Links to `sites.html` showing all impacted sites
+- **Weather Impact Card Order** - Reordered cards: Total Impact → High Impact → Severe Impact → Moderate Impact (closes #54)
+
 ## [1.7.0] - 2026-02-21
 
 ### Changed
