@@ -39,6 +39,11 @@ Currently monitoring 229 testing centers with real-time NOAA weather data update
 - **Enhanced Alert Cards** - Site detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 
+### Version & Release
+- **Version Display** - Footer on all pages shows version number and release date
+- **API Endpoint** - `GET /api/version` returns current version from `package.json`
+- **GitHub Releases** - Tagged releases with `v` prefix convention (e.g., `v1.7.5`)
+
 ### Performance & Security
 - **In-Memory Caching** - node-cache for ~100x faster API responses on cache hits
 - **API Rate Limiting** - 500 requests/15 min general, 20/15 min for write operations

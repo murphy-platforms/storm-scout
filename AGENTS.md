@@ -31,6 +31,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
 - **Safe Deployment**: `deploy.sh` pauses ingestion before deploy, resumes after — prevents mid-cycle data corruption
 - **Automated XSS Audit**: Smoke test includes innerHTML safety check across all frontend files
+- **Version Display**: Footer on all 8 pages shows version number and release date via `/api/version` endpoint
 
 ---
 
@@ -152,6 +153,7 @@ strom-scout/
     ├── css/style.css
     └── js/
         ├── api.js           # API client (shared by Classic & Beta)
+        ├── version.js       # Footer version display (fetches /api/version)
         ├── utils.js         # Helper functions
         ├── alert-filters.js # Shared filter logic
         └── aggregation.js   # Site aggregation utilities
@@ -832,6 +834,20 @@ When AI assists with commits, include:
 ```
 Co-Authored-By: Warp <agent@warp.dev>
 ```
+
+### Release Process
+When cutting a new release:
+1. Update `version` and `releasedDate` in `backend/package.json`
+2. Add entry to `CHANGELOG.md`
+3. Commit and push to main
+4. Create annotated tag: `git tag -a v{X.Y.Z} -m "v{X.Y.Z}: {summary}"`
+5. Push tag: `git push origin v{X.Y.Z}`
+6. Create GitHub release: `gh release create v{X.Y.Z} --title "v{X.Y.Z} - {title}" --notes "..."` (use CHANGELOG section as body)
+7. Version auto-displays in UI footer via `/api/version`
+
+**Tag convention**: Always use `v` prefix (e.g., `v1.7.5`). This is the Node.js ecosystem standard.
+
+**Single source of truth**: `package.json` → `/api/version` endpoint → frontend footer. Only update `package.json`; the rest follows automatically.
 
 ---
 

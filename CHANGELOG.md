@@ -22,9 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Smoke Test XSS Audit** - `smoke-test.sh` now includes automated innerHTML safety check (check #11) scanning all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (closes #64)
 - **NOAA Alerts Snapshot Fixture** - 540-alert NOAA fixture (`tests/fixtures/noaa-alerts-snapshot.json`) captured for future regression testing (closes #62)
 - **MariaDB-Compatible Rollback Migration** - `rollback-global-alert-sources.sql` corrected to use MariaDB-compatible `DROP TABLE IF EXISTS` syntax instead of MySQL-only batch drops (closes #61)
+- **Version Display in UI** - All 8 page footers now show version number and release date (`v1.7.5 · Feb 24, 2026`) via `/api/version` endpoint (closes #70)
+- **`/api/version` Endpoint** - Returns version and release date from `package.json` as single source of truth
+- **GitHub Release Tags** - Standardized on `v` prefix convention; release workflow documented in AGENTS.md
 
 ### Changed
 - **Safe Deployment** - `deploy.sh` now includes `pause_ingestion()` and `resume_ingestion()` functions that disable the cron scheduler before rsync and re-enable after restart, preventing mid-cycle data corruption (closes #60)
+- **package.json Version** - Synced from stale `1.0.0` to actual project version `1.7.5` with `releasedDate` field
 
 ### Security
 - Expert panel review completed: 5-expert review produced 16 findings; 3 critical + 8 medium findings remediated (GitHub issues #59-69 all closed)
