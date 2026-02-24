@@ -21,6 +21,9 @@ const trendsRouter = require('./routes/trends');
 const historyRouter = require('./routes/history');
 const observationsRouter = require('./routes/observations');
 
+// Read version info from package.json at startup (not on each request)
+const pkg = require('../package.json');
+
 // Create Express app
 const app = express();
 
@@ -230,12 +233,21 @@ app.use('/api/trends', trendsRouter);
 app.use('/api/history', historyRouter);
 app.use('/api/observations', observationsRouter);
 
+// Version endpoint
+app.get('/api/version', (req, res) => {
+  res.json({
+    version: pkg.version,
+    released: pkg.releasedDate || null
+  });
+});
+
 // API info endpoint
 app.get('/api', (req, res) => {
   res.json({
     name: 'Storm Scout API',
-    version: '1.0.0',
+    version: pkg.version,
     endpoints: {
+      version: '/api/version',
       health: '/health (Database + Ingestion status)',
       sites: '/api/sites',
       advisories: '/api/advisories',
