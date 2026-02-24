@@ -3,7 +3,7 @@
 **Project**: Storm Scout  
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://your-domain.example.com  
-**Status**: Phase 1 Complete, Production Deployed  
+**Status**: Phase 1 Complete, Global Architecture Planned, Production Deployed  
 **Last Updated**: 2026-02-24
 
 ---
@@ -28,6 +28,9 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **ProInsights Reference Import**: Recurring CSV import from ProInsights with sync to sites table
 - **Site Name Normalization**: All site names sourced from ProInsights MetroAreaName, normalized to UPPER CASE
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
+- **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
+- **Safe Deployment**: `deploy.sh` pauses ingestion before deploy, resumes after — prevents mid-cycle data corruption
+- **Automated XSS Audit**: Smoke test includes innerHTML safety check across all frontend files
 
 ---
 
@@ -123,11 +126,16 @@ strom-scout/
 │   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
 │   │   │   ├── import-reference.js       # Import ProInsights CSV into site_reference table
 │   │   │   ├── sync-reference.js         # Sync reference data to sites table (name, display columns)
-│   │   │   └── fetch-observation-stations.js  # Map sites to nearest NWS observation stations
+│   │   │   ├── fetch-observation-stations.js  # Map sites to nearest NWS observation stations
+│   │   │   └── smoke-test.sh             # Pre-deploy validation (11 checks incl. XSS audit)
+│   │   ├── tests/
+│   │   │   └── fixtures/
+│   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
 │   │       ├── sites.json            # 229 testing centers
 │   │       └── migrations/
+│   │           └── rollback-global-alert-sources.sql  # MariaDB-compatible rollback for global tables
 │   └── package.json
 │
 └── frontend/            # Bootstrap 5.3 UI
@@ -341,7 +349,7 @@ bash scripts/smoke-test.sh
 
 ### Deployment
 ```bash
-# One-command deploy (recommended)
+# One-command deploy (recommended) — pauses ingestion, deploys, resumes
 ./deploy.sh
 
 # Manual backend deploy
@@ -353,6 +361,8 @@ rsync -avz -e "ssh -p 21098" frontend/ mwqtiakilx@your-domain.example.com:~/publ
 # Restart (via cPanel or SSH)
 ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart.txt"
 ```
+
+**Deploy Safety**: `deploy.sh` includes `pause_ingestion()` and `resume_ingestion()` functions that disable the cron scheduler before rsync and re-enable it after restart. This prevents mid-cycle data corruption if an ingestion is running during deployment.
 
 ---
 
@@ -419,12 +429,20 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
 - ✅ Local development environment with MariaDB, Jest, and smoke test script
 - ✅ Frontend API client auto-detects local vs production (no hardcoded URL)
+- ✅ Global alert source architecture designed (adapter pattern for ECCC, MeteoAlarm, SMN)
+- ✅ Expert panel review (5 experts, 16 findings, 11 remediated — GitHub #59-69)
+- ✅ Deploy safety: `deploy.sh` pauses/resumes ingestion around rsync
+- ✅ Smoke test XSS audit (innerHTML safety check across all frontend files)
+- ✅ MariaDB-compatible rollback migration for global alert source tables
+- ✅ NOAA alerts snapshot fixture (540 alerts) for future regression testing
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
+- [ ] Global alert source implementation (ECCC adapter — Canada, Phase 2)
 
 ### Medium Priority
 - [ ] Phase 2: Zone filtering (reduce multi-zone alerts to preferred offices) - 10-12 hours
+- [ ] MeteoAlarm adapter (EU) and SMN adapter (Mexico)
 - [ ] Email notifications for critical events
 - [ ] WebSocket support for real-time updates
 - [ ] CI/CD pipeline (GitHub Actions)
@@ -702,7 +720,10 @@ The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy val
 3. Validates all key API endpoints (health, sites, advisories, status, filters, observations)
 4. Verifies 229 sites are loaded
 5. Confirms frontend is served correctly
-6. Shuts down the server and reports results
+6. **innerHTML XSS safety audit** — scans all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (reports as warning, does not fail build)
+7. Shuts down the server and reports results
+
+**Total checks**: 11 (10 endpoint/content checks + 1 XSS audit)
 
 Run from `backend/`: `bash scripts/smoke-test.sh`
 

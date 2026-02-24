@@ -50,6 +50,12 @@ Currently monitoring 229 testing centers with real-time NOAA weather data update
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
 - **Database Optimization** - UPSERT operations prevent duplicate advisories, unique indexes on external IDs
+- **Safe Deploys** - `deploy.sh` pauses ingestion before rsync, resumes after restart
+- **Pre-Deploy Smoke Test** - 11 automated checks including API validation and XSS audit
+
+### Global Architecture (Planned)
+- **Multi-Country Design** - Adapter pattern for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico)
+- **Expert Reviewed** - 5-expert panel review with 16 findings, all critical items remediated
 
 ## Quick Start
 
@@ -192,8 +198,11 @@ Users can customize their filter preferences at **/filters.html**, and changes a
 Production deployment to https://your-domain.example.com:
 
 ```bash
-# One-command deploy (recommended)
+# One-command deploy (recommended) — pauses ingestion, deploys, resumes
 ./deploy.sh
+
+# Pre-deploy smoke test (11 checks incl. XSS audit)
+cd backend && bash scripts/smoke-test.sh
 
 # Or manual deployment:
 rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ mwqtiakilx@your-domain.example.com:~/storm-scout/
