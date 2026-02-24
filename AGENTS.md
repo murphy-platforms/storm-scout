@@ -4,7 +4,7 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://teammurphy.rocks  
 **Status**: Phase 1 Complete, Production Deployed  
-**Last Updated**: 2026-02-20
+**Last Updated**: 2026-02-24
 
 ---
 
@@ -197,7 +197,7 @@ strom-scout/
 - **No Build Step**: Plain HTML/CSS/JS, no bundler
 - **Bootstrap Components**: Use Bootstrap 5.3 classes consistently
 - **localStorage**: Persist filter preferences as `selectedFilterPreset` and `customFilters`
-- **API Calls**: Centralized in `js/api.js`, all routes return JSON
+- **API Calls**: Centralized in `js/api.js`, auto-detects local vs production API URL
 
 ---
 
@@ -299,10 +299,12 @@ This aligns with IMT operational practices. Example: NOAA classifies Winter Stor
 # Development
 npm start              # Start server (production mode)
 npm run dev            # Start with nodemon (auto-restart)
+npm test               # Run unit tests (Jest)
+npm run test:watch     # Run tests in watch mode
 
 # Database
-npm run init-db        # Initialize schema
-npm run seed-db        # Load 229 sites
+npm run init-db        # Initialize schema + load 229 sites
+npm run seed-db        # Load seed/sample data
 
 # Data Operations
 npm run ingest         # Manual NOAA ingestion
@@ -330,6 +332,12 @@ ProInsights exports a CSV of ~227 US sites (2-3x/month). The import/sync workflo
 1. **Import**: `import-reference.js` reads CSV, converts state names to abbreviations, normalizes `metro_area_name` to UPPER CASE, and bulk-inserts into `site_reference` (TRUNCATE first).
 2. **Sync**: `sync-reference.js` compares `site_reference` (keyed by `parent_site_code`) with `sites` (keyed by `site_code`), reports mismatches (state, name, city), and updates display columns including `sites.name = metro_area_name`.
 3. **Seed data**: After syncing production, update `sites.json` to match so seed data stays consistent.
+
+### Pre-Deploy Smoke Test
+```bash
+# From backend/ directory — starts server, validates all endpoints, shuts down
+bash scripts/smoke-test.sh
+```
 
 ### Deployment
 ```bash
@@ -409,6 +417,8 @@ ssh -p 21098 mwqtiakilx@teammurphy.rocks "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
 - ✅ Observation station mapping for all 229 sites (223 unique stations)
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
+- ✅ Local development environment with MariaDB, Jest, and smoke test script
+- ✅ Frontend API client auto-detects local vs production (no hardcoded URL)
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
@@ -637,19 +647,69 @@ mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM advisories;"
 
 ## Testing Strategy
 
-### Local Testing
-1. Use separate test database: `storm_scout_test`
-2. Run ingestion manually: `npm run ingest`
-3. Test API endpoints with curl:
-   ```bash
-   curl http://localhost:3000/api/status/overview
-   curl http://localhost:3000/api/sites
-   curl http://localhost:3000/api/advisories/active
-   ```
-4. Open frontend: `open frontend/index.html` (use local server for API calls)
+### Local Development Environment
+A full local environment exists for QC testing changes before deploying to production.
+
+**Prerequisites** (already installed):
+- MariaDB (via Homebrew: `brew services start mariadb`)
+- Node.js (Homebrew)
+- Local database: `storm_scout_dev` with user `storm_scout`
+
+**Local Setup** (one-time, already done):
+```bash
+# Install MariaDB
+brew install mariadb && brew services start mariadb
+
+# Create local database
+mariadb -u $(whoami) -e "CREATE DATABASE storm_scout_dev; CREATE USER 'storm_scout'@'localhost' IDENTIFIED BY 'localdev'; GRANT ALL PRIVILEGES ON storm_scout_dev.* TO 'storm_scout'@'localhost';"
+
+# Initialize schema and seed data
+cd backend
+npm run init-db
+npm run seed-db
+```
+
+**Local `.env` Configuration** (`backend/.env`):
+- `DB_HOST=localhost`, `DB_NAME=storm_scout_dev`, `DB_USER=storm_scout`, `DB_PASSWORD=localdev`
+- `STATIC_FILES_PATH=../frontend` — backend serves frontend at http://localhost:3000
+- `INGESTION_ENABLED=false` — avoids hitting NOAA API; run `npm run ingest` manually when needed
+- `CORS_ORIGIN=*`
+
+**Frontend API URL** (`frontend/js/api.js`):
+- Auto-detects environment: uses `localhost:3000/api` locally, `/api` in production
+- No manual URL switching needed between environments
+
+**Daily Local Dev Workflow**:
+```bash
+cd backend
+npm run dev                    # Start server + frontend at http://localhost:3000
+open http://localhost:3000     # View dashboard in browser
+npm test                       # Run unit tests (Jest)
+npm run ingest                 # Optional: pull live NOAA data
+bash scripts/smoke-test.sh     # Pre-deploy: validates all API endpoints + frontend
+```
+
+### Unit Tests
+- **Framework**: Jest (configured in `package.json`)
+- **Test location**: `backend/tests/unit/`
+- **Run**: `npm test` or `npm run test:watch`
+- **Existing tests**: VTEC extraction and NOAA alert normalization (9 tests)
+
+### Smoke Test
+The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy validation:
+1. Starts the server in the background
+2. Waits for it to be ready
+3. Validates all key API endpoints (health, sites, advisories, status, filters, observations)
+4. Verifies 229 sites are loaded
+5. Confirms frontend is served correctly
+6. Shuts down the server and reports results
+
+Run from `backend/`: `bash scripts/smoke-test.sh`
 
 ### Pre-Deployment Checklist
-- [ ] Code tested locally
+- [ ] Code tested locally (`npm run dev` + browser verification)
+- [ ] Unit tests pass (`npm test`)
+- [ ] Smoke test passes (`bash scripts/smoke-test.sh`)
 - [ ] No console errors in browser
 - [ ] API endpoints return expected data
 - [ ] Database migrations documented (if any)
@@ -708,7 +768,7 @@ mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM advisories;"
 5. Run manual ingestion: `npm run ingest`
 
 ### Frontend Not Loading Data
-1. Check API base URL in `js/api.js` (should be `https://teammurphy.rocks` in production)
+1. Check API base URL in `js/api.js` (auto-detects localhost vs production — no hardcoded URL)
 2. Test API directly: `curl https://teammurphy.rocks/api/sites`
 3. Check browser console for CORS errors
 4. Verify backend is running: `curl https://teammurphy.rocks/health`

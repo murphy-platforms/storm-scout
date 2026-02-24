@@ -156,16 +156,54 @@ restart_app() {
     log_info "Application restarted"
 }
 
+# [OPS-1] Pause ingestion before schema migration to prevent old-code/new-schema conflicts
+pause_ingestion() {
+    log_step "Pausing weather data ingestion..."
+    
+    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
+        cd ~/storm-scout
+        # Set INGESTION_ENABLED=false in .env
+        if grep -q '^INGESTION_ENABLED=' .env 2>/dev/null; then
+            sed -i 's/^INGESTION_ENABLED=.*/INGESTION_ENABLED=false/' .env
+        else
+            echo 'INGESTION_ENABLED=false' >> .env
+        fi
+        echo "Ingestion paused. Waiting 30s for any in-progress cycle to complete..."
+        sleep 30
+EOF
+    
+    log_info "Ingestion paused on production"
+}
+
+# [OPS-1] Resume ingestion after deploy
+resume_ingestion() {
+    log_step "Resuming weather data ingestion..."
+    
+    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
+        cd ~/storm-scout
+        sed -i 's/^INGESTION_ENABLED=.*/INGESTION_ENABLED=true/' .env
+        echo "Ingestion resumed."
+EOF
+    
+    log_info "Ingestion resumed on production"
+}
+
 # Main deployment flow
 main() {
     show_deployment_info
     check_connection
     confirm_deployment
     
+    # [OPS-1] Pause ingestion during deploy window
+    pause_ingestion
+    
     deploy_backend
     deploy_frontend
     post_deploy
     restart_app
+    
+    # [OPS-1] Resume ingestion after restart
+    resume_ingestion
     
     echo ""
     echo "╔════════════════════════════════════════════════════════════╗"

@@ -3,7 +3,9 @@
  * Handles all backend API requests
  */
 
-const API_BASE_URL = 'https://teammurphy.rocks/api';
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? `${window.location.protocol}//${window.location.host}/api`
+  : '/api';
 
 const API = {
     /**
