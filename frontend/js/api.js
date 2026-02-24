@@ -7,7 +7,24 @@ const API_BASE_URL = (window.location.hostname === 'localhost' || window.locatio
   ? `${window.location.protocol}//${window.location.host}/api`
   : '/api';
 
+let _versionCache = null;
+
 const API = {
+    /**
+     * Get app version and release date
+     * Cached after first fetch
+     */
+    async getVersion() {
+        if (_versionCache) return _versionCache;
+        try {
+            const response = await fetch(`${API_BASE_URL}/version`);
+            _versionCache = await response.json();
+            return _versionCache;
+        } catch (error) {
+            console.error('Failed to fetch version:', error);
+            return null;
+        }
+    },
     /**
      * Get dashboard overview data
      */
