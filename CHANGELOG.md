@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Predictive analytics based on historical patterns
 - Unit tests with Jest
 - Database backup automation
+- Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
+
+## [1.7.5] - 2026-02-24
+
+### Added
+- **Global Alert Source Architecture** - Expert-reviewed adapter pattern design for multi-country weather alert support (ECCC/Canada, MeteoAlarm/EU, SMN/Mexico). Architecture and QC plans finalized; implementation is future work.
+- **Smoke Test XSS Audit** - `smoke-test.sh` now includes automated innerHTML safety check (check #11) scanning all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (closes #64)
+- **NOAA Alerts Snapshot Fixture** - 540-alert NOAA fixture (`tests/fixtures/noaa-alerts-snapshot.json`) captured for future regression testing (closes #62)
+- **MariaDB-Compatible Rollback Migration** - `rollback-global-alert-sources.sql` corrected to use MariaDB-compatible `DROP TABLE IF EXISTS` syntax instead of MySQL-only batch drops (closes #61)
+
+### Changed
+- **Safe Deployment** - `deploy.sh` now includes `pause_ingestion()` and `resume_ingestion()` functions that disable the cron scheduler before rsync and re-enable after restart, preventing mid-cycle data corruption (closes #60)
+
+### Security
+- Expert panel review completed: 5-expert review produced 16 findings; 3 critical + 8 medium findings remediated (GitHub issues #59-69 all closed)
 
 ## [1.7.4] - 2026-02-22
 
