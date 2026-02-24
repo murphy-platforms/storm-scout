@@ -89,8 +89,14 @@ h1, h2, h3, h4 {
     color: #d1d5db;
 }
 
-.footer-scout p {
-    color: #d1d5db;
+.footer-scout p,
+.footer-scout .text-muted {
+    color: #d1d5db !important;
+}
+
+.footer-scout a.text-muted:hover,
+.footer-scout a.text-muted:focus {
+    color: #ffffff !important;
 }
 
 /* Navigation */
