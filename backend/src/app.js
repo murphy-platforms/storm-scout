@@ -91,7 +91,17 @@ app.use('/api/operational-status', writeLimiter);
 if (config.staticFiles.path) {
   const publicPath = path.resolve(config.staticFiles.path);
   console.log(`Serving static files from: ${publicPath}`);
-  app.use(express.static(publicPath));
+
+  // Cache-Control: long cache for versioned assets (CSS/JS), no-cache for HTML
+  app.use(express.static(publicPath, {
+    maxAge: '7d',               // Default: cache assets for 7 days
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        // HTML must always revalidate so users get fresh pages
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    }
+  }));
 }
 
 // Request logging middleware (development)
@@ -107,6 +117,7 @@ app.get('/health', async (req, res) => {
   const fs = require('fs');
   const path = require('path');
   const { getDatabase } = require('./config/database');
+  const { getIngestionStatus } = require('./ingestion/noaa-ingestor');
   
   const health = {
     status: 'ok',
@@ -116,7 +127,8 @@ app.get('/health', async (req, res) => {
       database: { status: 'unknown' },
       ingestion: { status: 'unknown' },
       data_integrity: { status: 'unknown' }
-    }
+    },
+    ingestion: getIngestionStatus()
   };
   
   try {
@@ -220,6 +232,20 @@ app.get('/health', async (req, res) => {
   // Set HTTP status based on overall health
   const httpStatus = health.status === 'ok' ? 200 : 503;
   res.status(httpStatus).json(health);
+});
+
+// X-Data-Age header — tells the frontend how old the data is (seconds since last ingestion)
+app.use('/api', (req, res, next) => {
+  try {
+    const ingestionFile = path.join(__dirname, '../.last-ingestion.json');
+    const fs2 = require('fs');
+    if (fs2.existsSync(ingestionFile)) {
+      const data = JSON.parse(fs2.readFileSync(ingestionFile, 'utf8'));
+      const ageSec = Math.round((Date.now() - new Date(data.lastUpdated).getTime()) / 1000);
+      res.setHeader('X-Data-Age', String(ageSec));
+    }
+  } catch (_) { /* non-critical */ }
+  next();
 });
 
 // API routes
