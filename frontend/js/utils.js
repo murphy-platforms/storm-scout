@@ -152,3 +152,74 @@ function showError(message) {
     // Could enhance this to show toast notifications
     alert(message);
 }
+
+// =============================================================================
+// DATA FORMATTING HELPERS
+// =============================================================================
+
+/**
+ * Convert Celsius to Fahrenheit, rounded to nearest integer.
+ * @param {number|null} tempC - Temperature in Celsius
+ * @returns {number|null} Temperature in Fahrenheit, or null if input is null
+ */
+function cToF(tempC) {
+    if (tempC == null) return null;
+    return Math.round((parseFloat(tempC) * 9 / 5) + 32);
+}
+
+/**
+ * Return a human-friendly relative time string (e.g. "5 min ago").
+ * @param {string} dateString - ISO date string
+ * @returns {string} Relative time description
+ */
+function timeAgo(dateString) {
+    if (!dateString) return '';
+    const now = Date.now();
+    const then = new Date(dateString).getTime();
+    const diffMin = Math.round((now - then) / 60000);
+    if (diffMin < 1) return 'just now';
+    if (diffMin < 60) return `${diffMin} min ago`;
+    const diffHrs = Math.round(diffMin / 60);
+    if (diffHrs < 24) return `${diffHrs} hr ago`;
+    return `${Math.round(diffHrs / 24)} day ago`;
+}
+
+/**
+ * Check if an observation timestamp is stale (older than 90 minutes).
+ * @param {string} observedAt - ISO date string of observation
+ * @returns {boolean} True if stale or missing
+ */
+function isStale(observedAt) {
+    if (!observedAt) return true;
+    return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
+}
+
+/**
+ * Truncate a string to a maximum length, appending ellipsis if truncated.
+ * @param {string} str - String to truncate
+ * @param {number} max - Maximum length
+ * @returns {string} Truncated string
+ */
+function truncate(str, max) {
+    if (!str) return '';
+    return str.length > max ? str.substring(0, max) + '…' : str;
+}
+
+/**
+ * Format an ISO timestamp in the user's local timezone.
+ * @param {string} isoString - ISO date string
+ * @returns {string} Formatted local date/time string
+ */
+function formatLocalTime(isoString) {
+    if (!isoString) return 'Never';
+    const date = new Date(isoString);
+    return date.toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+}
