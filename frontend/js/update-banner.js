@@ -25,8 +25,12 @@ const UpdateBanner = {
         });
     },
     
+    isPollingIngestion: false,
+    pollingInterval: null,
+    
     /**
-     * Calculate and display countdown to next update
+     * Calculate and display countdown to next update.
+     * When countdown reaches 0, poll /health to detect active ingestion.
      */
     updateCountdown() {
         if (!this.nextUpdateTime) return;
@@ -38,13 +42,37 @@ const UpdateBanner = {
         if (!nextUpdateEl) return;
         
         if (diff <= 0) {
-            nextUpdateEl.textContent = 'Updating now...';
+            nextUpdateEl.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Refreshing data\u2026';
+            // Start polling /health to detect when ingestion finishes
+            if (!this.isPollingIngestion) {
+                this.startIngestionPolling();
+            }
             return;
         }
         
         const minutes = Math.floor(diff / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
         nextUpdateEl.textContent = `${minutes}m ${seconds}s`;
+    },
+    
+    /**
+     * Poll /health every 10 s while ingestion is expected to be running.
+     * When ingestion.active flips to false, refresh the page data.
+     */
+    startIngestionPolling() {
+        this.isPollingIngestion = true;
+        this.pollingInterval = setInterval(async () => {
+            try {
+                const resp = await fetch(`${typeof API !== 'undefined' && API.baseUrl ? API.baseUrl.replace('/api', '') : ''}/health`);
+                const health = await resp.json();
+                if (health.ingestion && !health.ingestion.active) {
+                    // Ingestion finished — stop polling and re-init
+                    clearInterval(this.pollingInterval);
+                    this.isPollingIngestion = false;
+                    this.init();
+                }
+            } catch (_) { /* network hiccup — keep polling */ }
+        }, 10000);
     },
     
     /**
