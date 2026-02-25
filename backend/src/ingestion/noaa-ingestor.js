@@ -19,12 +19,30 @@ const cache = require('../utils/cache');
 
 const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
 
+// Ingestion status tracking — exposed via getIngestionStatus()
+let isIngesting = false;
+let ingestionStartedAt = null;
+
+/**
+ * Return current ingestion status (consumed by /health endpoint)
+ * @returns {Object} { active: boolean, startedAt: string|null }
+ */
+function getIngestionStatus() {
+  return {
+    active: isIngesting,
+    startedAt: ingestionStartedAt
+  };
+}
+
 /**
  * Main ingestion function for NOAA weather data
  */
 async function ingestNOAAData() {
   console.log('\n═══ NOAA Weather Data Ingestion Started ═══');
   console.log(`Time: ${new Date().toISOString()}\n`);
+  
+  isIngesting = true;
+  ingestionStartedAt = new Date().toISOString();
   
   try {
     // Step 1: Fetch all active NOAA alerts
@@ -382,6 +400,9 @@ async function ingestNOAAData() {
   } catch (error) {
     console.error('\n✗ NOAA ingestion failed:', error.message);
     throw error;
+  } finally {
+    isIngesting = false;
+    ingestionStartedAt = null;
   }
 }
 
@@ -595,5 +616,6 @@ function getLastIngestionTime() {
 
 module.exports = {
   ingestNOAAData,
-  getLastIngestionTime
+  getLastIngestionTime,
+  getIngestionStatus
 };
