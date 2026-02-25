@@ -150,7 +150,7 @@ strom-scout/
 
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
 **Middleware:** node-cache (caching), express-rate-limit, express-validator  
-**Frontend:** HTML5, Bootstrap 5.3, Vanilla JavaScript, localStorage API  
+**Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
 **Data:** NOAA Weather API (80+ alert types, 223 observation stations), 229 US testing centers  
 **Deployment:** cPanel with Passenger, SSH/rsync  
 **Storage:** MySQL async/await models, unique indexes for data integrity
