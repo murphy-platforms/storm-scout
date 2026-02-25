@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.8.1] - 2026-02-25
+
+### Changed
+- **Bootstrap Upgrade** - Upgraded Bootstrap CSS/JS from 5.3.0 to 5.3.8 and Bootstrap Icons from 1.11.1 to 1.13.1 across all 8 HTML pages
+- **SRI Hash Updates** - Updated all Subresource Integrity hashes for Bootstrap CSS, JS, and Icons; added missing SRI hash for Leaflet CSS in map.html
+- **Consolidated Helper Functions** - Moved duplicate helper functions (`cToF`, `timeAgo`, `isStale`, `truncate`, `formatLocalTime`) from 5 inline page scripts into shared `js/utils.js`
+- **Cache-Busting Strings** - Updated `?v=1.8.0` → `?v=1.8.1` across all 8 HTML pages
+
 ## [1.8.0] - 2026-02-25
 
 ### Added

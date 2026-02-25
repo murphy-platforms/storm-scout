@@ -53,7 +53,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Dependencies**: express, cors, mysql2, node-cron, axios, dotenv, node-cache, express-validator, express-rate-limit
 
 ### Frontend
-- **UI Framework**: Bootstrap 5.3
+- **UI Framework**: Bootstrap 5.3.8, Bootstrap Icons 1.13.1
 - **JavaScript**: Vanilla JS (no framework), ES6+ features
 - **State Management**: localStorage for filter preferences
 - **API Client**: Fetch API with centralized error handling
@@ -445,6 +445,8 @@ ssh -p 21098 mwqtiakilx@teammurphy.rocks "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Ingestion status API: `/health` includes `ingestion.active`, `X-Data-Age` header on API responses
 - ✅ Smart frontend countdown with ingestion polling
 - ✅ Removed orphaned `pwa.js` and `manifest.json` from beta era
+- ✅ Bootstrap 5.3.0→5.3.8, Icons 1.11.1→1.13.1 upgrade with updated SRI hashes
+- ✅ Consolidated duplicate helper functions into shared `js/utils.js`
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
@@ -984,8 +986,8 @@ curl -s <URL> | openssl dgst -sha384 -binary | openssl base64 -A
 
 ```html
 <!-- Always include integrity and crossorigin attributes -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-..." 
         crossorigin="anonymous"></script>
 ```
 
@@ -1110,7 +1112,7 @@ When working on Storm Scout:
 
 7. **Explain trade-offs**: When suggesting features (e.g., Phase 2 zone filtering), outline effort, impact, and potential downsides.
 
-8. **Check dependencies**: Storm Scout uses specific versions (Node 20, Bootstrap 5.3, MySQL 8) - ensure compatibility.
+8. **Check dependencies**: Storm Scout uses specific versions (Node 20, Bootstrap 5.3.8, MySQL 8) - ensure compatibility.
 
 9. **Follow the roadmap**: Prioritize high-priority items from `ROADMAP.md` unless user specifies otherwise.
 
