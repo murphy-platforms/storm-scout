@@ -51,6 +51,8 @@ Currently monitoring 229 testing centers with real-time NOAA weather data update
 - **Security Headers** - helmet.js with CSP, HSTS, X-Frame-Options, X-Content-Type-Options
 - **XSS Prevention** - Secure `html` tagged template for safe dynamic HTML rendering
 - **CDN Integrity** - Subresource Integrity (SRI) hashes on all external resources
+- **Cache-Control Headers** - HTML always revalidates (`no-cache`); static assets cached 7 days with versioned URLs
+- **Ingestion Status API** - `/health` exposes real-time ingestion state; `X-Data-Age` header on all API responses
 
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
