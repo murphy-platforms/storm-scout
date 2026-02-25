@@ -1,6 +1,6 @@
 {
   "name": "storm-scout-backend",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "releasedDate": "2026-02-25",
   "description": "Storm Scout backend API - Weather advisory dashboard for testing centers",
   "main": "src/server.js",
