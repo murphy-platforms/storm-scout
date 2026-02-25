@@ -12,8 +12,8 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Storm Scout - Site Detail</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css?v=1.8.0">
     <link rel="stylesheet" href="css/mobile.css?v=1.8.0">
 </head>
@@ -170,7 +170,7 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="js/api.js?v=1.8.0"></script>
     <script src="js/version.js?v=1.8.0"></script>
     <script src="js/utils.js?v=1.8.0"></script>
@@ -179,31 +179,6 @@
     <script>
         let siteData = null;
         let siteAdvisories = [];
-        
-        // Helper: convert Celsius to Fahrenheit
-        function cToF(tempC) {
-            if (tempC == null) return null;
-            return Math.round((parseFloat(tempC) * 9 / 5) + 32);
-        }
-        
-        // Helper: relative time string
-        function timeAgo(dateString) {
-            if (!dateString) return '';
-            const now = Date.now();
-            const then = new Date(dateString).getTime();
-            const diffMin = Math.round((now - then) / 60000);
-            if (diffMin < 1) return 'just now';
-            if (diffMin < 60) return `${diffMin} min ago`;
-            const diffHrs = Math.round(diffMin / 60);
-            if (diffHrs < 24) return `${diffHrs} hr ago`;
-            return `${Math.round(diffHrs / 24)} day ago`;
-        }
-        
-        // Helper: check if observation is stale (>90 min)
-        function isStale(observedAt) {
-            if (!observedAt) return true;
-            return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
-        }
         
         async function loadSiteDetail() {
             try {
