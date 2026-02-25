@@ -15,6 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.8.0] - 2026-02-25
+
+### Added
+- **Ingestion Status API** (#73) - `/health` endpoint now includes `ingestion.active` and `ingestion.startedAt` fields for real-time ingestion tracking
+- **X-Data-Age Header** - All `/api/*` responses include `X-Data-Age` header showing seconds since last successful ingestion
+- **Smart Update Countdown** - Frontend countdown shows spinner and polls `/health` when data refresh is expected, auto-reinitializes when ingestion completes
+- **Cache-Control Headers** (#74) - HTML files served with `no-cache, no-store, must-revalidate`; static assets (CSS/JS/images) cached for 7 days via `max-age=604800`
+- **Version-Based Cache Busting** (#72) - All local CSS/JS references across all 8 HTML pages include `?v=1.8.0` query params to force browser cache invalidation on deploy
+
+### Fixed
+- **Orphaned Service Worker** (#71) - Replaced beta-era cache-first service worker (`sw.js`) with self-unregistering stub that clears all SW caches and unregisters itself on any browser that still has it installed. This was the likely root cause of stale page loads on some machines.
+
+### Removed
+- `frontend/js/pwa.js` - PWA registration script (no pages loaded it; orphaned from beta era)
+- `frontend/manifest.json` - PWA manifest (no pages referenced it; orphaned from beta era)
+
 ## [1.7.5] - 2026-02-24
 
 ### Added
