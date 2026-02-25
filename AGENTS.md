@@ -4,7 +4,7 @@
 **Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
 **Production URL**: https://your-domain.example.com  
 **Status**: Phase 1 Complete, Global Architecture Planned, Production Deployed  
-**Last Updated**: 2026-02-24
+**Last Updated**: 2026-02-25
 
 ---
 
@@ -32,6 +32,10 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Safe Deployment**: `deploy.sh` pauses ingestion before deploy, resumes after — prevents mid-cycle data corruption
 - **Automated XSS Audit**: Smoke test includes innerHTML safety check across all frontend files
 - **Version Display**: Footer on all 8 pages shows version number and release date via `/api/version` endpoint
+- **Stale Cache Safeguards**: Self-unregistering SW stub kills orphaned beta-era service worker; versioned asset URLs (`?v=X.Y.Z`) force cache busting on deploy
+- **Cache-Control Headers**: HTML served with `no-cache`; static assets cached 7 days with versioned URLs
+- **Ingestion Status API**: `/health` exposes real-time `ingestion.active` flag; `X-Data-Age` header on all API responses
+- **Smart Update Countdown**: Frontend shows spinner during data refresh and polls `/health` until ingestion completes
 
 ---
 
@@ -437,6 +441,10 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ Smoke test XSS audit (innerHTML safety check across all frontend files)
 - ✅ MariaDB-compatible rollback migration for global alert source tables
 - ✅ NOAA alerts snapshot fixture (540 alerts) for future regression testing
+- ✅ Stale cache safeguards: self-unregistering SW stub, versioned asset URLs, Cache-Control headers
+- ✅ Ingestion status API: `/health` includes `ingestion.active`, `X-Data-Age` header on API responses
+- ✅ Smart frontend countdown with ingestion polling
+- ✅ Removed orphaned `pwa.js` and `manifest.json` from beta era
 
 ### High Priority (Next)
 - [ ] Unit tests (Jest) for models and utilities
