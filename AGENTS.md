@@ -15,7 +15,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
 - **229 Testing Centers**: Monitoring sites across all 50 US states and territories
-- **Smart Filtering**: 80+ NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
+- **Smart Filtering**: 94 NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
 - **Filter Presets**: Site Default, Operations View, Executive Summary, Safety Focus, Full View
@@ -287,11 +287,11 @@ Each site is mapped to its nearest NWS observation station via `/points/{lat},{l
 Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
 ### Filter System
-- **Site Default (CUSTOM)**: 12 of 78 alert types enabled (most relevant for operations)
-- **Operations View**: High severity only
-- **Executive Summary**: Critical + High severity
-- **Safety Focus**: All safety-related alerts
-- **Full View**: All 78 alert types
+- **Site Default (CUSTOM)**: 47 of 94 alert types enabled (all CRITICAL + all HIGH + key MODERATE for land ops)
+- **Operations View**: All CRITICAL, HIGH, MODERATE (excluding marine/special weather statements)
+- **Executive Summary**: CRITICAL only
+- **Safety Focus**: CRITICAL through LOW (excluding marine/test)
+- **Full View**: All 94 alert types (excluding Test/Admin)
 
 Filters are applied **client-side** in the frontend. The API returns all data; frontend filters based on localStorage preferences.
 
