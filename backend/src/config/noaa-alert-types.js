@@ -22,7 +22,8 @@ const NOAA_ALERT_TYPES = {
     'Blizzard Warning',
     'Ice Storm Warning',
     'Dust Storm Warning',
-    'Avalanche Warning'
+    'Avalanche Warning',
+    'Snow Squall Warning'
   ],
 
   // HIGH - Significant threat requiring preparation/action
@@ -41,7 +42,9 @@ const NOAA_ALERT_TYPES = {
     'Tropical Storm Warning',
     'Storm Warning',
     'Gale Warning',
-    'Heavy Freezing Spray Warning'
+    'Heavy Freezing Spray Warning',
+    'Storm Surge Watch',
+    'Flash Flood Watch'
   ],
 
   // MODERATE - Notable conditions requiring awareness
@@ -66,7 +69,9 @@ const NOAA_ALERT_TYPES = {
     'Lakeshore Flood Watch',
     'Excessive Heat Watch',
     'Hard Freeze Warning',
-    'Freeze Watch'
+    'Freeze Watch',
+    'Extreme Cold Watch',
+    'Lake Wind Advisory'
   ],
 
   // LOW - Minor conditions or precautionary information
@@ -86,7 +91,14 @@ const NOAA_ALERT_TYPES = {
     'Freezing Fog Advisory',
     'Ashfall Advisory',
     'Air Quality Alert',
-    'Dense Smoke Advisory'
+    'Dense Smoke Advisory',
+    'Coastal Flood Statement',
+    'Lakeshore Flood Statement',
+    'Flood Statement',
+    'Flash Flood Statement',
+    'Low Water Advisory',
+    'Air Stagnation Advisory',
+    'Freezing Spray Advisory'
   ],
 
   // INFO - Informational statements
@@ -104,7 +116,11 @@ const NOAA_ALERT_TYPES = {
     'Civil Emergency Message',
     'Avalanche Watch',
     'Avalanche Advisory',
-    'Fire Weather Watch'
+    'Fire Weather Watch',
+    'Severe Weather Statement',
+    'Tropical Cyclone Local Statement',
+    'Tsunami Advisory',
+    'Tsunami Watch'
   ]
 };
 
@@ -113,44 +129,20 @@ const NOAA_ALERT_TYPES = {
  */
 const DEFAULT_FILTERS = {
   // Custom - Site-specific configuration (default)
+  // Enables all CRITICAL, all HIGH, and key MODERATE types for land-based operations.
+  // LOW and INFO categories are excluded via includeCategories (not listed here).
   CUSTOM: {
     name: 'Site Default',
     description: 'Customized alert configuration for testing center operations',
     includeCategories: ['CRITICAL', 'HIGH', 'MODERATE'],
     excludeTypes: [
-      // CRITICAL exclusions (OFF by default)
-      'Tornado Warning', 'Storm Surge Warning', 'Severe Thunderstorm Warning',
-      'Dust Storm Warning', 'Extreme Wind Warning', 'Avalanche Warning',
-      'Flash Flood Warning',
-      
-      // HIGH exclusions (OFF by default)
-      'Fire Warning', 'Gale Warning', 'High Wind Warning',
-      'Severe Thunderstorm Watch', 'Red Flag Warning', 'Storm Warning',
-      'Excessive Heat Warning', 'Tornado Watch', 'Flood Warning',
-      'Heavy Freezing Spray Warning',
-      
-      // MODERATE exclusions (most OFF, few enabled)
-      'Flood Watch', 'Wind Advisory', 'Heat Advisory', 'Dense Fog Advisory',
-      'Freeze Warning', 'Frost Advisory', 'Blowing Dust Advisory',
-      'Coastal Flood Warning', 'Lakeshore Flood Warning',
-      'Winter Weather Advisory', 'High Surf Warning',
-      'Lake Effect Snow Warning', 'Lake Effect Snow Watch',
-      'High Wind Watch', 'Coastal Flood Watch', 'Lakeshore Flood Watch',
-      'Excessive Heat Watch', 'Hard Freeze Warning', 'Freeze Watch',
-      
-      // All LOW excluded (entire category OFF)
-      'Wind Chill Advisory', 'Wind Chill Watch', 'Small Craft Advisory',
-      'Brisk Wind Advisory', 'Hazardous Seas Warning', 'High Surf Advisory',
-      'Coastal Flood Advisory', 'Lakeshore Flood Advisory', 'Beach Hazards Statement',
-      'Rip Current Statement', 'Cold Weather Advisory', 'Freezing Fog Advisory',
-      'Ashfall Advisory', 'Air Quality Alert', 'Dense Smoke Advisory',
-      
-      // All INFO excluded (entire category OFF)
-      'Special Weather Statement', 'Marine Weather Statement', 'Hydrologic Outlook',
-      'Hazardous Weather Outlook', 'Short Term Forecast', 'Administrative Message',
-      'Test', 'Child Abduction Emergency', 'Civil Danger Warning',
-      'Civil Emergency Message', 'Avalanche Watch', 'Avalanche Advisory',
-      'Fire Weather Watch'
+      // MODERATE exclusions — coastal/lakeshore/surf not relevant to most inland sites
+      'Blowing Dust Advisory',
+      'High Surf Warning',
+      'Coastal Flood Warning',
+      'Coastal Flood Watch',
+      'Lakeshore Flood Warning',
+      'Lakeshore Flood Watch'
     ]
   },
 

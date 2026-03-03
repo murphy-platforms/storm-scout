@@ -24,7 +24,7 @@ Currently monitoring 229 testing centers with real-time NOAA weather data update
 - **Weather Observations** - Current conditions from nearest NWS observation station updated every 15 minutes
 
 ### Alert Filtering System
-- **80+ NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
+- **94 NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
 - **5 Impact Levels** - Alerts categorized as CRITICAL, HIGH, MODERATE, LOW, or INFO
 - **Customizable Filters** - Users can enable/disable individual alert types via interactive UI
 - **Quick Presets** - Site Default, Operations View, Executive Summary, Safety Focus, Full View
@@ -151,7 +151,7 @@ strom-scout/
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
 **Middleware:** node-cache (caching), express-rate-limit, express-validator  
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (80+ alert types, 223 observation stations), 229 US testing centers  
+**Data:** NOAA Weather API (94 alert types, 223 observation stations), 229 US testing centers  
 **Deployment:** cPanel with Passenger, SSH/rsync  
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
@@ -190,13 +190,13 @@ See `backend/README.md` for complete API documentation.
 
 ## Filter Configuration
 
-The default filter preset is **"Site Default" (CUSTOM)** with 12 of 78 alert types enabled:
+The default filter preset is **"Site Default" (CUSTOM)** with 47 of 94 alert types enabled:
 
-- **CRITICAL**: 5/12 enabled (Hurricane Warning, Typhoon Warning, Tsunami Warning, Blizzard Warning, Ice Storm Warning)
-- **HIGH**: 4/15 enabled (Hurricane Watch, Typhoon Watch, Winter Storm Warning, Tropical Storm Warning)
-- **MODERATE**: 3/21 enabled (Winter Storm Watch, Lake Effect Snow Warning, Tropical Storm Watch)
-- **LOW**: 0/16 enabled (all disabled)
-- **INFO**: 0/14 enabled (all disabled)
+- **CRITICAL**: 13/13 enabled (all — Tornado Warning, Hurricane Warning, Blizzard Warning, etc.)
+- **HIGH**: 17/17 enabled (all — Tornado Watch, Flood Warning, High Wind Warning, etc.)
+- **MODERATE**: 17/23 enabled (Winter Weather Advisory, Dense Fog Advisory, Flood Watch, etc.)
+- **LOW**: 0/23 enabled (all disabled)
+- **INFO**: 0/18 enabled (all disabled)
 
 Users can customize their filter preferences at **/filters.html**, and changes are automatically applied across all dashboard pages.
 
