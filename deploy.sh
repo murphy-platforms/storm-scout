@@ -97,6 +97,7 @@ deploy_backend() {
         --exclude '*.db-wal' \
         --exclude '.env' \
         --exclude '.DS_Store' \
+        --exclude 'tmp/' \
         "$LOCAL_BACKEND" "$SERVER_USER@$SERVER_HOST:$SERVER_BACKEND_PATH/"
     
     log_info "Backend files synced"
