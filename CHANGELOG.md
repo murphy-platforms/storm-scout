@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **deploy.sh rsync excludes `tmp/`** - Added `--exclude 'tmp/'` to backend rsync to prevent overwriting the Passenger `tmp/` directory (used for `restart.txt`) on the server during deployment
+
 ### Planned
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
