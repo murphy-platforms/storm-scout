@@ -61,7 +61,7 @@ If the script doesn't work, deploy manually:
 
 ### Backend:
 ```bash
-rsync -avz -e "ssh -p 21098" --exclude 'node_modules/' --exclude '*.db*' --exclude '.env' \
+rsync -avz -e "ssh -p 21098" --exclude 'node_modules/' --exclude '*.db*' --exclude '.env' --exclude 'tmp/' \
   ./backend/ mwqtiakilx@your-domain.example.com:~/storm-scout/
 
 ssh -p 21098 mwqtiakilx@your-domain.example.com "cd ~/storm-scout && source ~/nodevenv/storm-scout/20/bin/activate && npm install --production"
