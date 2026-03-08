@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: storm-scout-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootdev
+      MYSQL_DATABASE: storm_scout_dev
+      MYSQL_USER: storm_scout
+      MYSQL_PASSWORD: localdev
+    ports:
+      - "3306:3306"
+    volumes:
+      - storm-scout-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  storm-scout-db-data:
