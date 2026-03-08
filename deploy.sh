@@ -11,10 +11,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration (update these for your server)
-SERVER_HOST="${DEPLOY_HOST:-your-domain.example.com}"
-SERVER_USER="${DEPLOY_USER:-mwqtiakilx}"
-SERVER_PORT="${DEPLOY_PORT:-21098}"
+# Configuration — set via environment variables or .deploy.config
+# Example: DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
+SERVER_HOST="${DEPLOY_HOST:-your-server.example.com}"
+SERVER_USER="${DEPLOY_USER:-your_ssh_user}"
+SERVER_PORT="${DEPLOY_PORT:-22}"
 SERVER_BACKEND_PATH="${DEPLOY_BACKEND_PATH:-~/storm-scout}"
 SERVER_FRONTEND_PATH="${DEPLOY_FRONTEND_PATH:-~/public_html}"
 
@@ -211,7 +212,7 @@ main() {
     echo "║          ✓ Deployment Complete!                           ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
-    echo "  Your site: https://$SERVER_HOST"
+    echo "  Your site: https://$SERVER_HOST  (update DEPLOY_HOST for your USPS server)"
     echo ""
     log_info "Storm Scout is live!"
     echo ""

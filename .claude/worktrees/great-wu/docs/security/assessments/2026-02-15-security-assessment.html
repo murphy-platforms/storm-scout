@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout Security Assessment - February 2026</title>
+    <style>
+        :root {
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-info: #3b82f6;
+            --color-muted: #6b7280;
+            --color-border: #e5e7eb;
+            --color-bg-light: #f9fafb;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        
+        @media print {
+            body {
+                padding: 20px;
+                font-size: 11pt;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        
+        /* Header */
+        .report-header {
+            border-bottom: 3px solid #1f2937;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .report-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .report-subtitle {
+            font-size: 18px;
+            color: var(--color-muted);
+            margin-bottom: 15px;
+        }
+        
+        .report-meta {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            color: var(--color-muted);
+        }
+        
+        .report-meta strong {
+            color: #1f2937;
+        }
+        
+        /* Classification Banner */
+        .classification {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 8px 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+        
+        /* Executive Summary Card */
+        .exec-summary {
+            background: var(--color-bg-light);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .exec-summary h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+        
+        .risk-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .risk-low {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        
+        .risk-medium {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .risk-high {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        
+        /* Status Grid */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .status-card {
+            background: #fff;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .status-card .label {
+            font-size: 12px;
+            color: var(--color-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-card .value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        .status-card .status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .status-secure {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-attention {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        /* Sections */
+        h2 {
+            font-size: 20px;
+            color: #1f2937;
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+        }
+        
+        h3 {
+            font-size: 16px;
+            color: #374151;
+            margin: 20px 0 10px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--color-border);
+        }
+        
+        th {
+            background: var(--color-bg-light);
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Finding Cards */
+        .finding {
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .finding-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .finding-header.secure {
+            background: #ecfdf5;
+            border-bottom: 1px solid #a7f3d0;
+        }
+        
+        .finding-header.attention {
+            background: #fffbeb;
+            border-bottom: 1px solid #fde68a;
+        }
+        
+        .finding-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .finding-body {
+            padding: 20px;
+        }
+        
+        .finding-body p {
+            margin-bottom: 10px;
+        }
+        
+        .finding-body strong {
+            color: #374151;
+        }
+        
+        /* Code blocks */
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        pre {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+        
+        li {
+            margin-bottom: 5px;
+        }
+        
+        /* Footer */
+        .report-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--color-border);
+            font-size: 12px;
+            color: var(--color-muted);
+            text-align: center;
+        }
+        
+        /* Print Button */
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1f2937;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-btn:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="classification">Internal Use Only - Security Assessment</div>
+    
+    <header class="report-header">
+        <h1 class="report-title">Storm Scout Security Assessment</h1>
+        <p class="report-subtitle">Web Application Security Review</p>
+        <div class="report-meta">
+            <span><strong>Date:</strong> February 15, 2026</span>
+            <span><strong>System:</strong> your-domain.example.com</span>
+            <span><strong>Version:</strong> 1.0</span>
+        </div>
+    </header>
+    
+    <section class="exec-summary">
+        <h2>Executive Summary</h2>
+        <div class="risk-rating risk-low">
+            ✓ Overall Risk Rating: LOW
+        </div>
+        <p>
+            Storm Scout is a weather advisory monitoring dashboard serving 219 US testing centers. 
+            This assessment evaluated the web application frontend, Node.js/Express backend, MySQL database 
+            interactions, and production security headers.
+        </p>
+        <p style="margin-top: 10px;">
+            <strong>Key Finding:</strong> The application demonstrates solid security practices with no critical 
+            or high-severity vulnerabilities identified. All user-facing input is properly validated and escaped.
+        </p>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="label">XSS Prevention</div>
+                <div class="value" style="color: var(--color-success);">✓</div>
+                <span class="status status-secure">SECURE</span>
+            </div>
+            <div class="status-card">
+                <div class="label">SQL Injection</div>
+                <div class="value" style="color: var(--color-success);">✓</div>
+                <span class="status status-secure">SECURE</span>
+            </div>
+            <div class="status-card">
+                <div class="label">Dependencies</div>
+                <div class="value" style="color: var(--color-success);">0</div>
+                <span class="status status-secure">NO VULNS</span>
+            </div>
+        </div>
+    </section>
+    
+    <h2>1. Scope &amp; Methodology</h2>
+    <table>
+        <tr>
+            <th>Component</th>
+            <th>Technology</th>
+            <th>Assessment Method</th>
+        </tr>
+        <tr>
+            <td>Frontend (Classic UI)</td>
+            <td>Bootstrap 5.3, Vanilla JS</td>
+            <td>Code review, header analysis</td>
+        </tr>
+        <tr>
+            <td>Frontend (Beta UI)</td>
+            <td>Custom CSS, Vanilla JS</td>
+            <td>Code review</td>
+        </tr>
+        <tr>
+            <td>Backend API</td>
+            <td>Node.js 20, Express 4.18</td>
+            <td>Code review, dependency audit</td>
+        </tr>
+        <tr>
+            <td>Database</td>
+            <td>MySQL/MariaDB 11.4</td>
+            <td>Query analysis</td>
+        </tr>
+        <tr>
+            <td>Infrastructure</td>
+            <td>cPanel/LiteSpeed</td>
+            <td>Header inspection</td>
+        </tr>
+    </table>
+    
+    <h2>2. Security Controls Summary</h2>
+    <table>
+        <tr>
+            <th>Control</th>
+            <th>Status</th>
+            <th>Implementation</th>
+        </tr>
+        <tr>
+            <td>Content Security Policy</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>helmet.js with strict directives</td>
+        </tr>
+        <tr>
+            <td>HTTPS/HSTS</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>max-age=31536000; includeSubDomains</td>
+        </tr>
+        <tr>
+            <td>XSS Prevention</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>html tagged template with auto-escaping</td>
+        </tr>
+        <tr>
+            <td>SQL Injection Prevention</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>Parameterized queries via mysql2</td>
+        </tr>
+        <tr>
+            <td>Input Validation</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>express-validator on all endpoints</td>
+        </tr>
+        <tr>
+            <td>Rate Limiting</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>100 req/15min (general), 20/15min (writes)</td>
+        </tr>
+        <tr>
+            <td>Clickjacking Protection</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>X-Frame-Options: SAMEORIGIN</td>
+        </tr>
+        <tr>
+            <td>CDN Integrity</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td>SRI hashes on Bootstrap resources</td>
+        </tr>
+    </table>
+    
+    <div class="page-break"></div>
+    
+    <h2>3. Verified Secure Areas</h2>
+    
+    <div class="finding">
+        <div class="finding-header secure">
+            <span class="finding-title">XSS Prevention</span>
+            <span class="badge badge-success">VERIFIED SECURE</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>Evidence:</strong> All dynamic HTML rendering uses the secure <code>html</code> tagged template function 
+            which automatically escapes interpolated values. The <code>raw()</code> function is only used for trusted UI elements 
+            (CSS classes, static badges).</p>
+            <p><strong>Files Reviewed:</strong></p>
+            <ul>
+                <li><code>frontend/js/utils.js</code> - escapeHtml(), raw(), html() implementation</li>
+                <li><code>frontend/index.html</code> - Dashboard rendering</li>
+                <li><code>frontend/site-detail.html</code> - Alert detail modal</li>
+                <li><code>frontend/beta/index.html</code> - Beta UI rendering</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-header secure">
+            <span class="finding-title">SQL Injection Prevention</span>
+            <span class="badge badge-success">VERIFIED SECURE</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>Evidence:</strong> All database queries use parameterized placeholders (<code>?</code>) with separate 
+            parameter arrays. No string concatenation of user input into SQL statements.</p>
+            <p><strong>Files Reviewed:</strong></p>
+            <ul>
+                <li><code>backend/src/models/advisory.js</code> - All queries parameterized</li>
+                <li><code>backend/src/models/site.js</code> - All queries parameterized</li>
+            </ul>
+            <p><strong>Note:</strong> The internal <code>update()</code> function builds field names dynamically but is not 
+            exposed via any API route. Recommend adding field whitelist for defense in depth.</p>
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-header secure">
+            <span class="finding-title">Dependency Security</span>
+            <span class="badge badge-success">VERIFIED SECURE</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>Evidence:</strong> <code>npm audit</code> returned 0 vulnerabilities.</p>
+            <pre><code>$ npm audit
+found 0 vulnerabilities</code></pre>
+            <p><strong>Recommendation:</strong> Continue running <code>npm audit</code> as part of CI/CD pipeline or before each deployment.</p>
+        </div>
+    </div>
+    
+    <h2>4. Production Security Headers</h2>
+    <p>Headers verified via HTTPS request to <code>https://your-domain.example.com</code>:</p>
+    <pre><code>content-security-policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net 
+    www.googletagmanager.com; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; 
+    font-src 'self' cdn.jsdelivr.net; img-src 'self' data: www.googletagmanager.com; 
+    connect-src 'self' www.google-analytics.com *.google-analytics.com; 
+    object-src 'none'; upgrade-insecure-requests; base-uri 'self'; 
+    form-action 'self'; frame-ancestors 'self'; script-src-attr 'none'
+
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: no-referrer
+x-xss-protection: 0</code></pre>
+    <p><strong>Note:</strong> <code>x-xss-protection: 0</code> is intentional and correct per modern best practices 
+    (legacy header can introduce vulnerabilities).</p>
+    
+    <div class="page-break"></div>
+    
+    <h2>5. Low-Severity Observations</h2>
+    
+    <div class="finding">
+        <div class="finding-header attention">
+            <span class="finding-title">CSP Uses 'unsafe-inline'</span>
+            <span class="badge badge-warning">LOW</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>Description:</strong> The Content Security Policy includes <code>'unsafe-inline'</code> for scripts 
+            and styles, which weakens XSS protection.</p>
+            <p><strong>Reason:</strong> Required for Google Analytics inline script and Bootstrap inline styles.</p>
+            <p><strong>Mitigation:</strong> The <code>script-src-attr 'none'</code> directive blocks inline event handlers, 
+            which mitigates the most common XSS attack vector.</p>
+            <p><strong>Recommendation:</strong> Consider implementing CSP nonces in a future iteration if stricter 
+            CSP is required.</p>
+        </div>
+    </div>
+    
+    <div class="finding">
+        <div class="finding-header attention">
+            <span class="finding-title">Internal Function Field Name Injection (Theoretical)</span>
+            <span class="badge badge-warning">LOW</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>Description:</strong> The <code>AdvisoryModel.update()</code> function builds SQL field names from 
+            object keys without validation.</p>
+            <p><strong>Risk:</strong> Not exploitable via current API (no routes expose this function with user input). 
+            Only used internally by NOAA ingestion with controlled data.</p>
+            <p><strong>Recommendation:</strong> Add field name whitelist for defense in depth:</p>
+            <pre><code>const ALLOWED_FIELDS = ['advisory_type', 'severity', 'status', ...];
+if (ALLOWED_FIELDS.includes(key)) {
+    fields.push(`${key} = ?`);
+}</code></pre>
+        </div>
+    </div>
+    
+    <h2>6. Recommendations</h2>
+    <table>
+        <tr>
+            <th>Priority</th>
+            <th>Recommendation</th>
+            <th>Effort</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            <td><span class="badge badge-info">Low</span></td>
+            <td>Add field whitelist to update() function</td>
+            <td>15 min</td>
+            <td>Recommended</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-info">Low</span></td>
+            <td>Consider CSP nonces for inline scripts (future)</td>
+            <td>2-4 hrs</td>
+            <td>Optional</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-info">Low</span></td>
+            <td>Run npm audit in CI/CD pipeline</td>
+            <td>30 min</td>
+            <td>Recommended</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-info">Low</span></td>
+            <td>Document security controls in README</td>
+            <td>30 min</td>
+            <td>Recommended</td>
+        </tr>
+    </table>
+    
+    <h2>7. Conclusion</h2>
+    <p>Storm Scout demonstrates a mature security posture appropriate for its use case as a public-facing 
+    weather advisory dashboard. Key security controls are properly implemented:</p>
+    <ul>
+        <li>All user input is validated and sanitized</li>
+        <li>XSS prevention through consistent use of secure templating</li>
+        <li>SQL injection prevented via parameterized queries</li>
+        <li>Comprehensive security headers via helmet.js</li>
+        <li>Rate limiting protects against abuse</li>
+        <li>No known dependency vulnerabilities</li>
+    </ul>
+    <p style="margin-top: 15px;">
+        <strong>No critical or high-severity vulnerabilities were identified.</strong> The low-severity findings 
+        are defensive recommendations and do not represent immediate risk.
+    </p>
+    
+    <footer class="report-footer">
+        <p>Storm Scout Security Assessment | February 15, 2026 | Prepared for Internal Review</p>
+        <p>This report contains security-sensitive information and should be handled according to your organization's data classification policies.</p>
+    </footer>
+    
+    <button class="print-btn no-print" onclick="window.print()">
+        📄 Print / Save as PDF
+    </button>
+</body>
+</html>

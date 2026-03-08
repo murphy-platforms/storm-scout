@@ -1,0 +1,18 @@
+/* Custom styles for Strom Scout */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.hero {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+}
+
+/* Add your custom styles below */

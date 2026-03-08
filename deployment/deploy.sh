@@ -9,12 +9,12 @@ echo "=================================="
 echo ""
 
 # Configuration
-APP_DIR="/var/www/storm-scout"
+APP_DIR="${DEPLOY_APP_DIR:-/var/www/storm-scout}"
 BACKEND_DIR="$APP_DIR/backend"
 FRONTEND_DIR="$APP_DIR/frontend"
 DATA_DIR="$APP_DIR/data"
 LOGS_DIR="$APP_DIR/logs"
-DOMAIN="your-domain.example.com"
+DOMAIN="${DEPLOY_DOMAIN:-your-usps-domain.example.com}"
 
 # Colors
 RED='\033[0;31m'

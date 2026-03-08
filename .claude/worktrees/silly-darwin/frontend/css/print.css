@@ -1,0 +1,311 @@
+/**
+ * Print-Optimized Styles for Storm Scout
+ * For clean PDF exports via browser print function
+ */
+
+/* =======================
+   Base Print Styles
+   ======================= */
+@media print {
+    /* Reset margins and remove unnecessary elements */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    body {
+        margin: 0;
+        padding: 20px;
+        font-size: 11pt;
+        line-height: 1.4;
+        color: #000;
+        background: #fff;
+    }
+    
+    /* Hide navigation and interactive elements */
+    nav,
+    .navbar,
+    button,
+    .btn,
+    .quick-actions,
+    .update-banner,
+    footer,
+    .help-icon,
+    .tooltip-content,
+    .badge.bg-info,
+    .export-notification {
+        display: none !important;
+    }
+    
+    /* Hide Beta UI sidebar and mobile controls */
+    aside,
+    .sidebar,
+    .mobile-menu-btn,
+    .top-bar-actions,
+    .a11y-toggle {
+        display: none !important;
+    }
+    
+    /* Make main content full width */
+    .main-content,
+    .container-fluid {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+    }
+    
+    /* Print header */
+    .print-header {
+        text-align: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #333;
+        page-break-after: avoid;
+    }
+    
+    .print-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .print-header p {
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    /* Page breaks */
+    h1, h2, h3, h4 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+    
+    .card,
+    .alert,
+    .table,
+    .severity-card,
+    .site-card {
+        page-break-inside: avoid;
+    }
+    
+    /* Preserve card styles */
+    .card {
+        border: 1px solid #dee2e6 !important;
+        margin-bottom: 0.5rem;
+        padding: 0.75rem;
+    }
+    
+    .card-header {
+        background: #f8f9fa !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        padding: 0.5rem;
+        font-weight: bold;
+    }
+    
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    /* Weather impact cards */
+    .weather-card {
+        border: 2px solid #dee2e6 !important;
+        padding: 0.5rem;
+        text-align: center;
+    }
+    
+    .impact-red { border-color: #dc3545 !important; }
+    .impact-orange { border-color: #fd7e14 !important; }
+    .impact-yellow { border-color: #ffc107 !important; }
+    .impact-green { border-color: #28a745 !important; }
+    .impact-total { border-color: #1B2845 !important; }
+    
+    /* Badges - keep colors visible */
+    .badge {
+        border: 1px solid #000;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .weather-red { background: #dc3545 !important; color: #fff !important; }
+    .weather-orange { background: #fd7e14 !important; color: #fff !important; }
+    .weather-yellow { background: #ffc107 !important; color: #000 !important; }
+    .weather-green { background: #28a745 !important; color: #fff !important; }
+    
+    .status-closed { background: #dc3545 !important; color: #fff !important; }
+    .status-restricted { background: #fd7e14 !important; color: #fff !important; }
+    .status-pending { background: #ffc107 !important; color: #000 !important; }
+    .status-open { background: #28a745 !important; color: #fff !important; }
+    
+    /* Tables */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 10pt;
+    }
+    
+    th, td {
+        border: 1px solid #dee2e6;
+        padding: 0.4rem;
+        text-align: left;
+    }
+    
+    th {
+        background: #f8f9fa !important;
+        font-weight: bold;
+    }
+    
+    /* Site cards in list view */
+    .site-card {
+        border: 1px solid #dee2e6 !important;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .site-card-header {
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+    
+    .advisory-item {
+        margin: 0.25rem 0;
+        padding: 0.25rem;
+        border-left: 3px solid #dee2e6;
+        padding-left: 0.5rem;
+    }
+    
+    /* Severity-specific advisory colors */
+    .advisory-item.severity-extreme {
+        border-left-color: #dc3545 !important;
+    }
+    
+    .advisory-item.severity-severe {
+        border-left-color: #fd7e14 !important;
+    }
+    
+    .advisory-item.severity-moderate {
+        border-left-color: #ffc107 !important;
+    }
+    
+    /* Links - show URL in print */
+    a[href]:after {
+        content: none; /* Don't show URLs in print by default */
+    }
+    
+    /* Force display of important content */
+    .print-only {
+        display: block !important;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Grid layouts */
+    .row {
+        display: block !important;
+    }
+    
+    .col, .col-12, .col-md-3, .col-md-4, .col-md-6 {
+        width: 100% !important;
+        float: none !important;
+        display: block !important;
+    }
+    
+    /* Beta UI specific adjustments */
+    .severity-grid,
+    .content-grid {
+        display: block !important;
+    }
+    
+    .severity-card,
+    .quick-filters {
+        display: inline-block !important;
+        width: 24% !important;
+        margin: 0.5% !important;
+        vertical-align: top;
+    }
+    
+    .severity-card .sparkline,
+    .progress-ring,
+    .donut-chart {
+        display: none !important;
+    }
+    
+    /* Clean up spacing */
+    h1 { font-size: 1.75rem; margin: 0.5rem 0; }
+    h2 { font-size: 1.5rem; margin: 0.5rem 0; }
+    h3 { font-size: 1.25rem; margin: 0.5rem 0; }
+    h4 { font-size: 1.1rem; margin: 0.5rem 0; }
+    p { margin: 0.25rem 0; }
+    
+    /* Alerts and callouts */
+    .alert {
+        border: 1px solid #000 !important;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+    }
+    
+    .alert-success { border-color: #28a745 !important; }
+    .alert-warning { border-color: #ffc107 !important; }
+    .alert-danger { border-color: #dc3545 !important; }
+    
+    /* Remove shadows and transitions */
+    *,
+    *::before,
+    *::after {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* =======================
+   Export Notification Toast
+   ======================= */
+.export-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: #fff;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid #28a745;
+    font-weight: 600;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease-in-out;
+}
+
+.export-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.export-notification-success {
+    border-left-color: #28a745;
+    color: #155724;
+}
+
+.export-notification-error {
+    border-left-color: #dc3545;
+    color: #721c24;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .export-notification {
+        transition: none;
+        transform: none;
+    }
+    
+    .export-notification.show {
+        opacity: 1;
+    }
+}

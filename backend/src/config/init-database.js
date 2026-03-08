@@ -4,20 +4,20 @@
  * Usage: npm run init-db
  */
 
-const { initDatabase: initSqlJs, initializeSchema, loadSites, closeDatabase } = require('./database');
+const { initDatabase: initSqlJs, initializeSchema, loadOffices, closeDatabase } = require('./database');
 
 async function initDatabase() {
   try {
     console.log('Initializing Storm Scout database...\n');
-    
+
     // Initialize database connection
     await initSqlJs();
-    
+
     // Initialize schema
     await initializeSchema();
-    
-    // Load site data
-    await loadSites();
+
+    // Load office data
+    await loadOffices();
     
     console.log('\n✓ Database initialization complete!');
     console.log('You can now run: npm run seed-db (optional, for sample data)');
