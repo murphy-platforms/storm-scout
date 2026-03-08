@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const AdvisoryHistory = require('../models/advisoryHistory');
-const Site = require('../models/site');
+const Site = require('../models/office');
 
 /**
  * GET /api/trends

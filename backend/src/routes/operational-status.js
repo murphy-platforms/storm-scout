@@ -6,8 +6,8 @@
 
 const express = require('express');
 const router = express.Router();
-const SiteStatusModel = require('../models/siteStatus');
-const SiteModel = require('../models/site');
+const SiteStatusModel = require('../models/officeStatus');
+const SiteModel = require('../models/office');
 
 /**
  * POST /api/operational-status/sites/:id

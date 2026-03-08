@@ -14,9 +14,9 @@ const AdvisoryModel = {
   async getAll(filters = {}) {
     const db = getDatabase();
     let query = `
-      SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
+      SELECT a.*, s.office_code, s.name as site_name, s.city, s.state, s.region
       FROM advisories a
-      JOIN sites s ON a.site_id = s.id
+      JOIN offices s ON a.office_id = s.id
       WHERE 1=1
     `;
     const params = [];
@@ -55,9 +55,9 @@ const AdvisoryModel = {
       params.push(filters.state);
     }
 
-    if (filters.site_id) {
-      query += ' AND a.site_id = ?';
-      params.push(filters.site_id);
+    if (filters.office_id) {
+      query += ' AND a.office_id = ?';
+      params.push(filters.office_id);
     }
 
     query += ' ORDER BY a.severity DESC, a.last_updated DESC';
@@ -89,9 +89,9 @@ const AdvisoryModel = {
     const db = getDatabase();
     try {
       const [rows] = await db.query(`
-        SELECT a.*, s.site_code, s.name as site_name, s.city, s.state, s.region
+        SELECT a.*, s.office_code, s.name as site_name, s.city, s.state, s.region
         FROM advisories a
-        JOIN sites s ON a.site_id = s.id
+        JOIN offices s ON a.office_id = s.id
         WHERE a.id = ?
       `, [id]);
       return rows[0] || null;
@@ -109,7 +109,7 @@ const AdvisoryModel = {
    */
   async getBySite(siteId, activeOnly = false) {
     const db = getDatabase();
-    let query = 'SELECT * FROM advisories WHERE site_id = ?';
+    let query = 'SELECT * FROM advisories WHERE office_id = ?';
     const params = [siteId];
     
     if (activeOnly) {
@@ -142,7 +142,7 @@ const AdvisoryModel = {
     
     // When siteId is provided, look up the specific (external_id, site_id) pair
     if (siteId) {
-      const query = 'SELECT * FROM advisories WHERE external_id = ? AND site_id = ? LIMIT 1';
+      const query = 'SELECT * FROM advisories WHERE external_id = ? AND office_id = ? LIMIT 1';
       try {
         const [rows] = await db.query(query, [externalId, siteId]);
         return rows[0] || null;
@@ -176,7 +176,7 @@ const AdvisoryModel = {
     if (!vtecEventId) return null;
     
     const db = getDatabase();
-    let query = 'SELECT * FROM advisories WHERE vtec_event_id = ? AND site_id = ? AND status = ?';
+    let query = 'SELECT * FROM advisories WHERE vtec_event_id = ? AND office_id = ? AND status = ?';
     const params = [vtecEventId, siteId, 'active'];
     
     // Optional: also match on advisory_type for extra safety
@@ -204,7 +204,7 @@ const AdvisoryModel = {
     if (!vtecCode) return null;
     
     const db = getDatabase();
-    let query = 'SELECT * FROM advisories WHERE vtec_code = ? AND site_id = ?';
+    let query = 'SELECT * FROM advisories WHERE vtec_code = ? AND office_id = ?';
     const params = [vtecCode, siteId];
     
     if (advisoryType) {
@@ -246,10 +246,10 @@ const AdvisoryModel = {
 
       // Primary deduplication: Check by external_id + site_id (composite unique)
       if (externalId) {
-        const existing = await this.findByExternalID(externalId, advisory.site_id);
+        const existing = await this.findByExternalID(externalId, advisory.office_id);
         if (existing) {
           const action = advisory.vtec_action || 'UPD';
-          console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for site ${advisory.site_id}`);
+          console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for site ${advisory.office_id}`);
           return this.update(existing.id, advisory);
         }
       }
@@ -260,14 +260,14 @@ const AdvisoryModel = {
       if (advisory.vtec_event_id) {
         const existing = await this.findByVTECEventID(
           advisory.vtec_event_id,
-          advisory.site_id,
+          advisory.office_id,
           advisory.advisory_type
         );
         
         if (existing) {
           // Update existing alert with new data
           const action = advisory.vtec_action || 'UNK';
-          console.log(`Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for site ${advisory.site_id}`);
+          console.log(`Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for site ${advisory.office_id}`);
           return this.update(existing.id, advisory);
         }
       }
@@ -280,12 +280,12 @@ const AdvisoryModel = {
       // Insert new alert (or update by external_id if duplicate external_id)
       const [result] = await db.query(`
         INSERT INTO advisories (
-          external_id, site_id, advisory_type, severity, status, source,
+          external_id, office_id, advisory_type, severity, status, source,
           headline, description, start_time, end_time, issued_time, 
           vtec_code, vtec_event_id, vtec_action, raw_payload
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
-          site_id = VALUES(site_id),
+          office_id = VALUES(office_id),
           advisory_type = VALUES(advisory_type),
           severity = VALUES(severity),
           status = VALUES(status),
@@ -302,7 +302,7 @@ const AdvisoryModel = {
           last_updated = CURRENT_TIMESTAMP
       `, [
         externalId,
-        advisory.site_id,
+        advisory.office_id,
         advisory.advisory_type,
         advisory.severity,
         advisory.status || 'active',
@@ -327,7 +327,7 @@ const AdvisoryModel = {
         // Find and return the existing alert
         const existing = await this.findByVTECEventID(
           advisory.vtec_event_id,
-          advisory.site_id,
+          advisory.office_id,
           advisory.advisory_type
         );
         if (existing) {
@@ -352,7 +352,7 @@ const AdvisoryModel = {
     const params = [];
 
     for (const [key, value] of Object.entries(updates)) {
-      if (key !== 'id' && key !== 'site_id') {
+      if (key !== 'id' && key !== 'office_id') {
         // Handle raw_payload JSON serialization
         if (key === 'raw_payload' && value && typeof value === 'object') {
           fields.push(`${key} = ?`);
@@ -427,9 +427,9 @@ const AdvisoryModel = {
     const db = getDatabase();
     try {
       const [rows] = await db.query(`
-        SELECT a.*, s.site_code, s.name as site_name, s.city, s.state
+        SELECT a.*, s.office_code, s.name as site_name, s.city, s.state
         FROM advisories a
-        JOIN sites s ON a.site_id = s.id
+        JOIN offices s ON a.office_id = s.id
         WHERE a.status = 'active'
         ORDER BY a.last_updated DESC
         LIMIT ?

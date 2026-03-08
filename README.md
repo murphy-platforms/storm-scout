@@ -1,26 +1,18 @@
 # Storm Scout
 
-**A site-focused weather advisory dashboard for IMT and Operations teams**
+**A site-focused weather advisory dashboard for USPS Operations teams**
 
-Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which testing centers may be impacted and support go/no-go decisions during severe weather events.
-
-## 🚀 Live Production Site
-
-**https://your-domain.example.com**
-
-Currently monitoring 229 testing centers with real-time NOAA weather data updated every 15 minutes.
+Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which USPS locations may be impacted and support go/no-go decisions during severe weather events.
 
 ## ✨ Features
 
 ### Core Functionality
-- **229 US Testing Center Locations** - Monitors sites across all 50 states and US territories
+- **300 USPS Locations** - Monitors sites across all 50 states and US territories, identified by 5-digit zip codes
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
-- **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes (v1.2.1)
+- **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes
 - **Site Operational Status** - Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Live Update Tracking** - Dashboard displays last update timestamp and countdown to next refresh
-- **ProInsights Reference Sync** - Recurring CSV import from ProInsights with automated site name and metadata sync
-- **Site Name Normalization** - All site names sourced from ProInsights MetroAreaName, displayed in UPPER CASE
 - **Weather Observations** - Current conditions from nearest NWS observation station updated every 15 minutes
 
 ### Alert Filtering System
@@ -103,7 +95,7 @@ cp .env.example .env
 # Initialize database with schema
 npm run init-db
 
-# Load 229 US testing center sites
+# Load USPS site data (run import script first, then seed)
 npm run seed-db
 
 # Start the API server
@@ -124,8 +116,8 @@ strom-scout/
 │   │   ├── models/      # Data access layer (site, advisory, observation, etc.)
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA alert + observation fetching
-│   │   ├── scripts/     # Maintenance scripts (reference import, station mapping)
-│   │   └── data/        # Schema, sites.json (229 US sites), migrations/
+│   │   ├── scripts/     # Maintenance scripts (USPS import, station mapping)
+│   │   └── data/        # Schema, sites.json (300 USPS locations), migrations/
 │   ├── package.json
 │   └── README.md
 │
@@ -151,7 +143,7 @@ strom-scout/
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
 **Middleware:** node-cache (caching), express-rate-limit, express-validator  
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (94 alert types, 223 observation stations), 229 US testing centers  
+**Data:** NOAA Weather API (94 alert types, 223 observation stations), 300 USPS locations
 **Deployment:** cPanel with Passenger, SSH/rsync  
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
@@ -202,18 +194,13 @@ Users can customize their filter preferences at **/filters.html**, and changes a
 
 ## Deployment
 
-Production deployment to https://your-domain.example.com:
-
 ```bash
 # One-command deploy (recommended) — pauses ingestion, deploys, resumes
-./deploy.sh
+# Set DEPLOY_HOST, DEPLOY_USER, DEPLOY_PORT before running:
+DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
 
 # Pre-deploy smoke test (11 checks incl. XSS audit)
 cd backend && bash scripts/smoke-test.sh
-
-# Or manual deployment:
-rsync -avz -e "ssh -p REDACTED_PORT" --exclude='node_modules' --exclude='.env' backend/ REDACTED_USER@your-domain.example.com:~/storm-scout/
-rsync -avz -e "ssh -p REDACTED_PORT" frontend/ REDACTED_USER@your-domain.example.com:~/public_html/
 ```
 
 See `DEPLOY.md` for detailed deployment instructions.

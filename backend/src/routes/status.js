@@ -6,9 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const config = require('../config/config');
-const SiteModel = require('../models/site');
+const SiteModel = require('../models/office');
 const AdvisoryModel = require('../models/advisory');
-const SiteStatusModel = require('../models/siteStatus');
+const SiteStatusModel = require('../models/officeStatus');
 const { getLastIngestionTime } = require('../ingestion/noaa-ingestor');
 const cache = require('../utils/cache');
 const { handleValidationErrors } = require('../middleware/validate');

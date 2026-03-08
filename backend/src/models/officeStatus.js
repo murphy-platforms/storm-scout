@@ -1,23 +1,23 @@
 /**
- * Site Status Model
- * Data access layer for site_status table
+ * Office Status Model
+ * Data access layer for office_status table
  */
 
 const { getDatabase } = require('../config/database');
 
-const SiteStatusModel = {
+const OfficeStatusModel = {
   /**
-   * Get all site statuses with site information
+   * Get all office statuses with office information
    * @param {Object} filters - Optional filters (operational_status)
-   * @returns {Promise<Array>} Array of site status objects with site data
+   * @returns {Promise<Array>} Array of office status objects with office data
    */
   async getAll(filters = {}) {
     const db = getDatabase();
     let query = `
-      SELECT ss.*, s.site_code, s.name, s.city, s.state, s.region,
+      SELECT ss.*, s.office_code, s.name, s.city, s.state, s.region,
              s.latitude, s.longitude
-      FROM site_status ss
-      JOIN sites s ON ss.site_id = s.id
+      FROM office_status ss
+      JOIN offices s ON ss.office_id = s.id
       WHERE 1=1
     `;
     const params = [];
@@ -39,41 +39,41 @@ const SiteStatusModel = {
   },
 
   /**
-   * Get status for a specific site
-   * @param {number} siteId - Site ID
-   * @returns {Promise<Object|null>} Site status object or null
+   * Get status for a specific office
+   * @param {number} officeId - Office ID
+   * @returns {Promise<Object|null>} Office status object or null
    */
-  async getBySite(siteId) {
+  async getByOffice(officeId) {
     const db = getDatabase();
     const [rows] = await db.query(`
-      SELECT ss.*, s.site_code, s.name, s.city, s.state, s.region
-      FROM site_status ss
-      JOIN sites s ON ss.site_id = s.id
-      WHERE ss.site_id = ?
-    `, [siteId]);
+      SELECT ss.*, s.office_code, s.name, s.city, s.state, s.region
+      FROM office_status ss
+      JOIN offices s ON ss.office_id = s.id
+      WHERE ss.office_id = ?
+    `, [officeId]);
     return rows[0] || null;
   },
 
   /**
-   * Get sites by operational status
-   * @param {string} status - Operational status ('Open', 'Closed', 'At Risk')
-   * @returns {Array} Array of site status objects
+   * Get offices by operational status
+   * @param {string} status - Operational status
+   * @returns {Array} Array of office status objects
    */
   getByStatus(status) {
     return this.getAll({ operational_status: status });
   },
 
   /**
-   * Get impacted sites (Closed or At Risk)
-   * @returns {Promise<Array>} Array of impacted site objects
+   * Get impacted offices (Closed or At Risk)
+   * @returns {Promise<Array>} Array of impacted office objects
    */
   async getImpacted() {
     const db = getDatabase();
     const [rows] = await db.query(`
-      SELECT ss.*, s.site_code, s.name, s.city, s.state, s.region,
-             (SELECT COUNT(*) FROM advisories WHERE site_id = ss.site_id AND status = 'active') as advisory_count
-      FROM site_status ss
-      JOIN sites s ON ss.site_id = s.id
+      SELECT ss.*, s.office_code, s.name, s.city, s.state, s.region,
+             (SELECT COUNT(*) FROM advisories WHERE office_id = ss.office_id AND status = 'active') as advisory_count
+      FROM office_status ss
+      JOIN offices s ON ss.office_id = s.id
       WHERE ss.operational_status IN ('Closed', 'At Risk')
       ORDER BY ss.operational_status DESC, s.state, s.city
     `);
@@ -81,24 +81,24 @@ const SiteStatusModel = {
   },
 
   /**
-   * Update or create site status (now handles both weather impact and operational status)
-   * @param {number} siteId - Site ID
+   * Update or create office status
+   * @param {number} officeId - Office ID
    * @param {Object} statusData - Status data object
    * @param {string} statusData.operational_status - Operational status (open_normal, open_restricted, closed, pending)
    * @param {string} statusData.weather_impact_level - Weather impact (green, yellow, orange, red)
    * @param {string} statusData.reason - Legacy reason field
    * @param {string} statusData.decision_by - Who made the operational decision
    * @param {string} statusData.decision_reason - Reason for operational decision
-   * @returns {Promise<Object>} Updated site status
+   * @returns {Promise<Object>} Updated office status
    */
-  async upsert(siteId, statusData) {
+  async upsert(officeId, statusData) {
     const db = getDatabase();
-    
+
     // Handle legacy format (string status) for backward compatibility
     if (typeof statusData === 'string') {
       statusData = { operational_status: statusData };
     }
-    
+
     const {
       operational_status,
       weather_impact_level,
@@ -107,8 +107,8 @@ const SiteStatusModel = {
       decision_reason
     } = statusData;
 
-    const fields = ['site_id'];
-    const values = [siteId];
+    const fields = ['office_id'];
+    const values = [officeId];
     const updates = ['last_updated = NOW()'];
 
     if (operational_status !== undefined) {
@@ -133,8 +133,8 @@ const SiteStatusModel = {
       fields.push('decision_by');
       values.push(decision_by);
       updates.push('decision_by = VALUES(decision_by)');
-      
-      // Auto-set decision_at when decision_by is provided (using NOW() for both INSERT and UPDATE)
+
+      // Auto-set decision_at when decision_by is provided
       updates.push('decision_at = NOW()');
     }
 
@@ -145,30 +145,30 @@ const SiteStatusModel = {
     }
 
     const placeholders = values.map(() => '?').join(', ');
-    
+
     // Add last_updated to field list for INSERT
     const insertFields = [...fields, 'last_updated'];
 
     await db.query(`
-      INSERT INTO site_status (${insertFields.join(', ')})
+      INSERT INTO office_status (${insertFields.join(', ')})
       VALUES (${placeholders}, NOW())
       ON DUPLICATE KEY UPDATE
         ${updates.join(',\n        ')}
     `, values);
 
-    return this.getBySite(siteId);
+    return this.getByOffice(officeId);
   },
 
   /**
-   * Set operational status manually (for IMT/Operations use)
-   * @param {number} siteId - Site ID
+   * Set operational status manually (for USPS Operations use)
+   * @param {number} officeId - Office ID
    * @param {string} operationalStatus - Operational status (open_normal, open_restricted, closed, pending)
    * @param {string} decisionBy - User who made the decision
    * @param {string} decisionReason - Reason for the decision
-   * @returns {Promise<Object>} Updated site status
+   * @returns {Promise<Object>} Updated office status
    */
-  async setOperationalStatus(siteId, operationalStatus, decisionBy, decisionReason) {
-    return this.upsert(siteId, {
+  async setOperationalStatus(officeId, operationalStatus, decisionBy, decisionReason) {
+    return this.upsert(officeId, {
       operational_status: operationalStatus,
       decision_by: decisionBy,
       decision_reason: decisionReason
@@ -183,9 +183,9 @@ const SiteStatusModel = {
     const db = getDatabase();
     const [rows] = await db.query(`
       SELECT operational_status, COUNT(*) as count
-      FROM site_status
+      FROM office_status
       GROUP BY operational_status
-      ORDER BY 
+      ORDER BY
         CASE operational_status
           WHEN 'closed' THEN 1
           WHEN 'open_restricted' THEN 2
@@ -208,9 +208,9 @@ const SiteStatusModel = {
     const db = getDatabase();
     const [rows] = await db.query(`
       SELECT weather_impact_level, COUNT(*) as count
-      FROM site_status
+      FROM office_status
       GROUP BY weather_impact_level
-      ORDER BY 
+      ORDER BY
         CASE weather_impact_level
           WHEN 'red' THEN 1
           WHEN 'orange' THEN 2
@@ -222,39 +222,39 @@ const SiteStatusModel = {
   },
 
   /**
-   * Bulk update operational status for multiple sites
-   * @param {Array<number>} siteIds - Array of site IDs
+   * Bulk update operational status for multiple offices
+   * @param {Array<number>} officeIds - Array of office IDs
    * @param {string} operationalStatus - Operational status
    * @param {string} decisionBy - User who made the decision
    * @param {string} decisionReason - Reason for the decision
-   * @returns {Promise<number>} Number of sites updated
+   * @returns {Promise<number>} Number of offices updated
    */
-  async bulkSetOperationalStatus(siteIds, operationalStatus, decisionBy, decisionReason) {
+  async bulkSetOperationalStatus(officeIds, operationalStatus, decisionBy, decisionReason) {
     const db = getDatabase();
     const [result] = await db.query(`
-      UPDATE site_status
-      SET 
+      UPDATE office_status
+      SET
         operational_status = ?,
         decision_by = ?,
         decision_at = NOW(),
         decision_reason = ?,
         last_updated = NOW()
-      WHERE site_id IN (?)
-    `, [operationalStatus, decisionBy, decisionReason, siteIds]);
+      WHERE office_id IN (?)
+    `, [operationalStatus, decisionBy, decisionReason, officeIds]);
     return result.affectedRows;
   },
 
   /**
    * Get recently updated statuses
    * @param {number} limit - Max number of results
-   * @returns {Promise<Array>} Array of recently updated site statuses
+   * @returns {Promise<Array>} Array of recently updated office statuses
    */
   async getRecentlyUpdated(limit = 10) {
     const db = getDatabase();
     const [rows] = await db.query(`
-      SELECT ss.*, s.site_code, s.name, s.city, s.state
-      FROM site_status ss
-      JOIN sites s ON ss.site_id = s.id
+      SELECT ss.*, s.office_code, s.name, s.city, s.state
+      FROM office_status ss
+      JOIN offices s ON ss.office_id = s.id
       ORDER BY ss.last_updated DESC
       LIMIT ?
     `, [limit]);
@@ -262,4 +262,4 @@ const SiteStatusModel = {
   }
 };
 
-module.exports = SiteStatusModel;
+module.exports = OfficeStatusModel;

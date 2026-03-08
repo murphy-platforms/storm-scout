@@ -5,12 +5,12 @@
 
 const express = require('express');
 const router = express.Router();
-const SiteModel = require('../models/site');
+const SiteModel = require('../models/office');
 const AdvisoryModel = require('../models/advisory');
-const SiteStatusModel = require('../models/siteStatus');
+const SiteStatusModel = require('../models/officeStatus');
 const cache = require('../utils/cache');
 const { handleValidationErrors } = require('../middleware/validate');
-const siteValidators = require('../validators/sites');
+const siteValidators = require('../validators/offices');
 
 /**
  * GET /api/sites
