@@ -1,97 +1,80 @@
 # Storm Scout Deployment Guide
 
-This document outlines the current production deployment procedures and best practices.
+This document outlines current deployment procedures and best practices.
 
-## Production Environment
+> For a quick-start guide see `DEPLOY.md` in the project root.
 
-- **URL**: https://your-domain.example.com
-- **Server**: 66.29.148.111:REDACTED_PORT
-- **SSH Alias**: `stormscout`
-- **Platform**: cPanel with Passenger (Node.js hosting)
-- **Backend Path**: `~/storm-scout/`
-- **Frontend Path**: `~/public_html/`
-- **Node.js Version**: 20.x LTS
-- **Database**: MySQL/MariaDB
+## Environment
+
+- **Platform**: Ubuntu Linux, systemd user service
+- **Database**: MariaDB 11 via Docker (`storm-scout-db` container)
+- **Node.js**: 18+ LTS
+- **Backend Path**: `/srv/projects/storm-scout-usps/backend/`
+- **Frontend**: Served as static files by Express (same process)
 
 ## SSH Configuration
 
-### Setup SSH Alias
-
-Add to `~/.ssh/config`:
+Configure an SSH alias for easier remote access:
 
 ```
 Host stormscout
-    HostName 66.29.148.111
-    Port REDACTED_PORT
-    User <your-username>
-    IdentityFile ~/.ssh/id_rsa
+    HostName <server-ip>
+    Port 22
+    User administrator
+    IdentityFile ~/.ssh/id_ed25519
 ```
 
 This allows simplified commands:
-- `ssh stormscout` instead of `ssh -p REDACTED_PORT user@66.29.148.111`
-- `scp` commands use the alias automatically
-
-### Why SSH over FTP
-
-**Always use SSH/SCP for deployments, never FTP:**
-
-1. **Security**: SSH encrypts all data; FTP transmits credentials in plaintext
-2. **Integrity**: SSH verifies file transfers with checksums
-3. **Efficiency**: SCP supports compression during transfer
-4. **Automation**: Scriptable deployments with error handling
-5. **Permissions**: Preserves Unix file permissions and timestamps
-6. **Modern**: Industry standard for server management
+- `ssh stormscout` instead of `ssh user@<ip>`
+- `rsync` and `scp` commands use the alias automatically
 
 ## Deployment Procedures
 
-### Frontend Deployment
+### Service Management
 
-Deploy using SCP for individual files or groups:
+The backend runs as a systemd user service. Key commands:
 
 ```bash
-# Deploy single HTML file
-scp -P REDACTED_PORT frontend/index.html stormscout:~/public_html/index.html
+# Check status
+systemctl --user status storm-scout-dev
 
-# Deploy multiple HTML files
-scp -P REDACTED_PORT frontend/*.html stormscout:~/public_html/
+# Restart after code changes
+systemctl --user restart storm-scout-dev
 
-# Deploy JavaScript files
-scp -P REDACTED_PORT frontend/js/*.js stormscout:~/public_html/js/
-
-# Deploy specific JS component
-scp -P REDACTED_PORT frontend/js/update-banner.js stormscout:~/public_html/js/
-
-# Deploy CSS
-scp -P REDACTED_PORT frontend/css/*.css stormscout:~/public_html/css/
+# View live logs
+journalctl --user -u storm-scout-dev -f
 ```
 
-**Best Practice**: Deploy only changed files to minimize transfer time and reduce deployment risk.
+### Frontend Deployment
+
+The frontend is served as static files by Express from `frontend/`. Deploy with rsync:
+
+```bash
+rsync -avz frontend/ stormscout:/srv/projects/storm-scout-usps/frontend/
+```
 
 ### Backend Deployment
 
-Use rsync for backend to handle directory synchronization:
-
 ```bash
-# Deploy backend code (excludes node_modules, .env, logs)
-rsync -avz -e "ssh -p REDACTED_PORT" \
+# Deploy backend code (excludes node_modules, .env, tmp)
+rsync -avz \
   --exclude='node_modules' \
   --exclude='.env' \
   --exclude='*.log' \
-  --exclude='.git' \
-  backend/ stormscout:~/storm-scout/
+  --exclude='tmp/' \
+  backend/ stormscout:/srv/projects/storm-scout-usps/backend/
 
-# Install/update production dependencies on server
-ssh stormscout "cd ~/storm-scout && npm install --production"
+# Install/update dependencies on server
+ssh stormscout "cd /srv/projects/storm-scout-usps/backend && npm install --production"
 
-# Restart application (Passenger)
-ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
+# Restart application
+ssh stormscout "systemctl --user restart storm-scout-dev"
 ```
 
 **Important Notes**:
-- Never deploy `.env` files - configure environment variables directly on server
-- The `--exclude` flags prevent deploying unnecessary or sensitive files
-- Always run `npm install --production` after deploying code changes
-- Use `touch tmp/restart.txt` to trigger Passenger restart
+- Never deploy `.env` files — configure environment variables directly on the server
+- Always run `npm install --production` after deploying if `package.json` changed
+- Exclude `tmp/` from rsync to avoid interfering with any runtime state
 
 ### Database Migrations
 
@@ -126,17 +109,14 @@ ssh stormscout "cd ~/storm-scout && node scripts/migrate-vtec.js"
 
 ### Restart Application
 
-Passenger uses a special restart mechanism:
-
 ```bash
-# Standard restart
-ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
+# Restart the systemd service
+systemctl --user restart storm-scout-dev
 
-# Force create tmp directory and restart
-ssh stormscout "mkdir -p ~/storm-scout/tmp && touch ~/storm-scout/tmp/restart.txt"
+# Check it came back up cleanly
+systemctl --user status storm-scout-dev
+journalctl --user -u storm-scout-dev -n 20
 ```
-
-This triggers Passenger to reload the Node.js application without manual process management.
 
 ## Typical Deployment Workflows
 
@@ -231,7 +211,8 @@ ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
 # 3. Test all pages
 #    - index.html
 #    - advisories.html
-#    - sites.html
+#    - offices.html
+#    - office-detail.html
 #    - notices.html
 #    - filters.html
 #    - sources.html
@@ -242,37 +223,36 @@ ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
 ### Backend Verification
 
 ```bash
-# 1. Check application is running
-ssh stormscout "ps aux | grep node"
+# 1. Check service is running
+systemctl --user status storm-scout-dev
 
 # 2. Test health endpoint
-curl https://your-domain.example.com/api/status/overview
+curl http://localhost:3000/health
 
 # 3. Test specific API endpoints
-curl https://your-domain.example.com/api/advisories/active | jq .
-curl https://your-domain.example.com/api/sites | jq .
+curl http://localhost:3000/api/advisories/active | jq .
+curl http://localhost:3000/api/offices | jq .
 
 # 4. Check logs for errors
-ssh stormscout "tail -100 ~/storm-scout/logs/app.log | grep -i error"
+journalctl --user -u storm-scout-dev -n 100 | grep -i error
 
-# 5. Monitor for 5-10 minutes
-ssh stormscout "tail -f ~/storm-scout/logs/app.log"
+# 5. Monitor live
+journalctl --user -u storm-scout-dev -f
 ```
 
 ### Database Verification
 
 ```bash
-# Connect to database
-ssh stormscout
-mysql -u storm_scout -p storm_scout
+# Connect to database (via Docker)
+docker exec -it storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev
 
-# Verify schema changes
+# Verify schema
 DESCRIBE advisories;
 SHOW INDEXES FROM advisories;
 
 # Check data integrity
 SELECT COUNT(*) FROM advisories;
-SELECT COUNT(*) FROM sites;
+SELECT COUNT(*) FROM offices;
 
 # Verify recent updates
 SELECT * FROM advisories ORDER BY last_updated DESC LIMIT 5;
@@ -319,66 +299,60 @@ LOG_LEVEL=info
 ### Check Application Status
 
 ```bash
-# Verify Node.js process running
-ssh stormscout "ps aux | grep node"
+# Service status
+systemctl --user status storm-scout-dev
 
-# View recent logs
-ssh stormscout "tail -100 ~/storm-scout/logs/app.log"
+# Recent logs
+journalctl --user -u storm-scout-dev -n 100
 
 # Follow logs in real-time
-ssh stormscout "tail -f ~/storm-scout/logs/app.log"
-
-# Check Passenger status (cPanel specific)
-ssh stormscout "passenger-status"
+journalctl --user -u storm-scout-dev -f
 ```
 
 ### Monitor Data Ingestion
 
 ```bash
 # Check last update time via API
-curl https://your-domain.example.com/api/status/overview | jq '.last_updated'
+curl http://localhost:3000/health | jq '.checks.ingestion'
 
 # Manually trigger ingestion
-ssh stormscout "cd ~/storm-scout && node src/ingestion/run-ingestion.js"
+cd /srv/projects/storm-scout-usps/backend && node src/ingestion/run-ingestion.js
 
-# Check ingestion logs
-ssh stormscout "grep -i ingest ~/storm-scout/logs/app.log | tail -20"
+# Check ingestion log entries
+journalctl --user -u storm-scout-dev | grep -i ingest | tail -20
 ```
 
 ### Database Access
 
 ```bash
-# SSH into server
-ssh stormscout
-
-# Connect to MySQL
-mysql -u storm_scout -p storm_scout
+# Connect to MariaDB via Docker
+docker exec -it storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev
 
 # Useful diagnostic queries
 SELECT COUNT(*) FROM advisories;
-SELECT COUNT(*) FROM sites;
+SELECT COUNT(*) FROM offices;
 SELECT COUNT(DISTINCT vtec_event_id) FROM advisories WHERE vtec_event_id IS NOT NULL;
 SELECT * FROM advisories ORDER BY last_updated DESC LIMIT 10;
-SELECT site_code, COUNT(*) as alert_count FROM advisories GROUP BY site_code ORDER BY alert_count DESC LIMIT 10;
+SELECT office_code, COUNT(*) as alert_count FROM advisories GROUP BY office_code ORDER BY alert_count DESC LIMIT 10;
 ```
 
 ### Common Issues
 
 #### Application Won't Start
 
-1. Check logs: `ssh stormscout "tail -100 ~/storm-scout/logs/error.log"`
-2. Verify Node.js version: `ssh stormscout "node --version"` (should be 20.x)
+1. Check logs: `journalctl --user -u storm-scout-dev -n 100`
+2. Verify Node.js version: `node --version` (should be 18+)
 3. Check database connection in `.env`
-4. Verify file permissions: `ssh stormscout "ls -la ~/storm-scout"`
-5. Reinstall dependencies: `ssh stormscout "cd ~/storm-scout && rm -rf node_modules && npm install --production"`
+4. Verify Docker container is running: `docker ps | grep storm-scout-db`
+5. Reinstall dependencies: `cd /srv/projects/storm-scout-usps/backend && rm -rf node_modules && npm install --production`
 
 #### Data Not Updating
 
-1. Verify ingestion is enabled in `.env`
-2. Check cron jobs: `ssh stormscout "crontab -l"`
-3. Run manual ingestion to test
+1. Verify `INGESTION_ENABLED=true` in `.env`
+2. Check service is running: `systemctl --user status storm-scout-dev`
+3. Run manual ingestion: `cd backend && node src/ingestion/run-ingestion.js`
 4. Check NOAA API availability: `curl https://api.weather.gov/alerts/active`
-5. Review ingestion logs for errors
+5. Review ingestion logs: `journalctl --user -u storm-scout-dev | grep -i ingest`
 
 #### Alerts Showing as Active After Expiration
 
@@ -413,11 +387,11 @@ As of v1.2.1, alerts are automatically marked as expired when `end_time < NOW()`
 
 #### Database Connection Errors
 
-1. Verify MySQL is running: `ssh stormscout "systemctl status mysql"`
-2. Check credentials in `.env`
-3. Test connection: `ssh stormscout "mysql -u storm_scout -p"`
-4. Check database exists: `SHOW DATABASES;`
-5. Verify user permissions: `SHOW GRANTS FOR 'storm_scout'@'localhost';`
+1. Verify Docker container is running: `docker ps | grep storm-scout-db`
+2. Start if stopped: `docker start storm-scout-db`
+3. Check credentials in `.env`
+4. Test connection: `docker exec -it storm-scout-db mariadb -u storm_scout -p`
+5. Check database exists: `SHOW DATABASES;`
 
 ## Rollback Procedures
 
@@ -475,37 +449,35 @@ ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
 
 ### Automated Daily Backups
 
-Set up cron job on server:
+Set up a cron job on the server:
 
 ```bash
-# Edit crontab
-ssh stormscout "crontab -e"
+crontab -e
 
 # Add this line (runs at 2 AM daily, keeps 30 days)
-0 2 * * * mysqldump -u storm_scout -p'PASSWORD' storm_scout | gzip > ~/backups/storm_scout_$(date +\%Y\%m\%d).sql.gz && find ~/backups -name "storm_scout_*.sql.gz" -mtime +30 -delete
+0 2 * * * docker exec storm-scout-db mariadb-dump -u storm_scout -p'PASSWORD' storm_scout_dev | gzip > ~/backups/storm_scout_$(date +\%Y\%m\%d).sql.gz && find ~/backups -name "storm_scout_*.sql.gz" -mtime +30 -delete
 ```
 
 ### Manual Backup
 
 ```bash
-# Backup database
-ssh stormscout "mysqldump -u storm_scout -p storm_scout | gzip > ~/backups/manual_$(date +%Y%m%d_%H%M%S).sql.gz"
+# Backup database via Docker
+mkdir -p ~/backups
+docker exec storm-scout-db mariadb-dump -u storm_scout -plocaldev storm_scout_dev \
+  | gzip > ~/backups/manual_$(date +%Y%m%d_%H%M%S).sql.gz
 
 # Download backup locally
-scp -P REDACTED_PORT stormscout:~/backups/manual_*.sql.gz ~/local-backups/
-
-# Backup application files
-ssh stormscout "tar -czf ~/backups/app_$(date +%Y%m%d).tar.gz ~/storm-scout --exclude=node_modules --exclude=logs"
+scp stormscout:~/backups/manual_*.sql.gz ~/local-backups/
 ```
 
 ### Restore from Backup
 
 ```bash
-# Decompress and restore
-ssh stormscout "gunzip < ~/backups/storm_scout_20260213.sql.gz | mysql -u storm_scout -p storm_scout"
+# Restore via Docker
+gunzip < ~/backups/storm_scout_20260308.sql.gz \
+  | docker exec -i storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev
 
-# Or restore uncompressed backup
-ssh stormscout "mysql -u storm_scout -p storm_scout < ~/backups/storm_scout_20260213.sql"
+systemctl --user restart storm-scout-dev
 ```
 
 ## Security Best Practices
@@ -576,5 +548,5 @@ Currently, deployment is manual. Future improvements could include:
 
 ---
 
-**Last Updated**: February 13, 2026  
-**Maintained By**: IMT Operations Team
+**Last Updated**: March 8, 2026
+**Maintained By**: USPS Operations Team

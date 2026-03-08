@@ -1,7 +1,7 @@
 # AGENTS.md - Storm Scout Project Context
 
 **Project**: Storm Scout  
-**Purpose**: Site-focused weather advisory dashboard for USPS Operations teams  
+**Purpose**: Office-focused weather advisory dashboard for USPS Operations teams  
 **Production URL**: https://your-usps-domain.example.com  (update when USPS server is configured)
 **Status**: Active — USPS deployment (300 locations, zip-code based)
 **Last Updated**: 2026-03-07
@@ -23,9 +23,9 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **In-Memory Caching**: node-cache for fast API responses (~100x faster on cache hits)
 - **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
-- **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
+- **Alert Detail Modal**: View full NOAA narrative descriptions on office-detail page
 - **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 USPS locations
-- **USPS Site Import**: One-time CSV import via `import-usps-sites.js` to load 300 USPS locations from zip-based CSV
+- **USPS Office Import**: One-time CSV import via `import-usps-offices.js` to load 300 USPS locations from zip-based CSV
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
 - **Safe Deployment**: `deploy.sh` pauses ingestion before deploy, resumes after — prevents mid-cycle data corruption
@@ -86,16 +86,16 @@ strom-scout/
 │   │   │   ├── init-database.js
 │   │   │   └── seed-database.js
 │   │   ├── models/              # Data access layer (async/await)
-│   │   │   ├── site.js
+│   │   │   ├── office.js
 │   │   │   ├── advisory.js
 │   │   │   ├── advisoryHistory.js
 │   │   │   ├── observation.js        # Current weather observations (upsert/query)
 │   │   │   ├── notice.js
-│   │   │   └── siteStatus.js
+│   │   │   └── officeStatus.js
 │   │   ├── routes/              # REST API endpoints
-│   │   │   ├── sites.js
+│   │   │   ├── offices.js
 │   │   │   ├── advisories.js
-│   │   │   ├── observations.js       # GET /api/observations, /api/observations/:siteCode
+│   │   │   ├── observations.js       # GET /api/observations, /api/observations/:officeCode
 │   │   │   ├── operational-status.js
 │   │   │   ├── notices.js
 │   │   │   ├── status.js
@@ -113,7 +113,7 @@ strom-scout/
 │   │   ├── validators/              # Route validation rules
 │   │   │   ├── common.js            # Shared rules (id, state, limit)
 │   │   │   ├── advisories.js
-│   │   │   ├── sites.js
+│   │   │   ├── offices.js
 │   │   │   ├── notices.js
 │   │   │   ├── history.js
 │   │   │   └── status.js
@@ -128,7 +128,7 @@ strom-scout/
 │   │   │   ├── fetch-ugc-codes.js        # Fetch UGC codes from NOAA for all sites
 │   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
 │   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
-│   │   │   ├── import-usps-sites.js      # Convert USPS CSV to sites.json (run once before init-db)
+│   │   │   ├── import-usps-offices.js      # Convert USPS CSV to offices.json (run once before init-db)
 │   │   │   ├── fetch-observation-stations.js  # Map sites to nearest NWS observation stations
 │   │   │   └── smoke-test.sh             # Pre-deploy validation (11 checks incl. XSS audit)
 │   │   ├── tests/
@@ -136,7 +136,7 @@ strom-scout/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── sites.json            # 300 USPS locations
+│   │       ├── offices.json            # 300 USPS locations
 │   │       └── migrations/
 │   │           └── rollback-global-alert-sources.sql  # MariaDB-compatible rollback for global tables
 │   └── package.json
@@ -144,8 +144,8 @@ strom-scout/
 └── frontend/            # Bootstrap 5.3 UI
     ├── index.html       # Overview dashboard (Classic)
     ├── advisories.html  # Active advisories list
-    ├── sites.html       # Sites impacted
-    ├── site-detail.html # Individual site view (with alert detail modal)
+    ├── offices.html       # Sites impacted
+    ├── office-detail.html # Individual site view (with alert detail modal)
     ├── map.html         # Interactive map (future)
     ├── notices.html     # Government notices
     ├── filters.html     # Filter configuration
@@ -158,16 +158,16 @@ strom-scout/
         ├── version.js       # Footer version display (fetches /api/version)
         ├── utils.js         # Helper functions
         ├── alert-filters.js # Shared filter logic
-        └── aggregation.js   # Site aggregation utilities
+        └── aggregation.js   # Office aggregation utilities
 ```
 
 ### Database Schema
 
 **6 Main Tables**:
-1. **sites** - 300 USPS locations (site_code = 5-digit zip, includes observation_station ICAO code)
-2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
-3. **site_observations** - Current weather conditions per site (replaced each ingestion cycle, no history)
-4. **site_status** - Operational status tracking (manual overrides + auto-calculation)
+1. **offices** - 300 USPS locations (office_code = 5-digit zip, includes observation_station ICAO code)
+2. **advisories** - Weather alerts mapped to offices (dynamic, updated every 15 min)
+3. **office_observations** - Current weather conditions per office (replaced each ingestion cycle, no history)
+4. **office_status** - Operational status tracking (manual overrides + auto-calculation)
 5. **notices** - Government/emergency notices (future feature)
 6. **advisory_history** - Snapshots for trend analysis (future feature)
 
@@ -176,10 +176,10 @@ strom-scout/
 - `vtec_event_id` (advisories) - Persistent event ID (e.g., "PAFG.BZ.W.0004")
 - `vtec_code` (advisories) - Full VTEC string for deduplication
 - `vtec_action` (advisories) - Action code (NEW, CON, EXT, EXP, CAN, UPG)
-- `ugc_codes` (sites) - JSON array of UGC codes for precise matching
-- `cwa` (sites) - NWS County Warning Area office code (e.g., "IND", "GYX")
-- `observation_station` (sites) - Nearest NWS observation station ICAO code (e.g., "KORD", "KJFK")
-- `site_id` (site_observations) - UNIQUE FK; one observation row per site, replaced each cycle
+- `ugc_codes` (offices) - JSON array of UGC codes for precise matching
+- `cwa` (offices) - NWS County Warning Area office code (e.g., "IND", "GYX")
+- `observation_station` (offices) - Nearest NWS observation station ICAO code (e.g., "KORD", "KJFK")
+- `office_id` (office_observations) - UNIQUE FK; one observation row per site, replaced each cycle
 
 ---
 
@@ -270,10 +270,10 @@ CWA is the 3-letter NWS office code responsible for a geographic area. Used for 
 **Usage**: Site detail page "NWS Forecast" button links to the regional office homepage.
 
 ### NWS Observation Stations
-Each site is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `sites.observation_station`.
+Each office is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `sites.observation_station`.
 
 **Key facts**:
-- 300 USPS locations map to 223 unique stations (some stations serve multiple nearby sites, e.g., KNYC→3 NYC sites)
+- 300 USPS offices map to 223 unique stations (some stations serve multiple nearby offices, e.g., KNYC→3 NYC offices)
 - Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
 - NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
 - Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
@@ -281,7 +281,7 @@ Each site is mapped to its nearest NWS observation station via `/points/{lat},{l
 - Station remapping history: KSVR→KSLC (Salt Lake City), KDKB→KARR (Naperville IL) — originals decommissioned
 
 ### Multi-Zone Alert Coverage
-Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
+Offices near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
 ### Filter System
 - **Site Default (CUSTOM)**: 47 of 94 alert types enabled (all CRITICAL + all HIGH + key MODERATE for land ops)
@@ -327,20 +327,20 @@ node src/utils/cleanup-advisories.js vtec       # VTEC duplicates only
 node src/utils/cleanup-advisories.js event_id   # Event ID duplicates only
 node src/utils/cleanup-advisories.js expired    # Remove expired only
 
-# USPS Site Import (one-time, run before init-db)
-node src/scripts/import-usps-sites.js /path/to/usps-locations.csv   # Convert CSV to sites.json
+# USPS Office Import (one-time, run before init-db)
+node src/scripts/import-usps-offices.js /path/to/usps-locations.csv   # Convert CSV to offices.json
 
 # Weather Observation Stations (one-time setup, or re-run with --force)
 node src/scripts/fetch-observation-stations.js --dry-run        # Preview station mappings
-node src/scripts/fetch-observation-stations.js                  # Apply: maps sites to nearest NWS stations
+node src/scripts/fetch-observation-stations.js                  # Apply: maps offices to nearest NWS stations
 node src/scripts/fetch-observation-stations.js --force          # Re-map all (overwrite existing)
 ```
 
-### USPS Site Import Workflow
+### USPS Office Import Workflow
 One-time setup to load USPS locations from CSV:
-1. **Import**: `import-usps-sites.js` reads CSV with columns `zip, name, city, state, latitude, longitude` (plus optional `region, county, ugc_codes, cwa`) and writes `src/data/sites.json`.
-2. **Init DB**: `npm run init-db` creates schema and loads `sites.json` into the database.
-3. To update sites later, re-run `import-usps-sites.js` then `npm run init-db`.
+1. **Import**: `import-usps-offices.js` reads CSV with columns `zip, name, city, state, latitude, longitude` (plus optional `region, county, ugc_codes, cwa`) and writes `src/data/offices.json`.
+2. **Init DB**: `npm run init-db` creates schema and loads `offices.json` into the database.
+3. To update sites later, re-run `import-usps-offices.js` then `npm run init-db`.
 
 ### Pre-Deploy Smoke Test
 ```bash
@@ -392,9 +392,9 @@ ssh -p 22 your_user@your-usps-server "touch ~/storm-scout/tmp/restart.txt"
 ### Debugging Duplicate Alerts
 1. Check if they have unique `external_id` values:
    ```sql
-   SELECT external_id, advisory_type, headline, site_id 
+   SELECT external_id, advisory_type, headline, office_id 
    FROM advisories 
-   WHERE site_id = 2703 AND advisory_type = 'Blizzard Warning';
+   WHERE office_id = 2703 AND advisory_type = 'Blizzard Warning';
    ```
 2. If unique external_ids → legitimate multi-zone coverage
 3. If duplicate external_ids → check UPSERT logic in `noaa-ingestor.js`
@@ -418,12 +418,12 @@ ssh -p 22 your_user@your-usps-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ API rate limiting with express-rate-limit (500 req/15 min, 20 writes/15 min)
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ Storm Scout Severity Alignment (uses internal categories instead of NOAA raw severity)
-- ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
+- ✅ 4-tier severity grouping (Offices Requiring Attention matches Weather Impact colors)
 - ✅ UGC code matching for all 300 USPS locations (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to sites without UGC codes
-- ✅ USPS site import workflow (import-usps-sites.js converts CSV → sites.json)
-- ✅ Dashboard cards show site_code + site_name (index.html, advisories.html, sites.html)
-- ✅ Site detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
+- ✅ USPS site import workflow (import-usps-offices.js converts CSV → offices.json)
+- ✅ Dashboard cards show office_code + office_name (index.html, advisories.html, offices.html)
+- ✅ Office detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
 - ✅ Observation station mapping for all 300 USPS locations (223 unique stations)
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
@@ -512,7 +512,7 @@ Set in cPanel → Node.js app interface:
    mysql -u storm_scout -p"$(grep DB_PASSWORD ~/storm-scout/.env | cut -d= -f2)" storm_scout
    
    # Run a single query
-   mysql -u storm_scout -p"$DB_PASS" storm_scout -e "SELECT COUNT(*) FROM sites;"
+   mysql -u storm_scout -p"$DB_PASS" storm_scout -e "SELECT COUNT(*) FROM offices;"
    ```
 
 2. **Via phpMyAdmin (GUI)**:
@@ -539,18 +539,18 @@ Set in cPanel → Node.js app interface:
 -- Check active advisory count
 SELECT COUNT(*) FROM advisories WHERE status = 'active';
 
--- Sites with most alerts
-SELECT s.site_code, s.name, s.state, COUNT(*) as alert_count 
-FROM sites s JOIN advisories a ON s.id = a.site_id 
-WHERE a.status = 'active' 
+-- Offices with most alerts
+SELECT s.office_code, s.name, s.state, COUNT(*) as alert_count
+FROM offices s JOIN advisories a ON s.id = a.office_id
+WHERE a.status = 'active'
 GROUP BY s.id ORDER BY alert_count DESC LIMIT 10;
 
--- Check UGC codes for a site
-SELECT site_code, name, state, ugc_codes, county FROM sites WHERE site_code = '0064';
+-- Check UGC codes for an office
+SELECT office_code, name, state, ugc_codes, county FROM offices WHERE office_code = '87102';
 
--- View alerts for a specific site
-SELECT advisory_type, severity, headline, start_time, end_time 
-FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') AND status = 'active';
+-- View alerts for a specific office
+SELECT advisory_type, severity, headline, start_time, end_time
+FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '87102') AND status = 'active';
 ```
 
 **⚠️ Security Notes**:
@@ -561,11 +561,11 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
 ### Database Backup & Disaster Recovery
 
 **Critical Data**: The Storm Scout database (`storm_scout`) contains:
-- **Static**: 300 USPS locations (sites table) - can be reloaded from `backend/src/data/sites.json`
+- **Static**: 300 USPS locations (offices table) - can be reloaded from `backend/src/data/offices.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
-- **Transient**: Weather observations (site_observations table) - repopulates automatically within 15 minutes
+- **Transient**: Weather observations (office_observations table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
-- **Configuration**: Site status overrides (site_status table) - manual USPS Operations decisions, **CRITICAL** to preserve
+- **Configuration**: Site status overrides (office_status table) - manual USPS Operations decisions, **CRITICAL** to preserve
 
 **Backup Strategy**:
 
@@ -618,7 +618,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    - Execute
    
    **Post-Restore Steps**:
-   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 300)
+   - Verify sites count: `SELECT COUNT(*) FROM offices;` (should be 300)
    - Check for active advisories: `SELECT COUNT(*) FROM advisories WHERE status='active';`
    - Restart ingestion: Backend will auto-populate advisories within 15 minutes
    - Verify health: `curl https://your-usps-domain.example.com/health`
@@ -635,10 +635,10 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    
    | Scenario | Impact | Recovery Time | Steps |
    |----------|--------|---------------|-------|
-   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (300 USPS locations) |
+   | **Offices table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (300 USPS locations) |
    | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
    | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
-   | **Site_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
+   | **Office_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
    | **Complete DB loss** | 🔴 Critical - Full outage | 10-15 min | Restore from latest backup, verify, restart |
 
 **Backup Verification**:
@@ -652,7 +652,7 @@ Test backups monthly by:
 ```bash
 # Local restore test
 mysql -u root -p storm_scout_test < stormscout_backup_YYYYMMDD.sql
-mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM sites;"
+mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM offices;"
 mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM advisories;"
 ```
 
@@ -746,7 +746,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 ### Post-Deployment Verification
 - [ ] Health check passes: `https://your-usps-domain.example.com/health`
 - [ ] Frontend loads: `https://your-usps-domain.example.com`
-- [ ] API responds: `https://your-usps-domain.example.com/api/sites`
+- [ ] API responds: `https://your-usps-domain.example.com/api/offices`
 - [ ] Dashboard shows data (sites, advisories, counts)
 - [ ] No errors in cPanel logs
 
@@ -755,7 +755,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 ## Known Issues & Quirks
 
 ### 1. Multi-Zone Alert "Duplicates"
-**Issue**: Sites near zone boundaries (e.g., Anchorage site 2703) show multiple alerts of the same type.  
+**Issue**: Sites near zone boundaries (e.g., Anchorage office 2703) show multiple alerts of the same type.  
 **Root Cause**: Legitimate coverage from multiple NWS offices, each with unique `external_id`.  
 **Status**: Working as designed. Phase 2 (zone filtering) would be optional enhancement.
 
@@ -796,7 +796,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 
 ### Frontend Not Loading Data
 1. Check API base URL in `js/api.js` (auto-detects localhost vs production — no hardcoded URL)
-2. Test API directly: `curl https://your-usps-domain.example.com/api/sites`
+2. Test API directly: `curl https://your-usps-domain.example.com/api/offices`
 3. Check browser console for CORS errors
 4. Verify backend is running: `curl https://your-usps-domain.example.com/health`
 5. Clear localStorage and refresh: `localStorage.clear()`
@@ -880,8 +880,8 @@ curl https://your-usps-domain.example.com/health  # Check production
 # Database inspection
 mysql -u storm_scout_user -p storm_scout
 SELECT COUNT(*) FROM advisories WHERE status = 'active';
-SELECT site_code, name, COUNT(*) as alert_count 
-FROM sites s JOIN advisories a ON s.id = a.site_id 
+SELECT office_code, name, COUNT(*) as alert_count 
+FROM offices s JOIN advisories a ON s.id = a.office_id 
 WHERE a.status = 'active' 
 GROUP BY s.id ORDER BY alert_count DESC LIMIT 10;
 
@@ -1081,7 +1081,7 @@ grep -rn "\.innerHTML\s*=" frontend/ --include="*.html" --include="*.js" | grep 
 curl -s https://your-usps-domain.example.com | grep -E 'integrity="sha'
 
 # 5. Test input validation
-curl -s "https://your-usps-domain.example.com/api/advisories?site_id=abc" | jq .error
+curl -s "https://your-usps-domain.example.com/api/advisories?office_id=abc" | jq .error
 ```
 
 **Document findings** in `docs/security/assessments/` with date-stamped reports.

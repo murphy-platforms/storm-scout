@@ -1,16 +1,16 @@
 /**
- * USPS Sites CSV Import Script
- * Converts a USPS locations CSV into backend/src/data/sites.json
+ * USPS Offices CSV Import Script
+ * Converts a USPS locations CSV into backend/src/data/offices.json
  *
  * Usage:
- *   node src/scripts/import-usps-sites.js /path/to/usps-locations.csv
+ *   node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
  *
  * Expected CSV columns (header row required):
  *   zip, name, city, state, latitude, longitude
  *   Optional: region, county, ugc_codes, cwa
  *
- * Output: backend/src/data/sites.json
- * Format consumed by database.js -> loadSites()
+ * Output: backend/src/data/offices.json
+ * Format consumed by database.js -> loadOffices()
  */
 
 'use strict';
@@ -19,7 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const OUTPUT_PATH = path.join(__dirname, '..', 'data', 'sites.json');
+const OUTPUT_PATH = path.join(__dirname, '..', 'data', 'offices.json');
 
 const REQUIRED_FIELDS = ['zip', 'name', 'city', 'state', 'latitude', 'longitude'];
 const OPTIONAL_FIELDS = ['region', 'county', 'ugc_codes', 'cwa'];
@@ -54,7 +54,7 @@ function parseCsvLine(line) {
 async function importCsv(csvPath) {
   if (!csvPath) {
     console.error('Error: No CSV file path provided.');
-    console.error('Usage: node src/scripts/import-usps-sites.js /path/to/usps-locations.csv');
+    console.error('Usage: node src/scripts/import-usps-offices.js /path/to/usps-locations.csv');
     process.exit(1);
   }
 
@@ -69,7 +69,7 @@ async function importCsv(csvPath) {
   let headers = null;
   let lineNumber = 0;
   let skipped = 0;
-  const sites = [];
+  const offices = [];
 
   for await (const line of rl) {
     lineNumber++;
@@ -137,9 +137,9 @@ async function importCsv(csvPath) {
       }
     });
 
-    // Build site object
+    // Build office object
     const site = {
-      site_code: zip,
+      office_code: zip,
       name: row.name.trim(),
       city: row.city.trim(),
       state,
@@ -170,19 +170,19 @@ async function importCsv(csvPath) {
       }
     }
 
-    sites.push(site);
+    offices.push(site);
   }
 
-  if (sites.length === 0) {
-    console.error('Error: No valid sites found in CSV. Check the file format.');
+  if (offices.length === 0) {
+    console.error('Error: No valid offices found in CSV. Check the file format.');
     process.exit(1);
   }
 
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(sites, null, 2));
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(offices, null, 2));
 
   console.log('\nImport complete:');
   console.log(`  Total rows processed : ${lineNumber - 1}`);
-  console.log(`  Sites written        : ${sites.length}`);
+  console.log(`  Offices written      : ${offices.length}`);
   console.log(`  Rows skipped         : ${skipped}`);
   console.log(`  Output               : ${OUTPUT_PATH}`);
 }

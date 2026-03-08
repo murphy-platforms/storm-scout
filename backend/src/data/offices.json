@@ -1,6 +1,5 @@
 [
   {
-    "site_code": "87102",
     "name": "USPS Downtown Albuquerque",
     "city": "Albuquerque",
     "state": "NM",
@@ -8,10 +7,10 @@
     "longitude": -106.6504,
     "county": "Bernalillo County",
     "cwa": "ABQ",
-    "ugc_codes": "[\"NMZ219\",\"NMC001\"]"
+    "ugc_codes": "[\"NMZ219\",\"NMC001\"]",
+    "office_code": "87102"
   },
   {
-    "site_code": "87110",
     "name": "USPS Uptown Albuquerque",
     "city": "Albuquerque",
     "state": "NM",
@@ -19,10 +18,10 @@
     "longitude": -106.6043,
     "county": "Bernalillo County",
     "cwa": "ABQ",
-    "ugc_codes": "[\"NMZ219\",\"NMC001\"]"
+    "ugc_codes": "[\"NMZ219\",\"NMC001\"]",
+    "office_code": "87110"
   },
   {
-    "site_code": "87501",
     "name": "USPS Downtown Santa Fe",
     "city": "Santa Fe",
     "state": "NM",
@@ -30,10 +29,10 @@
     "longitude": -105.9372,
     "county": "Santa Fe County",
     "cwa": "ABQ",
-    "ugc_codes": "[\"NMZ218\",\"NMC049\"]"
+    "ugc_codes": "[\"NMZ218\",\"NMC049\"]",
+    "office_code": "87501"
   },
   {
-    "site_code": "87505",
     "name": "USPS South Santa Fe",
     "city": "Santa Fe",
     "state": "NM",
@@ -41,10 +40,10 @@
     "longitude": -105.9454,
     "county": "Santa Fe County",
     "cwa": "ABQ",
-    "ugc_codes": "[\"NMZ214\",\"NMC049\"]"
+    "ugc_codes": "[\"NMZ214\",\"NMC049\"]",
+    "office_code": "87505"
   },
   {
-    "site_code": "99501",
     "name": "USPS Downtown Anchorage",
     "city": "Anchorage",
     "state": "AK",
@@ -52,10 +51,10 @@
     "longitude": -149.9003,
     "county": "Anchorage Municipality",
     "cwa": "AFC",
-    "ugc_codes": "[\"AKZ701\",\"AKC020\"]"
+    "ugc_codes": "[\"AKZ701\",\"AKC020\"]",
+    "office_code": "99501"
   },
   {
-    "site_code": "99507",
     "name": "USPS South Anchorage",
     "city": "Anchorage",
     "state": "AK",
@@ -63,10 +62,10 @@
     "longitude": -149.8499,
     "county": "Anchorage Municipality",
     "cwa": "AFC",
-    "ugc_codes": "[\"AKZ701\",\"AKC020\"]"
+    "ugc_codes": "[\"AKZ701\",\"AKC020\"]",
+    "office_code": "99507"
   },
   {
-    "site_code": "23219",
     "name": "USPS Downtown Richmond",
     "city": "Richmond",
     "state": "VA",
@@ -74,10 +73,10 @@
     "longitude": -77.436,
     "county": "City of Richmond",
     "cwa": "AKQ",
-    "ugc_codes": "[\"VAZ515\",\"VAC760\"]"
+    "ugc_codes": "[\"VAZ515\",\"VAC760\"]",
+    "office_code": "23219"
   },
   {
-    "site_code": "23220",
     "name": "USPS The Fan Richmond",
     "city": "Richmond",
     "state": "VA",
@@ -85,10 +84,10 @@
     "longitude": -77.4602,
     "county": "City of Richmond",
     "cwa": "AKQ",
-    "ugc_codes": "[\"VAZ515\",\"VAC760\"]"
+    "ugc_codes": "[\"VAZ515\",\"VAC760\"]",
+    "office_code": "23220"
   },
   {
-    "site_code": "23451",
     "name": "USPS Virginia Beach Oceanfront",
     "city": "Virginia Beach",
     "state": "VA",
@@ -96,10 +95,10 @@
     "longitude": -75.978,
     "county": "City of Virginia Beach",
     "cwa": "AKQ",
-    "ugc_codes": "[\"VAZ098\",\"VAC810\"]"
+    "ugc_codes": "[\"VAZ098\",\"VAC810\"]",
+    "office_code": "23451"
   },
   {
-    "site_code": "23502",
     "name": "USPS Norfolk",
     "city": "Norfolk",
     "state": "VA",
@@ -107,10 +106,10 @@
     "longitude": -76.2952,
     "county": "City of Norfolk",
     "cwa": "AKQ",
-    "ugc_codes": "[\"VAZ095\",\"VAC710\"]"
+    "ugc_codes": "[\"VAZ095\",\"VAC710\"]",
+    "office_code": "23502"
   },
   {
-    "site_code": "12207",
     "name": "USPS Downtown Albany",
     "city": "Albany",
     "state": "NY",
@@ -118,10 +117,10 @@
     "longitude": -73.7562,
     "county": "Albany County",
     "cwa": "ALY",
-    "ugc_codes": "[\"NYZ052\",\"NYC001\"]"
+    "ugc_codes": "[\"NYZ052\",\"NYC001\"]",
+    "office_code": "12207"
   },
   {
-    "site_code": "12210",
     "name": "USPS Center Square Albany",
     "city": "Albany",
     "state": "NY",
@@ -129,10 +128,10 @@
     "longitude": -73.7542,
     "county": "Albany County",
     "cwa": "ALY",
-    "ugc_codes": "[\"NYZ052\",\"NYC001\"]"
+    "ugc_codes": "[\"NYZ052\",\"NYC001\"]",
+    "office_code": "12210"
   },
   {
-    "site_code": "79101",
     "name": "USPS Downtown Amarillo",
     "city": "Amarillo",
     "state": "TX",
@@ -140,10 +139,10 @@
     "longitude": -101.8313,
     "county": "Potter County",
     "cwa": "AMA",
-    "ugc_codes": "[\"TXZ012\",\"TXC375\"]"
+    "ugc_codes": "[\"TXZ012\",\"TXC375\"]",
+    "office_code": "79101"
   },
   {
-    "site_code": "79109",
     "name": "USPS South Amarillo",
     "city": "Amarillo",
     "state": "TX",
@@ -151,10 +150,10 @@
     "longitude": -101.8853,
     "county": "Randall County",
     "cwa": "AMA",
-    "ugc_codes": "[\"TXZ017\",\"TXC381\"]"
+    "ugc_codes": "[\"TXZ017\",\"TXC381\"]",
+    "office_code": "79109"
   },
   {
-    "site_code": "13202",
     "name": "USPS Downtown Syracuse",
     "city": "Syracuse",
     "state": "NY",
@@ -162,10 +161,10 @@
     "longitude": -76.1474,
     "county": "Onondaga County",
     "cwa": "BGM",
-    "ugc_codes": "[\"NYZ018\",\"NYC067\"]"
+    "ugc_codes": "[\"NYZ018\",\"NYC067\"]",
+    "office_code": "13202"
   },
   {
-    "site_code": "13210",
     "name": "USPS University Hill Syracuse",
     "city": "Syracuse",
     "state": "NY",
@@ -173,10 +172,10 @@
     "longitude": -76.1293,
     "county": "Onondaga County",
     "cwa": "BGM",
-    "ugc_codes": "[\"NYZ018\",\"NYC067\"]"
+    "ugc_codes": "[\"NYZ018\",\"NYC067\"]",
+    "office_code": "13210"
   },
   {
-    "site_code": "18503",
     "name": "USPS Downtown Scranton",
     "city": "Scranton",
     "state": "PA",
@@ -184,10 +183,10 @@
     "longitude": -75.6624,
     "county": "Lackawanna County",
     "cwa": "BGM",
-    "ugc_codes": "[\"PAZ044\",\"PAC069\"]"
+    "ugc_codes": "[\"PAZ044\",\"PAC069\"]",
+    "office_code": "18503"
   },
   {
-    "site_code": "18505",
     "name": "USPS South Scranton",
     "city": "Scranton",
     "state": "PA",
@@ -195,10 +194,10 @@
     "longitude": -75.6604,
     "county": "Lackawanna County",
     "cwa": "BGM",
-    "ugc_codes": "[\"PAZ044\",\"PAC069\"]"
+    "ugc_codes": "[\"PAZ044\",\"PAC069\"]",
+    "office_code": "18505"
   },
   {
-    "site_code": "58501",
     "name": "USPS Downtown Bismarck",
     "city": "Bismarck",
     "state": "ND",
@@ -206,10 +205,10 @@
     "longitude": -100.7837,
     "county": "Burleigh County",
     "cwa": "BIS",
-    "ugc_codes": "[\"NDZ035\",\"NDC015\"]"
+    "ugc_codes": "[\"NDZ035\",\"NDC015\"]",
+    "office_code": "58501"
   },
   {
-    "site_code": "58504",
     "name": "USPS North Bismarck",
     "city": "Bismarck",
     "state": "ND",
@@ -217,10 +216,10 @@
     "longitude": -100.7777,
     "county": "Burleigh County",
     "cwa": "BIS",
-    "ugc_codes": "[\"NDZ035\",\"NDC015\"]"
+    "ugc_codes": "[\"NDZ035\",\"NDC015\"]",
+    "office_code": "58504"
   },
   {
-    "site_code": "35203",
     "name": "USPS Downtown Birmingham",
     "city": "Birmingham",
     "state": "AL",
@@ -228,10 +227,10 @@
     "longitude": -86.8104,
     "county": "Jefferson County",
     "cwa": "BMX",
-    "ugc_codes": "[\"ALZ024\",\"ALC073\"]"
+    "ugc_codes": "[\"ALZ024\",\"ALC073\"]",
+    "office_code": "35203"
   },
   {
-    "site_code": "35205",
     "name": "USPS Five Points South Birmingham",
     "city": "Birmingham",
     "state": "AL",
@@ -239,10 +238,10 @@
     "longitude": -86.8004,
     "county": "Jefferson County",
     "cwa": "BMX",
-    "ugc_codes": "[\"ALZ024\",\"ALC073\"]"
+    "ugc_codes": "[\"ALZ024\",\"ALC073\"]",
+    "office_code": "35205"
   },
   {
-    "site_code": "36104",
     "name": "USPS Downtown Montgomery",
     "city": "Montgomery",
     "state": "AL",
@@ -250,10 +249,10 @@
     "longitude": -86.3077,
     "county": "Montgomery County",
     "cwa": "BMX",
-    "ugc_codes": "[\"ALZ044\",\"ALC101\"]"
+    "ugc_codes": "[\"ALZ044\",\"ALC101\"]",
+    "office_code": "36104"
   },
   {
-    "site_code": "36107",
     "name": "USPS Cloverdale Montgomery",
     "city": "Montgomery",
     "state": "AL",
@@ -261,10 +260,10 @@
     "longitude": -86.2787,
     "county": "Montgomery County",
     "cwa": "BMX",
-    "ugc_codes": "[\"ALZ044\",\"ALC101\"]"
+    "ugc_codes": "[\"ALZ044\",\"ALC101\"]",
+    "office_code": "36107"
   },
   {
-    "site_code": "83702",
     "name": "USPS Downtown Boise",
     "city": "Boise",
     "state": "ID",
@@ -272,10 +271,10 @@
     "longitude": -116.2146,
     "county": "Ada County",
     "cwa": "BOI",
-    "ugc_codes": "[\"IDZ014\",\"IDC001\"]"
+    "ugc_codes": "[\"IDZ014\",\"IDC001\"]",
+    "office_code": "83702"
   },
   {
-    "site_code": "83706",
     "name": "USPS Southeast Boise",
     "city": "Boise",
     "state": "ID",
@@ -283,10 +282,10 @@
     "longitude": -116.1967,
     "county": "Ada County",
     "cwa": "BOI",
-    "ugc_codes": "[\"IDZ014\",\"IDC001\"]"
+    "ugc_codes": "[\"IDZ014\",\"IDC001\"]",
+    "office_code": "83706"
   },
   {
-    "site_code": "80202",
     "name": "USPS Downtown Denver",
     "city": "Denver",
     "state": "CO",
@@ -294,10 +293,10 @@
     "longitude": -104.9987,
     "county": "Denver County",
     "cwa": "BOU",
-    "ugc_codes": "[\"COZ040\",\"COC031\"]"
+    "ugc_codes": "[\"COZ040\",\"COC031\"]",
+    "office_code": "80202"
   },
   {
-    "site_code": "80210",
     "name": "USPS University Park Denver",
     "city": "Denver",
     "state": "CO",
@@ -305,10 +304,10 @@
     "longitude": -104.9731,
     "county": "Denver County",
     "cwa": "BOU",
-    "ugc_codes": "[\"COZ040\",\"COC031\"]"
+    "ugc_codes": "[\"COZ040\",\"COC031\"]",
+    "office_code": "80210"
   },
   {
-    "site_code": "80302",
     "name": "USPS Downtown Boulder",
     "city": "Boulder",
     "state": "CO",
@@ -316,10 +315,10 @@
     "longitude": -105.2705,
     "county": "Boulder County",
     "cwa": "BOU",
-    "ugc_codes": "[\"COZ039\",\"COC013\"]"
+    "ugc_codes": "[\"COZ039\",\"COC013\"]",
+    "office_code": "80302"
   },
   {
-    "site_code": "80303",
     "name": "USPS East Boulder",
     "city": "Boulder",
     "state": "CO",
@@ -327,10 +326,10 @@
     "longitude": -105.235,
     "county": "Boulder County",
     "cwa": "BOU",
-    "ugc_codes": "[\"COZ039\",\"COC013\"]"
+    "ugc_codes": "[\"COZ039\",\"COC013\"]",
+    "office_code": "80303"
   },
   {
-    "site_code": "80521",
     "name": "USPS Downtown Fort Collins",
     "city": "Fort Collins",
     "state": "CO",
@@ -338,10 +337,10 @@
     "longitude": -105.0844,
     "county": "Larimer County",
     "cwa": "BOU",
-    "ugc_codes": "[\"COZ038\",\"COC069\"]"
+    "ugc_codes": "[\"COZ038\",\"COC069\"]",
+    "office_code": "80521"
   },
   {
-    "site_code": "80525",
     "name": "USPS South Fort Collins",
     "city": "Fort Collins",
     "state": "CO",
@@ -349,10 +348,10 @@
     "longitude": -105.0674,
     "county": "Larimer County",
     "cwa": "BOU",
-    "ugc_codes": "[\"COZ038\",\"COC069\"]"
+    "ugc_codes": "[\"COZ038\",\"COC069\"]",
+    "office_code": "80525"
   },
   {
-    "site_code": "01103",
     "name": "USPS Downtown Springfield MA",
     "city": "Springfield",
     "state": "MA",
@@ -360,10 +359,10 @@
     "longitude": -72.5898,
     "county": "Hampden County",
     "cwa": "BOX",
-    "ugc_codes": "[\"MAZ011\",\"MAC013\"]"
+    "ugc_codes": "[\"MAZ011\",\"MAC013\"]",
+    "office_code": "01103"
   },
   {
-    "site_code": "01108",
     "name": "USPS South Springfield MA",
     "city": "Springfield",
     "state": "MA",
@@ -371,10 +370,10 @@
     "longitude": -72.5678,
     "county": "Hampden County",
     "cwa": "BOX",
-    "ugc_codes": "[\"MAZ011\",\"MAC013\"]"
+    "ugc_codes": "[\"MAZ011\",\"MAC013\"]",
+    "office_code": "01108"
   },
   {
-    "site_code": "01602",
     "name": "USPS Downtown Worcester",
     "city": "Worcester",
     "state": "MA",
@@ -382,10 +381,10 @@
     "longitude": -71.8023,
     "county": "Worcester County",
     "cwa": "BOX",
-    "ugc_codes": "[\"MAZ012\",\"MAC027\"]"
+    "ugc_codes": "[\"MAZ012\",\"MAC027\"]",
+    "office_code": "01602"
   },
   {
-    "site_code": "01608",
     "name": "USPS South Worcester",
     "city": "Worcester",
     "state": "MA",
@@ -393,10 +392,10 @@
     "longitude": -71.7994,
     "county": "Worcester County",
     "cwa": "BOX",
-    "ugc_codes": "[\"MAZ012\",\"MAC027\"]"
+    "ugc_codes": "[\"MAZ012\",\"MAC027\"]",
+    "office_code": "01608"
   },
   {
-    "site_code": "02108",
     "name": "USPS Beacon Hill Boston",
     "city": "Boston",
     "state": "MA",
@@ -404,10 +403,10 @@
     "longitude": -71.0656,
     "county": "Suffolk County",
     "cwa": "BOX",
-    "ugc_codes": "[\"MAZ015\",\"MAC025\"]"
+    "ugc_codes": "[\"MAZ015\",\"MAC025\"]",
+    "office_code": "02108"
   },
   {
-    "site_code": "02215",
     "name": "USPS Fenway Boston",
     "city": "Boston",
     "state": "MA",
@@ -415,10 +414,10 @@
     "longitude": -71.1001,
     "county": "Suffolk County",
     "cwa": "BOX",
-    "ugc_codes": "[\"MAZ015\",\"MAC025\"]"
+    "ugc_codes": "[\"MAZ015\",\"MAC025\"]",
+    "office_code": "02215"
   },
   {
-    "site_code": "02903",
     "name": "USPS Downtown Providence",
     "city": "Providence",
     "state": "RI",
@@ -426,10 +425,10 @@
     "longitude": -71.4128,
     "county": "Providence County",
     "cwa": "BOX",
-    "ugc_codes": "[\"RIZ002\",\"RIC007\"]"
+    "ugc_codes": "[\"RIZ002\",\"RIC007\"]",
+    "office_code": "02903"
   },
   {
-    "site_code": "02906",
     "name": "USPS East Side Providence",
     "city": "Providence",
     "state": "RI",
@@ -437,10 +436,10 @@
     "longitude": -71.3919,
     "county": "Providence County",
     "cwa": "BOX",
-    "ugc_codes": "[\"RIZ002\",\"RIC007\"]"
+    "ugc_codes": "[\"RIZ002\",\"RIC007\"]",
+    "office_code": "02906"
   },
   {
-    "site_code": "06103",
     "name": "USPS Downtown Hartford",
     "city": "Hartford",
     "state": "CT",
@@ -448,10 +447,10 @@
     "longitude": -72.6851,
     "county": "Hartford County",
     "cwa": "BOX",
-    "ugc_codes": "[\"CTZ002\",\"CTC003\"]"
+    "ugc_codes": "[\"CTZ002\",\"CTC003\"]",
+    "office_code": "06103"
   },
   {
-    "site_code": "06105",
     "name": "USPS West End Hartford",
     "city": "Hartford",
     "state": "CT",
@@ -459,10 +458,10 @@
     "longitude": -72.7041,
     "county": "Hartford County",
     "cwa": "BOX",
-    "ugc_codes": "[\"CTZ002\",\"CTC003\"]"
+    "ugc_codes": "[\"CTZ002\",\"CTC003\"]",
+    "office_code": "06105"
   },
   {
-    "site_code": "78520",
     "name": "USPS Downtown Brownsville",
     "city": "Brownsville",
     "state": "TX",
@@ -470,10 +469,10 @@
     "longitude": -97.4975,
     "county": "Cameron County",
     "cwa": "BRO",
-    "ugc_codes": "[\"TXZ255\",\"TXC061\"]"
+    "ugc_codes": "[\"TXZ255\",\"TXC061\"]",
+    "office_code": "78520"
   },
   {
-    "site_code": "78521",
     "name": "USPS North Brownsville",
     "city": "Brownsville",
     "state": "TX",
@@ -481,10 +480,10 @@
     "longitude": -97.4801,
     "county": "Cameron County",
     "cwa": "BRO",
-    "ugc_codes": "[\"TXZ255\",\"TXC061\"]"
+    "ugc_codes": "[\"TXZ255\",\"TXC061\"]",
+    "office_code": "78521"
   },
   {
-    "site_code": "05401",
     "name": "USPS Downtown Burlington",
     "city": "Burlington",
     "state": "VT",
@@ -492,10 +491,10 @@
     "longitude": -73.2121,
     "county": "Chittenden County",
     "cwa": "BTV",
-    "ugc_codes": "[\"VTZ005\",\"VTC007\"]"
+    "ugc_codes": "[\"VTZ005\",\"VTC007\"]",
+    "office_code": "05401"
   },
   {
-    "site_code": "05403",
     "name": "USPS South Burlington",
     "city": "South Burlington",
     "state": "VT",
@@ -503,10 +502,10 @@
     "longitude": -73.1701,
     "county": "Chittenden County",
     "cwa": "BTV",
-    "ugc_codes": "[\"VTZ005\",\"VTC007\"]"
+    "ugc_codes": "[\"VTZ005\",\"VTC007\"]",
+    "office_code": "05403"
   },
   {
-    "site_code": "14202",
     "name": "USPS Downtown Buffalo",
     "city": "Buffalo",
     "state": "NY",
@@ -514,10 +513,10 @@
     "longitude": -78.8784,
     "county": "Erie County",
     "cwa": "BUF",
-    "ugc_codes": "[\"NYZ010\",\"NYC029\"]"
+    "ugc_codes": "[\"NYZ010\",\"NYC029\"]",
+    "office_code": "14202"
   },
   {
-    "site_code": "14214",
     "name": "USPS University Heights Buffalo",
     "city": "Buffalo",
     "state": "NY",
@@ -525,10 +524,10 @@
     "longitude": -78.8295,
     "county": "Erie County",
     "cwa": "BUF",
-    "ugc_codes": "[\"NYZ010\",\"NYC029\"]"
+    "ugc_codes": "[\"NYZ010\",\"NYC029\"]",
+    "office_code": "14214"
   },
   {
-    "site_code": "14604",
     "name": "USPS Downtown Rochester",
     "city": "Rochester",
     "state": "NY",
@@ -536,10 +535,10 @@
     "longitude": -77.6088,
     "county": "Monroe County",
     "cwa": "BUF",
-    "ugc_codes": "[\"NYZ003\",\"NYC055\"]"
+    "ugc_codes": "[\"NYZ003\",\"NYC055\"]",
+    "office_code": "14604"
   },
   {
-    "site_code": "14607",
     "name": "USPS Park Avenue Rochester",
     "city": "Rochester",
     "state": "NY",
@@ -547,10 +546,10 @@
     "longitude": -77.5848,
     "county": "Monroe County",
     "cwa": "BUF",
-    "ugc_codes": "[\"NYZ003\",\"NYC055\"]"
+    "ugc_codes": "[\"NYZ003\",\"NYC055\"]",
+    "office_code": "14607"
   },
   {
-    "site_code": "59101",
     "name": "USPS Downtown Billings",
     "city": "Billings",
     "state": "MT",
@@ -558,10 +557,10 @@
     "longitude": -108.5007,
     "county": "Yellowstone County",
     "cwa": "BYZ",
-    "ugc_codes": "[\"MTZ235\",\"MTC111\"]"
+    "ugc_codes": "[\"MTZ235\",\"MTC111\"]",
+    "office_code": "59101"
   },
   {
-    "site_code": "59102",
     "name": "USPS West Billings",
     "city": "Billings",
     "state": "MT",
@@ -569,10 +568,10 @@
     "longitude": -108.5601,
     "county": "Yellowstone County",
     "cwa": "BYZ",
-    "ugc_codes": "[\"MTZ235\",\"MTC111\"]"
+    "ugc_codes": "[\"MTZ235\",\"MTC111\"]",
+    "office_code": "59102"
   },
   {
-    "site_code": "29201",
     "name": "USPS Downtown Columbia SC",
     "city": "Columbia",
     "state": "SC",
@@ -580,10 +579,10 @@
     "longitude": -81.0348,
     "county": "Richland County",
     "cwa": "CAE",
-    "ugc_codes": "[\"SCZ028\",\"SCC079\"]"
+    "ugc_codes": "[\"SCZ028\",\"SCC079\"]",
+    "office_code": "29201"
   },
   {
-    "site_code": "29205",
     "name": "USPS Shandon Columbia SC",
     "city": "Columbia",
     "state": "SC",
@@ -591,10 +590,10 @@
     "longitude": -80.9958,
     "county": "Richland County",
     "cwa": "CAE",
-    "ugc_codes": "[\"SCZ028\",\"SCC079\"]"
+    "ugc_codes": "[\"SCZ028\",\"SCC079\"]",
+    "office_code": "29205"
   },
   {
-    "site_code": "30901",
     "name": "USPS Downtown Augusta",
     "city": "Augusta",
     "state": "GA",
@@ -602,10 +601,10 @@
     "longitude": -81.9748,
     "county": "Richmond County",
     "cwa": "CAE",
-    "ugc_codes": "[\"GAZ065\",\"GAC245\"]"
+    "ugc_codes": "[\"GAZ065\",\"GAC245\"]",
+    "office_code": "30901"
   },
   {
-    "site_code": "30904",
     "name": "USPS West Augusta",
     "city": "Augusta",
     "state": "GA",
@@ -613,10 +612,10 @@
     "longitude": -82.0118,
     "county": "Richmond County",
     "cwa": "CAE",
-    "ugc_codes": "[\"GAZ065\",\"GAC245\"]"
+    "ugc_codes": "[\"GAZ065\",\"GAC245\"]",
+    "office_code": "30904"
   },
   {
-    "site_code": "04401",
     "name": "USPS Downtown Bangor",
     "city": "Bangor",
     "state": "ME",
@@ -624,10 +623,10 @@
     "longitude": -68.7778,
     "county": "Penobscot County",
     "cwa": "CAR",
-    "ugc_codes": "[\"MEZ015\",\"MEC019\"]"
+    "ugc_codes": "[\"MEZ015\",\"MEC019\"]",
+    "office_code": "04401"
   },
   {
-    "site_code": "04412",
     "name": "USPS Brewer",
     "city": "Brewer",
     "state": "ME",
@@ -635,10 +634,10 @@
     "longitude": -68.7558,
     "county": "Penobscot County",
     "cwa": "CAR",
-    "ugc_codes": "[\"MEZ015\",\"MEC019\"]"
+    "ugc_codes": "[\"MEZ015\",\"MEC019\"]",
+    "office_code": "04412"
   },
   {
-    "site_code": "29401",
     "name": "USPS Downtown Charleston SC",
     "city": "Charleston",
     "state": "SC",
@@ -646,10 +645,10 @@
     "longitude": -79.9311,
     "county": "Charleston County",
     "cwa": "CHS",
-    "ugc_codes": "[\"SCZ050\",\"SCC019\"]"
+    "ugc_codes": "[\"SCZ050\",\"SCC019\"]",
+    "office_code": "29401"
   },
   {
-    "site_code": "29407",
     "name": "USPS West Ashley Charleston",
     "city": "Charleston",
     "state": "SC",
@@ -657,10 +656,10 @@
     "longitude": -79.9914,
     "county": "Charleston County",
     "cwa": "CHS",
-    "ugc_codes": "[\"SCZ050\",\"SCC019\"]"
+    "ugc_codes": "[\"SCZ050\",\"SCC019\"]",
+    "office_code": "29407"
   },
   {
-    "site_code": "31401",
     "name": "USPS Historic Savannah",
     "city": "Savannah",
     "state": "GA",
@@ -668,10 +667,10 @@
     "longitude": -81.0912,
     "county": "Chatham County",
     "cwa": "CHS",
-    "ugc_codes": "[\"GAZ119\",\"GAC051\"]"
+    "ugc_codes": "[\"GAZ119\",\"GAC051\"]",
+    "office_code": "31401"
   },
   {
-    "site_code": "31405",
     "name": "USPS Southside Savannah",
     "city": "Savannah",
     "state": "GA",
@@ -679,10 +678,10 @@
     "longitude": -81.1172,
     "county": "Chatham County",
     "cwa": "CHS",
-    "ugc_codes": "[\"GAZ118\",\"GAC051\"]"
+    "ugc_codes": "[\"GAZ118\",\"GAC051\"]",
+    "office_code": "31405"
   },
   {
-    "site_code": "16501",
     "name": "USPS Downtown Erie",
     "city": "Erie",
     "state": "PA",
@@ -690,10 +689,10 @@
     "longitude": -80.0851,
     "county": "Erie County",
     "cwa": "CLE",
-    "ugc_codes": "[\"PAZ001\",\"PAC049\"]"
+    "ugc_codes": "[\"PAZ001\",\"PAC049\"]",
+    "office_code": "16501"
   },
   {
-    "site_code": "16507",
     "name": "USPS East Erie",
     "city": "Erie",
     "state": "PA",
@@ -701,10 +700,10 @@
     "longitude": -80.0655,
     "county": "Erie County",
     "cwa": "CLE",
-    "ugc_codes": "[\"PAZ001\",\"PAC049\"]"
+    "ugc_codes": "[\"PAZ001\",\"PAC049\"]",
+    "office_code": "16507"
   },
   {
-    "site_code": "43604",
     "name": "USPS Downtown Toledo",
     "city": "Toledo",
     "state": "OH",
@@ -712,10 +711,10 @@
     "longitude": -83.5552,
     "county": "Lucas County",
     "cwa": "CLE",
-    "ugc_codes": "[\"OHZ003\",\"OHC095\"]"
+    "ugc_codes": "[\"OHZ003\",\"OHC095\"]",
+    "office_code": "43604"
   },
   {
-    "site_code": "43606",
     "name": "USPS Old Orchard Toledo",
     "city": "Toledo",
     "state": "OH",
@@ -723,10 +722,10 @@
     "longitude": -83.5832,
     "county": "Lucas County",
     "cwa": "CLE",
-    "ugc_codes": "[\"OHZ003\",\"OHC095\"]"
+    "ugc_codes": "[\"OHZ003\",\"OHC095\"]",
+    "office_code": "43606"
   },
   {
-    "site_code": "44106",
     "name": "USPS University Circle Cleveland",
     "city": "Cleveland",
     "state": "OH",
@@ -734,10 +733,10 @@
     "longitude": -81.6045,
     "county": "Cuyahoga County",
     "cwa": "CLE",
-    "ugc_codes": "[\"OHZ011\",\"OHC035\"]"
+    "ugc_codes": "[\"OHZ011\",\"OHC035\"]",
+    "office_code": "44106"
   },
   {
-    "site_code": "44114",
     "name": "USPS Downtown Cleveland",
     "city": "Cleveland",
     "state": "OH",
@@ -745,10 +744,10 @@
     "longitude": -81.6788,
     "county": "Cuyahoga County",
     "cwa": "CLE",
-    "ugc_codes": "[\"OHZ011\",\"OHC035\"]"
+    "ugc_codes": "[\"OHZ011\",\"OHC035\"]",
+    "office_code": "44114"
   },
   {
-    "site_code": "44308",
     "name": "USPS Downtown Akron",
     "city": "Akron",
     "state": "OH",
@@ -756,10 +755,10 @@
     "longitude": -81.519,
     "county": "Summit County",
     "cwa": "CLE",
-    "ugc_codes": "[\"OHZ021\",\"OHC153\"]"
+    "ugc_codes": "[\"OHZ021\",\"OHC153\"]",
+    "office_code": "44308"
   },
   {
-    "site_code": "44311",
     "name": "USPS North Hill Akron",
     "city": "Akron",
     "state": "OH",
@@ -767,10 +766,10 @@
     "longitude": -81.508,
     "county": "Summit County",
     "cwa": "CLE",
-    "ugc_codes": "[\"OHZ021\",\"OHC153\"]"
+    "ugc_codes": "[\"OHZ021\",\"OHC153\"]",
+    "office_code": "44311"
   },
   {
-    "site_code": "78040",
     "name": "USPS Downtown Laredo",
     "city": "Laredo",
     "state": "TX",
@@ -778,10 +777,10 @@
     "longitude": -99.5075,
     "county": "Webb County",
     "cwa": "CRP",
-    "ugc_codes": "[\"TXZ239\",\"TXC479\"]"
+    "ugc_codes": "[\"TXZ239\",\"TXC479\"]",
+    "office_code": "78040"
   },
   {
-    "site_code": "78041",
     "name": "USPS North Laredo",
     "city": "Laredo",
     "state": "TX",
@@ -789,10 +788,10 @@
     "longitude": -99.4916,
     "county": "Webb County",
     "cwa": "CRP",
-    "ugc_codes": "[\"TXZ239\",\"TXC479\"]"
+    "ugc_codes": "[\"TXZ239\",\"TXC479\"]",
+    "office_code": "78041"
   },
   {
-    "site_code": "78401",
     "name": "USPS Downtown Corpus Christi",
     "city": "Corpus Christi",
     "state": "TX",
@@ -800,10 +799,10 @@
     "longitude": -97.3964,
     "county": "Nueces County",
     "cwa": "CRP",
-    "ugc_codes": "[\"TXZ343\",\"TXC355\"]"
+    "ugc_codes": "[\"TXZ343\",\"TXC355\"]",
+    "office_code": "78401"
   },
   {
-    "site_code": "78411",
     "name": "USPS South Side Corpus Christi",
     "city": "Corpus Christi",
     "state": "TX",
@@ -811,10 +810,10 @@
     "longitude": -97.3814,
     "county": "Nueces County",
     "cwa": "CRP",
-    "ugc_codes": "[\"TXZ343\",\"TXC355\"]"
+    "ugc_codes": "[\"TXZ343\",\"TXC355\"]",
+    "office_code": "78411"
   },
   {
-    "site_code": "17101",
     "name": "USPS Downtown Harrisburg",
     "city": "Harrisburg",
     "state": "PA",
@@ -822,10 +821,10 @@
     "longitude": -76.8867,
     "county": "Dauphin County",
     "cwa": "CTP",
-    "ugc_codes": "[\"PAZ057\",\"PAC043\"]"
+    "ugc_codes": "[\"PAZ057\",\"PAC043\"]",
+    "office_code": "17101"
   },
   {
-    "site_code": "17104",
     "name": "USPS South Harrisburg",
     "city": "Harrisburg",
     "state": "PA",
@@ -833,10 +832,10 @@
     "longitude": -76.8728,
     "county": "Dauphin County",
     "cwa": "CTP",
-    "ugc_codes": "[\"PAZ057\",\"PAC043\"]"
+    "ugc_codes": "[\"PAZ057\",\"PAC043\"]",
+    "office_code": "17104"
   },
   {
-    "site_code": "17601",
     "name": "USPS Downtown Lancaster",
     "city": "Lancaster",
     "state": "PA",
@@ -844,10 +843,10 @@
     "longitude": -76.3055,
     "county": "Lancaster County",
     "cwa": "CTP",
-    "ugc_codes": "[\"PAZ066\",\"PAC071\"]"
+    "ugc_codes": "[\"PAZ066\",\"PAC071\"]",
+    "office_code": "17601"
   },
   {
-    "site_code": "17603",
     "name": "USPS West Lancaster",
     "city": "Lancaster",
     "state": "PA",
@@ -855,10 +854,10 @@
     "longitude": -76.3325,
     "county": "Lancaster County",
     "cwa": "CTP",
-    "ugc_codes": "[\"PAZ066\",\"PAC071\"]"
+    "ugc_codes": "[\"PAZ066\",\"PAC071\"]",
+    "office_code": "17603"
   },
   {
-    "site_code": "82001",
     "name": "USPS Downtown Cheyenne",
     "city": "Cheyenne",
     "state": "WY",
@@ -866,10 +865,10 @@
     "longitude": -104.8202,
     "county": "Laramie County",
     "cwa": "CYS",
-    "ugc_codes": "[\"WYZ118\",\"WYC021\"]"
+    "ugc_codes": "[\"WYZ118\",\"WYC021\"]",
+    "office_code": "82001"
   },
   {
-    "site_code": "82009",
     "name": "USPS North Cheyenne",
     "city": "Cheyenne",
     "state": "WY",
@@ -877,10 +876,10 @@
     "longitude": -104.7742,
     "county": "Laramie County",
     "cwa": "CYS",
-    "ugc_codes": "[\"WYZ118\",\"WYC021\"]"
+    "ugc_codes": "[\"WYZ118\",\"WYC021\"]",
+    "office_code": "82009"
   },
   {
-    "site_code": "55802",
     "name": "USPS Downtown Duluth",
     "city": "Duluth",
     "state": "MN",
@@ -888,10 +887,10 @@
     "longitude": -92.1005,
     "county": "St. Louis County",
     "cwa": "DLH",
-    "ugc_codes": "[\"MNZ037\",\"MNC137\"]"
+    "ugc_codes": "[\"MNZ037\",\"MNC137\"]",
+    "office_code": "55802"
   },
   {
-    "site_code": "55811",
     "name": "USPS West Duluth",
     "city": "Duluth",
     "state": "MN",
@@ -899,10 +898,10 @@
     "longitude": -92.1606,
     "county": "St. Louis County",
     "cwa": "DLH",
-    "ugc_codes": "[\"MNZ037\",\"MNC137\"]"
+    "ugc_codes": "[\"MNZ037\",\"MNC137\"]",
+    "office_code": "55811"
   },
   {
-    "site_code": "50309",
     "name": "USPS Downtown Des Moines",
     "city": "Des Moines",
     "state": "IA",
@@ -910,10 +909,10 @@
     "longitude": -93.625,
     "county": "Polk County",
     "cwa": "DMX",
-    "ugc_codes": "[\"IAZ060\",\"IAC153\"]"
+    "ugc_codes": "[\"IAZ060\",\"IAC153\"]",
+    "office_code": "50309"
   },
   {
-    "site_code": "50312",
     "name": "USPS South of Grand Des Moines",
     "city": "Des Moines",
     "state": "IA",
@@ -921,10 +920,10 @@
     "longitude": -93.65,
     "county": "Polk County",
     "cwa": "DMX",
-    "ugc_codes": "[\"IAZ060\",\"IAC153\"]"
+    "ugc_codes": "[\"IAZ060\",\"IAC153\"]",
+    "office_code": "50312"
   },
   {
-    "site_code": "48104",
     "name": "USPS Downtown Ann Arbor",
     "city": "Ann Arbor",
     "state": "MI",
@@ -932,10 +931,10 @@
     "longitude": -83.743,
     "county": "Washtenaw County",
     "cwa": "DTX",
-    "ugc_codes": "[\"MIZ075\",\"MIC161\"]"
+    "ugc_codes": "[\"MIZ075\",\"MIC161\"]",
+    "office_code": "48104"
   },
   {
-    "site_code": "48108",
     "name": "USPS South Ann Arbor",
     "city": "Ann Arbor",
     "state": "MI",
@@ -943,10 +942,10 @@
     "longitude": -83.7377,
     "county": "Washtenaw County",
     "cwa": "DTX",
-    "ugc_codes": "[\"MIZ075\",\"MIC161\"]"
+    "ugc_codes": "[\"MIZ075\",\"MIC161\"]",
+    "office_code": "48108"
   },
   {
-    "site_code": "48201",
     "name": "USPS Midtown Detroit",
     "city": "Detroit",
     "state": "MI",
@@ -954,10 +953,10 @@
     "longitude": -83.0587,
     "county": "Wayne County",
     "cwa": "DTX",
-    "ugc_codes": "[\"MIZ076\",\"MIC163\"]"
+    "ugc_codes": "[\"MIZ076\",\"MIC163\"]",
+    "office_code": "48201"
   },
   {
-    "site_code": "48226",
     "name": "USPS Downtown Detroit",
     "city": "Detroit",
     "state": "MI",
@@ -965,10 +964,10 @@
     "longitude": -83.0458,
     "county": "Wayne County",
     "cwa": "DTX",
-    "ugc_codes": "[\"MIZ076\",\"MIC163\"]"
+    "ugc_codes": "[\"MIZ076\",\"MIC163\"]",
+    "office_code": "48226"
   },
   {
-    "site_code": "52401",
     "name": "USPS Downtown Cedar Rapids",
     "city": "Cedar Rapids",
     "state": "IA",
@@ -976,10 +975,10 @@
     "longitude": -91.6656,
     "county": "Linn County",
     "cwa": "DVN",
-    "ugc_codes": "[\"IAZ052\",\"IAC113\"]"
+    "ugc_codes": "[\"IAZ052\",\"IAC113\"]",
+    "office_code": "52401"
   },
   {
-    "site_code": "52402",
     "name": "USPS Northeast Cedar Rapids",
     "city": "Cedar Rapids",
     "state": "IA",
@@ -987,10 +986,10 @@
     "longitude": -91.6486,
     "county": "Linn County",
     "cwa": "DVN",
-    "ugc_codes": "[\"IAZ052\",\"IAC113\"]"
+    "ugc_codes": "[\"IAZ052\",\"IAC113\"]",
+    "office_code": "52402"
   },
   {
-    "site_code": "64106",
     "name": "USPS Downtown Kansas City",
     "city": "Kansas City",
     "state": "MO",
@@ -998,10 +997,10 @@
     "longitude": -94.5741,
     "county": "Jackson County",
     "cwa": "EAX",
-    "ugc_codes": "[\"MOZ037\",\"MOC095\"]"
+    "ugc_codes": "[\"MOZ037\",\"MOC095\"]",
+    "office_code": "64106"
   },
   {
-    "site_code": "64108",
     "name": "USPS Crossroads Kansas City",
     "city": "Kansas City",
     "state": "MO",
@@ -1009,10 +1008,10 @@
     "longitude": -94.5791,
     "county": "Jackson County",
     "cwa": "EAX",
-    "ugc_codes": "[\"MOZ037\",\"MOC095\"]"
+    "ugc_codes": "[\"MOZ037\",\"MOC095\"]",
+    "office_code": "64108"
   },
   {
-    "site_code": "79901",
     "name": "USPS Downtown El Paso",
     "city": "El Paso",
     "state": "TX",
@@ -1020,10 +1019,10 @@
     "longitude": -106.485,
     "county": "El Paso County",
     "cwa": "EPZ",
-    "ugc_codes": "[\"TXZ418\",\"TXC141\"]"
+    "ugc_codes": "[\"TXZ418\",\"TXC141\"]",
+    "office_code": "79901"
   },
   {
-    "site_code": "79925",
     "name": "USPS East El Paso",
     "city": "El Paso",
     "state": "TX",
@@ -1031,10 +1030,10 @@
     "longitude": -106.3753,
     "county": "El Paso County",
     "cwa": "EPZ",
-    "ugc_codes": "[\"TXZ419\",\"TXC141\"]"
+    "ugc_codes": "[\"TXZ419\",\"TXC141\"]",
+    "office_code": "79925"
   },
   {
-    "site_code": "78205",
     "name": "USPS Downtown San Antonio",
     "city": "San Antonio",
     "state": "TX",
@@ -1042,10 +1041,10 @@
     "longitude": -98.4936,
     "county": "Bexar County",
     "cwa": "EWX",
-    "ugc_codes": "[\"TXZ205\",\"TXC029\"]"
+    "ugc_codes": "[\"TXZ205\",\"TXC029\"]",
+    "office_code": "78205"
   },
   {
-    "site_code": "78229",
     "name": "USPS Medical Center San Antonio",
     "city": "San Antonio",
     "state": "TX",
@@ -1053,10 +1052,10 @@
     "longitude": -98.5578,
     "county": "Bexar County",
     "cwa": "EWX",
-    "ugc_codes": "[\"TXZ205\",\"TXC029\"]"
+    "ugc_codes": "[\"TXZ205\",\"TXC029\"]",
+    "office_code": "78229"
   },
   {
-    "site_code": "78701",
     "name": "USPS Downtown Austin",
     "city": "Austin",
     "state": "TX",
@@ -1064,10 +1063,10 @@
     "longitude": -97.7431,
     "county": "Travis County",
     "cwa": "EWX",
-    "ugc_codes": "[\"TXZ192\",\"TXC453\"]"
+    "ugc_codes": "[\"TXZ192\",\"TXC453\"]",
+    "office_code": "78701"
   },
   {
-    "site_code": "78745",
     "name": "USPS South Austin",
     "city": "Austin",
     "state": "TX",
@@ -1075,10 +1074,10 @@
     "longitude": -97.7773,
     "county": "Travis County",
     "cwa": "EWX",
-    "ugc_codes": "[\"TXZ192\",\"TXC453\"]"
+    "ugc_codes": "[\"TXZ192\",\"TXC453\"]",
+    "office_code": "78745"
   },
   {
-    "site_code": "30303",
     "name": "USPS Downtown Atlanta",
     "city": "Atlanta",
     "state": "GA",
@@ -1086,10 +1085,10 @@
     "longitude": -84.388,
     "county": "Fulton County",
     "cwa": "FFC",
-    "ugc_codes": "[\"GAZ033\",\"GAC121\"]"
+    "ugc_codes": "[\"GAZ033\",\"GAC121\"]",
+    "office_code": "30303"
   },
   {
-    "site_code": "30324",
     "name": "USPS Buckhead Atlanta",
     "city": "Atlanta",
     "state": "GA",
@@ -1097,10 +1096,10 @@
     "longitude": -84.3582,
     "county": "Fulton County",
     "cwa": "FFC",
-    "ugc_codes": "[\"GAZ033\",\"GAC121\"]"
+    "ugc_codes": "[\"GAZ033\",\"GAC121\"]",
+    "office_code": "30324"
   },
   {
-    "site_code": "58102",
     "name": "USPS Downtown Fargo",
     "city": "Fargo",
     "state": "ND",
@@ -1108,10 +1107,10 @@
     "longitude": -96.7898,
     "county": "Cass County",
     "cwa": "FGF",
-    "ugc_codes": "[\"NDZ039\",\"NDC017\"]"
+    "ugc_codes": "[\"NDZ039\",\"NDC017\"]",
+    "office_code": "58102"
   },
   {
-    "site_code": "58103",
     "name": "USPS South Fargo",
     "city": "Fargo",
     "state": "ND",
@@ -1119,10 +1118,10 @@
     "longitude": -96.7898,
     "county": "Cass County",
     "cwa": "FGF",
-    "ugc_codes": "[\"NDZ039\",\"NDC017\"]"
+    "ugc_codes": "[\"NDZ039\",\"NDC017\"]",
+    "office_code": "58103"
   },
   {
-    "site_code": "57104",
     "name": "USPS Downtown Sioux Falls",
     "city": "Sioux Falls",
     "state": "SD",
@@ -1130,10 +1129,10 @@
     "longitude": -96.7283,
     "county": "Minnehaha County",
     "cwa": "FSD",
-    "ugc_codes": "[\"SDZ062\",\"SDC099\"]"
+    "ugc_codes": "[\"SDZ062\",\"SDC099\"]",
+    "office_code": "57104"
   },
   {
-    "site_code": "57108",
     "name": "USPS South Sioux Falls",
     "city": "Sioux Falls",
     "state": "SD",
@@ -1141,10 +1140,10 @@
     "longitude": -96.7032,
     "county": "Lincoln County",
     "cwa": "FSD",
-    "ugc_codes": "[\"SDZ067\",\"SDC083\"]"
+    "ugc_codes": "[\"SDZ067\",\"SDC083\"]",
+    "office_code": "57108"
   },
   {
-    "site_code": "75201",
     "name": "USPS Downtown Dallas",
     "city": "Dallas",
     "state": "TX",
@@ -1152,10 +1151,10 @@
     "longitude": -96.797,
     "county": "Dallas County",
     "cwa": "FWD",
-    "ugc_codes": "[\"TXZ119\",\"TXC113\"]"
+    "ugc_codes": "[\"TXZ119\",\"TXC113\"]",
+    "office_code": "75201"
   },
   {
-    "site_code": "76102",
     "name": "USPS Downtown Fort Worth",
     "city": "Fort Worth",
     "state": "TX",
@@ -1163,10 +1162,10 @@
     "longitude": -97.3308,
     "county": "Tarrant County",
     "cwa": "FWD",
-    "ugc_codes": "[\"TXZ118\",\"TXC439\"]"
+    "ugc_codes": "[\"TXZ118\",\"TXC439\"]",
+    "office_code": "76102"
   },
   {
-    "site_code": "54301",
     "name": "USPS Downtown Green Bay",
     "city": "Green Bay",
     "state": "WI",
@@ -1174,10 +1173,10 @@
     "longitude": -88.0133,
     "county": "Brown County",
     "cwa": "GRB",
-    "ugc_codes": "[\"WIZ039\",\"WIC009\"]"
+    "ugc_codes": "[\"WIZ039\",\"WIC009\"]",
+    "office_code": "54301"
   },
   {
-    "site_code": "54304",
     "name": "USPS West Green Bay",
     "city": "Green Bay",
     "state": "WI",
@@ -1185,10 +1184,10 @@
     "longitude": -88.0503,
     "county": "Brown County",
     "cwa": "GRB",
-    "ugc_codes": "[\"WIZ039\",\"WIC009\"]"
+    "ugc_codes": "[\"WIZ039\",\"WIC009\"]",
+    "office_code": "54304"
   },
   {
-    "site_code": "48912",
     "name": "USPS East Lansing",
     "city": "Lansing",
     "state": "MI",
@@ -1196,10 +1195,10 @@
     "longitude": -84.5122,
     "county": "Ingham County",
     "cwa": "GRR",
-    "ugc_codes": "[\"MIZ067\",\"MIC065\"]"
+    "ugc_codes": "[\"MIZ067\",\"MIC065\"]",
+    "office_code": "48912"
   },
   {
-    "site_code": "48933",
     "name": "USPS Downtown Lansing",
     "city": "Lansing",
     "state": "MI",
@@ -1207,10 +1206,10 @@
     "longitude": -84.5555,
     "county": "Ingham County",
     "cwa": "GRR",
-    "ugc_codes": "[\"MIZ067\",\"MIC065\"]"
+    "ugc_codes": "[\"MIZ067\",\"MIC065\"]",
+    "office_code": "48933"
   },
   {
-    "site_code": "49007",
     "name": "USPS Downtown Kalamazoo",
     "city": "Kalamazoo",
     "state": "MI",
@@ -1218,10 +1217,10 @@
     "longitude": -85.5872,
     "county": "Kalamazoo County",
     "cwa": "GRR",
-    "ugc_codes": "[\"MIZ072\",\"MIC077\"]"
+    "ugc_codes": "[\"MIZ072\",\"MIC077\"]",
+    "office_code": "49007"
   },
   {
-    "site_code": "49008",
     "name": "USPS West Kalamazoo",
     "city": "Kalamazoo",
     "state": "MI",
@@ -1229,10 +1228,10 @@
     "longitude": -85.6162,
     "county": "Kalamazoo County",
     "cwa": "GRR",
-    "ugc_codes": "[\"MIZ072\",\"MIC077\"]"
+    "ugc_codes": "[\"MIZ072\",\"MIC077\"]",
+    "office_code": "49008"
   },
   {
-    "site_code": "49503",
     "name": "USPS Downtown Grand Rapids",
     "city": "Grand Rapids",
     "state": "MI",
@@ -1240,10 +1239,10 @@
     "longitude": -85.6681,
     "county": "Kent County",
     "cwa": "GRR",
-    "ugc_codes": "[\"MIZ057\",\"MIC081\"]"
+    "ugc_codes": "[\"MIZ057\",\"MIC081\"]",
+    "office_code": "49503"
   },
   {
-    "site_code": "49506",
     "name": "USPS East Grand Rapids",
     "city": "Grand Rapids",
     "state": "MI",
@@ -1251,10 +1250,10 @@
     "longitude": -85.6241,
     "county": "Kent County",
     "cwa": "GRR",
-    "ugc_codes": "[\"MIZ057\",\"MIC081\"]"
+    "ugc_codes": "[\"MIZ057\",\"MIC081\"]",
+    "office_code": "49506"
   },
   {
-    "site_code": "28202",
     "name": "USPS Uptown Charlotte",
     "city": "Charlotte",
     "state": "NC",
@@ -1262,10 +1261,10 @@
     "longitude": -80.8431,
     "county": "Mecklenburg County",
     "cwa": "GSP",
-    "ugc_codes": "[\"NCZ071\",\"NCC119\"]"
+    "ugc_codes": "[\"NCZ071\",\"NCC119\"]",
+    "office_code": "28202"
   },
   {
-    "site_code": "28205",
     "name": "USPS Plaza Midwood Charlotte",
     "city": "Charlotte",
     "state": "NC",
@@ -1273,10 +1272,10 @@
     "longitude": -80.8089,
     "county": "Mecklenburg County",
     "cwa": "GSP",
-    "ugc_codes": "[\"NCZ071\",\"NCC119\"]"
+    "ugc_codes": "[\"NCZ071\",\"NCC119\"]",
+    "office_code": "28205"
   },
   {
-    "site_code": "28801",
     "name": "USPS Downtown Asheville",
     "city": "Asheville",
     "state": "NC",
@@ -1284,10 +1283,10 @@
     "longitude": -82.5515,
     "county": "Buncombe County",
     "cwa": "GSP",
-    "ugc_codes": "[\"NCZ053\",\"NCC021\"]"
+    "ugc_codes": "[\"NCZ053\",\"NCC021\"]",
+    "office_code": "28801"
   },
   {
-    "site_code": "28806",
     "name": "USPS West Asheville",
     "city": "Asheville",
     "state": "NC",
@@ -1295,10 +1294,10 @@
     "longitude": -82.594,
     "county": "Buncombe County",
     "cwa": "GSP",
-    "ugc_codes": "[\"NCZ053\",\"NCC021\"]"
+    "ugc_codes": "[\"NCZ053\",\"NCC021\"]",
+    "office_code": "28806"
   },
   {
-    "site_code": "29601",
     "name": "USPS Downtown Greenville SC",
     "city": "Greenville",
     "state": "SC",
@@ -1306,10 +1305,10 @@
     "longitude": -82.394,
     "county": "Greenville County",
     "cwa": "GSP",
-    "ugc_codes": "[\"SCZ106\",\"SCC045\"]"
+    "ugc_codes": "[\"SCZ106\",\"SCC045\"]",
+    "office_code": "29601"
   },
   {
-    "site_code": "29607",
     "name": "USPS East Greenville SC",
     "city": "Greenville",
     "state": "SC",
@@ -1317,10 +1316,10 @@
     "longitude": -82.346,
     "county": "Greenville County",
     "cwa": "GSP",
-    "ugc_codes": "[\"SCZ106\",\"SCC045\"]"
+    "ugc_codes": "[\"SCZ106\",\"SCC045\"]",
+    "office_code": "29607"
   },
   {
-    "site_code": "03101",
     "name": "USPS Downtown Manchester NH",
     "city": "Manchester",
     "state": "NH",
@@ -1328,10 +1327,10 @@
     "longitude": -71.4548,
     "county": "Hillsborough County",
     "cwa": "GYX",
-    "ugc_codes": "[\"NHZ012\",\"NHC011\"]"
+    "ugc_codes": "[\"NHZ012\",\"NHC011\"]",
+    "office_code": "03101"
   },
   {
-    "site_code": "03104",
     "name": "USPS East Manchester NH",
     "city": "Manchester",
     "state": "NH",
@@ -1339,10 +1338,10 @@
     "longitude": -71.4288,
     "county": "Hillsborough County",
     "cwa": "GYX",
-    "ugc_codes": "[\"NHZ012\",\"NHC011\"]"
+    "ugc_codes": "[\"NHZ012\",\"NHC011\"]",
+    "office_code": "03104"
   },
   {
-    "site_code": "04101",
     "name": "USPS Downtown Portland ME",
     "city": "Portland",
     "state": "ME",
@@ -1350,10 +1349,10 @@
     "longitude": -70.2568,
     "county": "Cumberland County",
     "cwa": "GYX",
-    "ugc_codes": "[\"MEZ024\",\"MEC005\"]"
+    "ugc_codes": "[\"MEZ024\",\"MEC005\"]",
+    "office_code": "04101"
   },
   {
-    "site_code": "04102",
     "name": "USPS West Portland ME",
     "city": "Portland",
     "state": "ME",
@@ -1361,10 +1360,10 @@
     "longitude": -70.2838,
     "county": "Cumberland County",
     "cwa": "GYX",
-    "ugc_codes": "[\"MEZ024\",\"MEC005\"]"
+    "ugc_codes": "[\"MEZ024\",\"MEC005\"]",
+    "office_code": "04102"
   },
   {
-    "site_code": "96813",
     "name": "USPS Downtown Honolulu",
     "city": "Honolulu",
     "state": "HI",
@@ -1372,10 +1371,10 @@
     "longitude": -157.8583,
     "county": "Honolulu County",
     "cwa": "HFO",
-    "ugc_codes": "[\"HIZ036\",\"HIC003\"]"
+    "ugc_codes": "[\"HIZ036\",\"HIC003\"]",
+    "office_code": "96813"
   },
   {
-    "site_code": "96815",
     "name": "USPS Waikiki",
     "city": "Honolulu",
     "state": "HI",
@@ -1383,10 +1382,10 @@
     "longitude": -157.829,
     "county": "Honolulu County",
     "cwa": "HFO",
-    "ugc_codes": "[\"HIZ033\",\"HIC003\"]"
+    "ugc_codes": "[\"HIZ033\",\"HIC003\"]",
+    "office_code": "96815"
   },
   {
-    "site_code": "77002",
     "name": "USPS Downtown Houston",
     "city": "Houston",
     "state": "TX",
@@ -1394,10 +1393,10 @@
     "longitude": -95.3677,
     "county": "Harris County",
     "cwa": "HGX",
-    "ugc_codes": "[\"TXZ213\",\"TXC201\"]"
+    "ugc_codes": "[\"TXZ213\",\"TXC201\"]",
+    "office_code": "77002"
   },
   {
-    "site_code": "77030",
     "name": "USPS Texas Medical Center",
     "city": "Houston",
     "state": "TX",
@@ -1405,10 +1404,10 @@
     "longitude": -95.4013,
     "county": "Harris County",
     "cwa": "HGX",
-    "ugc_codes": "[\"TXZ213\",\"TXC201\"]"
+    "ugc_codes": "[\"TXZ213\",\"TXC201\"]",
+    "office_code": "77030"
   },
   {
-    "site_code": "93301",
     "name": "USPS Downtown Bakersfield",
     "city": "Bakersfield",
     "state": "CA",
@@ -1416,10 +1415,10 @@
     "longitude": -119.0187,
     "county": "Kern County",
     "cwa": "HNX",
-    "ugc_codes": "[\"CAZ314\",\"CAC029\"]"
+    "ugc_codes": "[\"CAZ314\",\"CAC029\"]",
+    "office_code": "93301"
   },
   {
-    "site_code": "93304",
     "name": "USPS South Bakersfield",
     "city": "Bakersfield",
     "state": "CA",
@@ -1427,10 +1426,10 @@
     "longitude": -119.0187,
     "county": "Kern County",
     "cwa": "HNX",
-    "ugc_codes": "[\"CAZ314\",\"CAC029\"]"
+    "ugc_codes": "[\"CAZ314\",\"CAC029\"]",
+    "office_code": "93304"
   },
   {
-    "site_code": "93721",
     "name": "USPS Downtown Fresno",
     "city": "Fresno",
     "state": "CA",
@@ -1438,10 +1437,10 @@
     "longitude": -119.7871,
     "county": "Fresno County",
     "cwa": "HNX",
-    "ugc_codes": "[\"CAZ307\",\"CAC019\"]"
+    "ugc_codes": "[\"CAZ307\",\"CAC019\"]",
+    "office_code": "93721"
   },
   {
-    "site_code": "93726",
     "name": "USPS Northeast Fresno",
     "city": "Fresno",
     "state": "CA",
@@ -1449,10 +1448,10 @@
     "longitude": -119.7641,
     "county": "Fresno County",
     "cwa": "HNX",
-    "ugc_codes": "[\"CAZ307\",\"CAC019\"]"
+    "ugc_codes": "[\"CAZ307\",\"CAC019\"]",
+    "office_code": "93726"
   },
   {
-    "site_code": "35801",
     "name": "USPS Downtown Huntsville",
     "city": "Huntsville",
     "state": "AL",
@@ -1460,10 +1459,10 @@
     "longitude": -86.5861,
     "county": "Madison County",
     "cwa": "HUN",
-    "ugc_codes": "[\"ALZ006\",\"ALC089\"]"
+    "ugc_codes": "[\"ALZ006\",\"ALC089\"]",
+    "office_code": "35801"
   },
   {
-    "site_code": "35805",
     "name": "USPS South Huntsville",
     "city": "Huntsville",
     "state": "AL",
@@ -1471,10 +1470,10 @@
     "longitude": -86.6029,
     "county": "Madison County",
     "cwa": "HUN",
-    "ugc_codes": "[\"ALZ006\",\"ALC089\"]"
+    "ugc_codes": "[\"ALZ006\",\"ALC089\"]",
+    "office_code": "35805"
   },
   {
-    "site_code": "67202",
     "name": "USPS Downtown Wichita",
     "city": "Wichita",
     "state": "KS",
@@ -1482,10 +1481,10 @@
     "longitude": -97.3301,
     "county": "Sedgwick County",
     "cwa": "ICT",
-    "ugc_codes": "[\"KSZ083\",\"KSC173\"]"
+    "ugc_codes": "[\"KSZ083\",\"KSC173\"]",
+    "office_code": "67202"
   },
   {
-    "site_code": "67208",
     "name": "USPS College Hill Wichita",
     "city": "Wichita",
     "state": "KS",
@@ -1493,10 +1492,10 @@
     "longitude": -97.2959,
     "county": "Sedgwick County",
     "cwa": "ICT",
-    "ugc_codes": "[\"KSZ083\",\"KSC173\"]"
+    "ugc_codes": "[\"KSZ083\",\"KSC173\"]",
+    "office_code": "67208"
   },
   {
-    "site_code": "28401",
     "name": "USPS Downtown Wilmington NC",
     "city": "Wilmington",
     "state": "NC",
@@ -1504,10 +1503,10 @@
     "longitude": -77.9447,
     "county": "New Hanover County",
     "cwa": "ILM",
-    "ugc_codes": "[\"NCZ107\",\"NCC129\"]"
+    "ugc_codes": "[\"NCZ107\",\"NCC129\"]",
+    "office_code": "28401"
   },
   {
-    "site_code": "28405",
     "name": "USPS North Wilmington NC",
     "city": "Wilmington",
     "state": "NC",
@@ -1515,10 +1514,10 @@
     "longitude": -77.9037,
     "county": "New Hanover County",
     "cwa": "ILM",
-    "ugc_codes": "[\"NCZ107\",\"NCC129\"]"
+    "ugc_codes": "[\"NCZ107\",\"NCC129\"]",
+    "office_code": "28405"
   },
   {
-    "site_code": "43202",
     "name": "USPS University District Columbus",
     "city": "Columbus",
     "state": "OH",
@@ -1526,10 +1525,10 @@
     "longitude": -82.9938,
     "county": "Franklin County",
     "cwa": "ILN",
-    "ugc_codes": "[\"OHZ055\",\"OHC049\"]"
+    "ugc_codes": "[\"OHZ055\",\"OHC049\"]",
+    "office_code": "43202"
   },
   {
-    "site_code": "43215",
     "name": "USPS Downtown Columbus",
     "city": "Columbus",
     "state": "OH",
@@ -1537,10 +1536,10 @@
     "longitude": -83.0007,
     "county": "Franklin County",
     "cwa": "ILN",
-    "ugc_codes": "[\"OHZ055\",\"OHC049\"]"
+    "ugc_codes": "[\"OHZ055\",\"OHC049\"]",
+    "office_code": "43215"
   },
   {
-    "site_code": "45202",
     "name": "USPS Downtown Cincinnati",
     "city": "Cincinnati",
     "state": "OH",
@@ -1548,10 +1547,10 @@
     "longitude": -84.512,
     "county": "Hamilton County",
     "cwa": "ILN",
-    "ugc_codes": "[\"OHZ077\",\"OHC061\"]"
+    "ugc_codes": "[\"OHZ077\",\"OHC061\"]",
+    "office_code": "45202"
   },
   {
-    "site_code": "45219",
     "name": "USPS Clifton Cincinnati",
     "city": "Cincinnati",
     "state": "OH",
@@ -1559,10 +1558,10 @@
     "longitude": -84.5199,
     "county": "Hamilton County",
     "cwa": "ILN",
-    "ugc_codes": "[\"OHZ077\",\"OHC061\"]"
+    "ugc_codes": "[\"OHZ077\",\"OHC061\"]",
+    "office_code": "45219"
   },
   {
-    "site_code": "45402",
     "name": "USPS Downtown Dayton",
     "city": "Dayton",
     "state": "OH",
@@ -1570,10 +1569,10 @@
     "longitude": -84.1916,
     "county": "Montgomery County",
     "cwa": "ILN",
-    "ugc_codes": "[\"OHZ061\",\"OHC113\"]"
+    "ugc_codes": "[\"OHZ061\",\"OHC113\"]",
+    "office_code": "45402"
   },
   {
-    "site_code": "45410",
     "name": "USPS East Dayton",
     "city": "Dayton",
     "state": "OH",
@@ -1581,10 +1580,10 @@
     "longitude": -84.1558,
     "county": "Montgomery County",
     "cwa": "ILN",
-    "ugc_codes": "[\"OHZ061\",\"OHC113\"]"
+    "ugc_codes": "[\"OHZ061\",\"OHC113\"]",
+    "office_code": "45410"
   },
   {
-    "site_code": "61602",
     "name": "USPS Downtown Peoria",
     "city": "Peoria",
     "state": "IL",
@@ -1592,10 +1591,10 @@
     "longitude": -89.589,
     "county": "Peoria County",
     "cwa": "ILX",
-    "ugc_codes": "[\"ILZ029\",\"ILC143\"]"
+    "ugc_codes": "[\"ILZ029\",\"ILC143\"]",
+    "office_code": "61602"
   },
   {
-    "site_code": "61604",
     "name": "USPS West Peoria",
     "city": "Peoria",
     "state": "IL",
@@ -1603,10 +1602,10 @@
     "longitude": -89.613,
     "county": "Peoria County",
     "cwa": "ILX",
-    "ugc_codes": "[\"ILZ029\",\"ILC143\"]"
+    "ugc_codes": "[\"ILZ029\",\"ILC143\"]",
+    "office_code": "61604"
   },
   {
-    "site_code": "46204",
     "name": "USPS Downtown Indianapolis",
     "city": "Indianapolis",
     "state": "IN",
@@ -1614,10 +1613,10 @@
     "longitude": -86.1581,
     "county": "Marion County",
     "cwa": "IND",
-    "ugc_codes": "[\"INZ047\",\"INC097\"]"
+    "ugc_codes": "[\"INZ047\",\"INC097\"]",
+    "office_code": "46204"
   },
   {
-    "site_code": "46220",
     "name": "USPS Broad Ripple Indianapolis",
     "city": "Indianapolis",
     "state": "IN",
@@ -1625,10 +1624,10 @@
     "longitude": -86.1325,
     "county": "Marion County",
     "cwa": "IND",
-    "ugc_codes": "[\"INZ047\",\"INC097\"]"
+    "ugc_codes": "[\"INZ047\",\"INC097\"]",
+    "office_code": "46220"
   },
   {
-    "site_code": "46601",
     "name": "USPS Downtown South Bend",
     "city": "South Bend",
     "state": "IN",
@@ -1636,10 +1635,10 @@
     "longitude": -86.252,
     "county": "St. Joseph County",
     "cwa": "IWX",
-    "ugc_codes": "[\"INZ104\",\"INC141\"]"
+    "ugc_codes": "[\"INZ104\",\"INC141\"]",
+    "office_code": "46601"
   },
   {
-    "site_code": "46615",
     "name": "USPS East South Bend",
     "city": "South Bend",
     "state": "IN",
@@ -1647,10 +1646,10 @@
     "longitude": -86.2046,
     "county": "St. Joseph County",
     "cwa": "IWX",
-    "ugc_codes": "[\"INZ104\",\"INC141\"]"
+    "ugc_codes": "[\"INZ104\",\"INC141\"]",
+    "office_code": "46615"
   },
   {
-    "site_code": "46802",
     "name": "USPS Downtown Fort Wayne",
     "city": "Fort Wayne",
     "state": "IN",
@@ -1658,10 +1657,10 @@
     "longitude": -85.1394,
     "county": "Allen County",
     "cwa": "IWX",
-    "ugc_codes": "[\"INZ018\",\"INC003\"]"
+    "ugc_codes": "[\"INZ018\",\"INC003\"]",
+    "office_code": "46802"
   },
   {
-    "site_code": "46806",
     "name": "USPS South Fort Wayne",
     "city": "Fort Wayne",
     "state": "IN",
@@ -1669,10 +1668,10 @@
     "longitude": -85.1266,
     "county": "Allen County",
     "cwa": "IWX",
-    "ugc_codes": "[\"INZ018\",\"INC003\"]"
+    "ugc_codes": "[\"INZ018\",\"INC003\"]",
+    "office_code": "46806"
   },
   {
-    "site_code": "39201",
     "name": "USPS Downtown Jackson MS",
     "city": "Jackson",
     "state": "MS",
@@ -1680,10 +1679,10 @@
     "longitude": -90.1848,
     "county": "Hinds County",
     "cwa": "JAN",
-    "ugc_codes": "[\"MSZ048\",\"MSC049\"]"
+    "ugc_codes": "[\"MSZ048\",\"MSC049\"]",
+    "office_code": "39201"
   },
   {
-    "site_code": "39206",
     "name": "USPS Northeast Jackson MS",
     "city": "Jackson",
     "state": "MS",
@@ -1691,10 +1690,10 @@
     "longitude": -90.1778,
     "county": "Hinds County",
     "cwa": "JAN",
-    "ugc_codes": "[\"MSZ048\",\"MSC049\"]"
+    "ugc_codes": "[\"MSZ048\",\"MSC049\"]",
+    "office_code": "39206"
   },
   {
-    "site_code": "32202",
     "name": "USPS Downtown Jacksonville",
     "city": "Jacksonville",
     "state": "FL",
@@ -1702,10 +1701,10 @@
     "longitude": -81.6557,
     "county": "Duval County",
     "cwa": "JAX",
-    "ugc_codes": "[\"FLZ125\",\"FLC031\"]"
+    "ugc_codes": "[\"FLZ125\",\"FLC031\"]",
+    "office_code": "32202"
   },
   {
-    "site_code": "32207",
     "name": "USPS San Marco Jacksonville",
     "city": "Jacksonville",
     "state": "FL",
@@ -1713,10 +1712,10 @@
     "longitude": -81.6429,
     "county": "Duval County",
     "cwa": "JAX",
-    "ugc_codes": "[\"FLZ325\",\"FLC031\"]"
+    "ugc_codes": "[\"FLZ325\",\"FLC031\"]",
+    "office_code": "32207"
   },
   {
-    "site_code": "32601",
     "name": "USPS Downtown Gainesville",
     "city": "Gainesville",
     "state": "FL",
@@ -1724,10 +1723,10 @@
     "longitude": -82.325,
     "county": "Alachua County",
     "cwa": "JAX",
-    "ugc_codes": "[\"FLZ136\",\"FLC001\"]"
+    "ugc_codes": "[\"FLZ136\",\"FLC001\"]",
+    "office_code": "32601"
   },
   {
-    "site_code": "32607",
     "name": "USPS West Gainesville",
     "city": "Gainesville",
     "state": "FL",
@@ -1735,10 +1734,10 @@
     "longitude": -82.389,
     "county": "Alachua County",
     "cwa": "JAX",
-    "ugc_codes": "[\"FLZ136\",\"FLC001\"]"
+    "ugc_codes": "[\"FLZ136\",\"FLC001\"]",
+    "office_code": "32607"
   },
   {
-    "site_code": "77701",
     "name": "USPS Downtown Beaumont",
     "city": "Beaumont",
     "state": "TX",
@@ -1746,10 +1745,10 @@
     "longitude": -94.1266,
     "county": "Jefferson County",
     "cwa": "LCH",
-    "ugc_codes": "[\"TXZ615\",\"TXC245\"]"
+    "ugc_codes": "[\"TXZ615\",\"TXC245\"]",
+    "office_code": "77701"
   },
   {
-    "site_code": "77706",
     "name": "USPS West Beaumont",
     "city": "Beaumont",
     "state": "TX",
@@ -1757,10 +1756,10 @@
     "longitude": -94.1626,
     "county": "Jefferson County",
     "cwa": "LCH",
-    "ugc_codes": "[\"TXZ515\",\"TXC245\"]"
+    "ugc_codes": "[\"TXZ515\",\"TXC245\"]",
+    "office_code": "77706"
   },
   {
-    "site_code": "70112",
     "name": "USPS French Quarter New Orleans",
     "city": "New Orleans",
     "state": "LA",
@@ -1768,10 +1767,10 @@
     "longitude": -90.0739,
     "county": "Orleans Parish",
     "cwa": "LIX",
-    "ugc_codes": "[\"LAZ077\",\"LAC071\"]"
+    "ugc_codes": "[\"LAZ077\",\"LAC071\"]",
+    "office_code": "70112"
   },
   {
-    "site_code": "70116",
     "name": "USPS Marigny New Orleans",
     "city": "New Orleans",
     "state": "LA",
@@ -1779,10 +1778,10 @@
     "longitude": -90.0587,
     "county": "Orleans Parish",
     "cwa": "LIX",
-    "ugc_codes": "[\"LAZ077\",\"LAC071\"]"
+    "ugc_codes": "[\"LAZ077\",\"LAC071\"]",
+    "office_code": "70116"
   },
   {
-    "site_code": "70801",
     "name": "USPS Downtown Baton Rouge",
     "city": "Baton Rouge",
     "state": "LA",
@@ -1790,10 +1789,10 @@
     "longitude": -91.1874,
     "county": "East Baton Rouge Parish",
     "cwa": "LIX",
-    "ugc_codes": "[\"LAZ048\",\"LAC033\"]"
+    "ugc_codes": "[\"LAZ048\",\"LAC033\"]",
+    "office_code": "70801"
   },
   {
-    "site_code": "70808",
     "name": "USPS Southdowns Baton Rouge",
     "city": "Baton Rouge",
     "state": "LA",
@@ -1801,10 +1800,10 @@
     "longitude": -91.1411,
     "county": "East Baton Rouge Parish",
     "cwa": "LIX",
-    "ugc_codes": "[\"LAZ048\",\"LAC033\"]"
+    "ugc_codes": "[\"LAZ048\",\"LAC033\"]",
+    "office_code": "70808"
   },
   {
-    "site_code": "40202",
     "name": "USPS Downtown Louisville",
     "city": "Louisville",
     "state": "KY",
@@ -1812,10 +1811,10 @@
     "longitude": -85.7585,
     "county": "Jefferson County",
     "cwa": "LMK",
-    "ugc_codes": "[\"KYZ030\",\"KYC111\"]"
+    "ugc_codes": "[\"KYZ030\",\"KYC111\"]",
+    "office_code": "40202"
   },
   {
-    "site_code": "40205",
     "name": "USPS Highlands Louisville",
     "city": "Louisville",
     "state": "KY",
@@ -1823,10 +1822,10 @@
     "longitude": -85.7192,
     "county": "Jefferson County",
     "cwa": "LMK",
-    "ugc_codes": "[\"KYZ030\",\"KYC111\"]"
+    "ugc_codes": "[\"KYZ030\",\"KYC111\"]",
+    "office_code": "40205"
   },
   {
-    "site_code": "40502",
     "name": "USPS Chevy Chase Lexington",
     "city": "Lexington",
     "state": "KY",
@@ -1834,10 +1833,10 @@
     "longitude": -84.4783,
     "county": "Fayette County",
     "cwa": "LMK",
-    "ugc_codes": "[\"KYZ041\",\"KYC067\"]"
+    "ugc_codes": "[\"KYZ041\",\"KYC067\"]",
+    "office_code": "40502"
   },
   {
-    "site_code": "40507",
     "name": "USPS Downtown Lexington",
     "city": "Lexington",
     "state": "KY",
@@ -1845,10 +1844,10 @@
     "longitude": -84.5037,
     "county": "Fayette County",
     "cwa": "LMK",
-    "ugc_codes": "[\"KYZ041\",\"KYC067\"]"
+    "ugc_codes": "[\"KYZ041\",\"KYC067\"]",
+    "office_code": "40507"
   },
   {
-    "site_code": "60601",
     "name": "USPS Chicago Loop",
     "city": "Chicago",
     "state": "IL",
@@ -1856,10 +1855,10 @@
     "longitude": -87.6233,
     "county": "Cook County",
     "cwa": "LOT",
-    "ugc_codes": "[\"ILZ104\",\"ILC031\"]"
+    "ugc_codes": "[\"ILZ104\",\"ILC031\"]",
+    "office_code": "60601"
   },
   {
-    "site_code": "60614",
     "name": "USPS Lincoln Park Chicago",
     "city": "Chicago",
     "state": "IL",
@@ -1867,10 +1866,10 @@
     "longitude": -87.6441,
     "county": "Cook County",
     "cwa": "LOT",
-    "ugc_codes": "[\"ILZ104\",\"ILC031\"]"
+    "ugc_codes": "[\"ILZ104\",\"ILC031\"]",
+    "office_code": "60614"
   },
   {
-    "site_code": "90012",
     "name": "USPS Downtown Los Angeles",
     "city": "Los Angeles",
     "state": "CA",
@@ -1878,10 +1877,10 @@
     "longitude": -118.2437,
     "county": "Los Angeles County",
     "cwa": "LOX",
-    "ugc_codes": "[\"CAZ368\",\"CAC037\"]"
+    "ugc_codes": "[\"CAZ368\",\"CAC037\"]",
+    "office_code": "90012"
   },
   {
-    "site_code": "90028",
     "name": "USPS Hollywood",
     "city": "Los Angeles",
     "state": "CA",
@@ -1889,10 +1888,10 @@
     "longitude": -118.3267,
     "county": "Los Angeles County",
     "cwa": "LOX",
-    "ugc_codes": "[\"CAZ368\",\"CAC037\"]"
+    "ugc_codes": "[\"CAZ368\",\"CAC037\"]",
+    "office_code": "90028"
   },
   {
-    "site_code": "93101",
     "name": "USPS Downtown Santa Barbara",
     "city": "Santa Barbara",
     "state": "CA",
@@ -1900,10 +1899,10 @@
     "longitude": -119.6982,
     "county": "Santa Barbara County",
     "cwa": "LOX",
-    "ugc_codes": "[\"CAZ350\",\"CAC083\"]"
+    "ugc_codes": "[\"CAZ350\",\"CAC083\"]",
+    "office_code": "93101"
   },
   {
-    "site_code": "93103",
     "name": "USPS East Santa Barbara",
     "city": "Santa Barbara",
     "state": "CA",
@@ -1911,10 +1910,10 @@
     "longitude": -119.6772,
     "county": "Santa Barbara County",
     "cwa": "LOX",
-    "ugc_codes": "[\"CAZ350\",\"CAC083\"]"
+    "ugc_codes": "[\"CAZ350\",\"CAC083\"]",
+    "office_code": "93103"
   },
   {
-    "site_code": "63101",
     "name": "USPS Downtown St Louis",
     "city": "Saint Louis",
     "state": "MO",
@@ -1922,10 +1921,10 @@
     "longitude": -90.1994,
     "county": "St. Louis city",
     "cwa": "LSX",
-    "ugc_codes": "[\"MOZ064\",\"MOC510\"]"
+    "ugc_codes": "[\"MOZ064\",\"MOC510\"]",
+    "office_code": "63101"
   },
   {
-    "site_code": "63139",
     "name": "USPS South St Louis",
     "city": "Saint Louis",
     "state": "MO",
@@ -1933,10 +1932,10 @@
     "longitude": -90.2784,
     "county": "St. Louis city",
     "cwa": "LSX",
-    "ugc_codes": "[\"MOZ064\",\"MOC510\"]"
+    "ugc_codes": "[\"MOZ064\",\"MOC510\"]",
+    "office_code": "63139"
   },
   {
-    "site_code": "65201",
     "name": "USPS Downtown Columbia MO",
     "city": "Columbia",
     "state": "MO",
@@ -1944,10 +1943,10 @@
     "longitude": -92.3341,
     "county": "Boone County",
     "cwa": "LSX",
-    "ugc_codes": "[\"MOZ041\",\"MOC019\"]"
+    "ugc_codes": "[\"MOZ041\",\"MOC019\"]",
+    "office_code": "65201"
   },
   {
-    "site_code": "65203",
     "name": "USPS South Columbia MO",
     "city": "Columbia",
     "state": "MO",
@@ -1955,10 +1954,10 @@
     "longitude": -92.3531,
     "county": "Boone County",
     "cwa": "LSX",
-    "ugc_codes": "[\"MOZ041\",\"MOC019\"]"
+    "ugc_codes": "[\"MOZ041\",\"MOC019\"]",
+    "office_code": "65203"
   },
   {
-    "site_code": "79401",
     "name": "USPS Downtown Lubbock",
     "city": "Lubbock",
     "state": "TX",
@@ -1966,10 +1965,10 @@
     "longitude": -101.8552,
     "county": "Lubbock County",
     "cwa": "LUB",
-    "ugc_codes": "[\"TXZ035\",\"TXC303\"]"
+    "ugc_codes": "[\"TXZ035\",\"TXC303\"]",
+    "office_code": "79401"
   },
   {
-    "site_code": "79410",
     "name": "USPS South Lubbock",
     "city": "Lubbock",
     "state": "TX",
@@ -1977,10 +1976,10 @@
     "longitude": -101.8782,
     "county": "Lubbock County",
     "cwa": "LUB",
-    "ugc_codes": "[\"TXZ035\",\"TXC303\"]"
+    "ugc_codes": "[\"TXZ035\",\"TXC303\"]",
+    "office_code": "79410"
   },
   {
-    "site_code": "20001",
     "name": "USPS Downtown Washington",
     "city": "Washington",
     "state": "DC",
@@ -1988,10 +1987,10 @@
     "longitude": -77.0181,
     "county": "District of Columbia",
     "cwa": "LWX",
-    "ugc_codes": "[\"DCZ001\",\"DCC001\"]"
+    "ugc_codes": "[\"DCZ001\",\"DCC001\"]",
+    "office_code": "20001"
   },
   {
-    "site_code": "20037",
     "name": "USPS Foggy Bottom",
     "city": "Washington",
     "state": "DC",
@@ -1999,10 +1998,10 @@
     "longitude": -77.0533,
     "county": "District of Columbia",
     "cwa": "LWX",
-    "ugc_codes": "[\"DCZ001\",\"DCC001\"]"
+    "ugc_codes": "[\"DCZ001\",\"DCC001\"]",
+    "office_code": "20037"
   },
   {
-    "site_code": "21201",
     "name": "USPS Downtown Baltimore",
     "city": "Baltimore",
     "state": "MD",
@@ -2010,10 +2009,10 @@
     "longitude": -76.6122,
     "county": "Baltimore city",
     "cwa": "LWX",
-    "ugc_codes": "[\"MDZ011\",\"MDC510\"]"
+    "ugc_codes": "[\"MDZ011\",\"MDC510\"]",
+    "office_code": "21201"
   },
   {
-    "site_code": "21224",
     "name": "USPS Canton Baltimore",
     "city": "Baltimore",
     "state": "MD",
@@ -2021,10 +2020,10 @@
     "longitude": -76.5734,
     "county": "Baltimore city",
     "cwa": "LWX",
-    "ugc_codes": "[\"MDZ011\",\"MDC510\"]"
+    "ugc_codes": "[\"MDZ011\",\"MDC510\"]",
+    "office_code": "21224"
   },
   {
-    "site_code": "72201",
     "name": "USPS Downtown Little Rock",
     "city": "Little Rock",
     "state": "AR",
@@ -2032,10 +2031,10 @@
     "longitude": -92.2896,
     "county": "Pulaski County",
     "cwa": "LZK",
-    "ugc_codes": "[\"ARZ044\",\"ARC119\"]"
+    "ugc_codes": "[\"ARZ044\",\"ARC119\"]",
+    "office_code": "72201"
   },
   {
-    "site_code": "72205",
     "name": "USPS Hillcrest Little Rock",
     "city": "Little Rock",
     "state": "AR",
@@ -2043,10 +2042,10 @@
     "longitude": -92.3246,
     "county": "Pulaski County",
     "cwa": "LZK",
-    "ugc_codes": "[\"ARZ044\",\"ARC119\"]"
+    "ugc_codes": "[\"ARZ044\",\"ARC119\"]",
+    "office_code": "72205"
   },
   {
-    "site_code": "38103",
     "name": "USPS Downtown Memphis",
     "city": "Memphis",
     "state": "TN",
@@ -2054,10 +2053,10 @@
     "longitude": -90.049,
     "county": "Shelby County",
     "cwa": "MEG",
-    "ugc_codes": "[\"TNZ088\",\"TNC157\"]"
+    "ugc_codes": "[\"TNZ088\",\"TNC157\"]",
+    "office_code": "38103"
   },
   {
-    "site_code": "38117",
     "name": "USPS East Memphis",
     "city": "Memphis",
     "state": "TN",
@@ -2065,10 +2064,10 @@
     "longitude": -89.9568,
     "county": "Shelby County",
     "cwa": "MEG",
-    "ugc_codes": "[\"TNZ088\",\"TNC157\"]"
+    "ugc_codes": "[\"TNZ088\",\"TNC157\"]",
+    "office_code": "38117"
   },
   {
-    "site_code": "33101",
     "name": "USPS Downtown Miami",
     "city": "Miami",
     "state": "FL",
@@ -2076,10 +2075,10 @@
     "longitude": -80.1918,
     "county": "Miami-Dade County",
     "cwa": "MFL",
-    "ugc_codes": "[\"FLZ173\",\"FLC086\"]"
+    "ugc_codes": "[\"FLZ173\",\"FLC086\"]",
+    "office_code": "33101"
   },
   {
-    "site_code": "33301",
     "name": "USPS Fort Lauderdale",
     "city": "Fort Lauderdale",
     "state": "FL",
@@ -2087,10 +2086,10 @@
     "longitude": -80.1374,
     "county": "Broward County",
     "cwa": "MFL",
-    "ugc_codes": "[\"FLZ172\",\"FLC011\"]"
+    "ugc_codes": "[\"FLZ172\",\"FLC011\"]",
+    "office_code": "33301"
   },
   {
-    "site_code": "34102",
     "name": "USPS Downtown Naples",
     "city": "Naples",
     "state": "FL",
@@ -2098,10 +2097,10 @@
     "longitude": -81.7948,
     "county": "Collier County",
     "cwa": "MFL",
-    "ugc_codes": "[\"FLZ069\",\"FLC021\"]"
+    "ugc_codes": "[\"FLZ069\",\"FLC021\"]",
+    "office_code": "34102"
   },
   {
-    "site_code": "34108",
     "name": "USPS North Naples",
     "city": "Naples",
     "state": "FL",
@@ -2109,10 +2108,10 @@
     "longitude": -81.7968,
     "county": "Collier County",
     "cwa": "MFL",
-    "ugc_codes": "[\"FLZ069\",\"FLC021\"]"
+    "ugc_codes": "[\"FLZ069\",\"FLC021\"]",
+    "office_code": "34108"
   },
   {
-    "site_code": "53202",
     "name": "USPS Downtown Milwaukee",
     "city": "Milwaukee",
     "state": "WI",
@@ -2120,10 +2119,10 @@
     "longitude": -87.9065,
     "county": "Milwaukee County",
     "cwa": "MKX",
-    "ugc_codes": "[\"WIZ066\",\"WIC079\"]"
+    "ugc_codes": "[\"WIZ066\",\"WIC079\"]",
+    "office_code": "53202"
   },
   {
-    "site_code": "53211",
     "name": "USPS Shorewood Milwaukee",
     "city": "Milwaukee",
     "state": "WI",
@@ -2131,10 +2130,10 @@
     "longitude": -87.8925,
     "county": "Milwaukee County",
     "cwa": "MKX",
-    "ugc_codes": "[\"WIZ066\",\"WIC079\"]"
+    "ugc_codes": "[\"WIZ066\",\"WIC079\"]",
+    "office_code": "53211"
   },
   {
-    "site_code": "53703",
     "name": "USPS Isthmus Madison",
     "city": "Madison",
     "state": "WI",
@@ -2142,10 +2141,10 @@
     "longitude": -89.3837,
     "county": "Dane County",
     "cwa": "MKX",
-    "ugc_codes": "[\"WIZ063\",\"WIC025\"]"
+    "ugc_codes": "[\"WIZ063\",\"WIC025\"]",
+    "office_code": "53703"
   },
   {
-    "site_code": "53711",
     "name": "USPS West Madison",
     "city": "Madison",
     "state": "WI",
@@ -2153,10 +2152,10 @@
     "longitude": -89.4437,
     "county": "Dane County",
     "cwa": "MKX",
-    "ugc_codes": "[\"WIZ063\",\"WIC025\"]"
+    "ugc_codes": "[\"WIZ063\",\"WIC025\"]",
+    "office_code": "53711"
   },
   {
-    "site_code": "32801",
     "name": "USPS Downtown Orlando",
     "city": "Orlando",
     "state": "FL",
@@ -2164,10 +2163,10 @@
     "longitude": -81.3792,
     "county": "Orange County",
     "cwa": "MLB",
-    "ugc_codes": "[\"FLZ045\",\"FLC095\"]"
+    "ugc_codes": "[\"FLZ045\",\"FLC095\"]",
+    "office_code": "32801"
   },
   {
-    "site_code": "32819",
     "name": "USPS International Drive Orlando",
     "city": "Orlando",
     "state": "FL",
@@ -2175,10 +2174,10 @@
     "longitude": -81.468,
     "county": "Orange County",
     "cwa": "MLB",
-    "ugc_codes": "[\"FLZ045\",\"FLC095\"]"
+    "ugc_codes": "[\"FLZ045\",\"FLC095\"]",
+    "office_code": "32819"
   },
   {
-    "site_code": "32501",
     "name": "USPS Downtown Pensacola",
     "city": "Pensacola",
     "state": "FL",
@@ -2186,10 +2185,10 @@
     "longitude": -87.2169,
     "county": "Escambia County",
     "cwa": "MOB",
-    "ugc_codes": "[\"FLZ202\",\"FLC033\"]"
+    "ugc_codes": "[\"FLZ202\",\"FLC033\"]",
+    "office_code": "32501"
   },
   {
-    "site_code": "32503",
     "name": "USPS East Hill Pensacola",
     "city": "Pensacola",
     "state": "FL",
@@ -2197,10 +2196,10 @@
     "longitude": -87.2039,
     "county": "Escambia County",
     "cwa": "MOB",
-    "ugc_codes": "[\"FLZ202\",\"FLC033\"]"
+    "ugc_codes": "[\"FLZ202\",\"FLC033\"]",
+    "office_code": "32503"
   },
   {
-    "site_code": "36602",
     "name": "USPS Downtown Mobile",
     "city": "Mobile",
     "state": "AL",
@@ -2208,10 +2207,10 @@
     "longitude": -88.0399,
     "county": "Mobile County",
     "cwa": "MOB",
-    "ugc_codes": "[\"ALZ263\",\"ALC097\"]"
+    "ugc_codes": "[\"ALZ263\",\"ALC097\"]",
+    "office_code": "36602"
   },
   {
-    "site_code": "36607",
     "name": "USPS Midtown Mobile",
     "city": "Mobile",
     "state": "AL",
@@ -2219,10 +2218,10 @@
     "longitude": -88.1029,
     "county": "Mobile County",
     "cwa": "MOB",
-    "ugc_codes": "[\"ALZ263\",\"ALC097\"]"
+    "ugc_codes": "[\"ALZ263\",\"ALC097\"]",
+    "office_code": "36607"
   },
   {
-    "site_code": "55101",
     "name": "USPS Downtown St Paul",
     "city": "Saint Paul",
     "state": "MN",
@@ -2230,10 +2229,10 @@
     "longitude": -93.09,
     "county": "Ramsey County",
     "cwa": "MPX",
-    "ugc_codes": "[\"MNZ062\",\"MNC123\"]"
+    "ugc_codes": "[\"MNZ062\",\"MNC123\"]",
+    "office_code": "55101"
   },
   {
-    "site_code": "55401",
     "name": "USPS Downtown Minneapolis",
     "city": "Minneapolis",
     "state": "MN",
@@ -2241,10 +2240,10 @@
     "longitude": -93.2655,
     "county": "Hennepin County",
     "cwa": "MPX",
-    "ugc_codes": "[\"MNZ060\",\"MNC053\"]"
+    "ugc_codes": "[\"MNZ060\",\"MNC053\"]",
+    "office_code": "55401"
   },
   {
-    "site_code": "37402",
     "name": "USPS Downtown Chattanooga",
     "city": "Chattanooga",
     "state": "TN",
@@ -2252,10 +2251,10 @@
     "longitude": -85.3097,
     "county": "Hamilton County",
     "cwa": "MRX",
-    "ugc_codes": "[\"TNZ099\",\"TNC065\"]"
+    "ugc_codes": "[\"TNZ099\",\"TNC065\"]",
+    "office_code": "37402"
   },
   {
-    "site_code": "37411",
     "name": "USPS East Brainerd Chattanooga",
     "city": "Chattanooga",
     "state": "TN",
@@ -2263,10 +2262,10 @@
     "longitude": -85.2109,
     "county": "Hamilton County",
     "cwa": "MRX",
-    "ugc_codes": "[\"TNZ099\",\"TNC065\"]"
+    "ugc_codes": "[\"TNZ099\",\"TNC065\"]",
+    "office_code": "37411"
   },
   {
-    "site_code": "37902",
     "name": "USPS Downtown Knoxville",
     "city": "Knoxville",
     "state": "TN",
@@ -2274,10 +2273,10 @@
     "longitude": -83.9207,
     "county": "Knox County",
     "cwa": "MRX",
-    "ugc_codes": "[\"TNZ069\",\"TNC093\"]"
+    "ugc_codes": "[\"TNZ069\",\"TNC093\"]",
+    "office_code": "37902"
   },
   {
-    "site_code": "37919",
     "name": "USPS West Knoxville",
     "city": "Knoxville",
     "state": "TN",
@@ -2285,10 +2284,10 @@
     "longitude": -84.0177,
     "county": "Knox County",
     "cwa": "MRX",
-    "ugc_codes": "[\"TNZ069\",\"TNC093\"]"
+    "ugc_codes": "[\"TNZ069\",\"TNC093\"]",
+    "office_code": "37919"
   },
   {
-    "site_code": "59801",
     "name": "USPS Downtown Missoula",
     "city": "Missoula",
     "state": "MT",
@@ -2296,10 +2295,10 @@
     "longitude": -113.994,
     "county": "Missoula County",
     "cwa": "MSO",
-    "ugc_codes": "[\"MTZ005\",\"MTC063\"]"
+    "ugc_codes": "[\"MTZ005\",\"MTC063\"]",
+    "office_code": "59801"
   },
   {
-    "site_code": "59802",
     "name": "USPS University Missoula",
     "city": "Missoula",
     "state": "MT",
@@ -2307,10 +2306,10 @@
     "longitude": -113.9627,
     "county": "Missoula County",
     "cwa": "MSO",
-    "ugc_codes": "[\"MTZ005\",\"MTC063\"]"
+    "ugc_codes": "[\"MTZ005\",\"MTC063\"]",
+    "office_code": "59802"
   },
   {
-    "site_code": "94102",
     "name": "USPS Civic Center San Francisco",
     "city": "San Francisco",
     "state": "CA",
@@ -2318,10 +2317,10 @@
     "longitude": -122.4167,
     "county": "San Francisco County",
     "cwa": "MTR",
-    "ugc_codes": "[\"CAZ006\",\"CAC075\"]"
+    "ugc_codes": "[\"CAZ006\",\"CAC075\"]",
+    "office_code": "94102"
   },
   {
-    "site_code": "94612",
     "name": "USPS Downtown Oakland",
     "city": "Oakland",
     "state": "CA",
@@ -2329,10 +2328,10 @@
     "longitude": -122.2711,
     "county": "Alameda County",
     "cwa": "MTR",
-    "ugc_codes": "[\"CAZ508\",\"CAC001\"]"
+    "ugc_codes": "[\"CAZ508\",\"CAC001\"]",
+    "office_code": "94612"
   },
   {
-    "site_code": "95113",
     "name": "USPS Downtown San Jose",
     "city": "San Jose",
     "state": "CA",
@@ -2340,10 +2339,10 @@
     "longitude": -121.8853,
     "county": "Santa Clara County",
     "cwa": "MTR",
-    "ugc_codes": "[\"CAZ513\",\"CAC085\"]"
+    "ugc_codes": "[\"CAZ513\",\"CAC085\"]",
+    "office_code": "95113"
   },
   {
-    "site_code": "95126",
     "name": "USPS West San Jose",
     "city": "San Jose",
     "state": "CA",
@@ -2351,10 +2350,10 @@
     "longitude": -121.9063,
     "county": "Santa Clara County",
     "cwa": "MTR",
-    "ugc_codes": "[\"CAZ513\",\"CAC085\"]"
+    "ugc_codes": "[\"CAZ513\",\"CAC085\"]",
+    "office_code": "95126"
   },
   {
-    "site_code": "68102",
     "name": "USPS Downtown Omaha",
     "city": "Omaha",
     "state": "NE",
@@ -2362,10 +2361,10 @@
     "longitude": -95.998,
     "county": "Douglas County",
     "cwa": "OAX",
-    "ugc_codes": "[\"NEZ052\",\"NEC055\"]"
+    "ugc_codes": "[\"NEZ052\",\"NEC055\"]",
+    "office_code": "68102"
   },
   {
-    "site_code": "68132",
     "name": "USPS Dundee Omaha",
     "city": "Omaha",
     "state": "NE",
@@ -2373,10 +2372,10 @@
     "longitude": -96.0239,
     "county": "Douglas County",
     "cwa": "OAX",
-    "ugc_codes": "[\"NEZ052\",\"NEC055\"]"
+    "ugc_codes": "[\"NEZ052\",\"NEC055\"]",
+    "office_code": "68132"
   },
   {
-    "site_code": "68502",
     "name": "USPS Near South Lincoln",
     "city": "Lincoln",
     "state": "NE",
@@ -2384,10 +2383,10 @@
     "longitude": -96.6925,
     "county": "Lancaster County",
     "cwa": "OAX",
-    "ugc_codes": "[\"NEZ066\",\"NEC109\"]"
+    "ugc_codes": "[\"NEZ066\",\"NEC109\"]",
+    "office_code": "68502"
   },
   {
-    "site_code": "68508",
     "name": "USPS Downtown Lincoln",
     "city": "Lincoln",
     "state": "NE",
@@ -2395,10 +2394,10 @@
     "longitude": -96.7025,
     "county": "Lancaster County",
     "cwa": "OAX",
-    "ugc_codes": "[\"NEZ066\",\"NEC109\"]"
+    "ugc_codes": "[\"NEZ066\",\"NEC109\"]",
+    "office_code": "68508"
   },
   {
-    "site_code": "37203",
     "name": "USPS Midtown Nashville",
     "city": "Nashville",
     "state": "TN",
@@ -2406,10 +2405,10 @@
     "longitude": -86.7844,
     "county": "Davidson County",
     "cwa": "OHX",
-    "ugc_codes": "[\"TNZ027\",\"TNC037\"]"
+    "ugc_codes": "[\"TNZ027\",\"TNC037\"]",
+    "office_code": "37203"
   },
   {
-    "site_code": "37206",
     "name": "USPS East Nashville",
     "city": "Nashville",
     "state": "TN",
@@ -2417,10 +2416,10 @@
     "longitude": -86.7444,
     "county": "Davidson County",
     "cwa": "OHX",
-    "ugc_codes": "[\"TNZ027\",\"TNC037\"]"
+    "ugc_codes": "[\"TNZ027\",\"TNC037\"]",
+    "office_code": "37206"
   },
   {
-    "site_code": "06510",
     "name": "USPS Downtown New Haven",
     "city": "New Haven",
     "state": "CT",
@@ -2428,10 +2427,10 @@
     "longitude": -72.9279,
     "county": "New Haven County",
     "cwa": "OKX",
-    "ugc_codes": "[\"CTZ010\",\"CTC009\"]"
+    "ugc_codes": "[\"CTZ010\",\"CTC009\"]",
+    "office_code": "06510"
   },
   {
-    "site_code": "06511",
     "name": "USPS East Rock New Haven",
     "city": "New Haven",
     "state": "CT",
@@ -2439,10 +2438,10 @@
     "longitude": -72.9157,
     "county": "New Haven County",
     "cwa": "OKX",
-    "ugc_codes": "[\"CTZ010\",\"CTC009\"]"
+    "ugc_codes": "[\"CTZ010\",\"CTC009\"]",
+    "office_code": "06511"
   },
   {
-    "site_code": "10001",
     "name": "USPS Midtown Manhattan",
     "city": "New York City",
     "state": "NY",
@@ -2450,10 +2449,10 @@
     "longitude": -73.9971,
     "county": "New York County",
     "cwa": "OKX",
-    "ugc_codes": "[\"NYZ072\",\"NYC061\"]"
+    "ugc_codes": "[\"NYZ072\",\"NYC061\"]",
+    "office_code": "10001"
   },
   {
-    "site_code": "10451",
     "name": "USPS South Bronx",
     "city": "Bronx",
     "state": "NY",
@@ -2461,10 +2460,10 @@
     "longitude": -73.9271,
     "county": "Bronx County",
     "cwa": "OKX",
-    "ugc_codes": "[\"NYZ073\",\"NYC005\"]"
+    "ugc_codes": "[\"NYZ073\",\"NYC005\"]",
+    "office_code": "10451"
   },
   {
-    "site_code": "99201",
     "name": "USPS Downtown Spokane",
     "city": "Spokane",
     "state": "WA",
@@ -2472,10 +2471,10 @@
     "longitude": -117.426,
     "county": "Spokane County",
     "cwa": "OTX",
-    "ugc_codes": "[\"WAZ036\",\"WAC063\"]"
+    "ugc_codes": "[\"WAZ036\",\"WAC063\"]",
+    "office_code": "99201"
   },
   {
-    "site_code": "99207",
     "name": "USPS Northeast Spokane",
     "city": "Spokane",
     "state": "WA",
@@ -2483,10 +2482,10 @@
     "longitude": -117.3859,
     "county": "Spokane County",
     "cwa": "OTX",
-    "ugc_codes": "[\"WAZ036\",\"WAC063\"]"
+    "ugc_codes": "[\"WAZ036\",\"WAC063\"]",
+    "office_code": "99207"
   },
   {
-    "site_code": "73102",
     "name": "USPS Downtown Oklahoma City",
     "city": "Oklahoma City",
     "state": "OK",
@@ -2494,10 +2493,10 @@
     "longitude": -97.5164,
     "county": "Oklahoma County",
     "cwa": "OUN",
-    "ugc_codes": "[\"OKZ025\",\"OKC109\"]"
+    "ugc_codes": "[\"OKZ025\",\"OKC109\"]",
+    "office_code": "73102"
   },
   {
-    "site_code": "73120",
     "name": "USPS North Oklahoma City",
     "city": "Oklahoma City",
     "state": "OK",
@@ -2505,10 +2504,10 @@
     "longitude": -97.5424,
     "county": "Oklahoma County",
     "cwa": "OUN",
-    "ugc_codes": "[\"OKZ025\",\"OKC109\"]"
+    "ugc_codes": "[\"OKZ025\",\"OKC109\"]",
+    "office_code": "73120"
   },
   {
-    "site_code": "47708",
     "name": "USPS Downtown Evansville",
     "city": "Evansville",
     "state": "IN",
@@ -2516,10 +2515,10 @@
     "longitude": -87.5711,
     "county": "Vanderburgh County",
     "cwa": "PAH",
-    "ugc_codes": "[\"INZ086\",\"INC163\"]"
+    "ugc_codes": "[\"INZ086\",\"INC163\"]",
+    "office_code": "47708"
   },
   {
-    "site_code": "47714",
     "name": "USPS East Evansville",
     "city": "Evansville",
     "state": "IN",
@@ -2527,10 +2526,10 @@
     "longitude": -87.5227,
     "county": "Vanderburgh County",
     "cwa": "PAH",
-    "ugc_codes": "[\"INZ086\",\"INC163\"]"
+    "ugc_codes": "[\"INZ086\",\"INC163\"]",
+    "office_code": "47714"
   },
   {
-    "site_code": "15213",
     "name": "USPS Oakland Pittsburgh",
     "city": "Pittsburgh",
     "state": "PA",
@@ -2538,10 +2537,10 @@
     "longitude": -79.9558,
     "county": "Allegheny County",
     "cwa": "PBZ",
-    "ugc_codes": "[\"PAZ021\",\"PAC003\"]"
+    "ugc_codes": "[\"PAZ021\",\"PAC003\"]",
+    "office_code": "15213"
   },
   {
-    "site_code": "15222",
     "name": "USPS Downtown Pittsburgh",
     "city": "Pittsburgh",
     "state": "PA",
@@ -2549,10 +2548,10 @@
     "longitude": -80.0008,
     "county": "Allegheny County",
     "cwa": "PBZ",
-    "ugc_codes": "[\"PAZ021\",\"PAC003\"]"
+    "ugc_codes": "[\"PAZ021\",\"PAC003\"]",
+    "office_code": "15222"
   },
   {
-    "site_code": "97701",
     "name": "USPS Downtown Bend",
     "city": "Bend",
     "state": "OR",
@@ -2560,10 +2559,10 @@
     "longitude": -121.3153,
     "county": "Deschutes County",
     "cwa": "PDT",
-    "ugc_codes": "[\"ORZ511\",\"ORC017\"]"
+    "ugc_codes": "[\"ORZ511\",\"ORC017\"]",
+    "office_code": "97701"
   },
   {
-    "site_code": "97702",
     "name": "USPS South Bend OR",
     "city": "Bend",
     "state": "OR",
@@ -2571,10 +2570,10 @@
     "longitude": -121.3153,
     "county": "Deschutes County",
     "cwa": "PDT",
-    "ugc_codes": "[\"ORZ511\",\"ORC017\"]"
+    "ugc_codes": "[\"ORZ511\",\"ORC017\"]",
+    "office_code": "97702"
   },
   {
-    "site_code": "08608",
     "name": "USPS Downtown Trenton",
     "city": "Trenton",
     "state": "NJ",
@@ -2582,10 +2581,10 @@
     "longitude": -74.7597,
     "county": "Mercer County",
     "cwa": "PHI",
-    "ugc_codes": "[\"NJZ015\",\"NJC021\"]"
+    "ugc_codes": "[\"NJZ015\",\"NJC021\"]",
+    "office_code": "08608"
   },
   {
-    "site_code": "08618",
     "name": "USPS West Trenton",
     "city": "Trenton",
     "state": "NJ",
@@ -2593,10 +2592,10 @@
     "longitude": -74.7747,
     "county": "Mercer County",
     "cwa": "PHI",
-    "ugc_codes": "[\"NJZ015\",\"NJC021\"]"
+    "ugc_codes": "[\"NJZ015\",\"NJC021\"]",
+    "office_code": "08618"
   },
   {
-    "site_code": "19102",
     "name": "USPS Center City Philadelphia",
     "city": "Philadelphia",
     "state": "PA",
@@ -2604,10 +2603,10 @@
     "longitude": -75.1643,
     "county": "Philadelphia County",
     "cwa": "PHI",
-    "ugc_codes": "[\"PAZ071\",\"PAC101\"]"
+    "ugc_codes": "[\"PAZ071\",\"PAC101\"]",
+    "office_code": "19102"
   },
   {
-    "site_code": "19134",
     "name": "USPS Kensington Philadelphia",
     "city": "Philadelphia",
     "state": "PA",
@@ -2615,10 +2614,10 @@
     "longitude": -75.1177,
     "county": "Philadelphia County",
     "cwa": "PHI",
-    "ugc_codes": "[\"PAZ071\",\"PAC101\"]"
+    "ugc_codes": "[\"PAZ071\",\"PAC101\"]",
+    "office_code": "19134"
   },
   {
-    "site_code": "19801",
     "name": "USPS Downtown Wilmington DE",
     "city": "Wilmington",
     "state": "DE",
@@ -2626,10 +2625,10 @@
     "longitude": -75.5484,
     "county": "New Castle County",
     "cwa": "PHI",
-    "ugc_codes": "[\"DEZ001\",\"DEC003\"]"
+    "ugc_codes": "[\"DEZ001\",\"DEC003\"]",
+    "office_code": "19801"
   },
   {
-    "site_code": "19805",
     "name": "USPS West Wilmington DE",
     "city": "Wilmington",
     "state": "DE",
@@ -2637,10 +2636,10 @@
     "longitude": -75.568,
     "county": "New Castle County",
     "cwa": "PHI",
-    "ugc_codes": "[\"DEZ001\",\"DEC003\"]"
+    "ugc_codes": "[\"DEZ001\",\"DEC003\"]",
+    "office_code": "19805"
   },
   {
-    "site_code": "19901",
     "name": "USPS Downtown Dover",
     "city": "Dover",
     "state": "DE",
@@ -2648,10 +2647,10 @@
     "longitude": -75.5244,
     "county": "Kent County",
     "cwa": "PHI",
-    "ugc_codes": "[\"DEZ002\",\"DEC001\"]"
+    "ugc_codes": "[\"DEZ002\",\"DEC001\"]",
+    "office_code": "19901"
   },
   {
-    "site_code": "19904",
     "name": "USPS North Dover",
     "city": "Dover",
     "state": "DE",
@@ -2659,10 +2658,10 @@
     "longitude": -75.5224,
     "county": "Kent County",
     "cwa": "PHI",
-    "ugc_codes": "[\"DEZ002\",\"DEC001\"]"
+    "ugc_codes": "[\"DEZ002\",\"DEC001\"]",
+    "office_code": "19904"
   },
   {
-    "site_code": "97201",
     "name": "USPS Downtown Portland",
     "city": "Portland",
     "state": "OR",
@@ -2670,10 +2669,10 @@
     "longitude": -122.675,
     "county": "Multnomah County",
     "cwa": "PQR",
-    "ugc_codes": "[\"ORZ111\",\"ORC051\"]"
+    "ugc_codes": "[\"ORZ111\",\"ORC051\"]",
+    "office_code": "97201"
   },
   {
-    "site_code": "97214",
     "name": "USPS Southeast Portland",
     "city": "Portland",
     "state": "OR",
@@ -2681,10 +2680,10 @@
     "longitude": -122.6511,
     "county": "Multnomah County",
     "cwa": "PQR",
-    "ugc_codes": "[\"ORZ111\",\"ORC051\"]"
+    "ugc_codes": "[\"ORZ111\",\"ORC051\"]",
+    "office_code": "97214"
   },
   {
-    "site_code": "97401",
     "name": "USPS Downtown Eugene",
     "city": "Eugene",
     "state": "OR",
@@ -2692,10 +2691,10 @@
     "longitude": -123.0868,
     "county": "Lane County",
     "cwa": "PQR",
-    "ugc_codes": "[\"ORZ118\",\"ORC039\"]"
+    "ugc_codes": "[\"ORZ118\",\"ORC039\"]",
+    "office_code": "97401"
   },
   {
-    "site_code": "97405",
     "name": "USPS South Eugene",
     "city": "Eugene",
     "state": "OR",
@@ -2703,10 +2702,10 @@
     "longitude": -123.0868,
     "county": "Lane County",
     "cwa": "PQR",
-    "ugc_codes": "[\"ORZ118\",\"ORC039\"]"
+    "ugc_codes": "[\"ORZ118\",\"ORC039\"]",
+    "office_code": "97405"
   },
   {
-    "site_code": "85004",
     "name": "USPS Downtown Phoenix",
     "city": "Phoenix",
     "state": "AZ",
@@ -2714,10 +2713,10 @@
     "longitude": -112.074,
     "county": "Maricopa County",
     "cwa": "PSR",
-    "ugc_codes": "[\"AZZ543\",\"AZC013\"]"
+    "ugc_codes": "[\"AZZ543\",\"AZC013\"]",
+    "office_code": "85004"
   },
   {
-    "site_code": "85281",
     "name": "USPS Tempe",
     "city": "Tempe",
     "state": "AZ",
@@ -2725,10 +2724,10 @@
     "longitude": -111.9401,
     "county": "Maricopa County",
     "cwa": "PSR",
-    "ugc_codes": "[\"AZZ548\",\"AZC013\"]"
+    "ugc_codes": "[\"AZZ548\",\"AZC013\"]",
+    "office_code": "85281"
   },
   {
-    "site_code": "80903",
     "name": "USPS Downtown Colorado Springs",
     "city": "Colorado Springs",
     "state": "CO",
@@ -2736,10 +2735,10 @@
     "longitude": -104.8214,
     "county": "El Paso County",
     "cwa": "PUB",
-    "ugc_codes": "[\"COZ085\",\"COC041\"]"
+    "ugc_codes": "[\"COZ085\",\"COC041\"]",
+    "office_code": "80903"
   },
   {
-    "site_code": "80909",
     "name": "USPS East Colorado Springs",
     "city": "Colorado Springs",
     "state": "CO",
@@ -2747,10 +2746,10 @@
     "longitude": -104.7827,
     "county": "El Paso County",
     "cwa": "PUB",
-    "ugc_codes": "[\"COZ085\",\"COC041\"]"
+    "ugc_codes": "[\"COZ085\",\"COC041\"]",
+    "office_code": "80909"
   },
   {
-    "site_code": "27401",
     "name": "USPS Downtown Greensboro",
     "city": "Greensboro",
     "state": "NC",
@@ -2758,10 +2757,10 @@
     "longitude": -79.792,
     "county": "Guilford County",
     "cwa": "RAH",
-    "ugc_codes": "[\"NCZ022\",\"NCC081\"]"
+    "ugc_codes": "[\"NCZ022\",\"NCC081\"]",
+    "office_code": "27401"
   },
   {
-    "site_code": "27408",
     "name": "USPS College Hill Greensboro",
     "city": "Greensboro",
     "state": "NC",
@@ -2769,10 +2768,10 @@
     "longitude": -79.7681,
     "county": "Guilford County",
     "cwa": "RAH",
-    "ugc_codes": "[\"NCZ022\",\"NCC081\"]"
+    "ugc_codes": "[\"NCZ022\",\"NCC081\"]",
+    "office_code": "27408"
   },
   {
-    "site_code": "27601",
     "name": "USPS Downtown Raleigh",
     "city": "Raleigh",
     "state": "NC",
@@ -2780,10 +2779,10 @@
     "longitude": -78.6382,
     "county": "Wake County",
     "cwa": "RAH",
-    "ugc_codes": "[\"NCZ041\",\"NCC183\"]"
+    "ugc_codes": "[\"NCZ041\",\"NCC183\"]",
+    "office_code": "27601"
   },
   {
-    "site_code": "27607",
     "name": "USPS West Raleigh",
     "city": "Raleigh",
     "state": "NC",
@@ -2791,10 +2790,10 @@
     "longitude": -78.673,
     "county": "Wake County",
     "cwa": "RAH",
-    "ugc_codes": "[\"NCZ041\",\"NCC183\"]"
+    "ugc_codes": "[\"NCZ041\",\"NCC183\"]",
+    "office_code": "27607"
   },
   {
-    "site_code": "27701",
     "name": "USPS Downtown Durham",
     "city": "Durham",
     "state": "NC",
@@ -2802,10 +2801,10 @@
     "longitude": -78.8986,
     "county": "Durham County",
     "cwa": "RAH",
-    "ugc_codes": "[\"NCZ025\",\"NCC063\"]"
+    "ugc_codes": "[\"NCZ025\",\"NCC063\"]",
+    "office_code": "27701"
   },
   {
-    "site_code": "27705",
     "name": "USPS West Durham",
     "city": "Durham",
     "state": "NC",
@@ -2813,10 +2812,10 @@
     "longitude": -79.0023,
     "county": "Durham County",
     "cwa": "RAH",
-    "ugc_codes": "[\"NCZ025\",\"NCC063\"]"
+    "ugc_codes": "[\"NCZ025\",\"NCC063\"]",
+    "office_code": "27705"
   },
   {
-    "site_code": "89501",
     "name": "USPS Downtown Reno",
     "city": "Reno",
     "state": "NV",
@@ -2824,10 +2823,10 @@
     "longitude": -119.8138,
     "county": "Washoe County",
     "cwa": "REV",
-    "ugc_codes": "[\"NVZ003\",\"NVC031\"]"
+    "ugc_codes": "[\"NVZ003\",\"NVC031\"]",
+    "office_code": "89501"
   },
   {
-    "site_code": "89509",
     "name": "USPS South Reno",
     "city": "Reno",
     "state": "NV",
@@ -2835,10 +2834,10 @@
     "longitude": -119.8228,
     "county": "Washoe County",
     "cwa": "REV",
-    "ugc_codes": "[\"NVZ003\",\"NVC031\"]"
+    "ugc_codes": "[\"NVZ003\",\"NVC031\"]",
+    "office_code": "89509"
   },
   {
-    "site_code": "25301",
     "name": "USPS Downtown Charleston WV",
     "city": "Charleston",
     "state": "WV",
@@ -2846,10 +2845,10 @@
     "longitude": -81.6326,
     "county": "Kanawha County",
     "cwa": "RLX",
-    "ugc_codes": "[\"WVZ015\",\"WVC039\"]"
+    "ugc_codes": "[\"WVZ015\",\"WVC039\"]",
+    "office_code": "25301"
   },
   {
-    "site_code": "25304",
     "name": "USPS South Hills Charleston WV",
     "city": "Charleston",
     "state": "WV",
@@ -2857,10 +2856,10 @@
     "longitude": -81.6256,
     "county": "Kanawha County",
     "cwa": "RLX",
-    "ugc_codes": "[\"WVZ015\",\"WVC039\"]"
+    "ugc_codes": "[\"WVZ015\",\"WVC039\"]",
+    "office_code": "25304"
   },
   {
-    "site_code": "24011",
     "name": "USPS Downtown Roanoke",
     "city": "Roanoke",
     "state": "VA",
@@ -2868,10 +2867,10 @@
     "longitude": -79.9414,
     "county": "City of Roanoke",
     "cwa": "RNK",
-    "ugc_codes": "[\"VAZ022\",\"VAC770\"]"
+    "ugc_codes": "[\"VAZ022\",\"VAC770\"]",
+    "office_code": "24011"
   },
   {
-    "site_code": "24016",
     "name": "USPS South Roanoke",
     "city": "Roanoke",
     "state": "VA",
@@ -2879,10 +2878,10 @@
     "longitude": -79.9594,
     "county": "City of Roanoke",
     "cwa": "RNK",
-    "ugc_codes": "[\"VAZ022\",\"VAC770\"]"
+    "ugc_codes": "[\"VAZ022\",\"VAC770\"]",
+    "office_code": "24016"
   },
   {
-    "site_code": "98101",
     "name": "USPS Downtown Seattle",
     "city": "Seattle",
     "state": "WA",
@@ -2890,10 +2889,10 @@
     "longitude": -122.3321,
     "county": "King County",
     "cwa": "SEW",
-    "ugc_codes": "[\"WAZ315\",\"WAC033\"]"
+    "ugc_codes": "[\"WAZ315\",\"WAC033\"]",
+    "office_code": "98101"
   },
   {
-    "site_code": "98115",
     "name": "USPS University District Seattle",
     "city": "Seattle",
     "state": "WA",
@@ -2901,10 +2900,10 @@
     "longitude": -122.2977,
     "county": "King County",
     "cwa": "SEW",
-    "ugc_codes": "[\"WAZ315\",\"WAC033\"]"
+    "ugc_codes": "[\"WAZ315\",\"WAC033\"]",
+    "office_code": "98115"
   },
   {
-    "site_code": "98402",
     "name": "USPS Downtown Tacoma",
     "city": "Tacoma",
     "state": "WA",
@@ -2912,10 +2911,10 @@
     "longitude": -122.4443,
     "county": "Pierce County",
     "cwa": "SEW",
-    "ugc_codes": "[\"WAZ316\",\"WAC053\"]"
+    "ugc_codes": "[\"WAZ316\",\"WAC053\"]",
+    "office_code": "98402"
   },
   {
-    "site_code": "98405",
     "name": "USPS South Tacoma",
     "city": "Tacoma",
     "state": "WA",
@@ -2923,10 +2922,10 @@
     "longitude": -122.4693,
     "county": "Pierce County",
     "cwa": "SEW",
-    "ugc_codes": "[\"WAZ316\",\"WAC053\"]"
+    "ugc_codes": "[\"WAZ316\",\"WAC053\"]",
+    "office_code": "98405"
   },
   {
-    "site_code": "65802",
     "name": "USPS West Springfield MO",
     "city": "Springfield",
     "state": "MO",
@@ -2934,10 +2933,10 @@
     "longitude": -93.3109,
     "county": "Greene County",
     "cwa": "SGF",
-    "ugc_codes": "[\"MOZ090\",\"MOC077\"]"
+    "ugc_codes": "[\"MOZ090\",\"MOC077\"]",
+    "office_code": "65802"
   },
   {
-    "site_code": "65806",
     "name": "USPS Downtown Springfield MO",
     "city": "Springfield",
     "state": "MO",
@@ -2945,10 +2944,10 @@
     "longitude": -93.2923,
     "county": "Greene County",
     "cwa": "SGF",
-    "ugc_codes": "[\"MOZ090\",\"MOC077\"]"
+    "ugc_codes": "[\"MOZ090\",\"MOC077\"]",
+    "office_code": "65806"
   },
   {
-    "site_code": "92101",
     "name": "USPS Downtown San Diego",
     "city": "San Diego",
     "state": "CA",
@@ -2956,10 +2955,10 @@
     "longitude": -117.1611,
     "county": "San Diego County",
     "cwa": "SGX",
-    "ugc_codes": "[\"CAZ043\",\"CAC073\"]"
+    "ugc_codes": "[\"CAZ043\",\"CAC073\"]",
+    "office_code": "92101"
   },
   {
-    "site_code": "92109",
     "name": "USPS Pacific Beach",
     "city": "San Diego",
     "state": "CA",
@@ -2967,10 +2966,10 @@
     "longitude": -117.2353,
     "county": "San Diego County",
     "cwa": "SGX",
-    "ugc_codes": "[\"CAZ043\",\"CAC073\"]"
+    "ugc_codes": "[\"CAZ043\",\"CAC073\"]",
+    "office_code": "92109"
   },
   {
-    "site_code": "92401",
     "name": "USPS San Bernardino",
     "city": "San Bernardino",
     "state": "CA",
@@ -2978,10 +2977,10 @@
     "longitude": -117.2898,
     "county": "San Bernardino County",
     "cwa": "SGX",
-    "ugc_codes": "[\"CAZ048\",\"CAC071\"]"
+    "ugc_codes": "[\"CAZ048\",\"CAC071\"]",
+    "office_code": "92401"
   },
   {
-    "site_code": "92501",
     "name": "USPS Downtown Riverside",
     "city": "Riverside",
     "state": "CA",
@@ -2989,10 +2988,10 @@
     "longitude": -117.3756,
     "county": "Riverside County",
     "cwa": "SGX",
-    "ugc_codes": "[\"CAZ048\",\"CAC065\"]"
+    "ugc_codes": "[\"CAZ048\",\"CAC065\"]",
+    "office_code": "92501"
   },
   {
-    "site_code": "71101",
     "name": "USPS Downtown Shreveport",
     "city": "Shreveport",
     "state": "LA",
@@ -3000,10 +2999,10 @@
     "longitude": -93.7502,
     "county": "Caddo Parish",
     "cwa": "SHV",
-    "ugc_codes": "[\"LAZ001\",\"LAC017\"]"
+    "ugc_codes": "[\"LAZ001\",\"LAC017\"]",
+    "office_code": "71101"
   },
   {
-    "site_code": "71105",
     "name": "USPS South Highlands Shreveport",
     "city": "Shreveport",
     "state": "LA",
@@ -3011,10 +3010,10 @@
     "longitude": -93.7342,
     "county": "Caddo Parish",
     "cwa": "SHV",
-    "ugc_codes": "[\"LAZ001\",\"LAC017\"]"
+    "ugc_codes": "[\"LAZ001\",\"LAC017\"]",
+    "office_code": "71105"
   },
   {
-    "site_code": "84101",
     "name": "USPS Downtown Salt Lake City",
     "city": "Salt Lake City",
     "state": "UT",
@@ -3022,10 +3021,10 @@
     "longitude": -111.891,
     "county": "Salt Lake County",
     "cwa": "SLC",
-    "ugc_codes": "[\"UTZ105\",\"UTC035\"]"
+    "ugc_codes": "[\"UTZ105\",\"UTC035\"]",
+    "office_code": "84101"
   },
   {
-    "site_code": "84105",
     "name": "USPS Sugar House Salt Lake City",
     "city": "Salt Lake City",
     "state": "UT",
@@ -3033,10 +3032,10 @@
     "longitude": -111.8568,
     "county": "Salt Lake County",
     "cwa": "SLC",
-    "ugc_codes": "[\"UTZ105\",\"UTC035\"]"
+    "ugc_codes": "[\"UTZ105\",\"UTC035\"]",
+    "office_code": "84105"
   },
   {
-    "site_code": "84601",
     "name": "USPS Downtown Provo",
     "city": "Provo",
     "state": "UT",
@@ -3044,10 +3043,10 @@
     "longitude": -111.6585,
     "county": "Utah County",
     "cwa": "SLC",
-    "ugc_codes": "[\"UTZ106\",\"UTC049\"]"
+    "ugc_codes": "[\"UTZ106\",\"UTC049\"]",
+    "office_code": "84601"
   },
   {
-    "site_code": "84604",
     "name": "USPS North Provo",
     "city": "Provo",
     "state": "UT",
@@ -3055,10 +3054,10 @@
     "longitude": -111.6441,
     "county": "Utah County",
     "cwa": "SLC",
-    "ugc_codes": "[\"UTZ106\",\"UTC049\"]"
+    "ugc_codes": "[\"UTZ106\",\"UTC049\"]",
+    "office_code": "84604"
   },
   {
-    "site_code": "95202",
     "name": "USPS Downtown Stockton",
     "city": "Stockton",
     "state": "CA",
@@ -3066,10 +3065,10 @@
     "longitude": -121.2908,
     "county": "San Joaquin County",
     "cwa": "STO",
-    "ugc_codes": "[\"CAZ019\",\"CAC077\"]"
+    "ugc_codes": "[\"CAZ019\",\"CAC077\"]",
+    "office_code": "95202"
   },
   {
-    "site_code": "95207",
     "name": "USPS North Stockton",
     "city": "Stockton",
     "state": "CA",
@@ -3077,10 +3076,10 @@
     "longitude": -121.3102,
     "county": "San Joaquin County",
     "cwa": "STO",
-    "ugc_codes": "[\"CAZ019\",\"CAC077\"]"
+    "ugc_codes": "[\"CAZ019\",\"CAC077\"]",
+    "office_code": "95207"
   },
   {
-    "site_code": "95350",
     "name": "USPS West Modesto",
     "city": "Modesto",
     "state": "CA",
@@ -3088,10 +3087,10 @@
     "longitude": -121.0001,
     "county": "Stanislaus County",
     "cwa": "STO",
-    "ugc_codes": "[\"CAZ019\",\"CAC099\"]"
+    "ugc_codes": "[\"CAZ019\",\"CAC099\"]",
+    "office_code": "95350"
   },
   {
-    "site_code": "95354",
     "name": "USPS Downtown Modesto",
     "city": "Modesto",
     "state": "CA",
@@ -3099,10 +3098,10 @@
     "longitude": -120.9969,
     "county": "Stanislaus County",
     "cwa": "STO",
-    "ugc_codes": "[\"CAZ019\",\"CAC099\"]"
+    "ugc_codes": "[\"CAZ019\",\"CAC099\"]",
+    "office_code": "95354"
   },
   {
-    "site_code": "95814",
     "name": "USPS Downtown Sacramento",
     "city": "Sacramento",
     "state": "CA",
@@ -3110,10 +3109,10 @@
     "longitude": -121.4944,
     "county": "Sacramento County",
     "cwa": "STO",
-    "ugc_codes": "[\"CAZ017\",\"CAC067\"]"
+    "ugc_codes": "[\"CAZ017\",\"CAC067\"]",
+    "office_code": "95814"
   },
   {
-    "site_code": "95821",
     "name": "USPS Arden Arcade Sacramento",
     "city": "Sacramento",
     "state": "CA",
@@ -3121,10 +3120,10 @@
     "longitude": -121.3938,
     "county": "Sacramento County",
     "cwa": "STO",
-    "ugc_codes": "[\"CAZ017\",\"CAC067\"]"
+    "ugc_codes": "[\"CAZ017\",\"CAC067\"]",
+    "office_code": "95821"
   },
   {
-    "site_code": "32301",
     "name": "USPS Downtown Tallahassee",
     "city": "Tallahassee",
     "state": "FL",
@@ -3132,10 +3131,10 @@
     "longitude": -84.2807,
     "county": "Leon County",
     "cwa": "TAE",
-    "ugc_codes": "[\"FLZ017\",\"FLC073\"]"
+    "ugc_codes": "[\"FLZ017\",\"FLC073\"]",
+    "office_code": "32301"
   },
   {
-    "site_code": "32303",
     "name": "USPS Midtown Tallahassee",
     "city": "Tallahassee",
     "state": "FL",
@@ -3143,10 +3142,10 @@
     "longitude": -84.3109,
     "county": "Leon County",
     "cwa": "TAE",
-    "ugc_codes": "[\"FLZ017\",\"FLC073\"]"
+    "ugc_codes": "[\"FLZ017\",\"FLC073\"]",
+    "office_code": "32303"
   },
   {
-    "site_code": "33602",
     "name": "USPS Downtown Tampa",
     "city": "Tampa",
     "state": "FL",
@@ -3154,10 +3153,10 @@
     "longitude": -82.4572,
     "county": "Hillsborough County",
     "cwa": "TBW",
-    "ugc_codes": "[\"FLZ151\",\"FLC057\"]"
+    "ugc_codes": "[\"FLZ151\",\"FLC057\"]",
+    "office_code": "33602"
   },
   {
-    "site_code": "33701",
     "name": "USPS St Petersburg",
     "city": "Saint Petersburg",
     "state": "FL",
@@ -3165,10 +3164,10 @@
     "longitude": -82.6397,
     "county": "Pinellas County",
     "cwa": "TBW",
-    "ugc_codes": "[\"FLZ050\",\"FLC103\"]"
+    "ugc_codes": "[\"FLZ050\",\"FLC103\"]",
+    "office_code": "33701"
   },
   {
-    "site_code": "34231",
     "name": "USPS South Sarasota",
     "city": "Sarasota",
     "state": "FL",
@@ -3176,10 +3175,10 @@
     "longitude": -82.5248,
     "county": "Sarasota County",
     "cwa": "TBW",
-    "ugc_codes": "[\"FLZ160\",\"FLC115\"]"
+    "ugc_codes": "[\"FLZ160\",\"FLC115\"]",
+    "office_code": "34231"
   },
   {
-    "site_code": "34237",
     "name": "USPS Downtown Sarasota",
     "city": "Sarasota",
     "state": "FL",
@@ -3187,10 +3186,10 @@
     "longitude": -82.5308,
     "county": "Sarasota County",
     "cwa": "TBW",
-    "ugc_codes": "[\"FLZ160\",\"FLC115\"]"
+    "ugc_codes": "[\"FLZ160\",\"FLC115\"]",
+    "office_code": "34237"
   },
   {
-    "site_code": "66603",
     "name": "USPS Downtown Topeka",
     "city": "Topeka",
     "state": "KS",
@@ -3198,10 +3197,10 @@
     "longitude": -95.6752,
     "county": "Shawnee County",
     "cwa": "TOP",
-    "ugc_codes": "[\"KSZ039\",\"KSC177\"]"
+    "ugc_codes": "[\"KSZ039\",\"KSC177\"]",
+    "office_code": "66603"
   },
   {
-    "site_code": "66607",
     "name": "USPS East Topeka",
     "city": "Topeka",
     "state": "KS",
@@ -3209,10 +3208,10 @@
     "longitude": -95.6323,
     "county": "Shawnee County",
     "cwa": "TOP",
-    "ugc_codes": "[\"KSZ039\",\"KSC177\"]"
+    "ugc_codes": "[\"KSZ039\",\"KSC177\"]",
+    "office_code": "66607"
   },
   {
-    "site_code": "74103",
     "name": "USPS Downtown Tulsa",
     "city": "Tulsa",
     "state": "OK",
@@ -3220,10 +3219,10 @@
     "longitude": -95.9928,
     "county": "Tulsa County",
     "cwa": "TSA",
-    "ugc_codes": "[\"OKZ060\",\"OKC143\"]"
+    "ugc_codes": "[\"OKZ060\",\"OKC143\"]",
+    "office_code": "74103"
   },
   {
-    "site_code": "74114",
     "name": "USPS Brookside Tulsa",
     "city": "Tulsa",
     "state": "OK",
@@ -3231,10 +3230,10 @@
     "longitude": -95.9678,
     "county": "Tulsa County",
     "cwa": "TSA",
-    "ugc_codes": "[\"OKZ060\",\"OKC143\"]"
+    "ugc_codes": "[\"OKZ060\",\"OKC143\"]",
+    "office_code": "74114"
   },
   {
-    "site_code": "85701",
     "name": "USPS Downtown Tucson",
     "city": "Tucson",
     "state": "AZ",
@@ -3242,10 +3241,10 @@
     "longitude": -110.9265,
     "county": "Pima County",
     "cwa": "TWC",
-    "ugc_codes": "[\"AZZ504\",\"AZC019\"]"
+    "ugc_codes": "[\"AZZ504\",\"AZC019\"]",
+    "office_code": "85701"
   },
   {
-    "site_code": "85719",
     "name": "USPS University Tucson",
     "city": "Tucson",
     "state": "AZ",
@@ -3253,10 +3252,10 @@
     "longitude": -110.9485,
     "county": "Pima County",
     "cwa": "TWC",
-    "ugc_codes": "[\"AZZ504\",\"AZC019\"]"
+    "ugc_codes": "[\"AZZ504\",\"AZC019\"]",
+    "office_code": "85719"
   },
   {
-    "site_code": "57701",
     "name": "USPS Downtown Rapid City",
     "city": "Rapid City",
     "state": "SD",
@@ -3264,10 +3263,10 @@
     "longitude": -103.231,
     "county": "Meade County",
     "cwa": "UNR",
-    "ugc_codes": "[\"SDZ072\",\"SDC093\"]"
+    "ugc_codes": "[\"SDZ072\",\"SDC093\"]",
+    "office_code": "57701"
   },
   {
-    "site_code": "57702",
     "name": "USPS West Rapid City",
     "city": "Rapid City",
     "state": "SD",
@@ -3275,10 +3274,10 @@
     "longitude": -103.256,
     "county": "Pennington County",
     "cwa": "UNR",
-    "ugc_codes": "[\"SDZ028\",\"SDC103\"]"
+    "ugc_codes": "[\"SDZ028\",\"SDC103\"]",
+    "office_code": "57702"
   },
   {
-    "site_code": "89101",
     "name": "USPS Downtown Las Vegas",
     "city": "Las Vegas",
     "state": "NV",
@@ -3286,10 +3285,10 @@
     "longitude": -115.1398,
     "county": "Clark County",
     "cwa": "VEF",
-    "ugc_codes": "[\"NVZ020\",\"NVC003\"]"
+    "ugc_codes": "[\"NVZ020\",\"NVC003\"]",
+    "office_code": "89101"
   },
   {
-    "site_code": "89109",
     "name": "USPS The Strip Las Vegas",
     "city": "Las Vegas",
     "state": "NV",
@@ -3297,6 +3296,7 @@
     "longitude": -115.1728,
     "county": "Clark County",
     "cwa": "VEF",
-    "ugc_codes": "[\"NVZ020\",\"NVC003\"]"
+    "ugc_codes": "[\"NVZ020\",\"NVC003\"]",
+    "office_code": "89109"
   }
 ]

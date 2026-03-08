@@ -30,7 +30,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link active" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -212,9 +212,9 @@
                     API.getObservations().catch(() => [])
                 ]);
                 
-                // Build observations lookup by site_code
+                // Build observations lookup by office_code
                 observationsMap = {};
-                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
+                obsData.forEach(obs => { observationsMap[obs.office_code] = obs; });
                 
                 allAdvisoriesUnfiltered = data;
                 allAdvisories = data;
@@ -279,14 +279,14 @@
             }
             
             // Render summary stats (keeps stats updated when filters change in table view)
-            const stats = SiteAggregator.getSummaryStats(filteredAdvisories, sites);
+            const stats = OfficeAggregator.getSummaryStats(filteredAdvisories, sites);
             const extremeCount = sites.filter(s => s.highest_severity === 'Extreme').length;
             const severeCount = sites.filter(s => s.highest_severity === 'Severe').length;
             statsContainer.innerHTML = `
                 <div class="col-12">
                     <div class="summary-stats">
                         <div class="summary-stat">
-                            <span class="summary-stat-value">${stats.unique_sites}</span>
+                            <span class="summary-stat-value">${stats.unique_offices}</span>
                             <span class="summary-stat-label">Locations Impacted</span>
                         </div>
                         <div class="summary-stat">
@@ -294,7 +294,7 @@
                             <span class="summary-stat-label">Critical/Severe</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_sites}</span>
+                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_offices}</span>
                             <span class="summary-stat-label">Moderate</span>
                         </div>
                         <div class="summary-stat">
@@ -305,14 +305,14 @@
                 </div>
             `;
             
-            // Sort sites by site_code ascending
-            const sorted = [...sites].sort((a, b) => 
-                a.site_code.localeCompare(b.site_code, undefined, { numeric: true })
+            // Sort offices by office_code ascending
+            const sorted = [...sites].sort((a, b) =>
+                a.office_code.localeCompare(b.office_code, undefined, { numeric: true })
             );
-            
+
             let rowsHtml = '';
             sorted.forEach(site => {
-                const obs = observationsMap[site.site_code];
+                const obs = observationsMap[site.office_code];
                 const tempF = obs ? cToF(obs.temperature_c) : null;
                 const tempC = obs && obs.temperature_c != null ? Math.round(parseFloat(obs.temperature_c)) : null;
                 let tempSpan = '';
@@ -328,12 +328,12 @@
                 const sevLower = site.highest_severity.toLowerCase();
                 
                 // Site header row
-                rowsHtml += `<tr class="site-group-header site-group-${escapeHtml(sevLower)}" data-site-code="${escapeHtml(site.site_code)}">
+                rowsHtml += `<tr class="site-group-header site-group-${escapeHtml(sevLower)}" data-office-code="${escapeHtml(site.office_code)}">
                     <td colspan="11">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
                             <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-                                <strong>${escapeHtml(site.site_code)}</strong>
-                                <span>${escapeHtml(site.site_name)}</span>
+                                <strong>${escapeHtml(site.office_code)}</strong>
+                                <span>${escapeHtml(site.office_name)}</span>
                                 <span class="text-muted"><i class="bi bi-geo-alt"></i> ${escapeHtml(site.city)}, ${escapeHtml(site.state)}</span>
                                 ${tempSpan}
                             </div>
@@ -347,7 +347,7 @@
                 
                 // Sort alerts: highest severity first
                 const sortedAdvs = [...site.advisories].sort((a, b) => 
-                    SiteAggregator.getSeverityRank(b.severity) - SiteAggregator.getSeverityRank(a.severity)
+                    OfficeAggregator.getSeverityRank(b.severity) - OfficeAggregator.getSeverityRank(a.severity)
                 );
                 
                 // Alert sub-rows
@@ -371,7 +371,7 @@
             // Click handlers: site header rows navigate to site detail
             tbody.querySelectorAll('.site-group-header').forEach(row => {
                 row.addEventListener('click', () => {
-                    window.location.href = `site-detail.html?site=${row.dataset.siteCode}`;
+                    window.location.href = `office-detail.html?office=${row.dataset.officeCode}`;
                 });
             });
         }
@@ -391,7 +391,7 @@
             
             // Filter advisories
             let filtered = allAdvisories.filter(adv => {
-                if (search && !(adv.site_code.toLowerCase().includes(search) || adv.site_name.toLowerCase().includes(search))) return false;
+                if (search && !(adv.office_code.toLowerCase().includes(search) || adv.office_name.toLowerCase().includes(search))) return false;
                 if (alertTypeFilter && !shouldIncludeAlertType(adv.advisory_type, alertTypeFilter)) return false;
                 if (state && adv.state !== state) return false;
                 if (severity && adv.severity !== severity) return false;
@@ -402,7 +402,7 @@
             renderFilterWarning(allAdvisoriesUnfiltered, filtered);
             
             // Aggregate by site
-            const aggregatedSites = SiteAggregator.aggregateBySite(filtered, { deduplicateZones: dedupEnabled });
+            const aggregatedSites = OfficeAggregator.aggregateByOffice(filtered, { deduplicateZones: dedupEnabled });
             
             // Render based on current view
             if (currentView === 'card') {
@@ -414,7 +414,7 @@
         
         // Render filter warning banner
         function renderFilterWarning(allAdv, filteredAdv) {
-            const warning = SiteAggregator.getFilterWarning(allAdv, filteredAdv);
+            const warning = OfficeAggregator.getFilterWarning(allAdv, filteredAdv);
             const container = document.getElementById('filterWarningContainer');
             
             if (!warning) {
@@ -461,14 +461,14 @@
             }
             
             // Render summary stats
-            const stats = SiteAggregator.getSummaryStats(originalAdvisories, sites);
+            const stats = OfficeAggregator.getSummaryStats(originalAdvisories, sites);
             const extremeCount = sites.filter(s => s.highest_severity === 'Extreme').length;
             const severeCount = sites.filter(s => s.highest_severity === 'Severe').length;
             statsContainer.innerHTML = `
                 <div class="col-12">
                     <div class="summary-stats">
                         <div class="summary-stat">
-                            <span class="summary-stat-value">${stats.unique_sites}</span>
+                            <span class="summary-stat-value">${stats.unique_offices}</span>
                             <span class="summary-stat-label">Locations Impacted</span>
                         </div>
                         <div class="summary-stat">
@@ -476,7 +476,7 @@
                             <span class="summary-stat-label">Critical/Severe</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_sites}</span>
+                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_offices}</span>
                             <span class="summary-stat-label">Moderate</span>
                         </div>
                         <div class="summary-stat">
@@ -488,10 +488,10 @@
             `;
             
             // Render site cards (sorted by site code ascending)
-            const sorted = [...sites].sort((a, b) => 
-                a.site_code.localeCompare(b.site_code, undefined, { numeric: true })
+            const sorted = [...sites].sort((a, b) =>
+                a.office_code.localeCompare(b.office_code, undefined, { numeric: true })
             );
-            container.innerHTML = sorted.map(site => renderSiteCard(site, observationsMap[site.site_code])).join('');
+            container.innerHTML = sorted.map(site => renderSiteCard(site, observationsMap[site.office_code])).join('');
         }
         
         // Render individual site card
@@ -521,12 +521,12 @@
             
             return html`
                 <div class="col-lg-6 col-12">
-                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                    <a href="office-detail.html?office=${site.office_code}" class="text-decoration-none">
                         <div class="card site-card site-card-clickable ${raw(severityClass)}">
                             <div class="site-card-header">
                                 <div>
                                     <h5 class="site-card-title text-dark">
-                                        <strong>${site.site_code}</strong> - ${site.site_name}
+                                        <strong>${site.office_code}</strong> - ${site.office_name}
                                     </h5>
                                     <div class="site-card-location">
                                         <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
