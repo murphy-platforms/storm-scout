@@ -1,72 +1,68 @@
 /**
- * Sites API Routes
- * Endpoints for site data
+ * Offices API Routes
+ * Endpoints for office data
  */
 
 const express = require('express');
 const router = express.Router();
-const SiteModel = require('../models/office');
+const OfficeModel = require('../models/office');
 const AdvisoryModel = require('../models/advisory');
-const SiteStatusModel = require('../models/officeStatus');
+const OfficeStatusModel = require('../models/officeStatus');
 const cache = require('../utils/cache');
 const { handleValidationErrors } = require('../middleware/validate');
-const siteValidators = require('../validators/offices');
+const officeValidators = require('../validators/offices');
 
 /**
- * GET /api/sites
- * Get all sites with optional filters
+ * GET /api/offices
+ * Get all offices with optional filters
  * Query params: state, region
  */
-router.get('/', siteValidators.getAll, handleValidationErrors, async (req, res) => {
+router.get('/', officeValidators.getAll, handleValidationErrors, async (req, res) => {
   try {
     const { state, region } = req.query;
-    
-    // Only cache requests with no filters (all sites)
+
+    // Only cache requests with no filters (all offices)
     const hasFilters = state || region;
-    
+
     if (!hasFilters) {
       const cached = cache.get(cache.CACHE_KEYS.ALL_SITES);
       if (cached) {
         return res.json(cached);
       }
     }
-    
-    console.log('[DEBUG] Fetching sites with filters:', { state, region });
-    const sites = await SiteModel.getAll({ state, region });
-    console.log('[DEBUG] Sites returned:', Array.isArray(sites), 'length:', sites ? sites.length : 'null');
-    
-    const response = { success: true, data: sites, count: sites.length };
-    
-    // Cache only unfiltered requests (longer TTL for static site data)
+
+    const offices = await OfficeModel.getAll({ state, region });
+
+    const response = { success: true, data: offices, count: offices.length };
+
+    // Cache only unfiltered requests (longer TTL for static office data)
     if (!hasFilters) {
       cache.set(cache.CACHE_KEYS.ALL_SITES, response, cache.TTL.LONG);
     }
-    
+
     res.json(response);
   } catch (error) {
-    console.error('Error fetching sites:', error);
+    console.error('Error fetching offices:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
 /**
- * GET /api/sites/states
- * Get list of all states with sites
+ * GET /api/offices/states
+ * Get list of all states with offices
  */
 router.get('/states', async (req, res) => {
   try {
-    // Check cache first (states rarely change)
     const cached = cache.get(cache.CACHE_KEYS.STATES_LIST);
     if (cached) {
       return res.json(cached);
     }
-    
-    const states = await SiteModel.getStates();
+
+    const states = await OfficeModel.getStates();
     const response = { success: true, data: states };
-    
-    // Cache for a long time (states list is static)
+
     cache.set(cache.CACHE_KEYS.STATES_LIST, response, cache.TTL.VERY_LONG);
-    
+
     res.json(response);
   } catch (error) {
     console.error('Error fetching states:', error);
@@ -75,23 +71,21 @@ router.get('/states', async (req, res) => {
 });
 
 /**
- * GET /api/sites/regions
+ * GET /api/offices/regions
  * Get list of all regions
  */
 router.get('/regions', async (req, res) => {
   try {
-    // Check cache first (regions rarely change)
     const cached = cache.get(cache.CACHE_KEYS.REGIONS_LIST);
     if (cached) {
       return res.json(cached);
     }
-    
-    const regions = await SiteModel.getRegions();
+
+    const regions = await OfficeModel.getRegions();
     const response = { success: true, data: regions };
-    
-    // Cache for a long time (regions list is static)
+
     cache.set(cache.CACHE_KEYS.REGIONS_LIST, response, cache.TTL.VERY_LONG);
-    
+
     res.json(response);
   } catch (error) {
     console.error('Error fetching regions:', error);
@@ -100,55 +94,54 @@ router.get('/regions', async (req, res) => {
 });
 
 /**
- * GET /api/sites/:id
- * Get site by ID with status and advisories
+ * GET /api/offices/:id
+ * Get office by ID with status and advisories
  */
-router.get('/:id', siteValidators.getById, handleValidationErrors, async (req, res) => {
+router.get('/:id', officeValidators.getById, handleValidationErrors, async (req, res) => {
   try {
     const { id } = req.params;
-    const site = await SiteModel.getById(id);
-    
-    if (!site) {
-      return res.status(404).json({ success: false, error: 'Site not found' });
+    const office = await OfficeModel.getById(id);
+
+    if (!office) {
+      return res.status(404).json({ success: false, error: 'Office not found' });
     }
-    
-    // Add status and advisories
-    const status = await SiteStatusModel.getBySite(id);
-    const advisories = await AdvisoryModel.getBySite(id, true); // Active only
-    
+
+    const status = await OfficeStatusModel.getByOffice(id);
+    const advisories = await AdvisoryModel.getByOffice(id, true); // Active only
+
     res.json({
       success: true,
       data: {
-        ...site,
+        ...office,
         status: status || { operational_status: 'Open', reason: null },
         active_advisories: advisories
       }
     });
   } catch (error) {
-    console.error('Error fetching site:', error);
+    console.error('Error fetching office:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
 /**
- * GET /api/sites/:id/advisories
- * Get all advisories for a specific site
+ * GET /api/offices/:id/advisories
+ * Get all advisories for a specific office
  * Query params: active_only (boolean)
  */
-router.get('/:id/advisories', siteValidators.getSiteAdvisories, handleValidationErrors, async (req, res) => {
+router.get('/:id/advisories', officeValidators.getOfficeAdvisories, handleValidationErrors, async (req, res) => {
   try {
     const { id } = req.params;
     const activeOnly = req.query.active_only === 'true';
-    
-    const site = await SiteModel.getById(id);
-    if (!site) {
-      return res.status(404).json({ success: false, error: 'Site not found' });
+
+    const office = await OfficeModel.getById(id);
+    if (!office) {
+      return res.status(404).json({ success: false, error: 'Office not found' });
     }
-    
-    const advisories = await AdvisoryModel.getBySite(id, activeOnly);
+
+    const advisories = await AdvisoryModel.getByOffice(id, activeOnly);
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
-    console.error('Error fetching site advisories:', error);
+    console.error('Error fetching office advisories:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

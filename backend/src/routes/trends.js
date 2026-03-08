@@ -1,27 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const AdvisoryHistory = require('../models/advisoryHistory');
-const Site = require('../models/office');
+const Office = require('../models/office');
 
 /**
  * GET /api/trends
- * Get trends for all sites with history
+ * Get trends for all offices with history
  */
 router.get('/', async (req, res) => {
     try {
         const days = parseInt(req.query.days) || 7;
         const trends = await AdvisoryHistory.getAllTrends(days);
-        
-        // Enhance with site info
-        const siteIds = [...new Set(trends.map(t => t.site_id))];
-        const sites = await Site.getByIds(siteIds);
-        const siteMap = new Map(sites.map(s => [s.id, s]));
-        
+
+        // Enhance with office info
+        const officeIds = [...new Set(trends.map(t => t.office_id))];
+        const offices = await Office.getByIds(officeIds);
+        const officeMap = new Map(offices.map(o => [o.id, o]));
+
         const enrichedTrends = trends.map(trend => ({
             ...trend,
-            site: siteMap.get(trend.site_id)
+            office: officeMap.get(trend.office_id)
         }));
-        
+
         res.json(enrichedTrends);
     } catch (error) {
         console.error('Error fetching trends:', error);
@@ -30,46 +30,46 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/trends/:siteId
- * Get trend data for a specific site
+ * GET /api/trends/:officeId
+ * Get trend data for a specific office
  */
-router.get('/:siteId', async (req, res) => {
+router.get('/:officeId', async (req, res) => {
     try {
-        const siteId = parseInt(req.params.siteId);
+        const officeId = parseInt(req.params.officeId);
         const days = parseInt(req.query.days) || 7;
-        
-        const trend = await AdvisoryHistory.getTrend(siteId, days);
-        const site = await Site.getById(siteId);
-        
+
+        const trend = await AdvisoryHistory.getTrend(officeId, days);
+        const office = await Office.getById(officeId);
+
         res.json({
             ...trend,
-            site
+            office
         });
     } catch (error) {
-        console.error('Error fetching site trend:', error);
-        res.status(500).json({ error: 'Failed to fetch site trend' });
+        console.error('Error fetching office trend:', error);
+        res.status(500).json({ error: 'Failed to fetch office trend' });
     }
 });
 
 /**
- * GET /api/trends/:siteId/history
- * Get full history for a site
+ * GET /api/trends/:officeId/history
+ * Get full history for an office
  */
-router.get('/:siteId/history', async (req, res) => {
+router.get('/:officeId/history', async (req, res) => {
     try {
-        const siteId = parseInt(req.params.siteId);
+        const officeId = parseInt(req.params.officeId);
         const days = parseInt(req.query.days) || 7;
-        
-        const history = await AdvisoryHistory.getHistoryForSite(siteId, days);
-        const site = await Site.getById(siteId);
-        
+
+        const history = await AdvisoryHistory.getHistoryForSite(officeId, days);
+        const office = await Office.getById(officeId);
+
         res.json({
-            site,
+            office,
             history
         });
     } catch (error) {
-        console.error('Error fetching site history:', error);
-        res.status(500).json({ error: 'Failed to fetch site history' });
+        console.error('Error fetching office history:', error);
+        res.status(500).json({ error: 'Failed to fetch office history' });
     }
 });
 
