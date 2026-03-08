@@ -6,6 +6,18 @@
 const { NOAA_ALERT_TYPES } = require('../../config/noaa-alert-types');
 
 /**
+ * Convert any ISO 8601 datetime string to MySQL DATETIME format (UTC, no offset)
+ * @param {string|null} isoString
+ * @returns {string|null}
+ */
+function toMySQLDatetime(isoString) {
+  if (!isoString) return null;
+  const d = new Date(isoString);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+/**
  * Get severity based on internal alert type category (IMT operational alignment)
  * Maps our curated categories to severity levels:
  * - CRITICAL → Extreme (🔴 RED)
@@ -172,9 +184,9 @@ function normalizeNOAAAlert(noaaAlert) {
     source: `NOAA/${properties.senderName || 'NWS'}`,
     headline: properties.headline || properties.event,
     description: properties.description || '',
-    start_time: properties.onset || properties.effective || new Date().toISOString(),
-    end_time: properties.ends || properties.expires,
-    issued_time: properties.sent || new Date().toISOString(),
+    start_time: toMySQLDatetime(properties.onset || properties.effective || new Date().toISOString()),
+    end_time: toMySQLDatetime(properties.ends || properties.expires),
+    issued_time: toMySQLDatetime(properties.sent || new Date().toISOString()),
     vtec_code: vtecCode,
     vtec_event_id: extractVTECEventID(vtecCode),
     vtec_action: extractVTECAction(vtecCode),
