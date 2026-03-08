@@ -128,12 +128,12 @@ const NOAA_ALERT_TYPES = {
  * Default filter configuration for different user personas
  */
 const DEFAULT_FILTERS = {
-  // Custom - Site-specific configuration (default)
+  // Custom - Office-specific configuration (default)
   // Enables all CRITICAL, all HIGH, and key MODERATE types for land-based operations.
   // LOW and INFO categories are excluded via includeCategories (not listed here).
   CUSTOM: {
-    name: 'Site Default',
-    description: 'Customized alert configuration for testing center operations',
+    name: 'Office Default',
+    description: 'Customized alert configuration for USPS operations',
     includeCategories: ['CRITICAL', 'HIGH', 'MODERATE'],
     excludeTypes: [
       // MODERATE exclusions — coastal/lakeshore/surf not relevant to most inland sites
