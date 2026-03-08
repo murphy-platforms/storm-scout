@@ -8,9 +8,9 @@ const fs = require('fs');
 const path = require('path');
 const { getNOAAAlerts, getLatestObservation } = require('./utils/api-client');
 const { normalizeNOAAAlert, calculateWeatherImpact, calculateHighestWeatherImpact, formatStatusReason } = require('./utils/normalizer');
-const SiteModel = require('../models/office');
+const OfficeModel = require('../models/office');
 const AdvisoryModel = require('../models/advisory');
-const SiteStatusModel = require('../models/officeStatus');
+const OfficeStatusModel = require('../models/officeStatus');
 const AdvisoryHistory = require('../models/advisoryHistory');
 const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
 const { alertAnomaly } = require('../utils/alerting');
@@ -57,32 +57,32 @@ async function ingestNOAAData() {
     }
     
     // Step 2: Get all sites with their UGC codes for matching
-    const sites = await SiteModel.getAll();
-    console.log(`Processing ${sites.length} sites...`);
+    const offices = await OfficeModel.getAll();
+    console.log(`Processing ${offices.length} offices...`);
     
     // Build lookup maps for efficient matching
-    const sitesByState = new Map();      // state -> [sites]
-    const sitesByUGC = new Map();        // ugc_code -> [sites]
-    const sitesByCounty = new Map();     // "state|county" -> [sites]
+    const officesByState = new Map();      // state -> [sites]
+    const officesByUGC = new Map();        // ugc_code -> [sites]
+    const officesByCounty = new Map();     // "state|county" -> [sites]
     
-    for (const site of sites) {
+    for (const office of offices) {
       // Index by state
-      if (!sitesByState.has(site.state)) {
-        sitesByState.set(site.state, []);
+      if (!officesByState.has(office.state)) {
+        officesByState.set(office.state, []);
       }
-      sitesByState.get(site.state).push(site);
+      officesByState.get(office.state).push(office);
       
       // Index by UGC codes (if available)
-      if (site.ugc_codes) {
+      if (office.ugc_codes) {
         try {
-          const ugcCodes = typeof site.ugc_codes === 'string' 
-            ? JSON.parse(site.ugc_codes) 
-            : site.ugc_codes;
+          const ugcCodes = typeof office.ugc_codes === 'string' 
+            ? JSON.parse(office.ugc_codes) 
+            : office.ugc_codes;
           for (const ugc of ugcCodes) {
-            if (!sitesByUGC.has(ugc)) {
-              sitesByUGC.set(ugc, []);
+            if (!officesByUGC.has(ugc)) {
+              officesByUGC.set(ugc, []);
             }
-            sitesByUGC.get(ugc).push(site);
+            officesByUGC.get(ugc).push(office);
           }
         } catch (e) {
           // Ignore parse errors
@@ -90,18 +90,18 @@ async function ingestNOAAData() {
       }
       
       // Index by county (state|county format for uniqueness)
-      if (site.county) {
-        const countyKey = `${site.state}|${site.county.toLowerCase()}`;
-        if (!sitesByCounty.has(countyKey)) {
-          sitesByCounty.set(countyKey, []);
+      if (office.county) {
+        const countyKey = `${office.state}|${office.county.toLowerCase()}`;
+        if (!officesByCounty.has(countyKey)) {
+          officesByCounty.set(countyKey, []);
         }
-        sitesByCounty.get(countyKey).push(site);
+        officesByCounty.get(countyKey).push(office);
       }
     }
     
     // Step 3: Match alerts to sites using hierarchical matching
     // Priority: UGC codes > County > State (most specific wins)
-    const siteAdvisories = new Map();
+    const officeAdvisories = new Map();
     
     for (const alert of noaaAlerts) {
       const properties = alert.properties;
@@ -117,15 +117,15 @@ async function ingestNOAAData() {
       
       // Level 1: Match by UGC codes (most precise)
       for (const ugc of ugcCodes) {
-        const sites = sitesByUGC.get(ugc) || [];
-        sites.forEach(site => matchedSites.add(site));
+        const matchedByUGC = officesByUGC.get(ugc) || [];
+        matchedByUGC.forEach(o => matchedSites.add(o));
       }
       
       // Level 2: Match by county (if no UGC matches for a site)
       if (matchedSites.size === 0) {
         for (const county of counties) {
-          const sites = sitesByCounty.get(county) || [];
-          sites.forEach(site => matchedSites.add(site));
+          const matchedByCounty = officesByCounty.get(county) || [];
+          matchedByUGC.forEach(o => matchedSites.add(o));
         }
       }
       
@@ -134,27 +134,27 @@ async function ingestNOAAData() {
       // should only match alerts that explicitly include their zone/county
       if (matchedSites.size === 0) {
         for (const state of states) {
-          const stateSites = sitesByState.get(state) || [];
+          const stateOffices = officesByState.get(state) || [];
           // Only add sites that don't have UGC codes (legacy fallback)
-          stateSites
-            .filter(site => !site.ugc_codes)
-            .forEach(site => matchedSites.add(site));
+          stateOffices
+            .filter(o => !o.ugc_codes)
+            .forEach(o => matchedSites.add(o));
         }
       }
       
       // Add alert to matched sites
-      for (const site of matchedSites) {
-        if (!siteAdvisories.has(site.id)) {
-          siteAdvisories.set(site.id, []);
+      for (const office of matchedSites) {
+        if (!officeAdvisories.has(office.id)) {
+          officeAdvisories.set(office.id, []);
         }
         
         const normalized = normalizeNOAAAlert(alert);
-        normalized.site_id = site.id;
-        siteAdvisories.get(site.id).push(normalized);
+        normalized.office_id = office.id;
+        officeAdvisories.get(office.id).push(normalized);
       }
     }
     
-    console.log(`Matched alerts to ${siteAdvisories.size} sites\n`);
+    console.log(`Matched alerts to ${officeAdvisories.size} offices\n`);
     
     // Step 3.5: De-duplicate advisories - keep only most severe of each type per site
     console.log('De-duplicating advisories by type per site...');
@@ -162,7 +162,7 @@ async function ingestNOAAData() {
     let beforeDedup = 0;
     let afterDedup = 0;
     
-    for (const [siteId, advisories] of siteAdvisories.entries()) {
+    for (const [officeId, advisories] of officeAdvisories.entries()) {
       beforeDedup += advisories.length;
       
       // Group by advisory type
@@ -194,7 +194,7 @@ async function ingestNOAAData() {
         deduplicated.push(mostSevere);
       }
       
-      siteAdvisories.set(siteId, deduplicated);
+      officeAdvisories.set(officeId, deduplicated);
       afterDedup += deduplicated.length;
     }
     
@@ -215,7 +215,7 @@ async function ingestNOAAData() {
       await connection.beginTransaction();
       
       // Create/update advisories and track processed external IDs
-      for (const [siteId, advisories] of siteAdvisories.entries()) {
+      for (const [officeId, advisories] of officeAdvisories.entries()) {
         // Create/update advisories
         for (const advisory of advisories) {
           try {
@@ -227,7 +227,7 @@ async function ingestNOAAData() {
               processedExternalIds.push(advisory.external_id);
             }
           } catch (error) {
-            console.error(`Error creating advisory for site ${siteId}:`, error.message);
+            console.error(`Error creating advisory for office ${officeId}:`, error.message);
             // Continue with other advisories - don't fail entire batch
           }
         }
@@ -239,29 +239,29 @@ async function ingestNOAAData() {
         try {
           // Update ONLY weather_impact_level, do NOT change operational_status
           // Operational status is set manually by IMT/Operations
-          await SiteStatusModel.upsert(siteId, {
+          await OfficeStatusModel.upsert(siteId, {
             weather_impact_level: weatherImpactLevel,
             reason: reason,
             decision_by: 'weather_system'
           });
           statusesUpdated++;
         } catch (error) {
-          console.error(`Error updating status for site ${siteId}:`, error.message);
+          console.error(`Error updating status for office ${officeId}:`, error.message);
         }
       }
       
       // Update sites with no advisories to green weather impact
-      for (const site of sites) {
-        if (!siteAdvisories.has(site.id)) {
+      for (const office of offices) {
+        if (!officeAdvisories.has(office.id)) {
           try {
             // Set weather impact to green (no advisories)
-            await SiteStatusModel.upsert(site.id, {
+            await OfficeStatusModel.upsert(office.id, {
               weather_impact_level: 'green',
               reason: 'No active advisories',
               decision_by: 'weather_system'
             });
           } catch (error) {
-            console.error(`Error updating status for site ${site.id}:`, error.message);
+            console.error(`Error updating status for office ${office.id}:`, error.message);
           }
         }
       }
@@ -305,7 +305,7 @@ async function ingestNOAAData() {
     console.log('\nCreating historical snapshots...');
     try {
       const snapshotData = [];
-      for (const [siteId, advisories] of siteAdvisories.entries()) {
+      for (const [officeId, advisories] of officeAdvisories.entries()) {
         // Aggregate data for snapshot
         const severityRank = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1 };
         const highestSeverity = advisories.reduce((highest, adv) => {
@@ -348,7 +348,7 @@ async function ingestNOAAData() {
     const [highCountSites] = await db.query(`
       SELECT s.site_code, s.name, s.state, COUNT(*) as advisory_count
       FROM advisories a
-      JOIN sites s ON a.site_id = s.id
+      JOIN offices s ON a.office_id = s.id
       WHERE a.status = 'active'
       GROUP BY s.id
       HAVING advisory_count > 15
@@ -359,21 +359,21 @@ async function ingestNOAAData() {
     if (highCountSites.length > 0) {
       console.warn('⚠️  WARNING: Sites with unusually high advisory counts detected:');
       const anomalyDetails = [];
-      highCountSites.forEach(site => {
-        console.warn(`   ${site.site_code} (${site.name}, ${site.state}): ${site.advisory_count} active advisories`);
+      highCountSites.forEach(office => {
+        console.warn(`   ${office.office_code} (${office.name}, ${office.state}): ${office.advisory_count} active advisories`);
         anomalyDetails.push({
-          site_code: site.site_code,
-          name: site.name,
-          state: site.state,
-          advisory_count: site.advisory_count
+          site_code: office.office_code,
+          name: office.name,
+          state: office.state,
+          advisory_count: office.advisory_count
         });
       });
       console.warn('   This may indicate duplicate accumulation. Consider running cleanup.');
       
       // Send alert for anomaly
       await alertAnomaly(
-        `${highCountSites.length} site(s) have unusually high advisory counts (>15)`,
-        { sites: anomalyDetails }
+        `${highCountSites.length} office(s) have unusually high advisory counts (>15)`,
+        { offices: anomalyDetails }
       );
     } else {
       console.log('✓ No anomalies detected');
@@ -425,7 +425,7 @@ async function ingestObservations(sites) {
   
   // Build station -> sites mapping to deduplicate fetches
   const stationToSites = new Map();
-  for (const site of mappedSites) {
+  for (const office of mappedSites) {
     const station = site.observation_station;
     if (!stationToSites.has(station)) {
       stationToSites.set(station, []);
@@ -476,12 +476,12 @@ async function ingestObservations(sites) {
       }
       
       // Upsert for each site mapped to this station
-      for (const site of stationSites) {
+      for (const office of stationSites) {
         try {
-          await ObservationModel.upsert(site.id, data);
+          await ObservationModel.upsert(office.id, data);
           updated++;
         } catch (dbError) {
-          console.error(`  Error saving observation for site ${site.site_code}: ${dbError.message}`);
+          console.error(`  Error saving observation for site ${office.office_code}: ${dbError.message}`);
           failed++;
         }
       }

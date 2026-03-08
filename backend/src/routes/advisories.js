@@ -18,8 +18,8 @@ const advisoryValidators = require('../validators/advisories');
  */
 router.get('/', advisoryValidators.getAll, handleValidationErrors, async (req, res) => {
   try {
-    const { status, severity, state, site_id, advisory_type } = req.query;
-    const advisories = await AdvisoryModel.getAll({ status, severity, state, site_id, advisory_type });
+    const { status, severity, state, office_id, advisory_type } = req.query;
+    const advisories = await AdvisoryModel.getAll({ status, severity, state, office_id, advisory_type });
     res.json({ success: true, data: advisories, count: advisories.length });
   } catch (error) {
     console.error('Error fetching advisories:', error);

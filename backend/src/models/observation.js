@@ -1,23 +1,23 @@
 /**
  * Observation Model
- * Data access layer for site_observations table
- * Stores current weather conditions per site (replaced each ingestion cycle)
+ * Data access layer for office_observations table
+ * Stores current weather conditions per office (replaced each ingestion cycle)
  */
 
 const { getDatabase } = require('../config/database');
 
 const ObservationModel = {
   /**
-   * Upsert observation for a site (INSERT or UPDATE if exists)
-   * @param {number} siteId - Site ID
+   * Upsert observation for an office (INSERT or UPDATE if exists)
+   * @param {number} officeId - Office ID
    * @param {Object} data - Observation data
    * @returns {Promise<Object>} Result
    */
-  async upsert(siteId, data) {
+  async upsert(officeId, data) {
     const db = getDatabase();
     const [result] = await db.query(`
-      INSERT INTO site_observations (
-        site_id, station_id, temperature_c, relative_humidity, dewpoint_c,
+      INSERT INTO office_observations (
+        office_id, station_id, temperature_c, relative_humidity, dewpoint_c,
         wind_speed_kmh, wind_direction_deg, wind_gust_kmh,
         barometric_pressure_pa, visibility_m, wind_chill_c, heat_index_c,
         cloud_layers, text_description,
@@ -40,7 +40,7 @@ const ObservationModel = {
         observed_at = VALUES(observed_at),
         ingested_at = NOW()
     `, [
-      siteId,
+      officeId,
       data.station_id,
       data.temperature_c,
       data.relative_humidity,
@@ -60,59 +60,59 @@ const ObservationModel = {
   },
 
   /**
-   * Get observation for a specific site
-   * @param {number} siteId - Site ID
+   * Get observation for a specific office by ID
+   * @param {number} officeId - Office ID
    * @returns {Promise<Object|null>} Observation or null
    */
-  async getBySiteId(siteId) {
+  async getByOfficeId(officeId) {
     const db = getDatabase();
     const [rows] = await db.query(
-      'SELECT * FROM site_observations WHERE site_id = ?',
-      [siteId]
+      'SELECT * FROM office_observations WHERE office_id = ?',
+      [officeId]
     );
     return rows[0] || null;
   },
 
   /**
-   * Get all observations joined with site info
-   * @returns {Promise<Array>} Array of observations with site data
+   * Get all observations joined with office info
+   * @returns {Promise<Array>} Array of observations with office data
    */
   async getAll() {
     const db = getDatabase();
     const [rows] = await db.query(`
-      SELECT 
+      SELECT
         o.*,
-        s.site_code,
-        s.name as site_name,
+        s.office_code,
+        s.name as office_name,
         s.city,
         s.state,
         s.observation_station
-      FROM site_observations o
-      JOIN sites s ON o.site_id = s.id
+      FROM office_observations o
+      JOIN offices s ON o.office_id = s.id
       ORDER BY s.state, s.city
     `);
     return rows;
   },
 
   /**
-   * Get observation by site code
-   * @param {string} siteCode - Site code
-   * @returns {Promise<Object|null>} Observation with site data or null
+   * Get observation by office code
+   * @param {string} officeCode - Office code (5-digit zip)
+   * @returns {Promise<Object|null>} Observation with office data or null
    */
-  async getBySiteCode(siteCode) {
+  async getByOfficeCode(officeCode) {
     const db = getDatabase();
     const [rows] = await db.query(`
-      SELECT 
+      SELECT
         o.*,
-        s.site_code,
-        s.name as site_name,
+        s.office_code,
+        s.name as office_name,
         s.city,
         s.state,
         s.observation_station
-      FROM site_observations o
-      JOIN sites s ON o.site_id = s.id
-      WHERE s.site_code = ?
-    `, [siteCode]);
+      FROM office_observations o
+      JOIN offices s ON o.office_id = s.id
+      WHERE s.office_code = ?
+    `, [officeCode]);
     return rows[0] || null;
   }
 };

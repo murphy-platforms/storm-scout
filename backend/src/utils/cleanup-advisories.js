@@ -49,10 +49,10 @@ async function removeDuplicatesByExternalId() {
   
   // Find duplicates by external_id + site_id (same alert for same site)
   const [duplicates] = await db.query(`
-    SELECT external_id, site_id, GROUP_CONCAT(id ORDER BY id DESC) as ids, COUNT(*) as count
+    SELECT external_id, office_id, GROUP_CONCAT(id ORDER BY id DESC) as ids, COUNT(*) as count
     FROM advisories
     WHERE external_id IS NOT NULL
-    GROUP BY external_id, site_id
+    GROUP BY external_id, office_id
     HAVING count > 1
   `);
   
@@ -87,7 +87,7 @@ async function removeDuplicatesByVTECEventId() {
   
   // Find duplicates: same event ID, site, and type
   const [duplicateGroups] = await db.query(`
-    SELECT vtec_event_id, site_id, advisory_type, 
+    SELECT vtec_event_id, office_id, advisory_type, 
            GROUP_CONCAT(
              id ORDER BY 
                CASE vtec_action
@@ -102,7 +102,7 @@ async function removeDuplicatesByVTECEventId() {
            COUNT(*) as count
     FROM advisories
     WHERE vtec_event_id IS NOT NULL AND status = 'active'
-    GROUP BY vtec_event_id, site_id, advisory_type
+    GROUP BY vtec_event_id, office_id, advisory_type
     HAVING count > 1
   `);
   
@@ -134,12 +134,12 @@ async function removeDuplicatesByVTECCode() {
   console.log('\n=== Removing Duplicates by VTEC Code ===');
   
   const [duplicateGroups] = await db.query(`
-    SELECT vtec_code, site_id, advisory_type,
+    SELECT vtec_code, office_id, advisory_type,
            GROUP_CONCAT(id ORDER BY last_updated DESC, id DESC) as ids,
            COUNT(*) as count
     FROM advisories
     WHERE vtec_code IS NOT NULL AND status = 'active'
-    GROUP BY vtec_code, site_id, advisory_type
+    GROUP BY vtec_code, office_id, advisory_type
     HAVING count > 1
   `);
   
@@ -171,7 +171,7 @@ async function removeDuplicateTypes() {
   console.log('\n=== Removing Duplicate Advisory Types ===');
   
   const [duplicateTypes] = await db.query(`
-    SELECT site_id, advisory_type,
+    SELECT office_id, advisory_type,
            GROUP_CONCAT(
              id ORDER BY 
                CASE severity
@@ -185,7 +185,7 @@ async function removeDuplicateTypes() {
            COUNT(*) as count
     FROM advisories
     WHERE status = 'active'
-    GROUP BY site_id, advisory_type
+    GROUP BY office_id, advisory_type
     HAVING count > 1
   `);
   
@@ -304,9 +304,9 @@ async function populateExternalIds() {
           await connection.beginTransaction();
           
           // Lock the row with FOR UPDATE to prevent race conditions
-          // Check for same external_id AND site_id (multi-site alerts are valid)
+          // Check for same external_id AND office_id (multi-site alerts are valid)
           const [sameRow] = await connection.query(
-            `SELECT id FROM advisories WHERE external_id = ? AND site_id = (SELECT site_id FROM advisories WHERE id = ?) FOR UPDATE`, 
+            `SELECT id FROM advisories WHERE external_id = ? AND office_id = (SELECT office_id FROM advisories WHERE id = ?) FOR UPDATE`, 
             [externalId, advisory.id]
           );
           
