@@ -6,6 +6,7 @@ yarn-error.log*
 
 # Environment variables
 .env
+backend/.env.production
 
 # Database files
 *.db

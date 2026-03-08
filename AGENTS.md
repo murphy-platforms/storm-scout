@@ -1,20 +1,20 @@
 # AGENTS.md - Storm Scout Project Context
 
 **Project**: Storm Scout  
-**Purpose**: Site-focused weather advisory dashboard for IMT and Operations teams  
-**Production URL**: https://your-domain.example.com  
-**Status**: Phase 1 Complete, Global Architecture Planned, Production Deployed  
-**Last Updated**: 2026-02-25
+**Purpose**: Site-focused weather advisory dashboard for USPS Operations teams  
+**Production URL**: https://your-usps-domain.example.com  (update when USPS server is configured)
+**Status**: Active — USPS deployment (300 locations, zip-code based)
+**Last Updated**: 2026-03-07
 
 ---
 
 ## Project Overview
 
-Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 229 US testing centers may be impacted during severe weather events.
+Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help USPS Operations teams quickly identify which of the 300 USPS locations may be impacted during severe weather events.
 
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
-- **229 Testing Centers**: Monitoring sites across all 50 US states and territories
+- **300 USPS Locations**: Monitoring sites across all 50 US states and territories
 - **Smart Filtering**: 94 NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
@@ -24,9 +24,8 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
-- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 229 sites
-- **ProInsights Reference Import**: Recurring CSV import from ProInsights with sync to sites table
-- **Site Name Normalization**: All site names sourced from ProInsights MetroAreaName, normalized to UPPER CASE
+- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 USPS locations
+- **USPS Site Import**: One-time CSV import via `import-usps-sites.js` to load 300 USPS locations from zip-based CSV
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
 - **Safe Deployment**: `deploy.sh` pauses ingestion before deploy, resumes after — prevents mid-cycle data corruption
@@ -67,7 +66,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 ### Infrastructure
 - **Hosting**: cPanel with Passenger on shared hosting
 - **Server**: ***REDACTED_HOST***
-- **Database**: ***REDACTED*** (MariaDB 11.4.9)
+- **Database**: storm_scout (MariaDB 11.4.9)
 - **Deployment**: rsync over SSH (port 21098)
 
 ---
@@ -129,8 +128,7 @@ strom-scout/
 │   │   │   ├── fetch-ugc-codes.js        # Fetch UGC codes from NOAA for all sites
 │   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
 │   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
-│   │   │   ├── import-reference.js       # Import ProInsights CSV into site_reference table
-│   │   │   ├── sync-reference.js         # Sync reference data to sites table (name, display columns)
+│   │   │   ├── import-usps-sites.js      # Convert USPS CSV to sites.json (run once before init-db)
 │   │   │   ├── fetch-observation-stations.js  # Map sites to nearest NWS observation stations
 │   │   │   └── smoke-test.sh             # Pre-deploy validation (11 checks incl. XSS audit)
 │   │   ├── tests/
@@ -138,7 +136,7 @@ strom-scout/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── sites.json            # 229 testing centers
+│   │       ├── sites.json            # 300 USPS locations
 │   │       └── migrations/
 │   │           └── rollback-global-alert-sources.sql  # MariaDB-compatible rollback for global tables
 │   └── package.json
@@ -165,14 +163,13 @@ strom-scout/
 
 ### Database Schema
 
-**7 Main Tables**:
-1. **sites** - 229 testing center locations (includes observation_station ICAO code, ProInsights display columns)
+**6 Main Tables**:
+1. **sites** - 300 USPS locations (site_code = 5-digit zip, includes observation_station ICAO code)
 2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
 3. **site_observations** - Current weather conditions per site (replaced each ingestion cycle, no history)
 4. **site_status** - Operational status tracking (manual overrides + auto-calculation)
-5. **site_reference** - Staging table for ProInsights CSV imports (TRUNCATE + INSERT on each import)
-6. **notices** - Government/emergency notices (future feature)
-7. **advisory_history** - Snapshots for trend analysis (future feature)
+5. **notices** - Government/emergency notices (future feature)
+6. **advisory_history** - Snapshots for trend analysis (future feature)
 
 **Key Fields**:
 - `external_id` (advisories) - NOAA alert ID, UNIQUE constraint prevents duplicates
@@ -276,7 +273,7 @@ CWA is the 3-letter NWS office code responsible for a geographic area. Used for 
 Each site is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `sites.observation_station`.
 
 **Key facts**:
-- 229 sites map to 223 unique stations (some stations serve multiple nearby sites, e.g., KNYC→3 NYC sites)
+- 300 USPS locations map to 223 unique stations (some stations serve multiple nearby sites, e.g., KNYC→3 NYC sites)
 - Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
 - NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
 - Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
@@ -295,14 +292,14 @@ Sites near forecast zone boundaries (e.g., Anchorage) may receive multiple alert
 
 Filters are applied **client-side** in the frontend. The API returns all data; frontend filters based on localStorage preferences.
 
-### IMT Severity Alignment
+### Storm Scout Severity Alignment
 Severity is determined by internal alert type categories, NOT NOAA's raw severity field:
 - **CRITICAL** category → Extreme (🔴 RED) - Tornado Warning, Blizzard Warning, etc.
 - **HIGH** category → Severe (🟠 ORANGE) - Winter Storm Warning, Flood Warning, etc.
 - **MODERATE** category → Moderate (🟡 YELLOW) - Winter Storm Watch, Wind Advisory, etc.
 - **LOW/INFO** category → Minor (🟢 GREEN) - Beach Hazards, Rip Current, etc.
 
-This aligns with IMT operational practices. Example: NOAA classifies Winter Storm Watch as "Severe", but Storm Scout displays it as Moderate/Yellow because it's in the MODERATE category.
+This aligns with USPS operational practices. Example: NOAA classifies Winter Storm Watch as "Severe", but Storm Scout displays it as Moderate/Yellow because it's in the MODERATE category.
 
 ---
 
@@ -317,7 +314,7 @@ npm test               # Run unit tests (Jest)
 npm run test:watch     # Run tests in watch mode
 
 # Database
-npm run init-db        # Initialize schema + load 229 sites
+npm run init-db        # Initialize schema + load 300 USPS locations
 npm run seed-db        # Load seed/sample data
 
 # Data Operations
@@ -330,10 +327,8 @@ node src/utils/cleanup-advisories.js vtec       # VTEC duplicates only
 node src/utils/cleanup-advisories.js event_id   # Event ID duplicates only
 node src/utils/cleanup-advisories.js expired    # Remove expired only
 
-# ProInsights Reference (recurring, 2-3x/month)
-node src/scripts/import-reference.js /path/to/proinsights.csv   # Import CSV to site_reference
-node src/scripts/sync-reference.js --dry-run                    # Preview changes
-node src/scripts/sync-reference.js                              # Apply: syncs name, display columns to sites
+# USPS Site Import (one-time, run before init-db)
+node src/scripts/import-usps-sites.js /path/to/usps-locations.csv   # Convert CSV to sites.json
 
 # Weather Observation Stations (one-time setup, or re-run with --force)
 node src/scripts/fetch-observation-stations.js --dry-run        # Preview station mappings
@@ -341,11 +336,11 @@ node src/scripts/fetch-observation-stations.js                  # Apply: maps si
 node src/scripts/fetch-observation-stations.js --force          # Re-map all (overwrite existing)
 ```
 
-### ProInsights Reference Workflow
-ProInsights exports a CSV of ~227 US sites (2-3x/month). The import/sync workflow:
-1. **Import**: `import-reference.js` reads CSV, converts state names to abbreviations, normalizes `metro_area_name` to UPPER CASE, and bulk-inserts into `site_reference` (TRUNCATE first).
-2. **Sync**: `sync-reference.js` compares `site_reference` (keyed by `parent_site_code`) with `sites` (keyed by `site_code`), reports mismatches (state, name, city), and updates display columns including `sites.name = metro_area_name`.
-3. **Seed data**: After syncing production, update `sites.json` to match so seed data stays consistent.
+### USPS Site Import Workflow
+One-time setup to load USPS locations from CSV:
+1. **Import**: `import-usps-sites.js` reads CSV with columns `zip, name, city, state, latitude, longitude` (plus optional `region, county, ugc_codes, cwa`) and writes `src/data/sites.json`.
+2. **Init DB**: `npm run init-db` creates schema and loads `sites.json` into the database.
+3. To update sites later, re-run `import-usps-sites.js` then `npm run init-db`.
 
 ### Pre-Deploy Smoke Test
 ```bash
@@ -359,13 +354,13 @@ bash scripts/smoke-test.sh
 ./deploy.sh
 
 # Manual backend deploy
-rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ mwqtiakilx@your-domain.example.com:~/storm-scout/
+rsync -avz -e "ssh -p 22" --exclude='node_modules' --exclude='.env' backend/ your_user@your-usps-server:~/storm-scout/
 
 # Manual frontend deploy
-rsync -avz -e "ssh -p 21098" frontend/ mwqtiakilx@your-domain.example.com:~/public_html/
+rsync -avz -e "ssh -p 22" frontend/ your_user@your-usps-server:~/public_html/
 
 # Restart (via cPanel or SSH)
-ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart.txt"
+ssh -p 22 your_user@your-usps-server "touch ~/storm-scout/tmp/restart.txt"
 ```
 
 **Deploy Safety**: `deploy.sh` includes `pause_ingestion()` and `resume_ingestion()` functions that disable the cron scheduler before rsync and re-enable it after restart. This prevents mid-cycle data corruption if an ingestion is running during deployment.
@@ -414,7 +409,7 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ External ID unique constraint
 - ✅ Automated cleanup system
 - ✅ Production deployment
-- ✅ 229 testing centers loaded
+- ✅ 300 USPS locations loaded
 - ✅ 15-minute NOAA ingestion working
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
@@ -422,16 +417,15 @@ ssh -p 21098 mwqtiakilx@your-domain.example.com "touch ~/storm-scout/tmp/restart
 - ✅ In-memory caching with node-cache (status/overview, sites, advisories/active)
 - ✅ API rate limiting with express-rate-limit (500 req/15 min, 20 writes/15 min)
 - ✅ Input validation with express-validator (all endpoints)
-- ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
+- ✅ Storm Scout Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
-- ✅ UGC code matching for all 229 sites (precise zone/county geo-targeting)
+- ✅ UGC code matching for all 300 USPS locations (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to sites without UGC codes
-- ✅ ProInsights reference import/sync workflow (site_reference table, import + sync scripts)
-- ✅ Site names synced from ProInsights MetroAreaName, normalized to UPPER CASE
+- ✅ USPS site import workflow (import-usps-sites.js converts CSV → sites.json)
 - ✅ Dashboard cards show site_code + site_name (index.html, advisories.html, sites.html)
 - ✅ Site detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
-- ✅ Observation station mapping for all 229 sites (223 unique stations)
+- ✅ Observation station mapping for all 300 USPS locations (223 unique stations)
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
 - ✅ Local development environment with MariaDB, Jest, and smoke test script
 - ✅ Frontend API client auto-detects local vs production (no hardcoded URL)
@@ -474,7 +468,7 @@ See `ROADMAP.md` for full list.
 
 ### Server Details
 - **Host**: ***REDACTED_HOST***
-- **SSH**: `ssh -p 21098 mwqtiakilx@your-domain.example.com`
+- **SSH**: `ssh -p 22 your_user@your-usps-server`
 - **cPanel**: https://***REDACTED_HOST***:2083
 - **Node.js**: Version 20 LTS (via cPanel Node.js app)
 - **Process Manager**: Passenger (cPanel)
@@ -490,7 +484,7 @@ Set in cPanel → Node.js app interface:
 - `ALERT_WEBHOOK_URL` (optional, for Slack notifications)
 
 ### Monitoring
-- **Health Check**: `curl https://your-domain.example.com/health` (enhanced with database + ingestion status)
+- **Health Check**: `curl https://your-usps-domain.example.com/health` (enhanced with database + ingestion status)
 - **Logs**: cPanel → Node.js → View Logs
 - **Database**: phpMyAdmin in cPanel
 - **Ingestion Status**: Check `last_updated` in advisories table
@@ -500,8 +494,8 @@ Set in cPanel → Node.js app interface:
 **Connection Details**:
 - **Host**: localhost (from server) 
 - **Port**: 3306
-- **Database**: `***REDACTED***`
-- **User**: `***REDACTED***`
+- **Database**: `storm_scout`
+- **User**: `storm_scout`
 - **Password**: Stored in `~/storm-scout/.env` on production server
 
 **Access Methods**:
@@ -509,35 +503,35 @@ Set in cPanel → Node.js app interface:
 1. **Via SSH (Command Line)**:
    ```bash
    # Connect to server
-   ssh -p 21098 mwqtiakilx@your-domain.example.com
+   ssh -p 22 your_user@your-usps-server
    
    # Access MySQL (password from .env file)
-   mysql -u ***REDACTED*** -p ***REDACTED***
+   mysql -u storm_scout -p storm_scout
    
    # Or with password inline (get from .env)
-   mysql -u ***REDACTED*** -p"$(grep DB_PASSWORD ~/storm-scout/.env | cut -d= -f2)" ***REDACTED***
+   mysql -u storm_scout -p"$(grep DB_PASSWORD ~/storm-scout/.env | cut -d= -f2)" storm_scout
    
    # Run a single query
-   mysql -u ***REDACTED*** -p"$DB_PASS" ***REDACTED*** -e "SELECT COUNT(*) FROM sites;"
+   mysql -u storm_scout -p"$DB_PASS" storm_scout -e "SELECT COUNT(*) FROM sites;"
    ```
 
 2. **Via phpMyAdmin (GUI)**:
    - Go to https://***REDACTED_HOST***:2083 (cPanel)
    - Click **phpMyAdmin** in the Databases section
-   - Select `***REDACTED***` from the left sidebar
+   - Select `storm_scout` from the left sidebar
    - Use SQL tab to run queries
 
 3. **Via Local SSH Tunnel** (for GUI tools like TablePlus, DBeaver):
    ```bash
    # Create SSH tunnel (run locally)
-   ssh -p 21098 -L 3307:localhost:3306 mwqtiakilx@your-domain.example.com
+   ssh -p 22 -L 3307:localhost:3306 your_user@your-usps-server
    
    # Then connect your GUI tool to:
    # Host: 127.0.0.1
    # Port: 3307
-   # User: ***REDACTED***
+   # User: storm_scout
    # Password: (from .env)
-   # Database: ***REDACTED***
+   # Database: storm_scout
    ```
 
 **Common Queries**:
@@ -566,12 +560,12 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
 
 ### Database Backup & Disaster Recovery
 
-**Critical Data**: The Storm Scout database (`***REDACTED***`) contains:
-- **Static**: 229 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
+**Critical Data**: The Storm Scout database (`storm_scout`) contains:
+- **Static**: 300 USPS locations (sites table) - can be reloaded from `backend/src/data/sites.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
 - **Transient**: Weather observations (site_observations table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
-- **Configuration**: Site status overrides (site_status table) - manual IMT decisions, **CRITICAL** to preserve
+- **Configuration**: Site status overrides (site_status table) - manual USPS Operations decisions, **CRITICAL** to preserve
 
 **Backup Strategy**:
 
@@ -589,16 +583,16 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    
    ```bash
    # Via SSH (requires password)
-   ssh -p 21098 mwqtiakilx@your-domain.example.com
-   mysqldump -u mwqtiakilx_stormsc -p ***REDACTED*** > stormscout_backup_$(date +%Y%m%d).sql
+   ssh -p 22 your_user@your-usps-server
+   mysqldump -u storm_scout_user -p storm_scout > stormscout_backup_$(date +%Y%m%d).sql
    
    # Download backup to local machine
-   scp -P 21098 mwqtiakilx@your-domain.example.com:~/stormscout_backup_*.sql ~/backups/
+   scp -P 22 your_user@your-usps-server:~/stormscout_backup_*.sql ~/backups/
    ```
    
    Via phpMyAdmin:
    - Log into cPanel → phpMyAdmin
-   - Select `***REDACTED***` database
+   - Select `storm_scout` database
    - Export → Quick → SQL → Go
    - Save `.sql` file locally
 
@@ -614,8 +608,8 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
 1. **Full Database Restore** (Disaster Recovery):
    ```bash
    # Via SSH
-   ssh -p 21098 mwqtiakilx@your-domain.example.com
-   mysql -u mwqtiakilx_stormsc -p ***REDACTED*** < stormscout_backup_YYYYMMDD.sql
+   ssh -p 22 your_user@your-usps-server
+   mysql -u storm_scout_user -p storm_scout < stormscout_backup_YYYYMMDD.sql
    ```
    
    Via phpMyAdmin:
@@ -624,24 +618,24 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    - Execute
    
    **Post-Restore Steps**:
-   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 229)
+   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 300)
    - Check for active advisories: `SELECT COUNT(*) FROM advisories WHERE status='active';`
    - Restart ingestion: Backend will auto-populate advisories within 15 minutes
-   - Verify health: `curl https://your-domain.example.com/health`
+   - Verify health: `curl https://your-usps-domain.example.com/health`
 
 2. **Partial Recovery** (Specific Tables):
    - Export single table from backup:
      ```bash
      # Extract specific table from full backup
      sed -n '/DROP TABLE.*`advisory_history`/,/UNLOCK TABLES/p' backup.sql > advisory_history_only.sql
-     mysql -u mwqtiakilx_stormsc -p ***REDACTED*** < advisory_history_only.sql
+     mysql -u storm_scout_user -p storm_scout < advisory_history_only.sql
      ```
 
 3. **Data Loss Scenarios**:
    
    | Scenario | Impact | Recovery Time | Steps |
    |----------|--------|---------------|-------|
-   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (229 sites) |
+   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (300 USPS locations) |
    | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
    | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
    | **Site_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
@@ -671,7 +665,7 @@ mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM advisories;"
 **Documentation Updates**:
 - **Last Backup Verified**: [Add date after testing restore]
 - **Backup Location**: [Add your backup storage location]
-- **Contact for Restore**: [Add IMT/DevOps contact]
+- **Contact for Restore**: [Add USPS/DevOps contact]
 
 ---
 
@@ -730,7 +724,7 @@ The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy val
 1. Starts the server in the background
 2. Waits for it to be ready
 3. Validates all key API endpoints (health, sites, advisories, status, filters, observations)
-4. Verifies 229 sites are loaded
+4. Verifies 300 USPS locations are loaded
 5. Confirms frontend is served correctly
 6. **innerHTML XSS safety audit** — scans all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (reports as warning, does not fail build)
 7. Shuts down the server and reports results
@@ -750,9 +744,9 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 - [ ] `.env` changes documented (don't commit `.env`)
 
 ### Post-Deployment Verification
-- [ ] Health check passes: `https://your-domain.example.com/health`
-- [ ] Frontend loads: `https://your-domain.example.com`
-- [ ] API responds: `https://your-domain.example.com/api/sites`
+- [ ] Health check passes: `https://your-usps-domain.example.com/health`
+- [ ] Frontend loads: `https://your-usps-domain.example.com`
+- [ ] API responds: `https://your-usps-domain.example.com/api/sites`
 - [ ] Dashboard shows data (sites, advisories, counts)
 - [ ] No errors in cPanel logs
 
@@ -787,7 +781,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 ## Troubleshooting Guide
 
 ### Backend Won't Start
-1. Check MySQL connection: `mysql -u mwqtiakilx_stormsc -p ***REDACTED***`
+1. Check MySQL connection: `mysql -u storm_scout_user -p storm_scout`
 2. Verify `.env` file exists and has correct values
 3. Check Node.js version: `node --version` (should be 20.x)
 4. Check for port conflicts: `lsof -i :3000`
@@ -802,9 +796,9 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 
 ### Frontend Not Loading Data
 1. Check API base URL in `js/api.js` (auto-detects localhost vs production — no hardcoded URL)
-2. Test API directly: `curl https://your-domain.example.com/api/sites`
+2. Test API directly: `curl https://your-usps-domain.example.com/api/sites`
 3. Check browser console for CORS errors
-4. Verify backend is running: `curl https://your-domain.example.com/health`
+4. Verify backend is running: `curl https://your-usps-domain.example.com/health`
 5. Clear localStorage and refresh: `localStorage.clear()`
 
 ### Duplicate Alerts Appearing
@@ -815,7 +809,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 5. Verify unique constraint exists: `SHOW INDEX FROM advisories;`
 
 ### Deployment Fails
-1. Test SSH connection: `ssh -p 21098 mwqtiakilx@your-domain.example.com`
+1. Test SSH connection: `ssh -p 22 your_user@your-usps-server`
 2. Check rsync is installed: `which rsync`
 3. Verify paths in `.deploy.config.local`
 4. Check server disk space: `ssh stormscout "df -h"`
@@ -826,7 +820,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 ## Git Workflow
 
 ### Branch Strategy
-- **main**: Production-ready code, deployed to https://your-domain.example.com
+- **main**: Production-ready code, deployed to https://your-usps-domain.example.com
 - Feature branches: Create for major features (e.g., `feature/zone-filtering`)
 - Hotfix branches: For urgent production fixes (e.g., `hotfix/ingestion-crash`)
 
@@ -881,10 +875,10 @@ When cutting a new release:
 # Quick status check
 git status
 npm run ingest  # Test ingestion locally
-curl https://your-domain.example.com/health  # Check production
+curl https://your-usps-domain.example.com/health  # Check production
 
 # Database inspection
-mysql -u mwqtiakilx_stormsc -p ***REDACTED***
+mysql -u storm_scout_user -p storm_scout
 SELECT COUNT(*) FROM advisories WHERE status = 'active';
 SELECT site_code, name, COUNT(*) as alert_count 
 FROM sites s JOIN advisories a ON s.id = a.site_id 
@@ -892,7 +886,7 @@ WHERE a.status = 'active'
 GROUP BY s.id ORDER BY alert_count DESC LIMIT 10;
 
 # Log monitoring
-ssh -p 21098 mwqtiakilx@your-domain.example.com "tail -f ~/logs/storm-scout.log"
+ssh -p 22 your_user@your-usps-server "tail -f ~/logs/storm-scout.log"
 ```
 
 ---
@@ -1078,16 +1072,16 @@ Run quarterly or after major changes:
 cd backend && npm audit
 
 # 2. Verify security headers in production
-curl -sI https://your-domain.example.com | grep -iE "(strict-transport|x-frame|content-security|x-content-type)"
+curl -sI https://your-usps-domain.example.com | grep -iE "(strict-transport|x-frame|content-security|x-content-type)"
 
 # 3. Search for unsafe innerHTML patterns
 grep -rn "\.innerHTML\s*=" frontend/ --include="*.html" --include="*.js" | grep -v "html\`"
 
 # 4. Verify SRI hashes on CDN resources
-curl -s https://your-domain.example.com | grep -E 'integrity="sha'
+curl -s https://your-usps-domain.example.com | grep -E 'integrity="sha'
 
 # 5. Test input validation
-curl -s "https://your-domain.example.com/api/advisories?site_id=abc" | jq .error
+curl -s "https://your-usps-domain.example.com/api/advisories?site_id=abc" | jq .error
 ```
 
 **Document findings** in `docs/security/assessments/` with date-stamped reports.

@@ -1,0 +1,137 @@
+[
+  {
+    "site_code": "0383",
+    "name": "Irving Testing Center",
+    "city": "Irving",
+    "state": "TX",
+    "latitude": 32.8379303,
+    "longitude": -97.0124383,
+    "region": "South Central",
+    "cwa": "FWD",
+    "county": "Dallas",
+    "ugc_codes": [
+      "TXZ119",
+      "TXC113"
+    ]
+  },
+  {
+    "site_code": "0624",
+    "name": "Miami Testing Center",
+    "city": "Miami",
+    "state": "FL",
+    "latitude": 25.77416,
+    "longitude": -80.1936,
+    "region": "Southeast",
+    "cwa": "MFL",
+    "county": "Miami-Dade",
+    "ugc_codes": [
+      "FLZ173",
+      "FLC086"
+    ]
+  },
+  {
+    "site_code": "5298",
+    "name": "Wichita Falls Testing Center",
+    "city": "Wichita Falls",
+    "state": "TX",
+    "latitude": 33.8579818,
+    "longitude": -98.563651,
+    "region": "South Central",
+    "cwa": "OUN",
+    "county": "Wichita",
+    "ugc_codes": [
+      "TXZ086",
+      "TXC485"
+    ]
+  },
+  {
+    "site_code": "6752",
+    "name": "NYC Downtown Testing Center",
+    "city": "New York",
+    "state": "NY",
+    "latitude": 40.7071357,
+    "longitude": -74.007455,
+    "region": "Mid-Atlantic",
+    "cwa": "OKX",
+    "county": "New York (Manhattan)",
+    "ugc_codes": [
+      "NYZ072",
+      "NYC061"
+    ]
+  },
+  {
+    "site_code": "0313",
+    "name": "Waco Testing Center",
+    "city": "Waco",
+    "state": "TX",
+    "latitude": 31.51962,
+    "longitude": -97.18002,
+    "region": "South Central",
+    "cwa": "FWD",
+    "county": "McLennan",
+    "ugc_codes": [
+      "TXZ159",
+      "TXC309"
+    ]
+  },
+  {
+    "site_code": "1908",
+    "name": "Santa Fe Testing Center",
+    "city": "Santa Fe",
+    "state": "NM",
+    "latitude": 35.65926,
+    "longitude": -105.96023,
+    "region": "Southwest",
+    "cwa": "ABQ",
+    "county": "Santa Fe",
+    "ugc_codes": [
+      "NMZ218",
+      "NMC049"
+    ]
+  },
+  {
+    "site_code": "1910",
+    "name": "Albuquerque Testing Center",
+    "city": "Albuquerque",
+    "state": "NM",
+    "latitude": 35.1306,
+    "longitude": -106.53576,
+    "region": "Southwest",
+    "cwa": "ABQ",
+    "county": "Bernalillo",
+    "ugc_codes": [
+      "NMZ219",
+      "NMC001"
+    ]
+  },
+  {
+    "site_code": "3700",
+    "name": "Billings Testing Center",
+    "city": "Billings",
+    "state": "MT",
+    "latitude": 45.76982,
+    "longitude": -108.56915,
+    "region": "Mountain",
+    "cwa": "BYZ",
+    "county": "Yellowstone",
+    "ugc_codes": [
+      "MTZ235",
+      "MTC111"
+    ]
+  },
+  {
+    "site_code": "3702",
+    "name": "Helena Testing Center",
+    "city": "Helena",
+    "state": "MT",
+    "latitude": 46.59651,
+    "longitude": -112.02577,
+    "region": "Mountain",
+    "cwa": "TFX",
+    "county": "Lewis and Clark",
+    "ugc_codes": [
+      "MTZ319",
+      "MTC049"
+    ]
+  }
+]

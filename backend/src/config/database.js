@@ -141,36 +141,39 @@ async function initializeSchema() {
 }
 
 /**
- * Load sites from JSON file into database
+ * Load offices from JSON file into database
  */
-async function loadSites() {
+async function loadOffices() {
   const db = await getDatabase();
-  const sitesPath = path.join(__dirname, '../data/sites.json');
-  
-  if (!fs.existsSync(sitesPath)) {
-    throw new Error('Sites file not found: ' + sitesPath);
+  const officesPath = path.join(__dirname, '../data/sites.json');
+
+  if (!fs.existsSync(officesPath)) {
+    throw new Error('Offices file not found: ' + officesPath);
   }
-  
-  const sitesData = JSON.parse(fs.readFileSync(sitesPath, 'utf8'));
-  
+
+  const officesData = JSON.parse(fs.readFileSync(officesPath, 'utf8'));
+
   const sql = `
-    INSERT IGNORE INTO sites (site_code, name, city, state, latitude, longitude, region)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT IGNORE INTO offices (office_code, name, city, state, latitude, longitude, region, county, ugc_codes, cwa)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
-  
-  for (const site of sitesData) {
+
+  for (const office of officesData) {
     await db.query(sql, [
-      site.site_code,
-      site.name,
-      site.city,
-      site.state,
-      site.latitude,
-      site.longitude,
-      site.region
+      office.site_code,
+      office.name,
+      office.city,
+      office.state,
+      office.latitude,
+      office.longitude,
+      office.region || null,
+      office.county || null,
+      office.ugc_codes || null,
+      office.cwa || null
     ]);
   }
-  
-  console.log(`✓ Loaded ${sitesData.length} sites into database`);
+
+  console.log(`✓ Loaded ${officesData.length} offices into database`);
 }
 
 /**
@@ -225,7 +228,7 @@ module.exports = {
   initDatabase,
   getDatabase,
   initializeSchema,
-  loadSites,
+  loadOffices,
   seedDatabase,
   closeDatabase,
   withRetry

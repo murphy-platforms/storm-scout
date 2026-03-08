@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout Security Assessment - February 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+        }
+        @media print {
+            body { padding: 20px; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none; }
+        }
+        .header {
+            border-bottom: 3px solid #1a365d;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #1a365d;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .meta-info div { flex: 1; }
+        .meta-info strong { color: #1a365d; }
+        
+        h2 {
+            color: #1a365d;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+            font-size: 20px;
+        }
+        h3 {
+            color: #2d3748;
+            margin: 20px 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .executive-summary {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .executive-summary h2 {
+            border: none;
+            margin: 0 0 15px 0;
+            color: #2c5282;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .risk-critical { background: #fed7d7; color: #c53030; }
+        .risk-high { background: #feebc8; color: #c05621; }
+        .risk-medium { background: #fefcbf; color: #975a16; }
+        .risk-low { background: #c6f6d5; color: #276749; }
+        .risk-resolved { background: #c6f6d5; color: #276749; }
+        
+        .finding {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .finding-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .finding-header.critical { background: #fed7d7; }
+        .finding-header.high { background: #feebc8; }
+        .finding-header.medium { background: #fefcbf; }
+        .finding-header.low { background: #c6f6d5; }
+        .finding-header.resolved { background: #e2e8f0; }
+        
+        .finding-body {
+            padding: 15px;
+        }
+        .finding-body p {
+            margin-bottom: 10px;
+        }
+        .finding-body strong {
+            color: #2d3748;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        tr:nth-child(even) { background: #f7fafc; }
+        
+        .remediation-table {
+            margin-top: 20px;
+        }
+        .remediation-table th:first-child { width: 60px; }
+        .remediation-table th:nth-child(3) { width: 100px; }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .status-dot.red { background: #e53e3e; }
+        .status-dot.yellow { background: #ecc94b; }
+        .status-dot.green { background: #48bb78; }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .summary-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .summary-card.critical { background: #fed7d7; }
+        .summary-card.high { background: #feebc8; }
+        .summary-card.medium { background: #fefcbf; }
+        .summary-card.resolved { background: #c6f6d5; }
+        .summary-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            display: block;
+        }
+        .summary-card.critical .number { color: #c53030; }
+        .summary-card.high .number { color: #c05621; }
+        .summary-card.medium .number { color: #975a16; }
+        .summary-card.resolved .number { color: #276749; }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .print-button:hover { background: #2c5282; }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">📄 Print / Save PDF</button>
+
+    <div class="header">
+        <h1>Security Assessment Report</h1>
+        <div class="subtitle">Storm Scout Weather Advisory Dashboard</div>
+    </div>
+
+    <div class="meta-info">
+        <div>
+            <strong>System:</strong> Storm Scout<br>
+            <strong>URL:</strong> https://your-domain.example.com
+        </div>
+        <div>
+            <strong>Assessment Date:</strong> February 15, 2026<br>
+            <strong>Assessment Type:</strong> Application Security Review
+        </div>
+        <div>
+            <strong>Classification:</strong> Internal Use Only<br>
+            <strong>Overall Risk:</strong> <span class="risk-badge risk-high">HIGH</span>
+        </div>
+    </div>
+
+    <div class="executive-summary">
+        <h2>Executive Summary</h2>
+        <p>A security assessment of the Storm Scout weather advisory dashboard identified <strong>1 critical</strong>, <strong>1 high</strong>, and <strong>3 medium</strong> severity vulnerabilities. The most severe finding is an <strong>unauthenticated API endpoint</strong> that allows anyone on the internet to modify site operational status, potentially causing safety risks or operational disruption.</p>
+        
+        <p style="margin-top: 15px;"><strong>Key Findings:</strong></p>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+            <li>Critical: Write endpoints lack authentication (immediate remediation required)</li>
+            <li>High: Cross-site scripting (XSS) vulnerabilities in weather data display</li>
+            <li>Medium: Missing security headers, SRI, and rate limiting configuration issues</li>
+        </ul>
+        
+        <p style="margin-top: 15px;"><strong>Positive Findings:</strong> SQL injection protections are properly implemented. CORS is correctly restricted. Error handling does not leak sensitive information in production.</p>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card critical">
+            <span class="number">1</span>
+            Critical
+        </div>
+        <div class="summary-card high">
+            <span class="number">1</span>
+            High
+        </div>
+        <div class="summary-card medium">
+            <span class="number">3</span>
+            Medium
+        </div>
+        <div class="summary-card resolved">
+            <span class="number">2</span>
+            Verified Safe
+        </div>
+    </div>
+
+    <h2>System Overview</h2>
+    <p>Storm Scout is a weather advisory monitoring dashboard used by IMT and Operations teams to track NOAA weather alerts affecting 219 US testing centers. The system automatically ingests weather data every 15 minutes and provides operational status recommendations.</p>
+    
+    <table>
+        <tr>
+            <th>Component</th>
+            <th>Technology</th>
+            <th>Notes</th>
+        </tr>
+        <tr>
+            <td>Frontend</td>
+            <td>Bootstrap 5.3, Vanilla JavaScript</td>
+            <td>Two UI variants (Classic & Beta)</td>
+        </tr>
+        <tr>
+            <td>Backend</td>
+            <td>Node.js 20, Express.js 4.18</td>
+            <td>REST API architecture</td>
+        </tr>
+        <tr>
+            <td>Database</td>
+            <td>MariaDB 11.4.9</td>
+            <td>mysql2 driver with parameterized queries</td>
+        </tr>
+        <tr>
+            <td>Hosting</td>
+            <td>cPanel with Passenger</td>
+            <td>LiteSpeed web server as proxy</td>
+        </tr>
+        <tr>
+            <td>External Data</td>
+            <td>NOAA Weather API</td>
+            <td>Read-only, HTTPS, 15-minute refresh</td>
+        </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>Detailed Findings</h2>
+
+    <!-- CRITICAL FINDING -->
+    <div class="finding">
+        <div class="finding-header critical">
+            <div>
+                <strong>BE-01: Unauthenticated Write Endpoints</strong>
+            </div>
+            <span class="risk-badge risk-critical">CRITICAL</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>OWASP Category:</strong> A01:2021 - Broken Access Control</p>
+            
+            <p><strong>Description:</strong> The operational status API endpoints allow any unauthenticated user to modify site operational status. This includes endpoints to change individual site status and bulk update multiple sites simultaneously.</p>
+            
+            <p><strong>Affected Endpoints:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li><code>POST /api/operational-status/sites/:id</code></li>
+                <li><code>POST /api/operational-status/bulk-update</code></li>
+            </ul>
+            
+            <p><strong>Evidence:</strong> Manual testing confirmed the endpoint accepts POST requests without authentication. The route handler in <code>operational-status.js</code> has no authentication middleware.</p>
+            
+            <p><strong>Business Impact:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li><strong>Safety Risk:</strong> Attacker could mark dangerous sites as "open" during severe weather</li>
+                <li><strong>Operational Disruption:</strong> Attacker could mark all sites as "closed" unnecessarily</li>
+                <li><strong>Impersonation:</strong> The <code>decision_by</code> field accepts any string, allowing audit trail manipulation</li>
+            </ul>
+            
+            <p><strong>Proof of Concept:</strong></p>
+            <div class="code-block">curl -X POST https://your-domain.example.com/api/operational-status/sites/1 \
+  -H "Content-Type: application/json" \
+  -d '{"operational_status":"closed", "decision_by":"Attacker", "decision_reason":"Malicious"}'</div>
+            
+            <p><strong>Recommendation:</strong> Implement authentication immediately. Options include HTTP Basic Auth with environment-configured credentials, API key authentication, or integration with existing identity provider.</p>
+        </div>
+    </div>
+
+    <!-- HIGH FINDING -->
+    <div class="finding">
+        <div class="finding-header high">
+            <div>
+                <strong>FE-01: Cross-Site Scripting (XSS) via NOAA Data</strong>
+            </div>
+            <span class="risk-badge risk-high">HIGH</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>OWASP Category:</strong> A03:2021 - Injection</p>
+            
+            <p><strong>Description:</strong> NOAA weather advisory data is rendered into the DOM using <code>innerHTML</code> without proper HTML escaping. If NOAA data were compromised or the database manipulated, malicious JavaScript could execute in users' browsers.</p>
+            
+            <p><strong>Evidence:</strong> Code review identified 20+ files using <code>innerHTML</code> with unescaped external data, including:</p>
+            <ul style="margin-left: 20px;">
+                <li><code>advisories.html</code> - line 267: Advisory type, severity rendered directly</li>
+                <li><code>site-detail.html</code> - line 362: Full advisory details rendered</li>
+                <li><code>index.html</code> - lines 472, 534: Dashboard summaries</li>
+            </ul>
+            
+            <p><strong>Business Impact:</strong> If exploited, attackers could steal session cookies, redirect users to phishing sites, or deface the dashboard. While NOAA data is generally trusted, defense-in-depth requires proper output encoding.</p>
+            
+            <p><strong>Recommendation:</strong> Create an <code>escapeHtml()</code> utility function and apply it to all dynamic content before DOM insertion. Alternatively, use <code>textContent</code> instead of <code>innerHTML</code> where HTML formatting is not required.</p>
+        </div>
+    </div>
+
+    <!-- MEDIUM FINDINGS -->
+    <div class="finding">
+        <div class="finding-header medium">
+            <div>
+                <strong>BE-06: Missing Security Headers</strong>
+            </div>
+            <span class="risk-badge risk-medium">MEDIUM</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>OWASP Category:</strong> A05:2021 - Security Misconfiguration</p>
+            
+            <p><strong>Description:</strong> The application does not implement security headers typically provided by the <code>helmet</code> middleware. Missing headers include:</p>
+            <ul style="margin-left: 20px;">
+                <li><code>X-Frame-Options</code> - Clickjacking protection</li>
+                <li><code>X-Content-Type-Options</code> - MIME sniffing prevention</li>
+                <li><code>Content-Security-Policy</code> - XSS mitigation</li>
+                <li><code>Strict-Transport-Security</code> - HTTPS enforcement</li>
+            </ul>
+            
+            <p><strong>Evidence:</strong> HTTP response header inspection shows only basic headers. The <code>helmet</code> package is not present in <code>package.json</code>.</p>
+            
+            <p><strong>Recommendation:</strong> Install <code>helmet</code> package and configure with appropriate Content Security Policy directives.</p>
+        </div>
+    </div>
+
+    <div class="finding">
+        <div class="finding-header medium">
+            <div>
+                <strong>FE-04: Missing Subresource Integrity (SRI)</strong>
+            </div>
+            <span class="risk-badge risk-medium">MEDIUM</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>OWASP Category:</strong> A08:2021 - Software and Data Integrity Failures</p>
+            
+            <p><strong>Description:</strong> Bootstrap CSS and JavaScript are loaded from jsDelivr CDN without Subresource Integrity (SRI) attributes. If the CDN were compromised, malicious code could be injected.</p>
+            
+            <p><strong>Evidence:</strong> Review of HTML files shows CDN resources loaded without <code>integrity</code> or <code>crossorigin</code> attributes.</p>
+            
+            <p><strong>Recommendation:</strong> Add SRI hash attributes to all CDN-loaded resources. Bootstrap provides these hashes in their official documentation.</p>
+        </div>
+    </div>
+
+    <div class="finding">
+        <div class="finding-header medium">
+            <div>
+                <strong>BE-02: Rate Limiting Bypass Risk</strong>
+            </div>
+            <span class="risk-badge risk-medium">MEDIUM</span>
+        </div>
+        <div class="finding-body">
+            <p><strong>OWASP Category:</strong> A04:2021 - Insecure Design</p>
+            
+            <p><strong>Description:</strong> Rate limiting is implemented using <code>express-rate-limit</code>, but the application does not configure <code>trust proxy</code> setting. Behind the LiteSpeed proxy, attackers may bypass rate limiting by manipulating the <code>X-Forwarded-For</code> header.</p>
+            
+            <p><strong>Evidence:</strong> Code review of <code>app.js</code> shows no <code>app.set('trust proxy', 1)</code> configuration.</p>
+            
+            <p><strong>Recommendation:</strong> Add <code>app.set('trust proxy', 1)</code> to properly trust the first proxy and ensure rate limiting uses the correct client IP.</p>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- RESOLVED/SAFE FINDINGS -->
+    <h2>Verified Safe Controls</h2>
+    
+    <div class="finding">
+        <div class="finding-header resolved">
+            <div>
+                <strong>DB-01: SQL Injection Protection</strong>
+            </div>
+            <span class="risk-badge risk-resolved">✓ SAFE</span>
+        </div>
+        <div class="finding-body">
+            <p>All database queries use parameterized statements with the <code>mysql2</code> driver. No string concatenation was found in query construction. This effectively mitigates SQL injection risk.</p>
+        </div>
+    </div>
+
+    <div class="finding">
+        <div class="finding-header resolved">
+            <div>
+                <strong>BE-05: CORS Configuration</strong>
+            </div>
+            <span class="risk-badge risk-resolved">✓ SAFE</span>
+        </div>
+        <div class="finding-body">
+            <p>HTTP response headers confirm CORS is properly restricted to <code>https://your-domain.example.com</code>. Cross-origin requests from other domains are blocked.</p>
+        </div>
+    </div>
+
+    <h2>Prioritized Remediation Plan</h2>
+    
+    <table class="remediation-table">
+        <tr>
+            <th>Priority</th>
+            <th>Finding</th>
+            <th>Effort</th>
+            <th>Action Required</th>
+        </tr>
+        <tr>
+            <td><strong>1</strong></td>
+            <td>BE-01: Unauthenticated Endpoints</td>
+            <td>1-2 hours</td>
+            <td>Add authentication middleware to POST endpoints in operational-status.js. Minimum: HTTP Basic Auth with env-configured password.</td>
+        </tr>
+        <tr>
+            <td><strong>2</strong></td>
+            <td>FE-01: XSS Vulnerabilities</td>
+            <td>2-3 hours</td>
+            <td>Create escapeHtml() utility function. Audit and update all innerHTML assignments across 20+ files.</td>
+        </tr>
+        <tr>
+            <td><strong>3</strong></td>
+            <td>BE-06: Security Headers</td>
+            <td>30 min</td>
+            <td>Install helmet package: <code>npm install helmet</code>. Add helmet middleware with CSP configuration.</td>
+        </tr>
+        <tr>
+            <td><strong>4</strong></td>
+            <td>FE-04: Missing SRI</td>
+            <td>30 min</td>
+            <td>Add integrity and crossorigin attributes to all CDN script/link tags.</td>
+        </tr>
+        <tr>
+            <td><strong>5</strong></td>
+            <td>BE-02: Trust Proxy</td>
+            <td>5 min</td>
+            <td>Add <code>app.set('trust proxy', 1)</code> to app.js</td>
+        </tr>
+    </table>
+
+    <h2>Risk Assessment Matrix</h2>
+    
+    <table>
+        <tr>
+            <th>Finding</th>
+            <th>Likelihood</th>
+            <th>Impact</th>
+            <th>Risk Level</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            <td>Unauthenticated Write Endpoints</td>
+            <td>High</td>
+            <td>Critical</td>
+            <td><span class="risk-badge risk-critical">CRITICAL</span></td>
+            <td>Open</td>
+        </tr>
+        <tr>
+            <td>XSS via NOAA Data</td>
+            <td>Medium</td>
+            <td>High</td>
+            <td><span class="risk-badge risk-high">HIGH</span></td>
+            <td>Open</td>
+        </tr>
+        <tr>
+            <td>Missing Security Headers</td>
+            <td>Medium</td>
+            <td>Medium</td>
+            <td><span class="risk-badge risk-medium">MEDIUM</span></td>
+            <td>Open</td>
+        </tr>
+        <tr>
+            <td>Missing SRI</td>
+            <td>Low</td>
+            <td>High</td>
+            <td><span class="risk-badge risk-medium">MEDIUM</span></td>
+            <td>Open</td>
+        </tr>
+        <tr>
+            <td>Rate Limiting Bypass</td>
+            <td>Low</td>
+            <td>Medium</td>
+            <td><span class="risk-badge risk-medium">MEDIUM</span></td>
+            <td>Open</td>
+        </tr>
+    </table>
+
+    <h2>Recommendations Summary</h2>
+    
+    <h3>Immediate (Within 24-48 hours)</h3>
+    <ul style="margin-left: 20px;">
+        <li>Add authentication to operational status write endpoints</li>
+        <li>Consider temporarily disabling write endpoints until auth is implemented</li>
+    </ul>
+    
+    <h3>Short-term (Within 1 week)</h3>
+    <ul style="margin-left: 20px;">
+        <li>Implement XSS protections across all frontend files</li>
+        <li>Install and configure helmet.js security headers</li>
+        <li>Add SRI to CDN resources</li>
+    </ul>
+    
+    <h3>Medium-term (Within 1 month)</h3>
+    <ul style="margin-left: 20px;">
+        <li>Implement comprehensive audit logging for all status changes</li>
+        <li>Consider role-based access control for different user types</li>
+        <li>Establish regular dependency vulnerability scanning</li>
+    </ul>
+
+    <div class="footer">
+        <p><strong>Document Classification:</strong> Internal Use Only</p>
+        <p><strong>Assessment Conducted:</strong> February 15, 2026</p>
+        <p><strong>Assessment Methodology:</strong> Manual code review, configuration analysis, and safe endpoint testing</p>
+        <p><strong>Scope:</strong> Web application, API endpoints, frontend code, server configuration</p>
+        <p style="margin-top: 15px;"><em>This assessment represents findings at a point in time. Security posture should be re-evaluated after remediation and periodically thereafter.</em></p>
+    </div>
+
+</body>
+</html>

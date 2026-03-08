@@ -32,7 +32,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sites.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -64,7 +64,7 @@
                         <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
                     </a>
                     <span class="badge bg-secondary me-2">
-                        <span id="totalSites">--</span> Total Sites
+                        <span id="totalSites">--</span> Total Offices
                     </span>
                     <span class="badge bg-warning text-dark">
                         <span id="sitesWithAdvisories">--</span> With Advisories
@@ -79,7 +79,7 @@
         <div class="row mb-3">
             <div class="col-12">
                 <h1 class="h2 mb-1">Dashboard Overview</h1>
-                <p class="text-muted mb-0">Site-focused weather advisory monitoring for IMT and Operations</p>
+                <p class="text-muted mb-0">Office-focused weather advisory monitoring for USPS Operations</p>
             </div>
         </div>
 
@@ -91,7 +91,7 @@
                     <span class="tooltip-wrapper tooltip-light">
                         <span class="help-icon" tabindex="0" role="button" aria-label="What is Weather Impact?">?</span>
                         <span class="tooltip-content" role="tooltip">
-                            <strong>Weather Impact</strong> is automatically calculated based on the severity of active weather advisories from NOAA. Sites are color-coded by their highest severity alert.
+                            <strong>Weather Impact</strong> is automatically calculated based on the severity of active weather advisories from NOAA. Offices are color-coded by their highest severity alert.
                         </span>
                     </span>
                 </h3>
@@ -158,12 +158,12 @@
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Sites Requiring Attention</h3>
+                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Offices Requiring Attention</h3>
                         <p class="text-muted small mb-0">Grouped by highest severity alert</p>
                     </div>
                     <div class="quick-actions">
                         <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
-                            <i class="bi bi-list-ul"></i> View All Sites
+                            <i class="bi bi-list-ul"></i> View All Offices
                         </a>
                         <a href="map.html" class="btn btn-sm btn-outline-primary me-1">
                             <i class="bi bi-geo-alt"></i> Map View
@@ -214,7 +214,7 @@
             <div class="col-12">
                 <div class="alert alert-success">
                     <i class="bi bi-check-circle-fill"></i>
-                    <strong>All Clear!</strong> No sites currently require attention based on your filter settings.
+                    <strong>All Clear!</strong> No offices currently require attention based on your filter settings.
                 </div>
             </div>
         </div>
@@ -227,11 +227,11 @@
                     <span class="tooltip-wrapper tooltip-light">
                         <span class="help-icon" tabindex="0" role="button" aria-label="What is Operational Status?">?</span>
                         <span class="tooltip-content" role="tooltip">
-                            <strong>Operational Status</strong> is manually set by IMT/Operations staff based on business decisions, not just weather. A site may be Open despite weather alerts, or Closed for non-weather reasons.
+                            <strong>Operational Status</strong> is manually set by USPS Operations staff based on business decisions, not just weather. An office may be Open despite weather alerts, or Closed for non-weather reasons.
                         </span>
                     </span>
                 </h3>
-                <p class="text-muted small mb-2">Current site status set by IMT/Operations team</p>
+                <p class="text-muted small mb-2">Current office status set by USPS Operations team</p>
             </div>
         </div>
         <div class="row g-3 mb-4">
@@ -294,7 +294,7 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Recently Updated Sites</h5>
+                            <h5 class="mb-0">Recently Updated Offices</h5>
                         </div>
                         <div class="card-body" id="recentlyUpdatedList">
                             <div class="text-center"><span class="spinner-border"></span></div>
@@ -309,7 +309,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
-                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | IMT Operations Tool | <span id="appVersion"></span></p>
+                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     <a href="sources.html" class="text-muted text-decoration-none me-3">
@@ -473,7 +473,7 @@
                         </small>
                     </div>`;
                 }).join('');
-                document.getElementById('recentlyUpdatedList').innerHTML = sitesHTML || '<p class="text-muted">No sites with advisories</p>';
+                document.getElementById('recentlyUpdatedList').innerHTML = sitesHTML || '<p class="text-muted">No offices with advisories</p>';
                 
                 function getWeatherBadge(level) {
                     const badges = { red: 'weather-red', orange: 'weather-orange', yellow: 'weather-yellow', green: 'weather-green' };
@@ -536,7 +536,7 @@
                             ${raw(sorted.length > 6 ? `
                             <div class="text-center mt-2">
                                 <a href="sites.html" class="btn btn-sm btn-outline-primary">
-                                    View All ${sorted.length} Sites <i class="bi bi-arrow-right"></i>
+                                    View All ${sorted.length} Offices <i class="bi bi-arrow-right"></i>
                                 </a>
                             </div>
                             ` : '')}

@@ -11,7 +11,7 @@ const config = require('./config/config');
 const { apiLimiter, writeLimiter } = require('./middleware/rateLimiter');
 
 // Import routes
-const sitesRouter = require('./routes/sites');
+const sitesRouter = require('./routes/offices');
 const advisoriesRouter = require('./routes/advisories');
 const statusRouter = require('./routes/status');
 const noticesRouter = require('./routes/notices');
@@ -186,17 +186,17 @@ app.get('/health', async (req, res) => {
     
     // Check for sites missing UGC codes
     const [missingUgc] = await db.query(
-      "SELECT COUNT(*) as count FROM sites WHERE ugc_codes IS NULL OR ugc_codes = '[]'"
+      "SELECT COUNT(*) as count FROM offices WHERE ugc_codes IS NULL OR ugc_codes = '[]'"
     );
     
     // Check for sites missing county
     const [missingCounty] = await db.query(
-      "SELECT COUNT(*) as count FROM sites WHERE county IS NULL OR county = ''"
+      "SELECT COUNT(*) as count FROM offices WHERE county IS NULL OR county = ''"
     );
     
     // Validate UGC code format (should match pattern like MNZ060 or MNC053)
     const [invalidFormat] = await db.query(
-      `SELECT COUNT(*) as count FROM sites 
+      `SELECT COUNT(*) as count FROM offices 
        WHERE ugc_codes IS NOT NULL 
        AND ugc_codes NOT REGEXP '"[A-Z]{2}[ZC][0-9]{3}"'`
     );
@@ -208,7 +208,7 @@ app.get('/health', async (req, res) => {
     if (ugcMissing === 0 && countyMissing === 0 && formatInvalid === 0) {
       health.checks.data_integrity = {
         status: 'ok',
-        message: 'All sites have valid UGC codes and county data'
+        message: 'All offices have valid UGC codes and county data'
       };
     } else {
       health.status = 'degraded';
@@ -249,7 +249,7 @@ app.use('/api', (req, res, next) => {
 });
 
 // API routes
-app.use('/api/sites', sitesRouter);
+app.use('/api/offices', sitesRouter);
 app.use('/api/advisories', advisoriesRouter);
 app.use('/api/status', statusRouter);
 app.use('/api/notices', noticesRouter);
@@ -275,7 +275,7 @@ app.get('/api', (req, res) => {
     endpoints: {
       version: '/api/version',
       health: '/health (Database + Ingestion status)',
-      sites: '/api/sites',
+      offices: '/api/offices',
       advisories: '/api/advisories',
       status: '/api/status',
       notices: '/api/notices',
