@@ -503,8 +503,8 @@ Current indexes for performance:
 -- Unique constraint on VTEC event ID for deduplication
 ALTER TABLE advisories ADD UNIQUE INDEX vtec_event_unique_key (vtec_event_id);
 
--- Index for site queries
-ALTER TABLE advisories ADD INDEX idx_site_id (site_id);
+-- Index for office queries
+ALTER TABLE advisories ADD INDEX idx_office_id (office_id);
 
 -- Index for date-based cleanup
 ALTER TABLE advisories ADD INDEX idx_expires (expires);
