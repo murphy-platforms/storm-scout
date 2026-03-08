@@ -1,9 +1,9 @@
 /**
  * Storm Scout Aggregation Logic - Phase 1
- * Groups advisories by site, deduplicates multi-zone alerts, calculates urgency
+ * Groups advisories by office, deduplicates multi-zone alerts, calculates urgency
  */
 
-const SiteAggregator = {
+const OfficeAggregator = {
     /**
      * Get severity rank for sorting (higher = more severe)
      */
@@ -43,7 +43,7 @@ const SiteAggregator = {
 
     /**
      * Deduplicate multi-zone alerts
-     * Groups alerts with same (site_id, advisory_type, severity, issued time window)
+     * Groups alerts with same (office_id, advisory_type, severity, issued time window)
      */
     deduplicateMultiZone(advisories) {
         const dedupMap = new Map();
@@ -52,7 +52,7 @@ const SiteAggregator = {
             // Create deduplication key
             const issuedTime = adv.issued_time || adv.last_updated || '';
             const timeWindow = issuedTime ? new Date(issuedTime).toISOString().slice(0, 13) : 'unknown';
-            const key = `${adv.site_id}-${adv.advisory_type}-${adv.severity}-${timeWindow}`;
+            const key = `${adv.office_id}-${adv.advisory_type}-${adv.severity}-${timeWindow}`;
             
             if (!dedupMap.has(key)) {
                 // First occurrence - create representative alert
@@ -88,27 +88,27 @@ const SiteAggregator = {
     },
 
     /**
-     * Group advisories by site and calculate summaries
+     * Group advisories by office and calculate summaries
      */
-    aggregateBySite(advisories, options = {}) {
+    aggregateByOffice(advisories, options = {}) {
         const { deduplicateZones = true } = options;
-        
+
         // First, deduplicate multi-zone alerts if enabled
-        const processedAdvisories = deduplicateZones 
-            ? this.deduplicateMultiZone(advisories) 
+        const processedAdvisories = deduplicateZones
+            ? this.deduplicateMultiZone(advisories)
             : advisories;
-        
-        // Group by site
-        const siteMap = new Map();
-        
+
+        // Group by office
+        const officeMap = new Map();
+
         processedAdvisories.forEach(adv => {
-            const siteId = adv.site_id;
-            
-            if (!siteMap.has(siteId)) {
-                siteMap.set(siteId, {
-                    site_id: siteId,
-                    site_code: adv.site_code,
-                    site_name: adv.site_name,
+            const officeId = adv.office_id;
+
+            if (!officeMap.has(officeId)) {
+                officeMap.set(officeId, {
+                    office_id: officeId,
+                    office_code: adv.office_code,
+                    office_name: adv.office_name,
                     city: adv.city,
                     state: adv.state,
                     advisories: [],
@@ -122,36 +122,36 @@ const SiteAggregator = {
                     urgency_score: 0
                 });
             }
-            
-            const site = siteMap.get(siteId);
-            site.advisories.push(adv);
-            site.unique_types.add(adv.advisory_type);
-            site.total_zone_count += (adv.zone_count || 1);
-            site.unique_advisory_count++;
-            
+
+            const office = officeMap.get(officeId);
+            office.advisories.push(adv);
+            office.unique_types.add(adv.advisory_type);
+            office.total_zone_count += (adv.zone_count || 1);
+            office.unique_advisory_count++;
+
             // Count NEW vs CONTINUED
             if (adv.vtec_action === 'NEW') {
-                site.new_count++;
+                office.new_count++;
             } else if (adv.vtec_action === 'CON') {
-                site.continued_count++;
+                office.continued_count++;
             }
-            
+
             // Track highest severity
             const severityRank = this.getSeverityRank(adv.severity);
-            if (severityRank > site.highest_severity_rank) {
-                site.highest_severity = adv.severity;
-                site.highest_severity_rank = severityRank;
+            if (severityRank > office.highest_severity_rank) {
+                office.highest_severity = adv.severity;
+                office.highest_severity_rank = severityRank;
             }
-            
+
             // Add to urgency score
-            site.urgency_score += this.calculateUrgency(adv);
+            office.urgency_score += this.calculateUrgency(adv);
         });
-        
+
         // Convert to array and enhance
-        const sites = Array.from(siteMap.values()).map(site => {
+        const offices = Array.from(officeMap.values()).map(office => {
             // Group advisories by type
             const typeGroups = {};
-            site.advisories.forEach(adv => {
+            office.advisories.forEach(adv => {
                 const type = adv.advisory_type;
                 if (!typeGroups[type]) {
                     typeGroups[type] = {
@@ -167,49 +167,49 @@ const SiteAggregator = {
                 typeGroups[type].count++;
                 typeGroups[type].zone_count += (adv.zone_count || 1);
             });
-            
+
             return {
-                ...site,
-                unique_types: Array.from(site.unique_types),
-                type_groups: Object.values(typeGroups).sort((a, b) => 
+                ...office,
+                unique_types: Array.from(office.unique_types),
+                type_groups: Object.values(typeGroups).sort((a, b) =>
                     this.getSeverityRank(b.severity) - this.getSeverityRank(a.severity)
                 ),
                 // Find the highest severity advisory for display
-                highest_severity_advisory: site.advisories.find(adv => 
-                    adv.severity === site.highest_severity
+                highest_severity_advisory: office.advisories.find(adv =>
+                    adv.severity === office.highest_severity
                 )
             };
         });
-        
+
         // Sort by urgency score (highest first)
-        return sites.sort((a, b) => b.urgency_score - a.urgency_score);
+        return offices.sort((a, b) => b.urgency_score - a.urgency_score);
     },
 
     /**
-     * Group sites by severity level for dashboard
+     * Group offices by severity level for dashboard
      * Each severity maps to its own color matching Weather Impact Assessment
      */
-    groupBySeverity(sites) {
+    groupBySeverity(offices) {
         return {
-            extreme: sites.filter(s => s.highest_severity === 'Extreme'),    // 🔴 RED
-            severe: sites.filter(s => s.highest_severity === 'Severe'),      // 🟠 ORANGE
-            moderate: sites.filter(s => s.highest_severity === 'Moderate'),  // 🟡 YELLOW
-            minor: sites.filter(s => s.highest_severity === 'Minor')         // 🟢 GREEN
+            extreme: offices.filter(s => s.highest_severity === 'Extreme'),    // 🔴 RED
+            severe: offices.filter(s => s.highest_severity === 'Severe'),      // 🟠 ORANGE
+            moderate: offices.filter(s => s.highest_severity === 'Moderate'),  // 🟡 YELLOW
+            minor: offices.filter(s => s.highest_severity === 'Minor')         // 🟢 GREEN
         };
     },
 
     /**
      * Get summary statistics
      */
-    getSummaryStats(advisories, sites) {
+    getSummaryStats(advisories, offices) {
         return {
             total_advisories: advisories.length,
-            unique_sites: sites.length,
-            critical_sites: sites.filter(s => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe').length,
-            elevated_sites: sites.filter(s => s.highest_severity === 'Moderate').length,
-            monitoring_sites: sites.filter(s => s.highest_severity === 'Minor').length,
+            unique_offices: offices.length,
+            critical_offices: offices.filter(s => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe').length,
+            elevated_offices: offices.filter(s => s.highest_severity === 'Moderate').length,
+            monitoring_offices: offices.filter(s => s.highest_severity === 'Minor').length,
             new_alerts: advisories.filter(a => a.vtec_action === 'NEW').length,
-            avg_alerts_per_site: sites.length > 0 ? (advisories.length / sites.length).toFixed(1) : 0
+            avg_alerts_per_office: offices.length > 0 ? (advisories.length / offices.length).toFixed(1) : 0
         };
     },
 
@@ -239,5 +239,5 @@ const SiteAggregator = {
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SiteAggregator;
+    module.exports = OfficeAggregator;
 }

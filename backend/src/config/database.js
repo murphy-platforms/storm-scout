@@ -145,7 +145,7 @@ async function initializeSchema() {
  */
 async function loadOffices() {
   const db = await getDatabase();
-  const officesPath = path.join(__dirname, '../data/sites.json');
+  const officesPath = path.join(__dirname, '../data/offices.json');
 
   if (!fs.existsSync(officesPath)) {
     throw new Error('Offices file not found: ' + officesPath);
@@ -160,7 +160,7 @@ async function loadOffices() {
 
   for (const office of officesData) {
     await db.query(sql, [
-      office.site_code,
+      office.office_code,
       office.name,
       office.city,
       office.state,

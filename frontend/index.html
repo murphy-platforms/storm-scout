@@ -32,7 +32,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Offices Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -100,7 +100,7 @@
         </div>
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <a href="sites.html" class="text-decoration-none">
+                <a href="offices.html" class="text-decoration-none">
                     <div class="card text-center weather-card weather-card-clickable impact-total h-100">
                         <div class="card-body py-3">
                             <span class="badge weather-total mb-1">⚡ TOTAL</span>
@@ -113,7 +113,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=red" class="text-decoration-none">
+                <a href="offices.html?weather_impact=red" class="text-decoration-none">
                     <div class="card text-center weather-card weather-card-clickable impact-red h-100">
                         <div class="card-body py-3">
                             <span class="badge weather-red mb-1">🔴 RED</span>
@@ -126,7 +126,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=orange" class="text-decoration-none">
+                <a href="offices.html?weather_impact=orange" class="text-decoration-none">
                     <div class="card text-center weather-card weather-card-clickable impact-orange h-100">
                         <div class="card-body py-3">
                             <span class="badge weather-orange mb-1">🟠 ORANGE</span>
@@ -139,7 +139,7 @@
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="sites.html?weather_impact=yellow" class="text-decoration-none">
+                <a href="offices.html?weather_impact=yellow" class="text-decoration-none">
                     <div class="card text-center weather-card weather-card-clickable impact-yellow h-100">
                         <div class="card-body py-3">
                             <span class="badge weather-yellow mb-1">🟡 YELLOW</span>
@@ -162,7 +162,7 @@
                         <p class="text-muted small mb-0">Grouped by highest severity alert</p>
                     </div>
                     <div class="quick-actions">
-                        <a href="sites.html" class="btn btn-sm btn-outline-danger me-1">
+                        <a href="offices.html" class="btn btn-sm btn-outline-danger me-1">
                             <i class="bi bi-list-ul"></i> View All Offices
                         </a>
                         <a href="map.html" class="btn btn-sm btn-outline-primary me-1">
@@ -363,9 +363,9 @@
                     API.getObservations().catch(() => [])
                 ]);
                 
-                // Build observations lookup by site_code
+                // Build observations lookup by office_code
                 observationsMap = {};
-                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
+                obsData.forEach(obs => { observationsMap[obs.office_code] = obs; });
                 
                 // Update timestamp and countdown
                 document.getElementById('lastUpdated').textContent = formatLocalTime(overviewData.last_updated);
@@ -386,8 +386,8 @@
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
                 
                 // Aggregate by site with deduplication
-                const aggregatedSites = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
-                const groupedSites = SiteAggregator.groupBySeverity(aggregatedSites);
+                const aggregatedSites = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
+                const groupedSites = OfficeAggregator.groupBySeverity(aggregatedSites);
                 
                 // Render grouped site summaries
                 renderSiteGroups(groupedSites);
@@ -401,7 +401,7 @@
                 }
                 
                 // Recalculate counts based on filtered data
-                document.getElementById('totalSites').textContent = overviewData.total_sites;
+                document.getElementById('totalSites').textContent = overviewData.total_offices;
                 
                 // Sites with advisories (after filtering)
                 const sitesWithAdvisories = aggregatedSites.length;
@@ -458,7 +458,7 @@
                 const sitesWithAdvisoriesData = overviewData.recently_updated
                     .filter(site => {
                         // Check if this site has any advisories in the filtered set
-                        return filteredAdvisories.some(adv => adv.site_id === site.site_id);
+                        return filteredAdvisories.some(adv => adv.office_id === site.id);
                     })
                     .slice(0, 5);
                 
@@ -466,7 +466,7 @@
                     const weatherBadge = getWeatherBadge(site.weather_impact_level || 'green');
                     const opsBadge = getOperationalBadge(site.operational_status || 'open_normal');
                     return html`<div class="mb-2">
-                        <a href="sites.html?site=${site.site_code}" class="text-decoration-none fw-bold">${site.site_code}</a> - ${site.name}<br>
+                        <a href="offices.html?office=${site.office_code}" class="text-decoration-none fw-bold">${site.office_code}</a> - ${site.name}<br>
                         <small>
                             <span class="badge ${raw(weatherBadge)} me-1">Weather: ${raw((site.weather_impact_level || 'green').toUpperCase())}</span>
                             <span class="badge ${raw(opsBadge)}">Ops: ${raw(formatOperationalStatus(site.operational_status || 'open_normal'))}</span>
@@ -514,7 +514,7 @@
             }
             
             // Sort by site code ascending within severity group
-            const sorted = [...sites].sort((a, b) => a.site_code.localeCompare(b.site_code, undefined, { numeric: true }));
+            const sorted = [...sites].sort((a, b) => a.office_code.localeCompare(b.office_code, undefined, { numeric: true }));
             
             const collapseId = `collapse${escapeHtml(cssClass)}`;
             const showClass = collapsed ? '' : 'show';
@@ -531,11 +531,11 @@
                         </div>
                         <div class="collapse ${raw(showClass)}" id="${raw(collapseId)}">
                             <div class="row mt-3">
-                                ${raw(sorted.slice(0, 6).map(site => renderSiteSummary(site, observationsMap[site.site_code])).join(''))}
+                                ${raw(sorted.slice(0, 6).map(site => renderSiteSummary(site, observationsMap[site.office_code])).join(''))}
                             </div>
                             ${raw(sorted.length > 6 ? `
                             <div class="text-center mt-2">
-                                <a href="sites.html" class="btn btn-sm btn-outline-primary">
+                                <a href="offices.html" class="btn btn-sm btn-outline-primary">
                                     View All ${sorted.length} Offices <i class="bi bi-arrow-right"></i>
                                 </a>
                             </div>
@@ -572,12 +572,12 @@
             
             return html`
                 <div class="col-lg-4 col-md-6 col-12 mb-3">
-                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                    <a href="office-detail.html?office=${site.office_code}" class="text-decoration-none">
                         <div class="card site-card site-card-clickable ${raw(severityClass)}" style="height: 100%;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="mb-0 text-dark">
-                                        <strong>${site.site_code}</strong> - ${site.site_name}<br>
+                                        <strong>${site.office_code}</strong> - ${site.office_name}<br>
                                         <small class="text-muted">${site.city}, ${site.state}</small>
                                     </h6>
                                     <div style="text-align: right;">
@@ -671,7 +671,7 @@
                 // Export based on type
                 switch(type) {
                     case 'csv':
-                        StormScoutExport.exportSitesToCSV(sites);
+                        StormScoutExport.exportOfficesToCSV(sites);
                         break;
                     case 'executive':
                         StormScoutExport.generateHTMLReport({ sites, advisories, overview }, 'executive');

@@ -64,12 +64,12 @@ const Trends = {
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h5 class="card-title mb-0">
-                                <strong>${trend.site.site_code}</strong> - ${trend.site.name}
+                                <strong>${trend.office.office_code}</strong> - ${trend.office.name}
                             </h5>
                             ${trendIcon}
                         </div>
                         <p class="card-text">
-                            <i class="bi bi-geo-alt"></i> ${trend.site.city}, ${trend.site.state}<br>
+                            <i class="bi bi-geo-alt"></i> ${trend.office.city}, ${trend.office.state}<br>
                             <i class="bi bi-arrow-right-circle"></i> ${trend.first_severity} → ${trend.last_severity}<br>
                             <i class="bi bi-clock"></i> ${trend.duration_hours} hours<br>
                             <i class="bi bi-bar-chart"></i> ${changeText}
@@ -122,19 +122,19 @@ const Trends = {
     },
     
     /**
-     * Render trend summary section for site detail page
+     * Render trend summary section for office detail page
      * @param {string} containerId - ID of container element
-     * @param {number} siteId - Site ID
+     * @param {number} officeId - Office ID
      * @param {number} days - Days of history to show
      */
-    async renderSiteTrendSection(containerId, siteId, days = 7) {
+    async renderOfficeTrendSection(containerId, officeId, days = 7) {
         const container = document.getElementById(containerId);
         if (!container) return;
-        
+
         try {
             container.innerHTML = '<div class="text-center"><span class="spinner-border spinner-border-sm"></span> Loading trends...</div>';
-            
-            const trendData = await API.getSiteTrend(siteId, days);
+
+            const trendData = await API.getOfficeTrend(officeId, days);
             
             if (!trendData || trendData.trend === 'insufficient_data') {
                 container.innerHTML = `

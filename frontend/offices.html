@@ -11,7 +11,7 @@
       gtag('config', '***REDACTED_GA_ID***');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Storm Scout - Sites Impacted</title>
+    <title>Storm Scout - Offices Impacted</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css?v=1.8.1">
@@ -30,7 +30,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -43,7 +43,7 @@
     <div class="container-fluid mt-4">
         <div class="row mb-4">
             <div class="col-12">
-                <h1 class="h2">Sites Impacted</h1>
+                <h1 class="h2">Offices Impacted</h1>
                 <p class="text-muted">USPS locations currently impacted by weather advisories</p>
             </div>
         </div>
@@ -72,7 +72,7 @@
 
         <div class="row mb-3">
             <div class="col-md-3">
-                <input type="text" class="form-control" id="searchBox" placeholder="Search sites...">
+                <input type="text" class="form-control" id="searchBox" placeholder="Search offices...">
             </div>
             <div class="col-md-2">
                 <select class="form-select" id="stateFilter">
@@ -126,14 +126,14 @@
             try {
                 // Load all sites, advisories, and observations
                 const [sites, advisories, obsData] = await Promise.all([
-                    API.getSites(),
+                    API.getOffices(),
                     API.getActiveAdvisories(),
                     API.getObservations().catch(() => [])
                 ]);
                 
-                // Build observations lookup by site_code
+                // Build observations lookup by office_code
                 observationsMap = {};
-                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
+                obsData.forEach(obs => { observationsMap[obs.office_code] = obs; });
                 
                 allSites = sites;
                 allAdvisories = advisories;
@@ -164,19 +164,19 @@
             const filteredAdvisories = AlertFilters.filterAdvisories(advisories);
             
             // Aggregate advisories by site with deduplication
-            const aggregatedSites = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
+            const aggregatedSites = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
             
             // Create map for quick lookup
             const siteMap = new Map();
             aggregatedSites.forEach(site => {
-                siteMap.set(site.site_id, site);
+                siteMap.set(site.office_id, site);
             });
             
             // Map severity to weather impact level (matches dashboard)
             const severityToImpact = { 'Extreme': 'red', 'Severe': 'orange', 'Moderate': 'yellow', 'Minor': 'green' };
             
             // Enhance original sites with aggregation data
-            // Note: Sites API uses 'id', advisories use 'site_id'
+            // Note: Offices API uses 'id', advisories use 'office_id'
             return sites
                 .map(site => {
                     const aggData = siteMap.get(site.id);
@@ -198,14 +198,14 @@
         function renderSites(sites) {
             const container = document.getElementById('sitesContainer');
             if (sites.length === 0) {
-                container.innerHTML = '<div class="col-12 text-center text-muted">No sites currently impacted</div>';
+                container.innerHTML = '<div class="col-12 text-center text-muted">No offices currently impacted</div>';
                 return;
             }
             
             // Sort by urgency (sites with highest severity first)
             const sortedSites = [...sites].sort((a, b) => {
-                const rankA = SiteAggregator.getSeverityRank(a.highest_severity || 'Minor');
-                const rankB = SiteAggregator.getSeverityRank(b.highest_severity || 'Minor');
+                const rankA = OfficeAggregator.getSeverityRank(a.highest_severity || 'Minor');
+                const rankB = OfficeAggregator.getSeverityRank(b.highest_severity || 'Minor');
                 return rankB - rankA;
             });
             
@@ -213,7 +213,7 @@
                 const severityClass = site.highest_severity ? `site-card-${escapeHtml(site.highest_severity.toLowerCase())}` : '';
                 const advisory = site.highest_severity_advisory;
                 const headlineText = advisory ? truncate(advisory.headline || '', 120) : '';
-                const obs = observationsMap[site.site_code];
+                const obs = observationsMap[site.office_code];
                 
                 // Temperature display
                 let tempHtml = '';
@@ -236,13 +236,13 @@
                 
                 return html`
                 <div class="col-md-6 col-lg-4 mb-3">
-                    <a href="site-detail.html?site=${site.site_code}" class="text-decoration-none">
+                    <a href="office-detail.html?office=${site.office_code}" class="text-decoration-none">
                         <div class="card site-card site-card-clickable ${raw(severityClass)}">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
                                         <h5 class="card-title mb-0 text-dark">
-                                            <strong>${site.site_code}</strong> - ${site.name}
+                                            <strong>${site.office_code}</strong> - ${site.name}
                                         </h5>
                                         <small class="text-muted"><i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}</small>
                                     </div>
@@ -288,7 +288,7 @@
             
             // Then apply UI filters
             const filtered = filteredData.filter(site => {
-                if (search && !(site.site_code.toLowerCase().includes(search) || site.name.toLowerCase().includes(search))) return false;
+                if (search && !(site.office_code.toLowerCase().includes(search) || site.name.toLowerCase().includes(search))) return false;
                 if (state && site.state !== state) return false;
                 if (weatherImpact && site.weather_impact_level !== weatherImpact) return false;
                 if (status && site.operational_status !== status) return false;
@@ -324,12 +324,12 @@
         // Check for URL parameters on page load
         function applyURLParameters() {
             const urlParams = new URLSearchParams(window.location.search);
-            const siteParam = urlParams.get('site');
+            const officeParam = urlParams.get('office') || urlParams.get('site'); // support legacy ?site= links
             const weatherImpactParam = urlParams.get('weather_impact');
-            
-            if (siteParam) {
-                // Auto-populate search box with site code from URL
-                document.getElementById('searchBox').value = siteParam;
+
+            if (officeParam) {
+                // Auto-populate search box with office code from URL
+                document.getElementById('searchBox').value = officeParam;
             }
             
             if (weatherImpactParam) {

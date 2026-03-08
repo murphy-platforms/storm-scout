@@ -1,10 +1,10 @@
 -- Storm Scout Seed Data
 -- MySQL/MariaDB compatible
 
--- NOTE: USPS site data is loaded via import-usps-sites.js + init-db, not seeded here.
+-- NOTE: USPS office data is loaded via import-usps-offices.js + init-db, not seeded here.
 -- To load 300 USPS locations:
---   1. node src/scripts/import-usps-sites.js /path/to/usps-locations.csv
---   2. npm run init-db   (loads sites.json into database)
+--   1. node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
+--   2. npm run init-db   (loads offices.json into database)
 -- The advisory/status inserts below are optional sample data for development only.
 
 -- Sample government/emergency notices (no site dependency)
@@ -43,7 +43,7 @@ INSERT INTO notices (jurisdiction, jurisdiction_type, notice_type, title, descri
     'https://www.fema.gov'
 );
 
--- Set default operational status for all loaded sites
-INSERT IGNORE INTO site_status (site_id, operational_status, reason)
-SELECT id, 'open_normal', 'No active advisories' FROM sites
-WHERE id NOT IN (SELECT site_id FROM site_status);
+-- Set default operational status for all loaded offices
+INSERT IGNORE INTO office_status (office_id, operational_status, reason)
+SELECT id, 'open_normal', 'No active advisories' FROM offices
+WHERE id NOT IN (SELECT office_id FROM office_status);

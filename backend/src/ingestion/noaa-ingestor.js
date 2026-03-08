@@ -239,7 +239,7 @@ async function ingestNOAAData() {
         try {
           // Update ONLY weather_impact_level, do NOT change operational_status
           // Operational status is set manually by IMT/Operations
-          await OfficeStatusModel.upsert(siteId, {
+          await OfficeStatusModel.upsert(officeId, {
             weather_impact_level: weatherImpactLevel,
             reason: reason,
             decision_by: 'weather_system'
@@ -326,12 +326,12 @@ async function ingestNOAAData() {
           advisories: advisories
         };
         
-        snapshotData.push({ siteId, aggregated });
+        snapshotData.push({ officeId, aggregated });
       }
-      
+
       // Create all snapshots
-      for (const { siteId, aggregated } of snapshotData) {
-        await AdvisoryHistory.createSnapshot(siteId, aggregated);
+      for (const { officeId, aggregated } of snapshotData) {
+        await AdvisoryHistory.createSnapshot(officeId, aggregated);
       }
       console.log(`Created ${snapshotData.length} historical snapshots`);
     } catch (error) {
@@ -346,7 +346,7 @@ async function ingestNOAAData() {
     // Step 8: Check for sites with unusually high advisory counts (monitoring)
     console.log('\nChecking for anomalies...');
     const [highCountSites] = await db.query(`
-      SELECT s.site_code, s.name, s.state, COUNT(*) as advisory_count
+      SELECT s.office_code, s.name, s.state, COUNT(*) as advisory_count
       FROM advisories a
       JOIN offices s ON a.office_id = s.id
       WHERE a.status = 'active'
@@ -380,7 +380,7 @@ async function ingestNOAAData() {
     }
     
     // Step 9: Ingest weather observations from nearest stations
-    const observationResult = await ingestObservations(sites);
+    const observationResult = await ingestObservations(offices);
     
     // Invalidate cache to ensure fresh data is served
     cache.invalidateAll();

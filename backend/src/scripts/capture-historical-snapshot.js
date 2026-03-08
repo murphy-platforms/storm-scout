@@ -51,7 +51,7 @@ async function captureSnapshot() {
             SELECT 
                 weather_impact_level,
                 COUNT(*) as count
-            FROM site_status
+            FROM office_status
             GROUP BY weather_impact_level
         `);
         
@@ -74,7 +74,7 @@ async function captureSnapshot() {
             SELECT 
                 operational_status,
                 COUNT(*) as count
-            FROM site_status
+            FROM office_status
             GROUP BY operational_status
         `);
         
@@ -118,7 +118,7 @@ async function captureSnapshot() {
         const [totalMetrics] = await connection.query(`
             SELECT 
                 COUNT(DISTINCT a.id) as total_advisories,
-                COUNT(DISTINCT a.site_id) as total_sites_with_advisories
+                COUNT(DISTINCT a.office_id) as total_sites_with_advisories
             FROM advisories a
             WHERE a.status = 'active'
         `);
@@ -157,8 +157,8 @@ async function captureSnapshot() {
         // Get all sites with their current advisory state
         const [siteData] = await connection.query(`
             SELECT 
-                s.id as site_id,
-                s.site_code,
+                s.id as office_id,
+                s.office_code,
                 COUNT(a.id) as advisory_count,
                 MAX(CASE 
                     WHEN a.severity = 'Extreme' THEN 4
@@ -174,9 +174,9 @@ async function captureSnapshot() {
                 MAX(CASE WHEN a.severity = 'Moderate' THEN 1 ELSE 0 END) as has_moderate,
                 SUM(CASE WHEN a.vtec_action = 'NEW' THEN 1 ELSE 0 END) as new_count,
                 SUM(CASE WHEN a.vtec_action = 'UPG' THEN 1 ELSE 0 END) as upgrade_count
-            FROM sites s
-            LEFT JOIN advisories a ON s.id = a.site_id AND a.status = 'active'
-            GROUP BY s.id, s.site_code
+            FROM offices s
+            LEFT JOIN advisories a ON s.id = a.office_id AND a.status = 'active'
+            GROUP BY s.id, s.office_code
         `);
         
         console.log(`[Snapshot] Processing ${siteData.length} sites...`);
@@ -184,7 +184,7 @@ async function captureSnapshot() {
         // Insert per-site snapshots in batch
         if (siteData.length > 0) {
             const values = siteData.map(site => [
-                site.site_id,
+                site.office_id,
                 snapshotTime,
                 site.advisory_count || 0,
                 site.highest_severity || null,
@@ -199,7 +199,7 @@ async function captureSnapshot() {
             
             await connection.query(`
                 INSERT INTO advisory_history (
-                    site_id, snapshot_time, advisory_count, highest_severity, 
+                    office_id, snapshot_time, advisory_count, highest_severity,
                     highest_severity_type, has_extreme, has_severe, has_moderate,
                     new_count, upgrade_count, advisory_snapshot
                 ) VALUES ?
