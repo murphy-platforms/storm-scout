@@ -102,28 +102,28 @@ const AdvisoryModel = {
   },
 
   /**
-   * Get advisories for a specific site
-   * @param {number} siteId - Site ID
+   * Get advisories for a specific office
+   * @param {number} officeId - Office ID
    * @param {boolean} activeOnly - Get only active advisories
    * @returns {Promise<Array>} Array of advisory objects
    */
-  async getBySite(siteId, activeOnly = false) {
+  async getByOffice(officeId, activeOnly = false) {
     const db = getDatabase();
     let query = 'SELECT * FROM advisories WHERE office_id = ?';
-    const params = [siteId];
-    
+    const params = [officeId];
+
     if (activeOnly) {
       query += ' AND status = ?';
       params.push('active');
     }
-    
+
     query += ' ORDER BY severity DESC, last_updated DESC';
-    
+
     try {
       const [rows] = await db.query(query, params);
       return rows;
     } catch (error) {
-      console.error('Error fetching advisories for site:', error);
+      console.error('Error fetching advisories for office:', error);
       return [];
     }
   },

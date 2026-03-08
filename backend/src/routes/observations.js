@@ -12,7 +12,7 @@ const { handleValidationErrors } = require('../middleware/validate');
 
 /**
  * GET /api/observations
- * Get all current weather observations for all sites
+ * Get all current weather observations for all offices
  */
 router.get('/', async (req, res) => {
   try {
@@ -34,24 +34,24 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/observations/:siteCode
- * Get current weather observation for a specific site
+ * GET /api/observations/:officeCode
+ * Get current weather observation for a specific office
  */
-router.get('/:siteCode',
-  param('siteCode')
+router.get('/:officeCode',
+  param('officeCode')
     .trim()
     .isLength({ min: 1, max: 10 })
-    .withMessage('Site code must be 1-10 characters'),
+    .withMessage('Office code must be 1-10 characters'),
   handleValidationErrors,
   async (req, res) => {
     try {
-      const { siteCode } = req.params;
-      const observation = await ObservationModel.getBySiteCode(siteCode);
+      const { officeCode } = req.params;
+      const observation = await ObservationModel.getByOfficeCode(officeCode);
 
       if (!observation) {
         return res.status(404).json({
           success: false,
-          error: `No observation found for site ${siteCode}`
+          error: `No observation found for office ${officeCode}`
         });
       }
 

@@ -5,7 +5,7 @@
  * Endpoints:
  * - GET /api/history/overview-trends - System-wide metrics over time
  * - GET /api/history/severity-trends - Severity counts over time
- * - GET /api/history/site-trends/:siteId - Per-site advisory counts over time
+ * - GET /api/history/office-trends/:officeId - Per-site advisory counts over time
  */
 
 const express = require('express');
@@ -200,29 +200,29 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
 });
 
 /**
- * GET /api/history/site-trends/:siteId
+ * GET /api/history/office-trends/:officeId
  * Returns per-site advisory count history
  * Query params: ?days=3 (default)
  */
-router.get('/site-trends/:siteId', historyValidators.getSiteTrends, handleValidationErrors, async (req, res) => {
+router.get('/office-trends/:officeId', historyValidators.getSiteTrends, handleValidationErrors, async (req, res) => {
     try {
-        const siteId = req.params.siteId;
+        const officeId = req.params.officeId;
         const days = req.query.days || 3;
         
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
         // Get site info
         const [sites] = await pool.query(`
-            SELECT id, site_code, name, city, state
-            FROM sites
+            SELECT id, office_code, name, city, state
+            FROM offices
             WHERE id = ?
         `, [siteId]);
         
         if (sites.length === 0) {
-            return res.status(404).json({ error: 'Site not found' });
+            return res.status(404).json({ error: 'Office not found' });
         }
         
-        const site = sites[0];
+        const office = sites[0];
         
         // Get historical data
         const [history] = await pool.query(`
@@ -237,15 +237,15 @@ router.get('/site-trends/:siteId', historyValidators.getSiteTrends, handleValida
                 new_count,
                 upgrade_count
             FROM advisory_history
-            WHERE site_id = ? AND snapshot_time >= ?
+            WHERE office_id = ? AND snapshot_time >= ?
             ORDER BY snapshot_time ASC
-        `, [siteId, startTime]);
+        `, [officeId, startTime]);
         
         if (history.length === 0) {
             return res.json({
                 status: 'no_data',
-                message: 'Historical data is being accumulated for this site.',
-                site,
+                message: 'Historical data is being accumulated for this office.',
+                office,
                 timeRange: { start: startTime, end: new Date(), points: 0 },
                 trends: null
             });
@@ -259,7 +259,7 @@ router.get('/site-trends/:siteId', historyValidators.getSiteTrends, handleValida
         
         res.json({
             status: 'success',
-            site,
+            office,
             timeRange: {
                 start: timestamps[0],
                 end: timestamps[timestamps.length - 1],
@@ -281,8 +281,8 @@ router.get('/site-trends/:siteId', historyValidators.getSiteTrends, handleValida
         });
         
     } catch (error) {
-        console.error(`Error fetching site trends for site ${req.params.siteId}:`, error);
-        res.status(500).json({ error: 'Failed to fetch site trends' });
+        console.error(`Error fetching site trends for office ${req.params.officeId}:`, error);
+        res.status(500).json({ error: 'Failed to fetch office trends' });
     }
 });
 

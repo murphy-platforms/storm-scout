@@ -22,7 +22,7 @@ const getById = [
 /**
  * Validators for GET /api/sites/:id/advisories
  */
-const getSiteAdvisories = [
+const getOfficeAdvisories = [
   validateId,
   validateBooleanQuery('active_only')
 ];
@@ -30,5 +30,5 @@ const getSiteAdvisories = [
 module.exports = {
   getAll,
   getById,
-  getSiteAdvisories
+  getOfficeAdvisories
 };
