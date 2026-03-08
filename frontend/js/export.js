@@ -5,32 +5,32 @@
 
 const StormScoutExport = {
     /**
-     * Export sites data to CSV
-     * @param {Array} sites - Array of site objects
+     * Export offices data to CSV
+     * @param {Array} offices - Array of office objects
      * @param {string} filename - Output filename (without extension)
      */
-    exportSitesToCSV(sites, filename = 'storm-scout-sites') {
+    exportOfficesToCSV(offices, filename = 'storm-scout-offices') {
         const headers = [
-            'Site Code', 'Name', 'City', 'State',
+            'Office Code', 'Name', 'City', 'State',
             'Highest Severity', 'Advisory Count', 'New Alerts',
             'Operational Status', 'Weather Impact'
         ];
-        
-        const rows = sites.map(site => [
-            site.site_code || '',
-            site.name || '',
-            site.city || '',
-            site.state || '',
-            site.highest_severity || '',
-            site.advisory_count || 0,
-            site.new_count || 0,
-            site.operational_status || '',
-            site.weather_impact_level || ''
+
+        const rows = offices.map(office => [
+            office.office_code || '',
+            office.name || '',
+            office.city || '',
+            office.state || '',
+            office.highest_severity || '',
+            office.advisory_count || 0,
+            office.new_count || 0,
+            office.operational_status || '',
+            office.weather_impact_level || ''
         ]);
         
         this.downloadCSV(headers, rows, filename);
     },
-    
+
     /**
      * Export advisories to CSV
      * @param {Array} advisories - Array of advisory objects
@@ -38,14 +38,14 @@ const StormScoutExport = {
      */
     exportAdvisoriesToCSV(advisories, filename = 'storm-scout-advisories') {
         const headers = [
-            'Site Code', 'Site Name', 'City', 'State',
+            'Office Code', 'Office Name', 'City', 'State',
             'Advisory Type', 'Severity', 'Action',
             'Start Time', 'End Time', 'Source'
         ];
-        
+
         const rows = advisories.map(adv => [
-            adv.site_code || '',
-            adv.site_name || '',
+            adv.office_code || '',
+            adv.office_name || '',
             adv.city || '',
             adv.state || '',
             adv.advisory_type || '',
@@ -102,7 +102,7 @@ const StormScoutExport = {
                 reportHTML = this.generateIncidentReport(data, timestamp);
                 break;
             case 'summary':
-                reportHTML = this.generateSiteSummary(data, timestamp);
+                reportHTML = this.generateOfficeSummary(data, timestamp);
                 break;
             case 'executive':
                 reportHTML = this.generateExecutiveBriefing(data, timestamp);
@@ -126,8 +126,8 @@ const StormScoutExport = {
      * Generate Incident Report
      */
     generateIncidentReport(data, timestamp) {
-        const { sites, advisories } = data;
-        
+        const { offices, advisories } = data;
+
         return `
 <!DOCTYPE html>
 <html>
@@ -155,14 +155,14 @@ const StormScoutExport = {
     <div class="header-info">
         <strong>Generated:</strong> ${timestamp}<br>
         <strong>Report Type:</strong> Incident Report<br>
-        <strong>Sites Affected:</strong> ${sites.length}
+        <strong>Offices Affected:</strong> ${offices.length}
     </div>
-    
-    <h2>Impacted Sites Summary</h2>
+
+    <h2>Impacted Offices Summary</h2>
     <table>
         <thead>
             <tr>
-                <th>Site Code</th>
+                <th>Office Code</th>
                 <th>Name</th>
                 <th>Location</th>
                 <th>Highest Severity</th>
@@ -171,24 +171,24 @@ const StormScoutExport = {
             </tr>
         </thead>
         <tbody>
-            ${sites.map(site => `
-                <tr class="severity-${(site.highest_severity || '').toLowerCase()}">
-                    <td><strong>${site.site_code}</strong></td>
-                    <td>${site.name}</td>
-                    <td>${site.city}, ${site.state}</td>
-                    <td>${site.highest_severity || 'N/A'}</td>
-                    <td>${site.advisory_count || 0}</td>
-                    <td>${site.operational_status || 'Unknown'}</td>
+            ${offices.map(office => `
+                <tr class="severity-${(office.highest_severity || '').toLowerCase()}">
+                    <td><strong>${office.office_code}</strong></td>
+                    <td>${office.name}</td>
+                    <td>${office.city}, ${office.state}</td>
+                    <td>${office.highest_severity || 'N/A'}</td>
+                    <td>${office.advisory_count || 0}</td>
+                    <td>${office.operational_status || 'Unknown'}</td>
                 </tr>
             `).join('')}
         </tbody>
     </table>
-    
+
     <h2>Active Advisories Detail</h2>
     <table>
         <thead>
             <tr>
-                <th>Site</th>
+                <th>Office</th>
                 <th>Advisory Type</th>
                 <th>Severity</th>
                 <th>Start Time</th>
@@ -198,7 +198,7 @@ const StormScoutExport = {
         <tbody>
             ${advisories.slice(0, 50).map(adv => `
                 <tr>
-                    <td><strong>${adv.site_code}</strong> - ${adv.site_name}</td>
+                    <td><strong>${adv.office_code}</strong> - ${adv.office_name}</td>
                     <td>${adv.advisory_type}</td>
                     <td>${adv.severity}</td>
                     <td>${this.formatDateTime(adv.start_time)}</td>
@@ -207,35 +207,35 @@ const StormScoutExport = {
             `).join('')}
         </tbody>
     </table>
-    
+
     <p style="margin-top: 40px; color: #666; font-size: 12px;">
-        Report generated by Storm Scout | IMT Operations Tool<br>
+        Report generated by Storm Scout | USPS Operations Tool<br>
         For internal use only
     </p>
 </body>
 </html>
         `;
     },
-    
+
     /**
-     * Generate Site Impact Summary
+     * Generate Office Impact Summary
      */
-    generateSiteSummary(data, timestamp) {
-        const { sites } = data;
-        
+    generateOfficeSummary(data, timestamp) {
+        const { offices } = data;
+
         // Group by severity
         const bySeverity = {
-            Extreme: sites.filter(s => s.highest_severity === 'Extreme'),
-            Severe: sites.filter(s => s.highest_severity === 'Severe'),
-            Moderate: sites.filter(s => s.highest_severity === 'Moderate'),
-            Minor: sites.filter(s => s.highest_severity === 'Minor')
+            Extreme: offices.filter(s => s.highest_severity === 'Extreme'),
+            Severe: offices.filter(s => s.highest_severity === 'Severe'),
+            Moderate: offices.filter(s => s.highest_severity === 'Moderate'),
+            Minor: offices.filter(s => s.highest_severity === 'Minor')
         };
-        
+
         return `
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Storm Scout - Site Impact Summary</title>
+    <title>Storm Scout - Office Impact Summary</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
         h1 { color: #333; border-bottom: 3px solid #1B2845; padding-bottom: 10px; }
@@ -255,9 +255,9 @@ const StormScoutExport = {
     </style>
 </head>
 <body>
-    <h1>📊 Storm Scout - Site Impact Summary</h1>
+    <h1>📊 Storm Scout - Office Impact Summary</h1>
     <p><strong>Generated:</strong> ${timestamp}</p>
-    
+
     <div class="summary-grid">
         <div class="summary-card extreme">
             <div class="count">${bySeverity.Extreme.length}</div>
@@ -276,13 +276,13 @@ const StormScoutExport = {
             <div>MINOR</div>
         </div>
     </div>
-    
-    ${Object.entries(bySeverity).map(([severity, sitesInCat]) => 
-        sitesInCat.length > 0 ? `
-        <h2>${severity} Impact Sites (${sitesInCat.length})</h2>
+
+    ${Object.entries(bySeverity).map(([severity, officesInCat]) =>
+        officesInCat.length > 0 ? `
+        <h2>${severity} Impact Offices (${officesInCat.length})</h2>
         <ul>
-            ${sitesInCat.map(site => `
-                <li><strong>${site.site_code}</strong> - ${site.name} (${site.city}, ${site.state}) - ${site.advisory_count} alerts</li>
+            ${officesInCat.map(office => `
+                <li><strong>${office.office_code}</strong> - ${office.name} (${office.city}, ${office.state}) - ${office.advisory_count} alerts</li>
             `).join('')}
         </ul>
         ` : ''
@@ -296,12 +296,12 @@ const StormScoutExport = {
      * Generate Executive Briefing
      */
     generateExecutiveBriefing(data, timestamp) {
-        const { sites, overview } = data;
-        
-        const criticalSites = sites.filter(s => 
+        const { offices, overview } = data;
+
+        const criticalOffices = offices.filter(s =>
             s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'
         );
-        
+
         return `
 <!DOCTYPE html>
 <html>
@@ -313,7 +313,7 @@ const StormScoutExport = {
         .executive-summary { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #1B2845; }
         .key-points { margin: 20px 0; }
         .key-points li { margin: 10px 0; }
-        .critical-sites { background: #fdd; padding: 15px; margin: 20px 0; border-left: 4px solid #dc3545; }
+        .critical-offices { background: #fdd; padding: 15px; margin: 20px 0; border-left: 4px solid #dc3545; }
         @media print {
             body { margin: 20px; }
         }
@@ -322,49 +322,48 @@ const StormScoutExport = {
 <body>
     <h1>📋 Storm Scout - Executive Briefing</h1>
     <p><strong>Date/Time:</strong> ${timestamp}</p>
-    
+
     <div class="executive-summary">
         <h2>Executive Summary</h2>
-        <p><strong>Total Sites Monitored:</strong> ${overview?.total_sites || 219}</p>
-        <p><strong>Sites with Active Weather Advisories:</strong> ${sites.length}</p>
-        <p><strong>Critical Attention Required:</strong> ${criticalSites.length} sites</p>
+        <p><strong>Total Offices Monitored:</strong> ${overview?.total_offices || 300}</p>
+        <p><strong>Offices with Active Weather Advisories:</strong> ${offices.length}</p>
+        <p><strong>Critical Attention Required:</strong> ${criticalOffices.length} offices</p>
     </div>
-    
+
     <h2>Key Points</h2>
     <ul class="key-points">
-        <li><strong>${sites.filter(s => s.highest_severity === 'Extreme').length}</strong> sites under EXTREME weather conditions requiring immediate action</li>
-        <li><strong>${sites.filter(s => s.highest_severity === 'Severe').length}</strong> sites experiencing SEVERE weather impacts</li>
-        <li><strong>${sites.filter(s => s.operational_status === 'Closed').length}</strong> sites currently closed due to weather</li>
-        <li><strong>${sites.filter(s => s.new_count > 0).reduce((sum, s) => sum + s.new_count, 0)}</strong> new weather alerts issued in the last 2 hours</li>
+        <li><strong>${offices.filter(s => s.highest_severity === 'Extreme').length}</strong> offices under EXTREME weather conditions requiring immediate action</li>
+        <li><strong>${offices.filter(s => s.highest_severity === 'Severe').length}</strong> offices experiencing SEVERE weather impacts</li>
+        <li><strong>${offices.filter(s => s.operational_status === 'Closed').length}</strong> offices currently closed due to weather</li>
+        <li><strong>${offices.filter(s => s.new_count > 0).reduce((sum, s) => sum + s.new_count, 0)}</strong> new weather alerts issued in the last 2 hours</li>
     </ul>
-    
-    ${criticalSites.length > 0 ? `
-    <div class="critical-sites">
-        <h2>⚠️ Critical Sites Requiring Immediate Attention</h2>
+
+    ${criticalOffices.length > 0 ? `
+    <div class="critical-offices">
+        <h2>⚠️ Critical Offices Requiring Immediate Attention</h2>
         <ul>
-            ${criticalSites.map(site => `
-                <li><strong>${site.site_code}</strong> - ${site.name}, ${site.state} 
-                    <br>Status: <strong>${site.highest_severity}</strong> | 
-                    ${site.advisory_count} active alerts | 
-                    Ops Status: ${site.operational_status || 'Pending'}
+            ${criticalOffices.map(office => `
+                <li><strong>${office.office_code}</strong> - ${office.name}, ${office.state}
+                    <br>Status: <strong>${office.highest_severity}</strong> |
+                    ${office.advisory_count} active alerts |
+                    Ops Status: ${office.operational_status || 'Pending'}
                 </li>
             `).join('')}
         </ul>
     </div>
-    ` : '<p><em>No critical sites at this time.</em></p>'}
-    
+    ` : '<p><em>No critical offices at this time.</em></p>'}
+
     <h2>Recommendations</h2>
     <ul>
-        ${criticalSites.length > 0 ? 
-            '<li>Review operational status for sites under extreme/severe weather conditions</li>' : ''}
-        <li>Monitor sites with multiple active advisories for potential escalation</li>
-        <li>Coordinate with local site management for real-time updates</li>
-        <li>Prepare communication for affected test-takers if needed</li>
+        ${criticalOffices.length > 0 ?
+            '<li>Review operational status for offices under extreme/severe weather conditions</li>' : ''}
+        <li>Monitor offices with multiple active advisories for potential escalation</li>
+        <li>Coordinate with local office management for real-time updates</li>
     </ul>
-    
+
     <p style="margin-top: 40px; color: #666; font-size: 12px;">
         This briefing is generated automatically from Storm Scout real-time data.<br>
-        For detailed information, access the Storm Scout dashboard at https://your-domain.example.com
+        For internal use only.
     </p>
 </body>
 </html>
@@ -403,9 +402,9 @@ const StormScoutExport = {
      * Add export buttons to a page
      * @param {string} containerId - ID of container element
      * @param {Function} getDataFunc - Function that returns data to export
-     * @param {string} dataType - Type of data ('sites' or 'advisories')
+     * @param {string} dataType - Type of data ('offices' or 'advisories')
      */
-    addExportButtons(containerId, getDataFunc, dataType = 'sites') {
+    addExportButtons(containerId, getDataFunc, dataType = 'offices') {
         const container = document.getElementById(containerId);
         if (!container) return;
         
@@ -418,7 +417,7 @@ const StormScoutExport = {
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item export-csv" href="#"><i class="bi bi-filetype-csv"></i> Export CSV</a></li>
                 <li><a class="dropdown-item export-incident" href="#"><i class="bi bi-file-earmark-text"></i> Incident Report</a></li>
-                <li><a class="dropdown-item export-summary" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Site Summary</a></li>
+                <li><a class="dropdown-item export-summary" href="#"><i class="bi bi-file-earmark-bar-graph"></i> Office Summary</a></li>
                 <li><a class="dropdown-item export-executive" href="#"><i class="bi bi-file-earmark-person"></i> Executive Briefing</a></li>
             </ul>
         `;
@@ -429,8 +428,8 @@ const StormScoutExport = {
         buttonGroup.querySelector('.export-csv').addEventListener('click', (e) => {
             e.preventDefault();
             const data = getDataFunc();
-            if (dataType === 'sites') {
-                this.exportSitesToCSV(data);
+            if (dataType === 'offices') {
+                this.exportOfficesToCSV(data);
             } else if (dataType === 'advisories') {
                 this.exportAdvisoriesToCSV(data);
             }

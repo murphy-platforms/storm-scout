@@ -130,7 +130,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link active" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -285,24 +285,24 @@
                 
                 const [allAdvisories, allSites, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
-                    API.getSites(),
+                    API.getOffices(),
                     API.getObservations().catch(() => [])
                 ]);
                 
-                // Build observations lookup by site_code
+                // Build observations lookup by office_code
                 observationsMap = {};
-                obsData.forEach(obs => { observationsMap[obs.site_code] = obs; });
+                obsData.forEach(obs => { observationsMap[obs.office_code] = obs; });
                 
                 // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
                 
                 // Aggregate FILTERED advisories by site
-                const aggregated = SiteAggregator.aggregateBySite(filteredAdvisories, { deduplicateZones: true });
+                const aggregated = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
                 
                 // Create map of aggregated data
                 const aggMap = new Map();
                 aggregated.forEach(site => {
-                    aggMap.set(site.site_id, site);
+                    aggMap.set(site.office_id, site);
                 });
                 
                 // Filter to sites with advisories and add coordinates
@@ -348,7 +348,7 @@
                 
                 // Create popup content using html tagged template for XSS prevention
                 // Build temperature HTML
-                const obs = observationsMap[site.site_code];
+                const obs = observationsMap[site.office_code];
                 let tempHtml = '';
                 if (obs && obs.temperature_c != null) {
                     const tempF = cToF(obs.temperature_c);
@@ -365,7 +365,7 @@
                 
                 const popupContent = html`
                     <div class="site-popup">
-                        <h6><strong>${site.site_code}</strong> - ${site.name}</h6>
+                        <h6><strong>${site.office_code}</strong> - ${site.name}</h6>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span>${raw('<i class="bi bi-geo-alt"></i>')} ${site.city}, ${site.state}</span>
                             ${raw(tempHtml ? `<span style="font-size: 0.85rem;">${tempHtml}</span>` : '')}
@@ -381,7 +381,7 @@
                             ${raw(site.total_zone_count !== site.unique_advisory_count ? 
                                 `<small class="text-muted">(${site.total_zone_count} zones)</small>` : '')}
                         </p>
-                        <a href="site-detail.html?site=${encodeURIComponent(site.site_code)}" class="btn btn-sm btn-primary w-100">
+                        <a href="office-detail.html?office=${encodeURIComponent(site.office_code)}" class="btn btn-sm btn-primary w-100">
                             ${raw('<i class="bi bi-arrow-right-circle"></i>')} View Details
                         </a>
                     </div>

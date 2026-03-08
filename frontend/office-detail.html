@@ -30,7 +30,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sites.html">Sites Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -64,7 +64,7 @@
                 <div class="alert alert-danger">
                     <h4><i class="bi bi-exclamation-triangle"></i> Error Loading Site</h4>
                     <p id="errorMessage"></p>
-                    <a href="sites.html" class="btn btn-primary">View All Sites</a>
+                    <a href="offices.html" class="btn btn-primary">View All Offices</a>
                 </div>
             </div>
         </div>
@@ -182,43 +182,43 @@
         
         async function loadSiteDetail() {
             try {
-                // Get site code from URL
+                // Get office code from URL (?office= preferred, ?site= for legacy links)
                 const urlParams = new URLSearchParams(window.location.search);
-                const siteCode = urlParams.get('site');
-                
+                const siteCode = urlParams.get('office') || urlParams.get('site');
+
                 if (!siteCode) {
-                    showError('No site code provided in URL');
+                    showError('No office code provided in URL');
                     return;
                 }
                 
                 // Load all advisories, sites, and observations
                 const [allAdvisories, allSites, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
-                    API.getSites(),
+                    API.getOffices(),
                     API.getObservations().catch(() => [])
                 ]);
                 
-                // Find the site
-                siteData = allSites.find(s => s.site_code === siteCode);
+                // Find the office
+                siteData = allSites.find(s => s.office_code === siteCode);
                 if (!siteData) {
-                    showError(`Site ${siteCode} not found`);
+                    showError(`Office ${siteCode} not found`);
                     return;
                 }
-                
-                // Get advisories for this site
-                siteAdvisories = allAdvisories.filter(a => a.site_code === siteCode);
-                
+
+                // Get advisories for this office
+                siteAdvisories = allAdvisories.filter(a => a.office_code === siteCode);
+
                 if (siteAdvisories.length === 0) {
-                    showError(`No active advisories for site ${siteCode}`);
+                    showError(`No active advisories for office ${siteCode}`);
                     return;
                 }
                 
                 // Aggregate with deduplication
-                const aggregated = SiteAggregator.aggregateBySite(siteAdvisories, { deduplicateZones: true });
+                const aggregated = OfficeAggregator.aggregateByOffice(siteAdvisories, { deduplicateZones: true });
                 const siteAggData = aggregated[0]; // Should only be one site
                 
-                // Find observation for this site
-                const siteObs = obsData.find(o => o.site_code === siteCode) || null;
+                // Find observation for this office
+                const siteObs = obsData.find(o => o.office_code === siteCode) || null;
                 
                 // Render the page
                 renderSiteHeader(siteData, siteAggData, siteObs);
@@ -244,7 +244,7 @@
         }
         
         function renderSiteHeader(site, aggData, obs) {
-            document.getElementById('siteCode').textContent = site.site_code;
+            document.getElementById('siteCode').textContent = site.office_code;
             document.getElementById('siteName').textContent = site.name;
             document.getElementById('siteLocation').textContent = `${site.city}, ${site.state}`;
             

@@ -14,7 +14,7 @@ const AdvisoryModel = {
   async getAll(filters = {}) {
     const db = getDatabase();
     let query = `
-      SELECT a.*, s.office_code, s.name as site_name, s.city, s.state, s.region
+      SELECT a.*, s.office_code, s.name as office_name, s.city, s.state, s.region
       FROM advisories a
       JOIN offices s ON a.office_id = s.id
       WHERE 1=1
@@ -89,7 +89,7 @@ const AdvisoryModel = {
     const db = getDatabase();
     try {
       const [rows] = await db.query(`
-        SELECT a.*, s.office_code, s.name as site_name, s.city, s.state, s.region
+        SELECT a.*, s.office_code, s.name as office_name, s.city, s.state, s.region
         FROM advisories a
         JOIN offices s ON a.office_id = s.id
         WHERE a.id = ?
@@ -427,7 +427,7 @@ const AdvisoryModel = {
     const db = getDatabase();
     try {
       const [rows] = await db.query(`
-        SELECT a.*, s.office_code, s.name as site_name, s.city, s.state
+        SELECT a.*, s.office_code, s.name as office_name, s.city, s.state
         FROM advisories a
         JOIN offices s ON a.office_id = s.id
         WHERE a.status = 'active'

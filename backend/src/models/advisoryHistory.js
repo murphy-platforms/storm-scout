@@ -7,7 +7,7 @@ class AdvisoryHistory {
     static async createSnapshot(siteId, aggregatedData) {
         const query = `
             INSERT INTO advisory_history (
-                site_id, snapshot_time, advisory_count, 
+                office_id, snapshot_time, advisory_count,
                 highest_severity, highest_severity_type,
                 has_extreme, has_severe, has_moderate,
                 new_count, upgrade_count, advisory_snapshot
@@ -46,7 +46,7 @@ class AdvisoryHistory {
      */
     static async createSnapshotsForAllSites(aggregatedSites) {
         const promises = aggregatedSites.map(site => 
-            this.createSnapshot(site.site_id, site)
+            this.createSnapshot(site.office_id, site)
         );
         
         return await Promise.all(promises);
@@ -58,7 +58,7 @@ class AdvisoryHistory {
     static async getHistoryForSite(siteId, days = 7) {
         const query = `
             SELECT * FROM advisory_history
-            WHERE site_id = ?
+            WHERE office_id = ?
             AND snapshot_time >= DATE_SUB(NOW(), INTERVAL ? DAY)
             ORDER BY snapshot_time ASC
         `;
@@ -74,7 +74,7 @@ class AdvisoryHistory {
     static async getLatestSnapshot(siteId) {
         const query = `
             SELECT * FROM advisory_history
-            WHERE site_id = ?
+            WHERE office_id = ?
             ORDER BY snapshot_time DESC
             LIMIT 1
         `;
@@ -131,19 +131,19 @@ class AdvisoryHistory {
     static async getAllTrends(days = 7) {
         // Get all sites that have history
         const query = `
-            SELECT DISTINCT site_id
+            SELECT DISTINCT office_id
             FROM advisory_history
             WHERE snapshot_time >= DATE_SUB(NOW(), INTERVAL ? DAY)
         `;
         
         const connection = getDatabase();
         const [rows] = await connection.query(query, [days]);
-        const siteIds = rows.map(r => r.site_id);
-        
+        const officeIds = rows.map(r => r.office_id);
+
         const trends = await Promise.all(
-            siteIds.map(async siteId => ({
-                site_id: siteId,
-                ...(await this.getTrend(siteId, days))
+            officeIds.map(async officeId => ({
+                office_id: officeId,
+                ...(await this.getTrend(officeId, days))
             }))
         );
         

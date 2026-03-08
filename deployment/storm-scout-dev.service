@@ -1,0 +1,25 @@
+[Unit]
+Description=Storm Scout DEV/QC Server
+Documentation=https://github.com/anthropics/storm-scout-usps
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=administrator
+WorkingDirectory=/srv/projects/storm-scout-usps/backend
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=storm-scout-dev
+
+# Environment
+Environment=NODE_ENV=development
+
+# Limits
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

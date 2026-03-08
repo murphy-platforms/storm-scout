@@ -1,17 +1,17 @@
 # Storm Scout
 
-**A site-focused weather advisory dashboard for USPS Operations teams**
+**An office-focused weather advisory dashboard for USPS Operations teams**
 
-Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which USPS locations may be impacted and support go/no-go decisions during severe weather events.
+Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which USPS offices may be impacted and support go/no-go decisions during severe weather events.
 
 ## ✨ Features
 
 ### Core Functionality
-- **300 USPS Locations** - Monitors sites across all 50 states and US territories, identified by 5-digit zip codes
+- **300 USPS Locations** - Monitors offices across all 50 states and US territories, identified by 5-digit zip codes
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes
-- **Site Operational Status** - Automatically calculated (Open/Closed/At Risk) based on advisory severity
+- **Office Operational Status** - Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Live Update Tracking** - Dashboard displays last update timestamp and countdown to next refresh
 - **Weather Observations** - Current conditions from nearest NWS observation station updated every 15 minutes
 
@@ -21,14 +21,14 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **Customizable Filters** - Users can enable/disable individual alert types via interactive UI
 - **Quick Presets** - Site Default, Operations View, Executive Summary, Safety Focus, Full View
 - **Persistent Preferences** - Filter settings saved to localStorage and applied across all pages
-- **Real-Time Recalculation** - Counts and impacted sites update based on active filter preferences
+- **Real-Time Recalculation** - Counts and impacted offices update based on active filter preferences
 
 ### User Interface
 - **Clean, Responsive UI** - Bootstrap 5.3 dashboard optimized for desktop and tablet
-- **6 Dashboard Pages** - Overview, Active Advisories, Sites Impacted, Notices, Filter Settings, Sources
+- **6 Dashboard Pages** - Overview, Active Advisories, Offices Impacted, Notices, Filter Settings, Sources
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
-- **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on site detail pages
-- **Enhanced Alert Cards** - Site detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
+- **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on office detail pages
+- **Enhanced Alert Cards** - Office detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 
 ### Version & Release
@@ -67,12 +67,25 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ### 1. Database Setup
 
-Create a MySQL/MariaDB database:
+Start MariaDB via Docker (recommended for dev/QC):
+
+```bash
+docker run -d --name storm-scout-db \
+  -e MYSQL_DATABASE=storm_scout_dev \
+  -e MYSQL_USER=storm_scout \
+  -e MYSQL_PASSWORD=localdev \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -p 3306:3306 \
+  --restart unless-stopped \
+  mariadb:11
+```
+
+Or create a MySQL/MariaDB database manually:
 
 ```sql
-CREATE DATABASE storm_scout;
+CREATE DATABASE storm_scout_dev;
 CREATE USER 'storm_scout'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON storm_scout.* TO 'storm_scout'@'localhost';
+GRANT ALL PRIVILEGES ON storm_scout_dev.* TO 'storm_scout'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
@@ -80,9 +93,6 @@ FLUSH PRIVILEGES;
 
 ```bash
 cd backend
-
-# If using Node 20 LTS via Homebrew:
-export PATH="/opt/homebrew/opt/node@20/bin:$PATH"
 
 npm install
 
@@ -95,7 +105,8 @@ cp .env.example .env
 # Initialize database with schema
 npm run init-db
 
-# Load USPS site data (run import script first, then seed)
+# Load USPS office data (run import script first, then seed)
+node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
 npm run seed-db
 
 # Start the API server
@@ -106,45 +117,64 @@ Backend runs at: **http://localhost:3000**
 
 The server will automatically start ingesting NOAA weather data every 15 minutes if `INGESTION_ENABLED=true` in your `.env` file.
 
+### 3. Run as a Persistent Service (Linux)
+
+To keep the server running across reboots:
+
+```bash
+# Install user systemd service
+cp deployment/storm-scout-dev.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now storm-scout-dev
+
+# Persist across reboots (no login required)
+loginctl enable-linger $USER
+```
+
+View logs: `journalctl --user -u storm-scout-dev -f`
+
 ## Project Structure
 
 ```
-strom-scout/
+storm-scout/
 ├── backend/              # Node.js + Express API
 │   ├── src/
 │   │   ├── config/      # Database & configuration
-│   │   ├── models/      # Data access layer (site, advisory, observation, etc.)
+│   │   ├── models/      # Data access layer (office, advisory, observation, etc.)
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA alert + observation fetching
 │   │   ├── scripts/     # Maintenance scripts (USPS import, station mapping)
-│   │   └── data/        # Schema, sites.json (300 USPS locations), migrations/
+│   │   └── data/        # Schema, offices.json (300 USPS locations), migrations/
 │   ├── package.json
 │   └── README.md
 │
+├── deployment/
+│   └── storm-scout-dev.service  # systemd user service unit
+│
 └── frontend/            # Bootstrap 5.3 UI
-    ├── index.html       # Overview dashboard
-    ├── advisories.html  # Active advisories
-    ├── sites.html       # Sites impacted
-    ├── site-detail.html # Individual site view
-    ├── map.html         # Interactive map view
-    ├── notices.html     # Government notices
-    ├── filters.html     # Filter configuration
-    ├── sources.html     # Data sources
+    ├── index.html         # Overview dashboard
+    ├── advisories.html    # Active advisories
+    ├── offices.html       # Offices impacted
+    ├── office-detail.html # Individual office view
+    ├── map.html           # Interactive map view
+    ├── notices.html       # Government notices
+    ├── filters.html       # Filter configuration
+    ├── sources.html       # Data sources
     ├── css/style.css
     └── js/
         ├── api.js           # API client
         ├── utils.js         # Helpers
         ├── alert-filters.js # Shared filter logic
-        └── aggregation.js   # Site aggregation utilities
+        └── aggregation.js   # Office aggregation utilities
 ```
 
 ## 🛠 Tech Stack
 
-**Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
-**Middleware:** node-cache (caching), express-rate-limit, express-validator  
+**Backend:** Node.js 18+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
+**Middleware:** node-cache (caching), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
 **Data:** NOAA Weather API (94 alert types, 223 observation stations), 300 USPS locations
-**Deployment:** cPanel with Passenger, SSH/rsync  
+**Deployment:** Ubuntu Linux, systemd user service, Docker (MariaDB)
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
 ## Development
@@ -172,11 +202,12 @@ npm start
 
 - `GET /api/status/overview` - Dashboard statistics (with filter-aware frontend calculations)
 - `GET /api/advisories/active` - All active advisories
-- `GET /api/status/sites-impacted` - Sites with Closed or At Risk status
+- `GET /api/offices` - All 300 USPS offices
+- `GET /api/status/offices-impacted` - Offices with Closed or At Risk status
 - `GET /api/filters` - Available filter presets
 - `GET /api/filters/types/all` - All NOAA alert types by impact level
-- `GET /api/observations` - Current weather observations for all sites
-- `GET /api/observations/:siteCode` - Weather observation for a specific site
+- `GET /api/observations` - Current weather observations for all offices
+- `GET /api/observations/:officeCode` - Weather observation for a specific office
 
 See `backend/README.md` for complete API documentation.
 
@@ -195,12 +226,11 @@ Users can customize their filter preferences at **/filters.html**, and changes a
 ## Deployment
 
 ```bash
-# One-command deploy (recommended) — pauses ingestion, deploys, resumes
-# Set DEPLOY_HOST, DEPLOY_USER, DEPLOY_PORT before running:
-DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
-
 # Pre-deploy smoke test (11 checks incl. XSS audit)
 cd backend && bash scripts/smoke-test.sh
+
+# Deploy via rsync to target server
+DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
 ```
 
 See `DEPLOY.md` for detailed deployment instructions.

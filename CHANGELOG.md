@@ -7,9 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **deploy.sh rsync excludes `tmp/`** - Added `--exclude 'tmp/'` to backend rsync to prevent overwriting the Passenger `tmp/` directory (used for `restart.txt`) on the server during deployment
-
 ### Planned
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
@@ -17,6 +14,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests with Jest
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
+
+## [1.9.0] - 2026-03-08
+
+### Added
+- **systemd User Service** (`deployment/storm-scout-dev.service`) - Persistent DEV/QC server managed by systemd; auto-starts on boot via `loginctl enable-linger`, restarts on crash with 10-second backoff; logs captured by journald (`journalctl --user -u storm-scout-dev`)
+- **Docker MariaDB** - Database container configured with `restart=unless-stopped` so it survives reboots without manual intervention
+
+### Changed
+- **USPS Refactor** - Replaced 229 Prometric testing center locations with 300 USPS offices identified by 5-digit zip codes; removed all ProInsights/Prometric references
+- **site→office Rename (Full Stack)** - Renamed all `site`/`sites` terminology to `office`/`offices` across the entire codebase:
+  - Database tables: `sites→offices`, `site_status→office_status`, `site_observations→office_observations`
+  - Database columns: `site_code→office_code`, `site_id→office_id` in all tables
+  - Backend models, routes, ingestion pipeline, and utility scripts
+  - Frontend HTML pages, JavaScript modules, and API client
+  - File renames: `sites.html→offices.html`, `site-detail.html→office-detail.html`, `sites.json→offices.json`, `import-usps-sites.js→import-usps-offices.js`
+  - Legacy `?site=` URL param accepted as fallback on `offices.html` and `office-detail.html`
+- **Deployment Platform** - Migrated from cPanel/Passenger to Ubuntu Linux with systemd + Docker; updated `DEPLOY.md` and `docs/deployment.md` accordingly
+
+### Fixed
+- **deploy.sh rsync excludes `tmp/`** - Added `--exclude 'tmp/'` to backend rsync to prevent overwriting the Passenger `tmp/` directory during deployment
+- **NOAA ISO 8601 timestamp handling** - Convert NOAA timestamps to UTC-normalized `DATETIME` strings compatible with MariaDB
+- **minimatch ReDoS** (CVE-2026-27903) - Patched `minimatch` dependency to remediate ReDoS vulnerability
+- **`system_snapshots` table** - Applied missing migration (`20260214-add-system-snapshots.sql`) to dev database; historical snapshot scheduler now completes successfully
 
 ## [1.8.1] - 2026-02-25
 
