@@ -14,10 +14,10 @@
     <title>Storm Scout - Overview</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css?v=1.8.1">
-    <link rel="stylesheet" href="css/tooltips.css?v=1.8.1">
-    <link rel="stylesheet" href="css/print.css?v=1.8.1">
-    <link rel="stylesheet" href="css/mobile.css?v=1.8.1">
+    <link rel="stylesheet" href="css/style.css?v=1.9.1">
+    <link rel="stylesheet" href="css/tooltips.css?v=1.9.1">
+    <link rel="stylesheet" href="css/print.css?v=1.9.1">
+    <link rel="stylesheet" href="css/mobile.css?v=1.9.1">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-scout">
@@ -324,11 +324,11 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="js/api.js?v=1.8.1"></script>
-    <script src="js/version.js?v=1.8.1"></script>
-    <script src="js/utils.js?v=1.8.1"></script>
-    <script src="js/alert-filters.js?v=1.8.1"></script>
-    <script src="js/aggregation.js?v=1.8.1"></script>
+    <script src="js/api.js?v=1.9.1"></script>
+    <script src="js/version.js?v=1.9.1"></script>
+    <script src="js/utils.js?v=1.9.1"></script>
+    <script src="js/alert-filters.js?v=1.9.1"></script>
+    <script src="js/aggregation.js?v=1.9.1"></script>
     <script>
         let nextUpdateTime = null;
         let countdownInterval = null;
@@ -458,7 +458,7 @@
                 const sitesWithAdvisoriesData = overviewData.recently_updated
                     .filter(site => {
                         // Check if this site has any advisories in the filtered set
-                        return filteredAdvisories.some(adv => adv.office_id === site.id);
+                        return filteredAdvisories.some(adv => adv.office_id === site.office_id);
                     })
                     .slice(0, 5);
                 
@@ -642,31 +642,26 @@
             loadOverview();
         });
     </script>
-    <script src="js/export.js?v=1.8.1"></script>
+    <script src="js/export.js?v=1.9.1"></script>
     <script>
         // Helper function to export current dashboard data
         window.exportCurrentData = async function(type) {
             try {
                 // Fetch current data
                 const overviewResponse = await fetch('/api/status/overview');
-                const sitesResponse = await fetch('/api/sites/requiring-attention');
+                const officesResponse = await fetch('/api/status/offices-impacted');
                 const advisoriesResponse = await fetch('/api/advisories/active');
-                
-                if (!overviewResponse.ok || !sitesResponse.ok || !advisoriesResponse.ok) {
+
+                if (!overviewResponse.ok || !officesResponse.ok || !advisoriesResponse.ok) {
                     throw new Error('Failed to fetch data for export');
                 }
-                
+
                 const overview = await overviewResponse.json();
-                const sitesData = await sitesResponse.json();
+                const officesData = await officesResponse.json();
                 const advisories = await advisoriesResponse.json();
-                
-                // Extract sites array from the grouped response
-                const sites = [];
-                if (sitesData.grouped) {
-                    if (sitesData.grouped.critical) sites.push(...sitesData.grouped.critical);
-                    if (sitesData.grouped.elevated) sites.push(...sitesData.grouped.elevated);
-                    if (sitesData.grouped.monitoring) sites.push(...sitesData.grouped.monitoring);
-                }
+
+                // Extract offices array from the response
+                const sites = Array.isArray(officesData.data) ? officesData.data : [];
                 
                 // Export based on type
                 switch(type) {

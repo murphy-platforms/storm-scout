@@ -1,6 +1,6 @@
 {
   "name": "storm-scout-backend",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "releasedDate": "2026-03-08",
   "description": "Storm Scout backend API - Weather advisory dashboard for USPS locations",
   "main": "src/server.js",

@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.1] - 2026-03-08
+
+### Fixed
+- **Dashboard "Recently Updated Offices" always empty** - `recently_updated` items from the overview API have an `id` field (office_status row ID) and a separate `office_id` field (actual office ID); the filter was incorrectly comparing `adv.office_id === site.id` instead of `site.office_id`, so the panel always showed "No offices with advisories" even when active advisories existed
+- **Export button 404** - Export function fetched the non-existent `/api/sites/requiring-attention` endpoint; updated to use `/api/status/offices-impacted`
+- **CUSTOM filter preset name/description** - `noaa-alert-types.js` CUSTOM preset had stale name "Site Default" and description "testing center operations"; updated to "Office Default" and "USPS operations"
+- **Stale "Site" terminology in frontend** - Remaining `site`/`Site` copy in `advisories.html` (page heading, search placeholder, filter dropdown) and `filters.html` (preset button, reset confirm dialog) updated to `office`/`Office`
+
 ## [1.9.0] - 2026-03-08
 
 ### Added
