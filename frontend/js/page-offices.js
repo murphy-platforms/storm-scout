@@ -103,12 +103,12 @@
                     const stale = isStale(obs.observed_at);
                     if (stale) {
                         tempHtml = `<div class="temp-display">
-                            <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
+                            <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
                             <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
                         </div>`;
                     } else {
                         tempHtml = `<div class="temp-display">
-                            <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
+                            <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
                             <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
                         </div>`;
                     }
@@ -217,7 +217,7 @@
                 document.getElementById('weatherImpactFilter').value = weatherImpactParam;
 
                 // Show active filter banner
-                const labels = { red: '🔴 RED (High Impact)', orange: '🟠 ORANGE (Severe Impact)', yellow: '🟡 YELLOW (Moderate Impact)', green: '🟢 GREEN (Low/No Impact)' };
+                const labels = { red: 'Extreme (High Impact)', orange: 'Severe (Severe Impact)', yellow: 'Moderate (Moderate Impact)', green: 'Minor (Low/No Impact)' };
                 document.getElementById('activeFilterLabel').textContent = labels[weatherImpactParam] || weatherImpactParam.toUpperCase();
                 document.getElementById('activeFilterBanner').style.display = 'block';
             }

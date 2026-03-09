@@ -215,7 +215,7 @@ h1, h2, h3, h4 {
 .severity-moderate,
 .badge-moderate {
     background-color: var(--severity-moderate);
-    color: #000;
+    color: var(--severity-moderate-text);
 }
 
 .severity-minor,
@@ -264,22 +264,22 @@ h1, h2, h3, h4 {
 
 /* Operational Status */
 .status-closed {
-    background-color: #dc3545;
+    background-color: var(--severity-extreme);
     color: white;
 }
 
 .status-restricted {
-    background-color: #fd7e14;
+    background-color: var(--severity-severe);
     color: white;
 }
 
 .status-pending {
-    background-color: #ffc107;
-    color: #000;
+    background-color: var(--severity-moderate);
+    color: var(--severity-moderate-text);
 }
 
 .status-open {
-    background-color: #198754;
+    background-color: var(--ss-green);
     color: white;
 }
 
@@ -484,22 +484,22 @@ a.badge:hover {
 
 /* Severity-based card border colors */
 .office-card-extreme {
-    border-left-color: #dc3545;
+    border-left-color: var(--severity-extreme);
     border-left-width: 8px;
 }
 
 .office-card-severe {
-    border-left-color: #fd7e14;
+    border-left-color: var(--severity-severe);
     border-left-width: 7px;
 }
 
 .office-card-moderate {
-    border-left-color: #ffc107;
+    border-left-color: var(--severity-moderate);
     border-left-width: 6px;
 }
 
 .office-card-minor {
-    border-left-color: #6c757d;
+    border-left-color: var(--bs-secondary);
     border-left-width: 5px;
 }
 
@@ -508,7 +508,7 @@ a.badge:hover {
 
 .office-card-extreme {
     /* Static styling instead of animation */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(239, 68, 68, 0.3); /* --severity-extreme at 30% */
 }
 
 /* Site card header */
@@ -520,10 +520,14 @@ a.badge:hover {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Prevent long office names overflowing card boundaries on small screens */
+.office-card .card-body h6,
 .office-card-title {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
     color: #212529;
 }
 

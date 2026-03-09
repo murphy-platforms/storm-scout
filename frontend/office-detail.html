@@ -10,11 +10,12 @@
     <title>Storm Scout - Office Detail</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css?v=1.9.2">
-    <link rel="stylesheet" href="css/tooltips.css?v=1.9.2">
-    <link rel="stylesheet" href="css/mobile.css?v=1.9.2">
+    <link rel="stylesheet" href="css/style.css?v=1.9.5">
+    <link rel="stylesheet" href="css/tooltips.css?v=1.9.5">
+    <link rel="stylesheet" href="css/mobile.css?v=1.9.5">
 </head>
 <body>
+    <a class="skip-to-content" href="#main-content">Skip to main content</a>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-scout">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="index.html">
@@ -37,7 +38,7 @@
         </div>
     </nav>
 
-    <div class="container-fluid mt-4">
+    <div id="main-content" class="container-fluid mt-4">
         <!-- Breadcrumb Navigation -->
         <div class="row mb-3">
             <div class="col-12">
@@ -81,7 +82,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h1 class="h3 mb-1">
+                                    <h1 class="mb-1">
                                         <strong id="officeCode"></strong> - <span id="officeName"></span>
                                     </h1>
                                     <p class="text-muted mb-0">
@@ -149,7 +150,7 @@
     </div>
 
     <!-- Alert Detail Modal -->
-    <div class="modal fade" id="alertDetailModal" tabindex="-1" aria-labelledby="alertDetailModalLabel" aria-hidden="true">
+    <div class="modal fade" id="alertDetailModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="alertDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -186,11 +187,11 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="js/api.js?v=1.9.2"></script>
-    <script src="js/version.js?v=1.9.2"></script>
-    <script src="js/utils.js?v=1.9.2"></script>
-    <script src="js/alert-filters.js?v=1.9.2"></script>
-    <script src="js/aggregation.js?v=1.9.2"></script>
-    <script src="js/page-office-detail.js?v=1.9.4"></script>
+    <script src="js/api.js?v=1.9.5"></script>
+    <script src="js/version.js?v=1.9.5"></script>
+    <script src="js/utils.js?v=1.9.5"></script>
+    <script src="js/alert-filters.js?v=1.9.5"></script>
+    <script src="js/aggregation.js?v=1.9.5"></script>
+    <script src="js/page-office-detail.js?v=1.9.5"></script>
 </body>
 </html>
