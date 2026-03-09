@@ -10,7 +10,7 @@
 
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/database');
+const { getDatabase } = require('../config/database');
 const { handleValidationErrors } = require('../middleware/validate');
 const historyValidators = require('../validators/history');
 
@@ -45,9 +45,10 @@ function calculateTrend(dataPoints) {
  */
 router.get('/overview-trends', historyValidators.getOverviewTrends, handleValidationErrors, async (req, res) => {
     try {
+        const pool = getDatabase();
         const days = req.query.days || 3;
         const limit = req.query.limit || 20;
-        
+
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
         const [snapshots] = await pool.query(`
@@ -146,6 +147,7 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
  */
 router.get('/severity-trends', historyValidators.getSeverityTrends, handleValidationErrors, async (req, res) => {
     try {
+        const pool = getDatabase();
         const days = req.query.days || 3;
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
@@ -206,6 +208,7 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
  */
 router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handleValidationErrors, async (req, res) => {
     try {
+        const pool = getDatabase();
         const officeId = req.params.officeId;
         const days = req.query.days || 3;
         
@@ -292,6 +295,7 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
  */
 router.get('/data-availability', async (req, res) => {
     try {
+        const pool = getDatabase();
         const [systemCount] = await pool.query(`
             SELECT 
                 COUNT(*) as snapshot_count,
