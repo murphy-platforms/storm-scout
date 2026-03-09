@@ -13,7 +13,7 @@ const advisoryValidators = require('../validators/advisories');
 /**
  * GET /api/advisories
  * Get all advisories with optional filters
- * Query params: status, severity (comma-separated), state, site_id, advisory_type (comma-separated)
+ * Query params: status, severity (comma-separated), state, office_id, advisory_type (comma-separated)
  * Example: /api/advisories?severity=Extreme,Severe&state=CA
  */
 router.get('/', advisoryValidators.getAll, handleValidationErrors, async (req, res) => {
