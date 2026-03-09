@@ -102,7 +102,7 @@
         function renderNotices(notices) {
             const container = document.getElementById('noticesContainer');
             if (notices.length === 0) {
-                container.innerHTML = '<div class="col-12 text-center text-muted">No active government or local notices</div>';
+                container.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="bi bi-bell-slash fs-1 d-block mb-2"></i><strong>No active notices</strong><p class="mb-0 small mt-1">No government or local notices are currently in effect.</p></div>';
                 return;
             }
             
