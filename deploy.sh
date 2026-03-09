@@ -86,6 +86,44 @@ confirm_deployment() {
     fi
 }
 
+# Create timestamped backup of current production files before rsync --delete runs.
+# Backups older than 7 days are pruned automatically.
+create_backup() {
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    BACKUP_TIMESTAMP="$timestamp"  # exported for use in main()
+
+    log_step "Creating pre-deploy backup (tag: $timestamp)..."
+
+    $SSH_CMD "$SERVER_USER@$SERVER_HOST" bash -s << ENDSSH
+        set -e
+        TIMESTAMP="$timestamp"
+        BACKEND="$SERVER_BACKEND_PATH"
+        FRONTEND="$SERVER_FRONTEND_PATH"
+
+        # Backup backend directory
+        if [ -d "\$BACKEND" ]; then
+            cp -a "\$BACKEND" "\${BACKEND}.bak.\${TIMESTAMP}"
+            echo "  Backend  → \${BACKEND}.bak.\${TIMESTAMP}"
+        fi
+
+        # Backup frontend directory
+        if [ -d "\$FRONTEND" ]; then
+            cp -a "\$FRONTEND" "\${FRONTEND}.bak.\${TIMESTAMP}"
+            echo "  Frontend → \${FRONTEND}.bak.\${TIMESTAMP}"
+        fi
+
+        # Prune backups older than 7 days (keep disk usage bounded)
+        PARENT_BACKEND=\$(dirname "\$BACKEND")
+        PARENT_FRONTEND=\$(dirname "\$FRONTEND")
+        find "\$PARENT_BACKEND" -maxdepth 1 -name "\$(basename \$BACKEND).bak.*" -mtime +7 -exec rm -rf {} + 2>/dev/null || true
+        find "\$PARENT_FRONTEND" -maxdepth 1 -name "\$(basename \$FRONTEND).bak.*" -mtime +7 -exec rm -rf {} + 2>/dev/null || true
+        echo "  Old backups (>7d) pruned"
+ENDSSH
+
+    log_info "Backup complete — tag: $timestamp"
+}
+
 # Deploy backend
 deploy_backend() {
     log_step "Deploying backend..."
@@ -198,21 +236,32 @@ main() {
     
     # [OPS-1] Pause ingestion during deploy window
     pause_ingestion
-    
+
+    # Create backup before any destructive rsync --delete operations
+    create_backup
+
     deploy_backend
     deploy_frontend
     post_deploy
     restart_app
-    
+
     # [OPS-1] Resume ingestion after restart
     resume_ingestion
-    
+
     echo ""
     echo "╔════════════════════════════════════════════════════════════╗"
     echo "║          ✓ Deployment Complete!                           ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
     echo "  Your site: https://$SERVER_HOST  (update DEPLOY_HOST for your USPS server)"
+    echo ""
+    echo "  Backup tag: $BACKUP_TIMESTAMP"
+    echo "  To rollback if needed:"
+    echo "    ssh $SERVER_USER@$SERVER_HOST"
+    echo "    cp -a ${SERVER_BACKEND_PATH}.bak.${BACKUP_TIMESTAMP} $SERVER_BACKEND_PATH"
+    echo "    cp -a ${SERVER_FRONTEND_PATH}.bak.${BACKUP_TIMESTAMP} $SERVER_FRONTEND_PATH"
+    echo "    (then restart the app)"
+    echo "  See DEPLOY.md for full rollback procedure."
     echo ""
     log_info "Storm Scout is live!"
     echo ""

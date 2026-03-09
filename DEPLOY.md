@@ -200,6 +200,48 @@ Expected `/health` response:
 
 ---
 
+## Rollback Procedure
+
+`deploy.sh` creates a timestamped backup of both backend and frontend directories on the server **before** running `rsync --delete`. The backup tag is printed at the end of every successful deployment.
+
+### Rollback steps (deploy.sh / cPanel rsync deployments)
+
+```bash
+# 1. SSH into the server
+ssh $SERVER_USER@$SERVER_HOST
+
+# 2. Stop the application
+#    (cPanel → Node.js → Stop, or: touch ~/storm-scout/tmp/restart.txt)
+
+# 3. Restore backend and frontend from backup
+#    Replace <TAG> with the backup timestamp shown at deploy time (e.g. 20260309_142531)
+cp -a ~/storm-scout.bak.<TAG> ~/storm-scout
+cp -a ~/public_html.bak.<TAG> ~/public_html
+
+# 4. Restart the application
+#    (cPanel → Node.js → Start)
+```
+
+Backups older than **7 days** are pruned automatically on each deploy run.
+
+### Rollback steps (deployment/deploy.sh / git-based deployments)
+
+```bash
+cd /var/www/storm-scout
+
+# View recent commits
+git log --oneline -5
+
+# Reset to the previous commit
+git reset --hard <previous-commit-sha>
+
+# Reinstall dependencies and restart
+cd backend && npm install --production
+pm2 restart storm-scout
+```
+
+---
+
 ## Boot Sequence
 
 On system reboot the startup order is:
