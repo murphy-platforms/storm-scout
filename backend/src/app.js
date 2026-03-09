@@ -39,14 +39,12 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
-        "'unsafe-inline'",  // Required for Google Analytics inline script
         "cdn.jsdelivr.net",
         "unpkg.com",  // Leaflet maps
         "www.googletagmanager.com"
       ],
       styleSrc: [
         "'self'",
-        "'unsafe-inline'",  // Bootstrap uses inline styles
         "cdn.jsdelivr.net",
         "unpkg.com"  // Leaflet CSS
       ],
