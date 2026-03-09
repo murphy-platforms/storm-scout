@@ -266,3 +266,12 @@ CREATE TABLE IF NOT EXISTS system_snapshots (
   COMMENT='System-wide snapshots captured every 6 hours, retained for 3 days';
 
 CREATE INDEX idx_system_snapshots_time ON system_snapshots(snapshot_time);
+
+-- Migration version tracking table
+-- Records every forward migration that has been applied to this database.
+-- Managed by: node src/scripts/run-migrations.js
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    filename   VARCHAR(255) NOT NULL,
+    applied_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (filename)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
