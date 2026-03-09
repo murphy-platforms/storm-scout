@@ -8,6 +8,18 @@
 | Backend API | Node.js 18+, Express | `systemd` user service |
 | Frontend | Static files served by Express | same process as backend |
 
+### Reverse Proxy Requirement
+
+This application **must** run behind a reverse proxy (LiteSpeed on cPanel shared hosting, or Nginx/Apache on a VPS). The proxy:
+
+- Terminates TLS (HTTPS)
+- Rewrites the `X-Forwarded-For` header with the real client IP
+- Forwards requests to the Node.js process on `localhost:3000`
+
+Set `TRUST_PROXY=true` in `.env.production` when a reverse proxy is confirmed. This tells Express to trust the `X-Forwarded-For` header for accurate IP-based rate limiting.
+
+**Do not set `TRUST_PROXY=true` if the Node.js process is exposed directly to the internet** — doing so allows clients to spoof their IP address and bypass rate limiting.
+
 ---
 
 ## First-Time Setup
@@ -258,4 +270,5 @@ systemctl --user restart storm-scout-dev
 | `INGESTION_ENABLED` | Enable NOAA polling | `true` |
 | `INGESTION_INTERVAL_MINUTES` | Poll interval | `15` |
 | `NOAA_API_USER_AGENT` | NOAA API contact | `(Storm Scout, ops@example.com)` |
-| `CORS_ORIGIN` | Allowed CORS origin | `*` |
+| `CORS_ORIGIN` | Allowed CORS origin (required — no default) | `https://your-domain.example.com` |
+| `TRUST_PROXY` | Set `true` when behind LiteSpeed/Nginx/Apache reverse proxy | `false` |
