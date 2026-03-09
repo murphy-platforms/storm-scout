@@ -273,7 +273,7 @@
             const statsContainer = document.getElementById('summaryStatsContainer');
             
             if (sites.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="text-center">No active advisories</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted"><i class="bi bi-cloud-sun d-block fs-4 mb-1"></i>No active advisories</td></tr>';
                 statsContainer.innerHTML = '';
                 return;
             }
@@ -455,7 +455,7 @@
             const statsContainer = document.getElementById('summaryStatsContainer');
             
             if (sites.length === 0) {
-                container.innerHTML = '<div class="col-12"><div class="alert alert-info">No advisories match your filters</div></div>';
+                container.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="bi bi-cloud-sun fs-1 d-block mb-2"></i><strong>No advisories match your filters</strong><p class="mb-0 small mt-1">Try adjusting your filter settings to see more results.</p></div>';
                 statsContainer.innerHTML = '';
                 return;
             }

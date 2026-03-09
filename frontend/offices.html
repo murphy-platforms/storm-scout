@@ -198,7 +198,7 @@
         function renderSites(sites) {
             const container = document.getElementById('sitesContainer');
             if (sites.length === 0) {
-                container.innerHTML = '<div class="col-12 text-center text-muted">No offices currently impacted</div>';
+                container.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="bi bi-building fs-1 d-block mb-2"></i><strong>No offices currently impacted</strong><p class="mb-0 small mt-1">No USPS locations are affected by active weather advisories.</p></div>';
                 return;
             }
             
