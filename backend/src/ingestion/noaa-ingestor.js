@@ -204,7 +204,9 @@ async function ingestNOAAData() {
     
     // Step 4: Update database with transaction
     let advisoriesCreated = 0;
+    let advisoriesFailed = 0;
     let statusesUpdated = 0;
+    let statusesFailed = 0;
     const processedExternalIds = [];
     
     const { getDatabase } = require('../config/database');
@@ -228,7 +230,7 @@ async function ingestNOAAData() {
             }
           } catch (error) {
             console.error(`Error creating advisory for office ${officeId}:`, error.message);
-            // Continue with other advisories - don't fail entire batch
+            advisoriesFailed++;
           }
         }
         
@@ -247,9 +249,10 @@ async function ingestNOAAData() {
           statusesUpdated++;
         } catch (error) {
           console.error(`Error updating status for office ${officeId}:`, error.message);
+          statusesFailed++;
         }
       }
-      
+
       // Update sites with no advisories to green weather impact
       for (const office of offices) {
         if (!officeAdvisories.has(office.id)) {
@@ -389,13 +392,32 @@ async function ingestNOAAData() {
     const timestamp = new Date().toISOString();
     fs.writeFileSync(LAST_INGESTION_FILE, JSON.stringify({ lastUpdated: timestamp }));
     
-    console.log('\n═══ Ingestion Complete ═══');
+    const totalFailed = advisoriesFailed + statusesFailed;
+    const logSummary = totalFailed > 0 ? console.warn : console.log;
+
+    logSummary('\n═══ Ingestion Complete ═══');
     console.log(`Advisories created/updated: ${advisoriesCreated}`);
     console.log(`Site statuses updated: ${statusesUpdated}`);
     console.log(`Advisories marked expired: ${expiredCount}`);
     console.log(`Old expired removed: ${expiredRemoved}`);
     console.log(`Observations updated: ${observationResult.updated}/${observationResult.total} sites (${observationResult.uniqueStations} unique stations)`);
+    if (totalFailed > 0) {
+      console.warn(`⚠️  Partial failures: ${advisoriesFailed} advisory write(s) failed, ${statusesFailed} status update(s) failed`);
+      console.warn(`⚠️  Ingestion completed with errors — review logs above for details`);
+    }
     console.log(`═══════════════════════════\n`);
+
+    return {
+      status: totalFailed > 0 ? 'partial' : 'success',
+      advisoriesCreated,
+      advisoriesFailed,
+      statusesUpdated,
+      statusesFailed,
+      expiredCount,
+      expiredRemoved,
+      observationsUpdated: observationResult.updated,
+      observationsTotal: observationResult.total
+    };
     
   } catch (error) {
     console.error('\n✗ NOAA ingestion failed:', error.message);
