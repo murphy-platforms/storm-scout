@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.6] - 2026-03-09
+
+### Fixed
+
+- **#76 Stale seed notices on notices.html** — removed 3 fabricated emergency declaration `INSERT`s from `seed.sql`; notices are populated by ingestion only; migration `20260309-remove-seed-notices.sql` deletes the rows from any database previously seeded
+- **#77 Jurisdiction filter returns no results** — removed `.toLowerCase()` from `validateJurisdiction` in `notices.js` validator and updated `VALID_JURISDICTIONS` to Title-Case (`['Federal', 'State', 'County', 'City']`) to match values stored in the database; filter now works correctly
+
+### Documented
+
+- **#78 local-ingestor.js is a no-op stub** — filed as enhancement; `notices` table has no real data source until a FEMA/state RSS ingestion adapter is implemented
+
 ## [1.9.5] - 2026-03-09
 
 ### Fixed (Accessibility & UI/UX — closes #63–#74)
