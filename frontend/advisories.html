@@ -133,9 +133,9 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Site Code</th>
+                                        <th>Office Code</th>
                                         <th>Temp</th>
-                                        <th>Site Name</th>
+                                        <th>Office Name</th>
                                         <th>Headline</th>
                                         <th>City</th>
                                         <th>State</th>
@@ -327,7 +327,7 @@
                 const alertCount = site.advisories.length;
                 const sevLower = site.highest_severity.toLowerCase();
                 
-                // Site header row
+                // Office header row
                 rowsHtml += `<tr class="site-group-header site-group-${escapeHtml(sevLower)}" data-office-code="${escapeHtml(site.office_code)}">
                     <td colspan="11">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
@@ -368,7 +368,7 @@
             
             tbody.innerHTML = rowsHtml;
             
-            // Click handlers: site header rows navigate to site detail
+            // Click handlers: office header rows navigate to office detail
             tbody.querySelectorAll('.site-group-header').forEach(row => {
                 row.addEventListener('click', () => {
                     window.location.href = `office-detail.html?office=${row.dataset.officeCode}`;
@@ -401,7 +401,7 @@
             // Show filter warning
             renderFilterWarning(allAdvisoriesUnfiltered, filtered);
             
-            // Aggregate by site
+            // Aggregate by office
             const aggregatedSites = OfficeAggregator.aggregateByOffice(filtered, { deduplicateZones: dedupEnabled });
             
             // Render based on current view
@@ -487,7 +487,7 @@
                 </div>
             `;
             
-            // Render site cards (sorted by site code ascending)
+            // Render office cards (sorted by office code ascending)
             const sorted = [...sites].sort((a, b) =>
                 a.office_code.localeCompare(b.office_code, undefined, { numeric: true })
             );
