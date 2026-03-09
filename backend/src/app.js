@@ -75,6 +75,14 @@ app.use(helmet({
   } : false
 }));
 
+if (config.cors.origin === false) {
+  const msg = 'CORS_ORIGIN is not set — all cross-origin requests will be blocked.';
+  if (config.env === 'production') {
+    console.warn(`[WARN] ${msg} Set CORS_ORIGIN in .env.production to allow the frontend origin.`);
+  } else {
+    console.info(`[INFO] ${msg}`);
+  }
+}
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
