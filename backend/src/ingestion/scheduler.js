@@ -15,6 +15,10 @@ let consecutiveFailures = 0;
 let consecutiveSnapshotFailures = 0;
 const MAX_CONSECUTIVE_FAILURES = 3;
 
+// Concurrency guards — prevent overlapping runs if a task exceeds the cron interval
+let isIngesting = false;
+let isSnapshoting = false;
+
 /**
  * Handle ingestion completion
  * @param {Error|null} error - Error if ingestion failed
@@ -59,11 +63,18 @@ function startScheduler() {
   
   // Schedule the NOAA ingestion task
   scheduledTask = cron.schedule(cronExpression, async () => {
+    if (isIngesting) {
+      console.warn('[Scheduler] Ingestion skipped — previous run still in progress');
+      return;
+    }
+    isIngesting = true;
     try {
       await ingestNOAAData();
       await handleIngestionResult(null);
     } catch (error) {
       await handleIngestionResult(error);
+    } finally {
+      isIngesting = false;
     }
   });
   
@@ -74,6 +85,11 @@ function startScheduler() {
   console.log(`Cron expression: ${snapshotCronExpression}\n`);
   
   snapshotTask = cron.schedule(snapshotCronExpression, async () => {
+    if (isSnapshoting) {
+      console.warn('[Scheduler] Snapshot skipped — previous run still in progress');
+      return;
+    }
+    isSnapshoting = true;
     try {
       console.log('[Scheduler] Running historical snapshot...');
       const result = await captureSnapshot();
@@ -82,7 +98,7 @@ function startScheduler() {
     } catch (error) {
       consecutiveSnapshotFailures++;
       console.error(`[Scheduler] Snapshot failed (${consecutiveSnapshotFailures}/${MAX_CONSECUTIVE_FAILURES}):`, error.message);
-      
+
       // Alert on persistent failures
       if (consecutiveSnapshotFailures >= MAX_CONSECUTIVE_FAILURES) {
         await alertIngestionFailure(error, {
@@ -91,24 +107,32 @@ function startScheduler() {
           maxConsecutiveFailures: MAX_CONSECUTIVE_FAILURES
         });
       }
+    } finally {
+      isSnapshoting = false;
     }
   });
   
   // Run initial ingestion immediately
   console.log('Running initial ingestion...');
+  isIngesting = true;
   ingestNOAAData()
     .then(() => handleIngestionResult(null))
-    .catch(error => handleIngestionResult(error));
-  
+    .catch(error => handleIngestionResult(error))
+    .finally(() => { isIngesting = false; });
+
   // Run initial snapshot after 5 seconds (let ingestion complete first)
   console.log('Scheduling initial historical snapshot in 5 seconds...');
   setTimeout(async () => {
+    if (isSnapshoting) return;
+    isSnapshoting = true;
     try {
       console.log('[Scheduler] Running initial historical snapshot...');
       const result = await captureSnapshot();
       console.log(`[Scheduler] Initial snapshot completed: ${result.sites_captured} sites captured`);
     } catch (error) {
       console.error('[Scheduler] Initial snapshot failed:', error.message);
+    } finally {
+      isSnapshoting = false;
     }
   }, 5000);
 }
@@ -140,11 +164,13 @@ function getSchedulerStatus() {
   return {
     ingestion: {
       running: scheduledTask !== null,
+      inProgress: isIngesting,
       consecutiveFailures,
       intervalMinutes: config.ingestion.intervalMinutes
     },
     snapshot: {
       running: snapshotTask !== null,
+      inProgress: isSnapshoting,
       consecutiveFailures: consecutiveSnapshotFailures,
       intervalHours: 6
     }
