@@ -17,9 +17,12 @@
     /* Semantic Severity Colors (matching Beta UI) */
     --severity-extreme: #ef4444;  /* Red - Critical */
     --severity-severe: #f97316;   /* Orange - High Impact */
-    --severity-moderate: #eab308; /* Yellow - Moderate */
+    --severity-moderate: #eab308; /* Yellow - Moderate (badge/bg use only) */
     --severity-minor: #22c55e;    /* Green - Low/Minor */
-    
+    /* Accessible text variant for moderate — #eab308 on white is ~1.9:1 (fails WCAG AA).
+       #92400e (dark amber) on white is 7.1:1 (passes WCAG AAA). */
+    --severity-moderate-text: #92400e;
+
     /* Background variants */
     --severity-extreme-bg: rgba(239, 68, 68, 0.1);
     --severity-severe-bg: rgba(249, 115, 22, 0.1);
@@ -207,7 +210,7 @@ h1, h2, h3, h4 {
 }
 
 .text-severity-moderate {
-    color: var(--severity-moderate) !important;
+    color: var(--severity-moderate-text) !important; /* dark amber — passes WCAG AA on white */
 }
 
 .text-severity-minor {
@@ -534,7 +537,7 @@ a.badge:hover {
 }
 
 .severity-moderate {
-    background-color: #ffc107;
+    background-color: var(--severity-moderate);
     color: #000;
 }
 
