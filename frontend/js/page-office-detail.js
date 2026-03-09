@@ -49,8 +49,8 @@
                 renderAllAdvisories(officeAggData);
 
                 // Show content, hide loading
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('officeContent').style.display = 'block';
+                document.getElementById('loadingState').classList.add('d-none');
+                document.getElementById('officeContent').classList.remove('d-none');
 
             } catch (error) {
                 console.error('Error loading office detail:', error);
@@ -60,8 +60,8 @@
 
         function showError(message) {
             document.getElementById('errorMessage').textContent = message;
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('loadingState').classList.add('d-none');
+            document.getElementById('errorState').classList.remove('d-none');
         }
 
         function renderOfficeHeader(office, aggData, obs) {

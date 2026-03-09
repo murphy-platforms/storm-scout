@@ -181,7 +181,7 @@
         // Clear weather impact filter
         function clearWeatherFilter() {
             document.getElementById('weatherImpactFilter').value = '';
-            document.getElementById('activeFilterBanner').style.display = 'none';
+            document.getElementById('activeFilterBanner').classList.add('d-none');
             // Update URL without the parameter
             const url = new URL(window.location);
             url.searchParams.delete('weather_impact');
@@ -194,7 +194,7 @@
         document.getElementById('weatherImpactFilter').addEventListener('change', function() {
             // Hide banner when manually changing filter
             if (!this.value) {
-                document.getElementById('activeFilterBanner').style.display = 'none';
+                document.getElementById('activeFilterBanner').classList.add('d-none');
             }
             filterOffices();
         });
@@ -219,7 +219,7 @@
                 // Show active filter banner
                 const labels = { red: 'Extreme (High Impact)', orange: 'Severe (Severe Impact)', yellow: 'Moderate (Moderate Impact)', green: 'Minor (Low/No Impact)' };
                 document.getElementById('activeFilterLabel').textContent = labels[weatherImpactParam] || weatherImpactParam.toUpperCase();
-                document.getElementById('activeFilterBanner').style.display = 'block';
+                document.getElementById('activeFilterBanner').classList.remove('d-none');
             }
 
             // Trigger filtering

@@ -404,13 +404,13 @@
             if (view === 'card') {
                 document.getElementById('cardViewBtn').classList.add('active');
                 document.getElementById('tableViewBtn').classList.remove('active');
-                document.getElementById('cardViewContainer').style.display = 'flex';
-                document.getElementById('tableViewContainer').style.display = 'none';
+                document.getElementById('cardViewContainer').classList.remove('d-none');
+                document.getElementById('tableViewContainer').classList.add('d-none');
             } else {
                 document.getElementById('cardViewBtn').classList.remove('active');
                 document.getElementById('tableViewBtn').classList.add('active');
-                document.getElementById('cardViewContainer').style.display = 'none';
-                document.getElementById('tableViewContainer').style.display = 'block';
+                document.getElementById('cardViewContainer').classList.add('d-none');
+                document.getElementById('tableViewContainer').classList.remove('d-none');
             }
 
             renderAll();
