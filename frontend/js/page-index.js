@@ -84,9 +84,9 @@
                 // Show/hide "no sites" message
                 const noSitesMsg = document.getElementById('noSitesMessage');
                 if (aggregatedSites.length === 0) {
-                    noSitesMsg.style.display = 'block';
+                    noSitesMsg.classList.remove('d-none');
                 } else {
-                    noSitesMsg.style.display = 'none';
+                    noSitesMsg.classList.add('d-none');
                 }
 
                 // Operational Status Counts - Coming Soon (manual IMT tracking not yet implemented)
@@ -289,9 +289,9 @@
 
             // Show indicator only if filters are active (not showing all)
             if (AlertFilters.hasActiveFilters()) {
-                indicator.style.display = 'inline-block';
+                indicator.classList.remove('d-none');
             } else {
-                indicator.style.display = 'none';
+                indicator.classList.add('d-none');
             }
         }
 
