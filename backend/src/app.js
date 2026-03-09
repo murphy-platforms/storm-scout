@@ -27,9 +27,15 @@ const pkg = require('../package.json');
 // Create Express app
 const app = express();
 
-// Trust proxy for proper client IP detection behind LiteSpeed
-// Required for rate limiting to work correctly on cPanel shared hosting
-app.set('trust proxy', 1);
+// Trust proxy — only enable when a reverse proxy (LiteSpeed, Nginx, etc.)
+// sits in front of this app and strips/rewrites X-Forwarded-For.
+// Without a proxy, enabling this allows clients to spoof their IP address
+// and bypass rate limiting. Set TRUST_PROXY=true in .env when deploying
+// behind LiteSpeed on cPanel shared hosting.
+if (process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1);
+  console.info('[INFO] trust proxy enabled — ensure a reverse proxy is stripping X-Forwarded-For before forwarding requests.');
+}
 
 // Middleware
 // Security headers via helmet
