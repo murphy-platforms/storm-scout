@@ -19,16 +19,18 @@ const AlertFilters = {
             // Load filter configurations from API
             const response = await fetch(`${API_BASE_URL}/filters`);
             const data = await response.json();
+            if (!data.success) throw new Error(data.error || 'Failed to load filter configs');
             this.filterConfigs = data.data;
-            
+
             // Load all alert types by level
             const typesResponse = await fetch(`${API_BASE_URL}/filters/types/all`);
             const typesData = await typesResponse.json();
+            if (!typesData.success) throw new Error(typesData.error || 'Failed to load alert types');
             this.alertTypesByLevel = typesData.data;
-            
+
             // Load user's saved preferences
             this.loadUserPreferences();
-            
+
             return true;
         } catch (error) {
             console.error('Failed to load filter configs:', error);
