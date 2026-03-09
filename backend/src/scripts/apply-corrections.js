@@ -22,14 +22,14 @@ const corrections = {
 const REMOVE_SITE = '6753';
 
 // Load sites
-let sites = JSON.parse(fs.readFileSync(sitesPath, 'utf8'));
-console.log(`Loaded ${sites.length} sites\n`);
+let offices = JSON.parse(fs.readFileSync(sitesPath, 'utf8'));
+console.log(`Loaded ${offices.length} offices\n`);
 
 // Apply corrections
 const sqlStatements = [];
 for (const [code, updates] of Object.entries(corrections)) {
-  const site = sites.find(s => s.site_code === code);
-  if (!site) {
+  const office = offices.find(s => s.site_code === code);
+  if (!office) {
     console.error(`Site ${code} not found!`);
     continue;
   }
@@ -38,22 +38,22 @@ for (const [code, updates] of Object.entries(corrections)) {
   const setClauses = [];
 
   if (updates.latitude !== undefined) {
-    changes.push(`lat: ${site.latitude} → ${updates.latitude}`);
-    site.latitude = updates.latitude;
+    changes.push(`lat: ${office.latitude} → ${updates.latitude}`);
+    office.latitude = updates.latitude;
     setClauses.push(`latitude = ${updates.latitude}`);
   }
   if (updates.longitude !== undefined) {
-    changes.push(`lon: ${site.longitude} → ${updates.longitude}`);
-    site.longitude = updates.longitude;
+    changes.push(`lon: ${office.longitude} → ${updates.longitude}`);
+    office.longitude = updates.longitude;
     setClauses.push(`longitude = ${updates.longitude}`);
   }
   if (updates.ugc_codes !== undefined) {
-    changes.push(`ugc: ${JSON.stringify(site.ugc_codes)} → ${JSON.stringify(updates.ugc_codes)}`);
-    site.ugc_codes = updates.ugc_codes;
+    changes.push(`ugc: ${JSON.stringify(office.ugc_codes)} → ${JSON.stringify(updates.ugc_codes)}`);
+    office.ugc_codes = updates.ugc_codes;
     setClauses.push(`ugc_codes = '${JSON.stringify(updates.ugc_codes)}'`);
   }
 
-  console.log(`[${code}] ${site.name}: ${changes.join(', ')}`);
+  console.log(`[${code}] ${office.name}: ${changes.join(', ')}`);
 
   if (setClauses.length > 0) {
     sqlStatements.push(
@@ -63,21 +63,21 @@ for (const [code, updates] of Object.entries(corrections)) {
 }
 
 // Remove child site 6753
-const removeIdx = sites.findIndex(s => s.site_code === REMOVE_SITE);
+const removeIdx = offices.findIndex(s => s.site_code === REMOVE_SITE);
 if (removeIdx >= 0) {
-  console.log(`\nRemoving site ${REMOVE_SITE}: ${sites[removeIdx].name}`);
-  sites.splice(removeIdx, 1);
+  console.log(`\nRemoving office ${REMOVE_SITE}: ${offices[removeIdx].name}`);
+  offices.splice(removeIdx, 1);
   sqlStatements.push(`DELETE FROM sites WHERE site_code = '${REMOVE_SITE}';`);
 } else {
   console.error(`Site ${REMOVE_SITE} not found for removal!`);
 }
 
 // Re-sort by latitude (ascending, matching existing sort order)
-sites.sort((a, b) => a.latitude - b.latitude);
+offices.sort((a, b) => a.latitude - b.latitude);
 
 // Write updated sites.json
-fs.writeFileSync(sitesPath, JSON.stringify(sites, null, 2) + '\n');
-console.log(`\nWrote ${sites.length} sites to sites.json`);
+fs.writeFileSync(sitesPath, JSON.stringify(offices, null, 2) + '\n');
+console.log(`\nWrote ${offices.length} offices to sites.json`);
 
 // Write SQL file
 const sqlHeader = `-- Storm Scout: Site corrections and cleanup
@@ -94,7 +94,7 @@ console.log(`Wrote SQL to site-corrections.sql`);
 // Regenerate new-sites-output.json (9 sites, no 6753)
 const newSiteCodes = ['0313', '0383', '0624', '1908', '1910', '3700', '3702', '5298', '6752'];
 const newSites = newSiteCodes.map(code => {
-  const s = sites.find(x => x.site_code === code);
+  const s = offices.find(x => x.site_code === code);
   return {
     site_code: s.site_code,
     name: s.name,
@@ -130,7 +130,7 @@ console.log('Regenerated new-sites-insert.sql (9 sites)');
 
 // Summary
 console.log('\n=== SUMMARY ===');
-console.log(`Total sites: ${sites.length}`);
+console.log(`Total offices: ${offices.length}`);
 console.log(`Sites updated: ${Object.keys(corrections).length}`);
 console.log(`Sites removed: 1 (${REMOVE_SITE})`);
 console.log(`SQL statements: ${sqlStatements.length}`);

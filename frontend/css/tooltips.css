@@ -18,15 +18,15 @@
     border: 1.5px solid #6c757d;
     border-radius: 50%;
     cursor: help;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
     text-decoration: none;
     line-height: 1;
     vertical-align: middle;
 }
 
 .help-icon:hover {
-    color: var(--pm-navy);
-    border-color: var(--pm-navy);
+    color: var(--ss-navy);
+    border-color: var(--ss-navy);
     background: rgba(27, 40, 69, 0.1);
     transform: scale(1.1);
 }
@@ -53,9 +53,9 @@
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    transition: opacity var(--transition-base), visibility var(--transition-base), transform var(--transition-base);
     pointer-events: none;
-    z-index: 10000;
+    z-index: var(--z-tooltip);
     max-width: 300px;
     white-space: normal;
 }
@@ -120,7 +120,7 @@
 
 /* Accessibility */
 .help-icon:focus {
-    outline: 2px solid var(--pm-navy);
+    outline: 2px solid var(--ss-navy);
     outline-offset: 2px;
 }
 

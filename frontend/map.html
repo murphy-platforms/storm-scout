@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=***REDACTED_GA_ID***"></script>
     <script src="js/analytics.js"></script>
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
     <link rel="stylesheet" href="css/style.css?v=1.9.1">
+    <link rel="stylesheet" href="css/tooltips.css?v=1.9.1">
     <link rel="stylesheet" href="css/mobile.css?v=1.9.1">
     <link rel="stylesheet" href="css/map.css?v=1.9.1">
 </head>
@@ -41,7 +43,14 @@
         <div class="row mb-3">
             <div class="col-12">
                 <h1 class="h2"><i class="bi bi-geo-alt-fill"></i> Map View</h1>
-                <p class="text-muted">Interactive map showing all sites color-coded by highest severity</p>
+                <p class="text-muted">Interactive map showing all offices color-coded by highest severity</p>
+            </div>
+        </div>
+
+        <!-- Update Banner -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div id="update-banner-container"></div>
             </div>
         </div>
 
@@ -65,14 +74,14 @@
                         </div>
                         <div class="col-md-4">
                             <button class="btn btn-sm btn-primary" id="fitAllBtn">
-                                <i class="bi bi-arrows-fullscreen"></i> Fit All Sites
+                                <i class="bi bi-arrows-fullscreen"></i> Fit All Offices
                             </button>
                             <button class="btn btn-sm btn-outline-secondary" id="resetMapBtn">
                                 <i class="bi bi-arrow-counterclockwise"></i> Reset
                             </button>
                         </div>
                         <div class="col-md-4 text-end">
-                            <span class="badge bg-secondary" id="visibleSiteCount">0 sites visible</span>
+                            <span class="badge bg-secondary" id="visibleOfficeCount">0 offices visible</span>
                         </div>
                     </div>
                 </div>
@@ -122,31 +131,31 @@
             <div class="col-md-3">
                 <div class="card text-center map-stat-card" id="toggleExtreme" data-severity="Extreme" title="Click to toggle Extreme filter">
                     <div class="card-body">
-                        <h5 class="text-danger" id="extremeCount">0</h5>
-                        <small class="text-muted">Extreme Sites</small>
+                        <h5 class="text-severity-extreme" id="extremeCount">0</h5>
+                        <small class="text-muted">Extreme Offices</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center map-stat-card" id="toggleSevere" data-severity="Severe" title="Click to toggle Severe filter">
                     <div class="card-body">
-                        <h5 class="text-warning" id="severeCount">0</h5>
-                        <small class="text-muted">Severe Sites</small>
+                        <h5 class="text-severity-severe" id="severeCount">0</h5>
+                        <small class="text-muted">Severe Offices</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center map-stat-card" id="toggleModerate" data-severity="Moderate" title="Click to toggle Moderate filter">
                     <div class="card-body">
-                        <h5 class="text-secondary" id="moderateCount">0</h5>
-                        <small class="text-muted">Moderate Sites</small>
+                        <h5 class="text-severity-moderate" id="moderateCount">0</h5>
+                        <small class="text-muted">Moderate Offices</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center static-card">
                     <div class="card-body">
-                        <h5 id="totalSitesCount">0</h5>
+                        <h5 id="totalOfficesCount">0</h5>
                         <small class="text-muted">Total Impacted</small>
                     </div>
                 </div>
@@ -154,9 +163,21 @@
         </div>
     </div>
 
-    <footer class="footer-scout text-center py-3 mt-5">
+    <footer class="footer-scout py-3 mt-5">
         <div class="container">
-            <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="sources.html" class="text-muted text-decoration-none me-3">
+                        <i class="bi bi-info-circle"></i> About &amp; Data Sources
+                    </a>
+                    <a href="filters.html" class="text-muted text-decoration-none">
+                        <i class="bi bi-sliders"></i> Filter Settings
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -167,6 +188,7 @@
     <script src="js/utils.js?v=1.9.1"></script>
     <script src="js/aggregation.js?v=1.9.1"></script>
     <script src="js/alert-filters.js?v=1.9.1"></script>
+    <script src="js/update-banner.js?v=1.9.1"></script>
     <script>
         let map;
         let markers = [];
@@ -190,37 +212,37 @@
                 // Initialize filters first
                 await AlertFilters.init();
                 
-                const [allAdvisories, allSites, obsData] = await Promise.all([
+                const [allAdvisories, allOffices, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
                     API.getOffices(),
                     API.getObservations().catch(() => [])
                 ]);
-                
+
                 // Build observations lookup by office_code
                 observationsMap = {};
                 obsData.forEach(obs => { observationsMap[obs.office_code] = obs; });
-                
+
                 // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
-                
+
                 // Aggregate FILTERED advisories by office
                 const aggregated = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
-                
+
                 // Create map of aggregated data
                 const aggMap = new Map();
-                aggregated.forEach(site => {
-                    aggMap.set(site.office_id, site);
+                aggregated.forEach(office => {
+                    aggMap.set(office.office_id, office);
                 });
-                
-                // Filter to sites with advisories and add coordinates
-                const sitesWithAdvisories = allSites
-                    .filter(site => aggMap.has(site.id))
-                    .map(site => ({
-                        ...site,
-                        ...aggMap.get(site.id)
+
+                // Filter to offices with advisories and add coordinates
+                const officesWithAdvisories = allOffices
+                    .filter(office => aggMap.has(office.id))
+                    .map(office => ({
+                        ...office,
+                        ...aggMap.get(office.id)
                     }));
-                
-                renderMarkers(sitesWithAdvisories);
+
+                renderMarkers(officesWithAdvisories);
                 updateStats(aggregated);
                 
             } catch (error) {
@@ -232,19 +254,19 @@
             }
         }
         
-        function renderMarkers(sites) {
+        function renderMarkers(offices) {
             // Clear existing markers
             markerLayer.clearLayers();
             markers = [];
-            
-            sites.forEach(site => {
-                if (!site.latitude || !site.longitude) return;
-                
-                const severity = site.highest_severity;
+
+            offices.forEach(office => {
+                if (!office.latitude || !office.longitude) return;
+
+                const severity = office.highest_severity;
                 const severityClass = `marker-${severity.toLowerCase()}`;
-                
+
                 // Create custom div icon with escaped values
-                const iconHtml = `<div class="severity-marker ${escapeHtml(severityClass)}" style="width: 30px; height: 30px;">${parseInt(site.unique_advisory_count) || 0}</div>`;
+                const iconHtml = `<div class="severity-marker ${escapeHtml(severityClass)}" style="width: 30px; height: 30px;">${parseInt(office.unique_advisory_count) || 0}</div>`;
                 const customIcon = L.divIcon({
                     html: iconHtml,
                     className: '',
@@ -252,13 +274,13 @@
                     iconAnchor: [15, 15],
                     popupAnchor: [0, -15]
                 });
-                
+
                 // Create marker
-                const marker = L.marker([site.latitude, site.longitude], { icon: customIcon });
-                
+                const marker = L.marker([office.latitude, office.longitude], { icon: customIcon });
+
                 // Create popup content using html tagged template for XSS prevention
                 // Build temperature HTML
-                const obs = observationsMap[site.office_code];
+                const obs = observationsMap[office.office_code];
                 let tempHtml = '';
                 if (obs && obs.temperature_c != null) {
                     const tempF = cToF(obs.temperature_c);
@@ -270,69 +292,69 @@
                         tempHtml = `<span>🌡️ ${tempF}°F / ${tempC}°C <small class="text-muted">${timeAgo(obs.observed_at)}</small></span>`;
                     }
                 }
-                
-                const headlineText = truncate(site.highest_severity_advisory.headline || '', 80);
-                
+
+                const headlineText = truncate(office.highest_severity_advisory.headline || '', 80);
+
                 const popupContent = html`
-                    <div class="site-popup">
-                        <h6><strong>${site.office_code}</strong> - ${site.name}</h6>
+                    <div class="office-popup">
+                        <h6><strong>${office.office_code}</strong> - ${office.name}</h6>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>${raw('<i class="bi bi-geo-alt"></i>')} ${site.city}, ${site.state}</span>
-                            ${raw(tempHtml ? `<span style="font-size: 0.85rem;">${tempHtml}</span>` : '')}
+                            <span>${raw('<i class="bi bi-geo-alt"></i>')} ${office.city}, ${office.state}</span>
+                            ${raw(tempHtml ? `<span class="temp-display d-inline-block">${tempHtml}</span>` : '')}
                         </div>
                         <p class="mb-2">
                             ${raw(`<span class="badge severity-${escapeHtml(severity.toLowerCase())}">${escapeHtml(severity)}</span>`)}
-                            ${raw(site.new_count > 0 ? `<span class="badge bg-success">${site.new_count} NEW</span>` : '')}
+                            ${raw(office.new_count > 0 ? `<span class="badge bg-success">${office.new_count} NEW</span>` : '')}
                         </p>
-                        <p class="mb-1"><strong>${site.highest_severity_advisory.advisory_type}</strong></p>
+                        <p class="mb-1"><strong>${office.highest_severity_advisory.advisory_type}</strong></p>
                         ${raw(headlineText ? `<p class="mb-2"><small class="text-muted">${escapeHtml(headlineText)}</small></p>` : '')}
                         <p class="mb-2">
-                            <strong>${site.unique_advisory_count}</strong> unique alerts
-                            ${raw(site.total_zone_count !== site.unique_advisory_count ? 
-                                `<small class="text-muted">(${site.total_zone_count} zones)</small>` : '')}
+                            <strong>${office.unique_advisory_count}</strong> unique alerts
+                            ${raw(office.total_zone_count !== office.unique_advisory_count ?
+                                `<small class="text-muted">(${office.total_zone_count} zones)</small>` : '')}
                         </p>
-                        <a href="office-detail.html?office=${encodeURIComponent(site.office_code)}" class="btn btn-sm btn-primary w-100">
+                        <a href="office-detail.html?office=${encodeURIComponent(office.office_code)}" class="btn btn-sm btn-primary w-100">
                             ${raw('<i class="bi bi-arrow-right-circle"></i>')} View Details
                         </a>
                     </div>
                 `;
-                
+
                 marker.bindPopup(popupContent);
-                
+
                 // Add to layer and tracking
                 marker.addTo(markerLayer);
                 markers.push({
                     marker,
-                    site,
+                    office,
                     severity
                 });
             });
-            
+
             // Fit map to show all markers
             if (markers.length > 0) {
                 const group = L.featureGroup(markers.map(m => m.marker));
                 map.fitBounds(group.getBounds().pad(0.1));
             }
-            
+
             updateVisibleCount();
         }
-        
-        function updateStats(sites) {
+
+        function updateStats(offices) {
             const counts = {
-                extreme: sites.filter(s => s.highest_severity === 'Extreme').length,
-                severe: sites.filter(s => s.highest_severity === 'Severe').length,
-                moderate: sites.filter(s => s.highest_severity === 'Moderate').length
+                extreme: offices.filter(o => o.highest_severity === 'Extreme').length,
+                severe: offices.filter(o => o.highest_severity === 'Severe').length,
+                moderate: offices.filter(o => o.highest_severity === 'Moderate').length
             };
-            
+
             document.getElementById('extremeCount').textContent = counts.extreme;
             document.getElementById('severeCount').textContent = counts.severe;
             document.getElementById('moderateCount').textContent = counts.moderate;
-            document.getElementById('totalSitesCount').textContent = sites.length;
+            document.getElementById('totalOfficesCount').textContent = offices.length;
         }
-        
+
         function updateVisibleCount() {
             const visible = markers.filter(m => map.getBounds().contains(m.marker.getLatLng())).length;
-            document.getElementById('visibleSiteCount').textContent = `${visible} sites visible`;
+            document.getElementById('visibleOfficeCount').textContent = `${visible} offices visible`;
         }
         
         function fitAllMarkers() {

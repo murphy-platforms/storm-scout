@@ -50,12 +50,12 @@
     line-height: 30px;
     color: white;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform var(--transition-base);
 }
 
 .severity-marker:hover {
     transform: scale(1.2);
-    z-index: 1000;
+    z-index: var(--z-sticky);
 }
 
 .marker-extreme {
@@ -82,20 +82,20 @@
     border-radius: 0.375rem;
 }
 
-.site-popup {
+.office-popup {
     min-width: 250px;
 }
 
-.site-popup h6 {
+.office-popup h6 {
     margin-bottom: 0.5rem;
     font-weight: 700;
 }
 
-.site-popup .badge {
+.office-popup .badge {
     margin-right: 0.25rem;
     margin-bottom: 0.25rem;
 }
 
-.site-popup .btn {
+.office-popup .btn {
     color: #fff !important;
 }

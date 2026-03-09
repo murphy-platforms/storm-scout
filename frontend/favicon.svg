@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Navy background circle -->
+  <circle cx="16" cy="16" r="16" fill="#1B2845"/>
+  <!-- Lightning bolt (Bootstrap Icons bi-lightning-charge-fill path, scaled to fit) -->
+  <path d="M11.5 5L6 18h7l-2 9 13-14h-8l3-8z" fill="#7AB648"/>
+</svg>

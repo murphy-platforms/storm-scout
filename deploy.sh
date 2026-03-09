@@ -253,7 +253,7 @@ main() {
     echo "║          ✓ Deployment Complete!                           ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
-    echo "  Your site: https://$SERVER_HOST  (update DEPLOY_HOST for your USPS server)"
+    echo "  Storm Scout: https://$SERVER_HOST  (update DEPLOY_HOST for your USPS server)"
     echo ""
     echo "  Backup tag: $BACKUP_TIMESTAMP"
     echo "  To rollback if needed:"
