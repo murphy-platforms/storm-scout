@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.5] - 2026-03-09
+
+### Fixed (Accessibility & UI/UX — closes #63–#74)
+
+- **#63 Skip-to-content links** — added `<a class="skip-to-content">` and `id="main-content"` to all 8 pages (`index.html`, `advisories.html`, `offices.html`, `office-detail.html`, `map.html`, `notices.html`, `filters.html`, `sources.html`) enabling keyboard-only WCAG SC 2.4.1 bypass
+- **#64 Map legend color-only markers** — legend icons now display letter initials (E / S / M / Mi) with `role="img"` and `aria-label`; `map.css` legend-icon updated to flex layout for centering; fixes WCAG SC 1.4.1 (Use of Color)
+- **#65 Emoji in select option values** — removed emoji circles (🔴🟠🟡🟢) from `offices.html` weather-impact `<select>` options and matching `page-offices.js` label strings; labels now use plain text (e.g. "Extreme — High Impact")
+- **#66 Decorative emoji missing aria-hidden** — wrapped 🌡️ temperature emoji in `<span aria-hidden="true">` across all 5 page JS files (12 total occurrences) so screen readers skip decorative glyphs; fixes WCAG SC 1.1.1
+- **#67 Disabled filter card contrast** — `filters.css` replaced `opacity: 0.7` with explicit `color: #6c757d` on disabled `.alert-type-card` elements; achieves ~4.5:1 contrast on `#f8f9fa` background; fixes WCAG SC 1.4.3
+- **#68 Hardcoded hex colours in status/border CSS** — `style.css` status badges (`.status-closed/restricted/pending/open`) and office-card border classes now use CSS variables (`--severity-extreme`, `--severity-severe`, `--severity-moderate`, `--ss-green`, `--bs-secondary`) instead of hardcoded hex values
+- **#69 Alert modal missing ARIA attributes** — `office-detail.html` alert modal now has `role="dialog"` and `aria-modal="true"`; fixes WCAG SC 4.1.2
+- **#70 Semantic heading anti-pattern** — removed Bootstrap size-override class from all `<h1>` elements across all 8 pages (`class="h2"` / `class="h3 mb-1"` stripped); headings now carry correct semantic weight
+- **#71 Help icon contrast below WCAG AA** — `tooltips.css` help icon color darkened from `#6c757d` to `#5a6472` (≥4.5:1 contrast on white); fixes WCAG SC 1.4.3
+- **#72 Office card title text overflow** — `style.css` added `overflow-wrap: break-word; word-break: break-word` to `.office-card .card-body h6` and `.office-card-title` to prevent long names overflowing card boundaries
+- **#73 Moderate severity badge text colour** — `style.css` `.severity-moderate` text colour updated from hardcoded `#000` to `var(--severity-moderate-text)` for consistent theming
+- **#74 Map full-width on ultra-wide screens** — `map.css` `#map` now has `max-width: 1800px` to prevent excessive horizontal stretch on ultra-wide displays
+
+### Changed
+- All inline page `<script>` blocks externalised to `js/page-*.js` files (`page-index.js`, `page-advisories.js`, `page-offices.js`, `page-office-detail.js`, `page-notices.js`, `page-filters.js`, `page-map.js`) allowing removal of `'unsafe-inline'` from CSP `scriptSrc` (closes #61)
+- Cache-busting version strings updated to `?v=1.9.5` across all 8 HTML pages
+
 ## [1.9.4] - 2026-03-09
 
 ### Fixed

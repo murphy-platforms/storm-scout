@@ -13,9 +13,9 @@
     margin-left: 6px;
     font-size: 11px;
     font-weight: 600;
-    color: #6c757d;
+    color: #5a6472; /* darkened from #6c757d to meet WCAG AA 4.5:1 on white */
     background: transparent;
-    border: 1.5px solid #6c757d;
+    border: 1.5px solid #5a6472;
     border-radius: 50%;
     cursor: help;
     transition: all var(--transition-base);
