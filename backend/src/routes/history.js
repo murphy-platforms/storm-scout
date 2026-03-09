@@ -5,7 +5,7 @@
  * Endpoints:
  * - GET /api/history/overview-trends - System-wide metrics over time
  * - GET /api/history/severity-trends - Severity counts over time
- * - GET /api/history/office-trends/:officeId - Per-site advisory counts over time
+ * - GET /api/history/office-trends/:officeId - Per-office advisory counts over time
  */
 
 const express = require('express');
@@ -54,10 +54,10 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
             SELECT 
                 snapshot_time,
                 extreme_count, severe_count, moderate_count, minor_count,
-                sites_red, sites_orange, sites_yellow, sites_green,
-                sites_closed, sites_restricted, sites_pending, sites_open,
+                offices_red, offices_orange, offices_yellow, offices_green,
+                offices_closed, offices_restricted, offices_pending, offices_open,
                 new_advisories, continued_advisories, upgraded_advisories,
-                total_advisories, total_sites_with_advisories
+                total_advisories, total_offices_with_advisories
             FROM system_snapshots
             WHERE snapshot_time >= ?
             ORDER BY snapshot_time ASC
@@ -84,13 +84,13 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
         const moderateCounts = snapshots.map(s => s.moderate_count);
         const minorCounts = snapshots.map(s => s.minor_count);
         
-        const sitesRed = snapshots.map(s => s.sites_red);
-        const sitesOrange = snapshots.map(s => s.sites_orange);
-        const sitesYellow = snapshots.map(s => s.sites_yellow);
-        const sitesGreen = snapshots.map(s => s.sites_green);
+        const officesRed = snapshots.map(s => s.offices_red);
+        const officesOrange = snapshots.map(s => s.offices_orange);
+        const officesYellow = snapshots.map(s => s.offices_yellow);
+        const officesGreen = snapshots.map(s => s.offices_green);
         
         const totalAdvisories = snapshots.map(s => s.total_advisories);
-        const sitesImpacted = snapshots.map(s => s.total_sites_with_advisories);
+        const officesImpacted = snapshots.map(s => s.total_offices_with_advisories);
         
         // Calculate trends
         const extremeTrend = calculateTrend(extremeCounts);
@@ -115,15 +115,15 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
             },
             sitesByWeatherLevel: {
                 timestamps,
-                red: sitesRed,
-                orange: sitesOrange,
-                yellow: sitesYellow,
-                green: sitesGreen
+                red: officesRed,
+                orange: officesOrange,
+                yellow: officesYellow,
+                green: officesGreen
             },
             totals: {
                 timestamps,
                 advisories: totalAdvisories,
-                sitesImpacted: sitesImpacted
+                officesImpacted: officesImpacted
             },
             trends: {
                 extreme: extremeTrend,
@@ -204,7 +204,7 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
  * Returns per-site advisory count history
  * Query params: ?days=3 (default)
  */
-router.get('/office-trends/:officeId', historyValidators.getSiteTrends, handleValidationErrors, async (req, res) => {
+router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handleValidationErrors, async (req, res) => {
     try {
         const officeId = req.params.officeId;
         const days = req.query.days || 3;
@@ -216,7 +216,7 @@ router.get('/office-trends/:officeId', historyValidators.getSiteTrends, handleVa
             SELECT id, office_code, name, city, state
             FROM offices
             WHERE id = ?
-        `, [siteId]);
+        `, [officeId]);
         
         if (sites.length === 0) {
             return res.status(404).json({ error: 'Office not found' });
