@@ -33,8 +33,16 @@ const config = {
   },
   
   // CORS configuration
+  // Fails closed: if CORS_ORIGIN is not set, all cross-origin requests are
+  // blocked (origin: false). Never defaults to '*'.
+  // Supports comma-separated origins: CORS_ORIGIN=https://a.com,https://b.com
   cors: {
-    origin: process.env.CORS_ORIGIN || '*'
+    origin: (() => {
+      const raw = process.env.CORS_ORIGIN;
+      if (!raw) return false;
+      const origins = raw.split(',').map(o => o.trim()).filter(Boolean);
+      return origins.length === 1 ? origins[0] : origins;
+    })()
   },
   
   // Logging configuration
