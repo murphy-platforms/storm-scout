@@ -46,7 +46,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
-        "'unsafe-inline'",  // TODO: remove once all page scripts are externalized (see GH issue)
+        // 'unsafe-inline' removed — all page scripts externalized to js/page-*.js files
         "cdn.jsdelivr.net",
         "unpkg.com",  // Leaflet maps
         "www.googletagmanager.com"
