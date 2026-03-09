@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify-sites.js
- * Geocodes imprecise addresses and verifies all 9 remaining sites against NOAA /points API.
+ * verify-offices.js
+ * Geocodes imprecise addresses and verifies all 9 remaining offices against NOAA /points API.
  * Outputs a comparison report and writes verified data to verified-sites.json.
  */
 
@@ -137,26 +137,26 @@ async function main() {
 
   // Step 1: Geocode the 4 imprecise sites
   console.log('--- Geocoding 4 imprecise addresses ---\n');
-  for (const site of SITES_TO_GEOCODE) {
-    const current = currentSites.find(s => s.site_code === site.site_code);
-    console.log(`[${site.site_code}] ${current.name}`);
-    console.log(`  Address: ${site.address}`);
+  for (const office of SITES_TO_GEOCODE) {
+    const current = currentSites.find(s => s.site_code === office.site_code);
+    console.log(`[${office.site_code}] ${current.name}`);
+    console.log(`  Address: ${office.address}`);
     console.log(`  Current coords: ${current.latitude}, ${current.longitude}`);
 
-    let geo = await geocodeCensus(site.address);
+    let geo = await geocodeCensus(office.address);
     if (!geo) {
       console.log('  Census: no match, trying Nominatim...');
       await sleep(1100);
-      geo = await geocodeNominatim(site.address);
+      geo = await geocodeNominatim(office.address);
     }
 
     if (geo) {
       console.log(`  Geocoded (${geo.source}): ${geo.lat}, ${geo.lon}`);
       console.log(`  Matched: ${geo.matched}`);
-      results.push({ site_code: site.site_code, lat: geo.lat, lon: geo.lon, source: geo.source, needs_geocode: true });
+      results.push({ site_code: office.site_code, lat: geo.lat, lon: geo.lon, source: geo.source, needs_geocode: true });
     } else {
       console.log('  *** FAILED to geocode - keeping current coordinates ***');
-      results.push({ site_code: site.site_code, lat: current.latitude, lon: current.longitude, source: 'unchanged', needs_geocode: true });
+      results.push({ site_code: office.site_code, lat: current.latitude, lon: current.longitude, source: 'unchanged', needs_geocode: true });
     }
     await sleep(500);
     console.log();
@@ -169,7 +169,7 @@ async function main() {
   }
 
   // Step 3: Verify all 9 sites against NOAA /points
-  console.log('--- Verifying all 9 sites against NOAA /points ---\n');
+  console.log('--- Verifying all 9 offices against NOAA /points ---\n');
   const verified = [];
 
   for (const r of results) {
@@ -241,7 +241,7 @@ async function main() {
   console.log(`Sites unchanged: ${unchanged.length}`);
 
   if (changed.length > 0) {
-    console.log('\nChanged sites:');
+    console.log('\nChanged offices:');
     changed.forEach(s => console.log(`  ${s.site_code} ${s.name} (source: ${s._source})`));
   }
 

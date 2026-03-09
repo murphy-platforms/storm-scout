@@ -2,7 +2,7 @@
 /**
  * Add New Sites to Storm Scout
  * 
- * Enriches new site data with coordinates (via Census Geocoder / Nominatim)
+ * Enriches new office data with coordinates (via Census Geocoder / Nominatim)
  * and NOAA weather data (UGC codes, CWA, county), then outputs:
  *   1. JSON entries for sites.json
  *   2. SQL INSERT statements for production
@@ -286,32 +286,32 @@ async function main() {
   console.log('═══════════════════════════════════════════════════');
   console.log('  Storm Scout - Add New Sites');
   console.log('═══════════════════════════════════════════════════\n');
-  console.log(`Processing ${NEW_SITES.length} new sites...\n`);
+  console.log(`Processing ${NEW_SITES.length} new offices...\n`);
   
   const results = [];
   const warnings = [];
   
   for (let i = 0; i < NEW_SITES.length; i++) {
-    const site = NEW_SITES[i];
-    const stateCode = STATE_CODES[site.state_full];
+    const office = NEW_SITES[i];
+    const stateCode = STATE_CODES[office.state_full];
     const region = STATE_REGIONS[stateCode];
     const progress = `[${i + 1}/${NEW_SITES.length}]`;
     
-    console.log(`${progress} ${site.site_code} - ${site.name} (${site.city}, ${stateCode})`);
+    console.log(`${progress} ${office.site_code} - ${office.name} (${site.city}, ${stateCode})`);
     
     // Step 1: Geocode
     let geo = null;
     
-    if (site.address) {
+    if (office.address) {
       // Try Census Geocoder first for confirmed addresses
-      console.log(`  Geocoding: ${site.address}, ${site.city}, ${stateCode}`);
-      geo = await geocodeCensus(site.address, site.city, stateCode);
+      console.log(`  Geocoding: ${office.address}, ${office.city}, ${stateCode}`);
+      geo = await geocodeCensus(office.address, office.city, stateCode);
       await sleep(DELAY_MS);
     }
     
-    if (!geo && site.street_hint) {
+    if (!geo && office.street_hint) {
       // Try Nominatim with street hint
-      const query = `${site.street_hint}, ${site.city}, ${stateCode}`;
+      const query = `${office.street_hint}, ${office.city}, ${stateCode}`;
       console.log(`  Trying Nominatim with street hint: ${query}`);
       geo = await geocodeNominatim(query);
       await sleep(DELAY_MS);
@@ -319,22 +319,22 @@ async function main() {
     
     if (!geo) {
       // Fallback: geocode the city center
-      const query = `${site.city}, ${stateCode}`;
+      const query = `${office.city}, ${stateCode}`;
       console.log(`  Fallback: geocoding city center: ${query}`);
       geo = await geocodeNominatim(query);
       await sleep(DELAY_MS);
       
       if (geo) {
         geo.source = 'nominatim_city_fallback';
-        warnings.push(`${site.site_code} (${site.city}, ${stateCode}): Used city-center coordinates - needs manual verification`);
+        warnings.push(`${office.site_code} (${site.city}, ${stateCode}): Used city-center coordinates - needs manual verification`);
       }
     }
     
     if (!geo) {
       console.log(`  ✗ FAILED to geocode - skipping NOAA lookup`);
-      warnings.push(`${site.site_code}: GEOCODING FAILED completely`);
+      warnings.push(`${office.site_code}: GEOCODING FAILED completely`);
       results.push({
-        ...site, stateCode, region,
+        ...office, stateCode, region,
         latitude: null, longitude: null,
         ugc_codes: [], cwa: null, county: null,
         geo_source: 'FAILED'
@@ -353,26 +353,26 @@ async function main() {
       console.log(`  ✓ UGC: ${noaa.ugc_codes.join(', ')} | CWA: ${noaa.cwa} | County: ${noaa.county}`);
     } else {
       console.log(`  ✗ NOAA lookup failed: ${noaa.error}`);
-      warnings.push(`${site.site_code}: NOAA lookup failed - ${noaa.error}`);
+      warnings.push(`${office.site_code}: NOAA lookup failed - ${noaa.error}`);
     }
     
     results.push({
-      site_code: site.site_code,
-      name: site.name,
-      city: site.city,
+      site_code: office.site_code,
+      name: office.name,
+      city: office.city,
       stateCode,
       region,
       latitude: geo.latitude,
       longitude: geo.longitude,
-      address: site.address,
-      zip: site.zip,
+      address: office.address,
+      zip: office.zip,
       ugc_codes: noaa.ugc_codes,
       cwa: noaa.cwa,
       county: noaa.county,
       geo_source: geo.source,
       matched_address: geo.matched_address,
-      note: site.note || null,
-      source: site.source
+      note: office.note || null,
+      source: office.source
     });
     
     console.log('');
@@ -435,7 +435,7 @@ async function main() {
   console.log('  VERIFICATION REPORT');
   console.log('═══════════════════════════════════════════════════\n');
   
-  console.log(`Total sites processed: ${results.length}`);
+  console.log(`Total offices processed: ${results.length}`);
   console.log(`Successfully geocoded: ${results.filter(r => r.latitude != null).length}`);
   console.log(`NOAA data retrieved:   ${results.filter(r => r.ugc_codes.length > 0).length}`);
   console.log(`Warnings:              ${warnings.length}\n`);
@@ -466,7 +466,7 @@ async function main() {
   console.log('  NEXT STEPS');
   console.log('═══════════════════════════════════════════════════\n');
   console.log('1. Review the verification report above');
-  console.log('2. Manually verify any sites marked with ⚠️  warnings');
+  console.log('2. Manually verify any offices marked with ⚠️  warnings');
   console.log(`3. Review/edit: ${jsonOutputPath}`);
   console.log(`4. Review/edit: ${sqlOutputPath}`);
   console.log('5. Merge new entries into sites.json');
