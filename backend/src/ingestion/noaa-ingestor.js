@@ -221,6 +221,12 @@ async function ingestNOAAData() {
         // Create/update advisories
         for (const advisory of advisories) {
           try {
+            // Ensure advisory_type is registered — auto-inserts unknown NOAA types
+            // with category='UNKNOWN' so the FK constraint is never violated
+            await connection.query(
+              'INSERT IGNORE INTO alert_types (type_name, category) VALUES (?, ?)',
+              [advisory.advisory_type, 'UNKNOWN']
+            );
             await AdvisoryModel.create(advisory);
             advisoriesCreated++;
             
