@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.4] - 2026-03-09
+
+### Fixed
+- **All pages silent spinner (closes #62)** — CSP `script-src` directive lacked `'unsafe-inline'`, which caused browsers to silently block all inline `<script>` blocks on every page; data never loaded and no error was shown to the user. Root cause: issue #15 removed `unsafe-inline` intending to externalise inline scripts, but the migration was never completed. Hotfix: `'unsafe-inline'` restored to `app.js` `scriptSrc`. Proper remediation (externalising all page scripts) tracked in #61.
+
 ## [1.9.3] - 2026-03-09
 
 ### Fixed
