@@ -203,6 +203,16 @@
             </div>
         </div>
 
+        <!-- Map Load Error Banner -->
+        <div id="mapErrorBanner" class="row mb-3" style="display: none;">
+            <div class="col-12">
+                <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="mapErrorMessage">Failed to load map data. Please refresh the page.</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Map Container -->
         <div class="row mb-4">
             <div class="col-12">
@@ -318,7 +328,10 @@
                 
             } catch (error) {
                 console.error('Failed to load map data:', error);
-                alert('Failed to load map data. Please refresh the page.');
+                const banner = document.getElementById('mapErrorBanner');
+                const msg = document.getElementById('mapErrorMessage');
+                if (msg) msg.textContent = 'Failed to load map data. Please refresh the page.';
+                if (banner) banner.style.display = '';
             }
         }
         
