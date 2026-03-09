@@ -195,18 +195,60 @@ function normalizeNOAAAlert(noaaAlert) {
 }
 
 /**
- * Check if coordinates are within alert area
- * Simple check - in production you'd use proper polygon checking
- * @param {number} lat - Site latitude
- * @param {number} lon - Site longitude
- * @param {Object} alertGeometry - NOAA alert geometry
- * @returns {boolean} Whether site is in alert area
+ * Check if a point (lat/lon) falls within a GeoJSON polygon ring using ray-casting.
+ * GeoJSON coordinates are [longitude, latitude] pairs.
+ * @param {number} lat
+ * @param {number} lon
+ * @param {Array} ring - Array of [lon, lat] coordinate pairs (outer ring of a Polygon)
+ * @returns {boolean}
+ */
+function pointInRing(lat, lon, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1]; // GeoJSON: [lon, lat]
+    const xj = ring[j][0], yj = ring[j][1];
+    const intersect = ((yi > lat) !== (yj > lat)) &&
+      (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+/**
+ * Check if coordinates fall within a NOAA alert's GeoJSON geometry.
+ *
+ * Architectural note: NOAA alert zones are authoritatively defined by UGC codes
+ * (geocode.UGC), not by the polygon geometry. The GeoJSON shape is a visual
+ * approximation of those zones. UGC/county/state string matching in the ingestor
+ * is therefore the primary — and more accurate — matching mechanism.
+ *
+ * This function provides polygon containment as a secondary check, available for
+ * offices that lack UGC codes or for callers that want geometric verification.
+ * When geometry is absent, it returns true so UGC matching remains authoritative.
+ *
+ * @param {number} lat - Office latitude
+ * @param {number} lon - Office longitude
+ * @param {Object|null} alertGeometry - NOAA alert GeoJSON geometry object
+ * @returns {boolean} True if point is inside the geometry, or if geometry is unavailable
  */
 function isPointInAlertArea(lat, lon, alertGeometry) {
-  // Simplified check - NOAA alerts cover large areas
-  // In production, implement proper polygon containment check
-  // For now, we'll use the affectedZones from the alert properties
-  return true; // Conservative approach - include all alerts
+  // No geometry provided — defer to UGC/county/state matching (authoritative)
+  if (!alertGeometry || !alertGeometry.type || !alertGeometry.coordinates) {
+    return true;
+  }
+
+  if (alertGeometry.type === 'Polygon') {
+    // coordinates[0] is the outer ring; subsequent rings are holes (ignored)
+    return pointInRing(lat, lon, alertGeometry.coordinates[0]);
+  }
+
+  if (alertGeometry.type === 'MultiPolygon') {
+    // Point is inside if it falls within any of the constituent polygons
+    return alertGeometry.coordinates.some(polygon => pointInRing(lat, lon, polygon[0]));
+  }
+
+  // Unknown geometry type — fall back to inclusive (UGC matching decides)
+  return true;
 }
 
 /**
