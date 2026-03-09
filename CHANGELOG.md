@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.3] - 2026-03-09
+
+### Fixed
+- **Dashboard counts not loading (`index.html`)** — `loadOverview` now sets all stat counters (`weatherTotal`, `weatherRed`, `weatherOrange`, `weatherYellow`, `totalSites`, `sitesWithAdvisories`) before calling `renderSiteGroups`, so counts are always populated even if card rendering throws; `renderSiteGroups` wrapped in its own `try/catch` to isolate render errors from data-display logic
+- **Null advisory crash in `renderSiteSummary`** — added `|| {}` guard on `site.highest_severity_advisory` so accessing `.headline`/`.advisory_type`/`.expires` never throws a `TypeError` if the field is unexpectedly absent
+- **`filters.html` failing to load** — stale `?v=1.9.1` cache-busting strings caused browsers to serve an old cached `utils.js` (pre-audit) that lacked `renderErrorHtml`; any `loadData()` failure then triggered a secondary uncaught `ReferenceError`, leaving the spinner permanently
+- **Cache-busting strings** — updated `?v=1.9.1` → `?v=1.9.2` across all 8 HTML pages (`index.html` had already been updated; `advisories.html`, `filters.html`, `map.html`, `notices.html`, `office-detail.html`, `offices.html`, `sources.html` updated now)
+
+### Changed
+- **Script terminology** — `add-new-offices.js` and `verify-offices.js` variable names updated from `site` to `office` to match USPS refactor naming conventions
+
 ## [1.9.2] - 2026-03-09
 
 ### Changed (UI/UX Audit — 31 issues resolved, closes #26–#60)
