@@ -452,7 +452,7 @@
                             <strong>${severityCounts[sev]}</strong> advisories
                         </div>`
                     ).join('');
-                document.getElementById('severityCounts').innerHTML = severityHTML || '<p class="text-muted">No active advisories</p>';
+                document.getElementById('severityCounts').innerHTML = severityHTML || '<p class="text-center text-muted mb-0"><i class="bi bi-cloud-sun me-1"></i>No active advisories</p>';
                 
                 // Sites with advisories (filter to show only sites with active advisories)
                 const sitesWithAdvisoriesData = overviewData.recently_updated
@@ -473,7 +473,7 @@
                         </small>
                     </div>`;
                 }).join('');
-                document.getElementById('recentlyUpdatedList').innerHTML = sitesHTML || '<p class="text-muted">No offices with advisories</p>';
+                document.getElementById('recentlyUpdatedList').innerHTML = sitesHTML || '<p class="text-center text-muted mb-0"><i class="bi bi-building me-1"></i>No offices with advisories</p>';
                 
                 function getWeatherBadge(level) {
                     const badges = { red: 'weather-red', orange: 'weather-orange', yellow: 'weather-yellow', green: 'weather-green' };
