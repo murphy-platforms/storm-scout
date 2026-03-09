@@ -25,6 +25,68 @@ CREATE INDEX idx_offices_region ON offices(region);
 CREATE INDEX idx_offices_coords ON offices(latitude, longitude);
 CREATE INDEX idx_offices_county ON offices(county);
 
+-- Alert types lookup table: known NOAA weather alert taxonomy
+-- Referenced by advisories.advisory_type (FK). Unknown types are auto-registered
+-- by the ingestor with category='UNKNOWN' before inserting the advisory.
+CREATE TABLE IF NOT EXISTS alert_types (
+    type_name VARCHAR(100) NOT NULL,
+    category  ENUM('CRITICAL','HIGH','MODERATE','LOW','INFO','UNKNOWN') NOT NULL DEFAULT 'UNKNOWN',
+    PRIMARY KEY (type_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Seed known NOAA types (categories match noaa-alert-types.js)
+INSERT IGNORE INTO alert_types (type_name, category) VALUES
+    ('Tornado Warning','CRITICAL'),('Severe Thunderstorm Warning','CRITICAL'),
+    ('Flash Flood Warning','CRITICAL'),('Hurricane Warning','CRITICAL'),
+    ('Typhoon Warning','CRITICAL'),('Extreme Wind Warning','CRITICAL'),
+    ('Storm Surge Warning','CRITICAL'),('Tsunami Warning','CRITICAL'),
+    ('Blizzard Warning','CRITICAL'),('Ice Storm Warning','CRITICAL'),
+    ('Dust Storm Warning','CRITICAL'),('Avalanche Warning','CRITICAL'),
+    ('Snow Squall Warning','CRITICAL'),
+    ('Tornado Watch','HIGH'),('Severe Thunderstorm Watch','HIGH'),
+    ('Hurricane Watch','HIGH'),('Typhoon Watch','HIGH'),
+    ('Flood Warning','HIGH'),('Winter Storm Warning','HIGH'),
+    ('High Wind Warning','HIGH'),('Excessive Heat Warning','HIGH'),
+    ('Extreme Cold Warning','HIGH'),('Red Flag Warning','HIGH'),
+    ('Fire Warning','HIGH'),('Tropical Storm Warning','HIGH'),
+    ('Storm Warning','HIGH'),('Gale Warning','HIGH'),
+    ('Heavy Freezing Spray Warning','HIGH'),('Storm Surge Watch','HIGH'),
+    ('Flash Flood Watch','HIGH'),
+    ('Flood Watch','MODERATE'),('Winter Storm Watch','MODERATE'),
+    ('Winter Weather Advisory','MODERATE'),('Wind Advisory','MODERATE'),
+    ('Heat Advisory','MODERATE'),('Dense Fog Advisory','MODERATE'),
+    ('Freeze Warning','MODERATE'),('Frost Advisory','MODERATE'),
+    ('Lake Effect Snow Warning','MODERATE'),('Lake Effect Snow Watch','MODERATE'),
+    ('Blowing Dust Advisory','MODERATE'),('Tropical Storm Watch','MODERATE'),
+    ('High Wind Watch','MODERATE'),('High Surf Warning','MODERATE'),
+    ('Coastal Flood Warning','MODERATE'),('Coastal Flood Watch','MODERATE'),
+    ('Lakeshore Flood Warning','MODERATE'),('Lakeshore Flood Watch','MODERATE'),
+    ('Excessive Heat Watch','MODERATE'),('Hard Freeze Warning','MODERATE'),
+    ('Freeze Watch','MODERATE'),('Extreme Cold Watch','MODERATE'),
+    ('Lake Wind Advisory','MODERATE'),
+    ('Wind Chill Advisory','LOW'),('Wind Chill Watch','LOW'),
+    ('Small Craft Advisory','LOW'),('Brisk Wind Advisory','LOW'),
+    ('Hazardous Seas Warning','LOW'),('High Surf Advisory','LOW'),
+    ('Coastal Flood Advisory','LOW'),('Lakeshore Flood Advisory','LOW'),
+    ('Flood Advisory','LOW'),('Beach Hazards Statement','LOW'),
+    ('Rip Current Statement','LOW'),('Cold Weather Advisory','LOW'),
+    ('Freezing Fog Advisory','LOW'),('Ashfall Advisory','LOW'),
+    ('Air Quality Alert','LOW'),('Dense Smoke Advisory','LOW'),
+    ('Coastal Flood Statement','LOW'),('Lakeshore Flood Statement','LOW'),
+    ('Flood Statement','LOW'),('Flash Flood Statement','LOW'),
+    ('Low Water Advisory','LOW'),('Air Stagnation Advisory','LOW'),
+    ('Freezing Spray Advisory','LOW'),
+    ('Special Weather Statement','INFO'),('Marine Weather Statement','INFO'),
+    ('Hydrologic Outlook','INFO'),('Hazardous Weather Outlook','INFO'),
+    ('Short Term Forecast','INFO'),('Administrative Message','INFO'),
+    ('Test','INFO'),('Test Message','INFO'),
+    ('Child Abduction Emergency','INFO'),('Civil Danger Warning','INFO'),
+    ('Civil Emergency Message','INFO'),('Avalanche Watch','INFO'),
+    ('Avalanche Advisory','INFO'),('Fire Weather Watch','INFO'),
+    ('Severe Weather Statement','INFO'),('Tropical Cyclone Local Statement','INFO'),
+    ('Tsunami Advisory','INFO'),('Tsunami Watch','INFO'),
+    ('Weather Advisory','UNKNOWN');
+
 -- Advisories table: weather alerts and warnings mapped to offices
 CREATE TABLE IF NOT EXISTS advisories (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,6 +116,9 @@ CREATE TABLE IF NOT EXISTS advisories (
     ) STORED,
     raw_payload TEXT,                     -- JSON string of original data for reference
     FOREIGN KEY (office_id) REFERENCES offices(id) ON DELETE CASCADE,
+    -- NOTE: No FK on advisory_type — MariaDB forbids FK on columns used in GENERATED
+    -- ALWAYS AS expressions (vtec_event_unique_key). Enforced at application layer:
+    -- ingestor runs INSERT IGNORE INTO alert_types before every advisory insert.
     UNIQUE INDEX idx_advisories_external_office (external_id, office_id),
     UNIQUE INDEX idx_vtec_event_unique_active (vtec_event_unique_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
