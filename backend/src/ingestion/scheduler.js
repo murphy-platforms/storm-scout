@@ -20,6 +20,31 @@ let isIngesting = false;
 let isSnapshoting = false;
 
 /**
+ * Wait until isIngesting is false, then resolve.
+ * The snapshot must never fire mid-ingestion — it would capture a
+ * partially-updated state where some offices have new advisories and
+ * others still reflect the prior run.
+ *
+ * @param {number} timeoutMs - Max wait before giving up (default 10 min)
+ * @returns {Promise<void>}
+ */
+function waitForIngestionIdle(timeoutMs = 10 * 60 * 1000) {
+  if (!isIngesting) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const poll = setInterval(() => {
+      if (!isIngesting) {
+        clearInterval(poll);
+        resolve();
+      } else if (Date.now() - start > timeoutMs) {
+        clearInterval(poll);
+        reject(new Error('Timed out waiting for ingestion to complete before snapshot'));
+      }
+    }, 5000); // poll every 5 seconds
+  });
+}
+
+/**
  * Handle ingestion completion
  * @param {Error|null} error - Error if ingestion failed
  */
@@ -91,6 +116,13 @@ function startScheduler() {
     }
     isSnapshoting = true;
     try {
+      // Wait for any active ingestion to finish before capturing the snapshot.
+      // A snapshot taken mid-ingestion would reflect a partially-updated state.
+      if (isIngesting) {
+        console.log('[Scheduler] Snapshot waiting for active ingestion to complete...');
+        await waitForIngestionIdle();
+        console.log('[Scheduler] Ingestion complete — proceeding with snapshot');
+      }
       console.log('[Scheduler] Running historical snapshot...');
       const result = await captureSnapshot();
       consecutiveSnapshotFailures = 0;
@@ -120,12 +152,17 @@ function startScheduler() {
     .catch(error => handleIngestionResult(error))
     .finally(() => { isIngesting = false; });
 
-  // Run initial snapshot after 5 seconds (let ingestion complete first)
-  console.log('Scheduling initial historical snapshot in 5 seconds...');
+  // Run initial snapshot once ingestion settles (waits for idle rather than
+  // relying on a fixed 5-second delay, which could still race on slow systems)
+  console.log('Scheduling initial historical snapshot after ingestion completes...');
   setTimeout(async () => {
     if (isSnapshoting) return;
     isSnapshoting = true;
     try {
+      if (isIngesting) {
+        console.log('[Scheduler] Initial snapshot waiting for ingestion to complete...');
+        await waitForIngestionIdle();
+      }
       console.log('[Scheduler] Running initial historical snapshot...');
       const result = await captureSnapshot();
       console.log(`[Scheduler] Initial snapshot completed: ${result.sites_captured} sites captured`);
