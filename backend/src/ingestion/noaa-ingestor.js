@@ -125,7 +125,7 @@ async function ingestNOAAData() {
       if (matchedSites.size === 0) {
         for (const county of counties) {
           const matchedByCounty = officesByCounty.get(county) || [];
-          matchedByUGC.forEach(o => matchedSites.add(o));
+          matchedByCounty.forEach(o => matchedSites.add(o));
         }
       }
       
