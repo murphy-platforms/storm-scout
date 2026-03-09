@@ -18,7 +18,8 @@
         async function loadMapData() {
             try {
                 // Initialize filters first
-                await AlertFilters.init();
+                const filtersLoaded = await AlertFilters.init();
+                if (!filtersLoaded) throw new Error('Alert filter initialization failed');
 
                 const [allAdvisories, allOffices, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
@@ -70,7 +71,7 @@
             offices.forEach(office => {
                 if (!office.latitude || !office.longitude) return;
 
-                const severity = office.highest_severity;
+                const severity = office.highest_severity || 'Minor';
                 const severityClass = `marker-${severity.toLowerCase()}`;
 
                 // Create custom div icon with escaped values
