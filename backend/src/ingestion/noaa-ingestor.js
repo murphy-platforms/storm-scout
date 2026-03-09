@@ -407,34 +407,34 @@ async function ingestNOAAData() {
 }
 
 /**
- * Ingest latest weather observations for all sites with mapped observation stations.
- * Deduplicates station fetches (multiple sites may share a station).
- * @param {Array} sites - All site objects from database
+ * Ingest latest weather observations for all offices with mapped observation stations.
+ * Deduplicates station fetches (multiple offices may share a station).
+ * @param {Array} offices - All office objects from database
  * @returns {Object} { total, updated, failed, uniqueStations }
  */
-async function ingestObservations(sites) {
+async function ingestObservations(offices) {
   console.log('\n═══ Weather Observations Ingestion ═══');
-  
-  // Filter to sites with observation_station mapped
-  const mappedSites = sites.filter(s => s.observation_station);
-  
+
+  // Filter to offices with observation_station mapped
+  const mappedSites = offices.filter(s => s.observation_station);
+
   if (mappedSites.length === 0) {
-    console.log('No sites have observation stations mapped. Run fetch-observation-stations.js first.');
+    console.log('No offices have observation stations mapped. Run fetch-observation-stations.js first.');
     return { total: 0, updated: 0, failed: 0, uniqueStations: 0 };
   }
-  
-  // Build station -> sites mapping to deduplicate fetches
+
+  // Build station -> offices mapping to deduplicate fetches
   const stationToSites = new Map();
   for (const office of mappedSites) {
-    const station = site.observation_station;
+    const station = office.observation_station;
     if (!stationToSites.has(station)) {
       stationToSites.set(station, []);
     }
-    stationToSites.get(station).push(site);
+    stationToSites.get(station).push(office);
   }
   
   const uniqueStations = stationToSites.size;
-  console.log(`${mappedSites.length} sites mapped to ${uniqueStations} unique stations`);
+  console.log(`${mappedSites.length} offices mapped to ${uniqueStations} unique stations`);
   
   let updated = 0;
   let failed = 0;
@@ -475,13 +475,13 @@ async function ingestObservations(sites) {
         }
       }
       
-      // Upsert for each site mapped to this station
+      // Upsert for each office mapped to this station
       for (const office of stationSites) {
         try {
           await ObservationModel.upsert(office.id, data);
           updated++;
         } catch (dbError) {
-          console.error(`  Error saving observation for site ${office.office_code}: ${dbError.message}`);
+          console.error(`  Error saving observation for office ${office.office_code}: ${dbError.message}`);
           failed++;
         }
       }
