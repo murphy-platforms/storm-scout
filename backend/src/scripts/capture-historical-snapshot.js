@@ -56,17 +56,17 @@ async function captureSnapshot() {
         `);
         
         const weatherMap = {
-            sites_red: 0,
-            sites_orange: 0,
-            sites_yellow: 0,
-            sites_green: 0
+            offices_red: 0,
+            offices_orange: 0,
+            offices_yellow: 0,
+            offices_green: 0
         };
-        
+
         weatherImpact.forEach(row => {
-            if (row.weather_impact_level === 'red') weatherMap.sites_red = row.count;
-            if (row.weather_impact_level === 'orange') weatherMap.sites_orange = row.count;
-            if (row.weather_impact_level === 'yellow') weatherMap.sites_yellow = row.count;
-            if (row.weather_impact_level === 'green') weatherMap.sites_green = row.count;
+            if (row.weather_impact_level === 'red') weatherMap.offices_red = row.count;
+            if (row.weather_impact_level === 'orange') weatherMap.offices_orange = row.count;
+            if (row.weather_impact_level === 'yellow') weatherMap.offices_yellow = row.count;
+            if (row.weather_impact_level === 'green') weatherMap.offices_green = row.count;
         });
         
         // Count sites by operational status
@@ -79,17 +79,17 @@ async function captureSnapshot() {
         `);
         
         const opsMap = {
-            sites_closed: 0,
-            sites_restricted: 0,
-            sites_pending: 0,
-            sites_open: 0
+            offices_closed: 0,
+            offices_restricted: 0,
+            offices_pending: 0,
+            offices_open: 0
         };
-        
+
         opsStatus.forEach(row => {
-            if (row.operational_status === 'closed') opsMap.sites_closed = row.count;
-            if (row.operational_status === 'open_restricted') opsMap.sites_restricted = row.count;
-            if (row.operational_status === 'pending') opsMap.sites_pending = row.count;
-            if (row.operational_status === 'open_normal') opsMap.sites_open = row.count;
+            if (row.operational_status === 'closed') opsMap.offices_closed = row.count;
+            if (row.operational_status === 'open_restricted') opsMap.offices_restricted = row.count;
+            if (row.operational_status === 'pending') opsMap.offices_pending = row.count;
+            if (row.operational_status === 'open_normal') opsMap.offices_open = row.count;
         });
         
         // Count advisory actions
@@ -118,37 +118,37 @@ async function captureSnapshot() {
         const [totalMetrics] = await connection.query(`
             SELECT 
                 COUNT(DISTINCT a.id) as total_advisories,
-                COUNT(DISTINCT a.office_id) as total_sites_with_advisories
+                COUNT(DISTINCT a.office_id) as total_offices_with_advisories
             FROM advisories a
             WHERE a.status = 'active'
         `);
         
-        const totals = totalMetrics[0] || { total_advisories: 0, total_sites_with_advisories: 0 };
+        const totals = totalMetrics[0] || { total_advisories: 0, total_offices_with_advisories: 0 };
         
         // Insert system snapshot
         await connection.query(`
             INSERT INTO system_snapshots (
                 snapshot_time,
                 extreme_count, severe_count, moderate_count, minor_count,
-                sites_red, sites_orange, sites_yellow, sites_green,
-                sites_closed, sites_restricted, sites_pending, sites_open,
+                offices_red, offices_orange, offices_yellow, offices_green,
+                offices_closed, offices_restricted, offices_pending, offices_open,
                 new_advisories, continued_advisories, upgraded_advisories,
-                total_advisories, total_sites_with_advisories
+                total_advisories, total_offices_with_advisories
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             snapshotTime,
-            severityMap.extreme_count, severityMap.severe_count, 
+            severityMap.extreme_count, severityMap.severe_count,
             severityMap.moderate_count, severityMap.minor_count,
-            weatherMap.sites_red, weatherMap.sites_orange, 
-            weatherMap.sites_yellow, weatherMap.sites_green,
-            opsMap.sites_closed, opsMap.sites_restricted,
-            opsMap.sites_pending, opsMap.sites_open,
-            actionMap.new_advisories, actionMap.continued_advisories, 
+            weatherMap.offices_red, weatherMap.offices_orange,
+            weatherMap.offices_yellow, weatherMap.offices_green,
+            opsMap.offices_closed, opsMap.offices_restricted,
+            opsMap.offices_pending, opsMap.offices_open,
+            actionMap.new_advisories, actionMap.continued_advisories,
             actionMap.upgraded_advisories,
-            totals.total_advisories, totals.total_sites_with_advisories
+            totals.total_advisories, totals.total_offices_with_advisories
         ]);
         
-        console.log(`[Snapshot] System aggregate captured: ${totals.total_advisories} advisories, ${totals.total_sites_with_advisories} sites impacted`);
+        console.log(`[Snapshot] System aggregate captured: ${totals.total_advisories} advisories, ${totals.total_offices_with_advisories} offices impacted`);
         
         // ========================================
         // 2. CAPTURE PER-SITE DATA
