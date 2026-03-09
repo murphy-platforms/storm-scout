@@ -131,11 +131,12 @@ async function migrate() {
     const sql = fs.readFileSync(filePath, 'utf8');
 
     // Split on statement delimiter so multi-statement files run correctly.
-    // Strip comment-only lines and blank lines before splitting.
-    const statements = sql
+    // Strip SQL line comments first, then split and drop blank entries.
+    const stripped = sql.replace(/--[^\n]*/g, '');
+    const statements = stripped
       .split(';')
       .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'));
+      .filter(s => s.length > 0);
 
     const connection = await pool.getConnection();
     try {
