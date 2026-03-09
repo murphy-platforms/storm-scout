@@ -6,11 +6,11 @@ const { param } = require('express-validator');
 const { validateDays, validateLimit, validateHours } = require('./common');
 
 /**
- * Validate siteId parameter
+ * Validate officeId parameter
  */
-const validateSiteIdParam = param('siteId')
+const validateOfficeIdParam = param('officeId')
   .isInt({ min: 1 })
-  .withMessage('siteId must be a positive integer')
+  .withMessage('officeId must be a positive integer')
   .toInt();
 
 /**
@@ -29,15 +29,15 @@ const getSeverityTrends = [
 ];
 
 /**
- * Validators for GET /api/history/site-trends/:siteId
+ * Validators for GET /api/history/office-trends/:officeId
  */
-const getSiteTrends = [
-  validateSiteIdParam,
+const getOfficeTrends = [
+  validateOfficeIdParam,
   validateHours
 ];
 
 module.exports = {
   getOverviewTrends,
   getSeverityTrends,
-  getSiteTrends
+  getOfficeTrends
 };

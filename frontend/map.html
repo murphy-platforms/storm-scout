@@ -296,7 +296,7 @@
                 // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
                 
-                // Aggregate FILTERED advisories by site
+                // Aggregate FILTERED advisories by office
                 const aggregated = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
                 
                 // Create map of aggregated data

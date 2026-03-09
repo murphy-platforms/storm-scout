@@ -20,7 +20,7 @@ const validateOperationalStatus = query('operational_status')
   .withMessage(`operational_status must be one of: ${VALID_OPERATIONAL_STATUSES.join(', ')}`);
 
 /**
- * Validators for GET /api/status/sites
+ * Validators for GET /api/status/offices
  */
 const getSites = [
   validateOperationalStatus,

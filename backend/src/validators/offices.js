@@ -1,11 +1,11 @@
 /**
- * Site Route Validators
+ * Office Route Validators
  */
 
 const { validateId, validateState, validateRegion, validateBooleanQuery } = require('./common');
 
 /**
- * Validators for GET /api/sites
+ * Validators for GET /api/offices
  */
 const getAll = [
   validateState,
@@ -13,14 +13,14 @@ const getAll = [
 ];
 
 /**
- * Validators for GET /api/sites/:id
+ * Validators for GET /api/offices/:id
  */
 const getById = [
   validateId
 ];
 
 /**
- * Validators for GET /api/sites/:id/advisories
+ * Validators for GET /api/offices/:id/advisories
  */
 const getOfficeAdvisories = [
   validateId,

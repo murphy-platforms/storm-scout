@@ -385,7 +385,7 @@
                 // Apply user's filter preferences
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
                 
-                // Aggregate by site with deduplication
+                // Aggregate by office with deduplication
                 const aggregatedSites = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
                 const groupedSites = OfficeAggregator.groupBySeverity(aggregatedSites);
                 
@@ -513,7 +513,7 @@
                 return;
             }
             
-            // Sort by site code ascending within severity group
+            // Sort by office code ascending within severity group
             const sorted = [...sites].sort((a, b) => a.office_code.localeCompare(b.office_code, undefined, { numeric: true }));
             
             const collapseId = `collapse${escapeHtml(cssClass)}`;

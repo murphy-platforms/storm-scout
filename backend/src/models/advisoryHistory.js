@@ -4,7 +4,7 @@ class AdvisoryHistory {
     /**
      * Create a snapshot of current advisory state for a site
      */
-    static async createSnapshot(siteId, aggregatedData) {
+    static async createSnapshot(officeId, aggregatedData) {
         const query = `
             INSERT INTO advisory_history (
                 office_id, snapshot_time, advisory_count,
@@ -24,7 +24,7 @@ class AdvisoryHistory {
         });
         
         const params = [
-            siteId,
+            officeId,
             aggregatedData.advisory_count,
             aggregatedData.highest_severity,
             aggregatedData.highest_severity_type,
@@ -55,40 +55,40 @@ class AdvisoryHistory {
     /**
      * Get historical data for a site (last N days)
      */
-    static async getHistoryForSite(siteId, days = 7) {
+    static async getHistoryForSite(officeId, days = 7) {
         const query = `
             SELECT * FROM advisory_history
             WHERE office_id = ?
             AND snapshot_time >= DATE_SUB(NOW(), INTERVAL ? DAY)
             ORDER BY snapshot_time ASC
         `;
-        
+
         const connection = getDatabase();
-        const [rows] = await connection.query(query, [siteId, days]);
+        const [rows] = await connection.query(query, [officeId, days]);
         return rows;
     }
     
     /**
      * Get latest snapshot for a site
      */
-    static async getLatestSnapshot(siteId) {
+    static async getLatestSnapshot(officeId) {
         const query = `
             SELECT * FROM advisory_history
             WHERE office_id = ?
             ORDER BY snapshot_time DESC
             LIMIT 1
         `;
-        
+
         const connection = getDatabase();
-        const [rows] = await connection.query(query, [siteId]);
+        const [rows] = await connection.query(query, [officeId]);
         return rows[0] || null;
     }
     
     /**
      * Get trend for a site (comparing first vs last snapshot)
      */
-    static async getTrend(siteId, days = 7) {
-        const history = await this.getHistoryForSite(siteId, days);
+    static async getTrend(officeId, days = 7) {
+        const history = await this.getHistoryForSite(officeId, days);
         
         if (history.length < 2) {
             return { trend: 'insufficient_data', history };
