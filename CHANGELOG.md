@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.7] - 2026-03-09
+
+### Fixed
+
+- **#79 map.html error banner — Express route ordering** — `/:filterName` was registered before `/types/all` and `/types/:level` in `filters.js`; Express matched `GET /api/filters/types/all` as `filterName = "types"`, returned `{ success: false }`, causing `AlertFilters.init()` to assign `undefined` to `this.alertTypesByLevel`; `applyPreset()` then threw `TypeError: Cannot convert undefined or null to object`, triggering the error banner on `map.html`. Fixed by reordering: `/types/all` and `/types/:level` are now registered before `/:filterName`
+- **#80 AlertFilters.init() silent error swallowing** — added `success` field guards on both API responses in `init()`; a failed response now throws an explicit `Error` instead of silently assigning `undefined` to internal state; `page-map.js` now checks the `init()` return value and throws if initialization failed
+- **#81 Null guard on highest_severity** — `renderMarkers()` in `page-map.js` now falls back to `'Minor'` when `office.highest_severity` is null, preventing a `TypeError` from crashing the entire map render
+
 ## [1.9.6] - 2026-03-09
 
 ### Fixed

@@ -31,34 +31,10 @@ router.get('/', (req, res) => {
 });
 
 /**
- * GET /api/filters/:filterName
- * Get specific filter configuration
- */
-router.get('/:filterName', (req, res) => {
-  try {
-    const { filterName } = req.params;
-    const filter = getFilterConfig(filterName.toUpperCase());
-    
-    if (!filter) {
-      return res.status(404).json({
-        success: false,
-        error: 'Filter not found'
-      });
-    }
-    
-    res.json({
-      success: true,
-      data: filter
-    });
-  } catch (error) {
-    console.error('Error fetching filter:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-/**
  * GET /api/filters/types/all
  * Get all alert types organized by impact level
+ * NOTE: must be registered before /:filterName to prevent Express
+ * matching "types" as the filterName parameter.
  */
 router.get('/types/all', (req, res) => {
   try {
@@ -75,12 +51,13 @@ router.get('/types/all', (req, res) => {
 /**
  * GET /api/filters/types/:level
  * Get alert types for a specific impact level
+ * NOTE: must be registered before /:filterName.
  */
 router.get('/types/:level', (req, res) => {
   try {
     const { level } = req.params;
     const types = getAlertTypesByLevel(level.toUpperCase());
-    
+
     res.json({
       success: true,
       data: types,
@@ -88,6 +65,32 @@ router.get('/types/:level', (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching alert types by level:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/filters/:filterName
+ * Get specific filter configuration
+ */
+router.get('/:filterName', (req, res) => {
+  try {
+    const { filterName } = req.params;
+    const filter = getFilterConfig(filterName.toUpperCase());
+
+    if (!filter) {
+      return res.status(404).json({
+        success: false,
+        error: 'Filter not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: filter
+    });
+  } catch (error) {
+    console.error('Error fetching filter:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
