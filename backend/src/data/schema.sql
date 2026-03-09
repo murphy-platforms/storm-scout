@@ -65,7 +65,11 @@ CREATE INDEX idx_advisories_status_severity ON advisories(status, severity);
 CREATE INDEX idx_advisories_time ON advisories(start_time, end_time);
 CREATE INDEX idx_advisories_status_time ON advisories(status, start_time, end_time);
 CREATE INDEX idx_advisories_office_status ON advisories(office_id, status);
+CREATE INDEX idx_advisories_office_severity ON advisories(office_id, severity);
+CREATE INDEX idx_advisories_office_status_endtime ON advisories(office_id, status, end_time);
 CREATE INDEX idx_vtec_event_id ON advisories(vtec_event_id);
+CREATE INDEX idx_advisories_vtec_office_status ON advisories(vtec_event_id, office_id, status);
+CREATE INDEX idx_advisories_status_updated ON advisories(status, last_updated);
 CREATE INDEX idx_vtec_action ON advisories(vtec_action);
 
 -- Enforce valid severity values
