@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=***REDACTED_GA_ID***"></script>
     <script src="js/analytics.js"></script>
@@ -10,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css?v=1.9.1">
+    <link rel="stylesheet" href="css/tooltips.css?v=1.9.1">
     <link rel="stylesheet" href="css/mobile.css?v=1.9.1">
 </head>
 <body>
@@ -113,9 +115,11 @@
 
         <!-- Card View -->
         <div class="row" id="cardViewContainer">
-            <div class="col-12 text-center py-5">
-                <span class="spinner-border"></span>
-                <p class="mt-2">Loading advisories...</p>
+            <div class="col-12 text-center py-4">
+                <span class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </span>
+                <p class="mt-2 text-muted">Loading advisories...</p>
             </div>
         </div>
 
@@ -144,7 +148,7 @@
                                 <tbody id="advisoriesTable">
                                     <tr>
                                         <td colspan="11" class="text-center">
-                                            <span class="spinner-border"></span> Loading...
+                                            <span class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -156,9 +160,21 @@
         </div>
     </div>
 
-    <footer class="footer-scout text-center py-3 mt-5">
+    <footer class="footer-scout py-3 mt-5">
         <div class="container">
-            <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="sources.html" class="text-muted text-decoration-none me-3">
+                        <i class="bi bi-info-circle"></i> About &amp; Data Sources
+                    </a>
+                    <a href="filters.html" class="text-muted text-decoration-none">
+                        <i class="bi bi-sliders"></i> Filter Settings
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -228,47 +244,21 @@
                 // Initial render
                 renderAll();
             } catch (error) {
-                document.getElementById('cardViewContainer').innerHTML = 
-                    '<div class="col-12"><div class="alert alert-danger">Failed to load advisories</div></div>';
-                document.getElementById('advisoriesTable').innerHTML = 
-                    '<tr><td colspan="11" class="text-center text-danger">Failed to load advisories</td></tr>';
+                document.getElementById('cardViewContainer').innerHTML =
+                    renderErrorHtml('Failed to load advisories');
+                document.getElementById('advisoriesTable').innerHTML =
+                    `<tr><td colspan="11"><div class="alert alert-danger mb-0" role="alert"><i class="bi bi-exclamation-triangle-fill me-2"></i>Failed to load advisories</div></td></tr>`;
             }
         }
         
-        function getActionBadge(action) {
-            if (!action) {
-                return '<span class="badge bg-secondary" title="No VTEC action code">-</span>';
-            }
-            
-            const actionConfig = {
-                'NEW': { label: 'NEW', class: 'bg-success', icon: '🆕', title: 'New alert issued' },
-                'CON': { label: 'CONTINUED', class: 'bg-primary', icon: '🔄', title: 'Alert continuing' },
-                'EXT': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert time extended' },
-                'EXA': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert extended (A)' },
-                'EXB': { label: 'EXTENDED', class: 'bg-info', icon: '⏱️', title: 'Alert extended (B)' },
-                'UPG': { label: 'UPGRADED', class: 'bg-warning text-dark', icon: '⚠️', title: 'Alert upgraded' },
-                'EXP': { label: 'EXPIRED', class: 'bg-secondary', icon: '❌', title: 'Alert expired' },
-                'CAN': { label: 'CANCELLED', class: 'bg-dark', icon: '🚫', title: 'Alert cancelled' },
-                'COR': { label: 'CORRECTED', class: 'bg-warning text-dark', icon: '✏️', title: 'Correction issued' },
-                'ROU': { label: 'ROUTINE', class: 'bg-secondary', icon: '📋', title: 'Routine update' }
-            };
-            
-            const config = actionConfig[action] || { 
-                label: action, 
-                class: 'bg-secondary', 
-                icon: '', 
-                title: `Action: ${action}` 
-            };
-            
-            return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
-        }
+        // getActionBadge() is defined in js/utils.js
         
         function renderGroupedTable(sites, filteredAdvisories) {
             const tbody = document.getElementById('advisoriesTable');
             const statsContainer = document.getElementById('summaryStatsContainer');
             
             if (sites.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted"><i class="bi bi-cloud-sun d-block fs-4 mb-1"></i>No active advisories</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-5 text-muted"><i class="bi bi-cloud-sun fs-1 d-block mb-2"></i><strong>No active advisories</strong><p class="mb-0 small mt-1">No advisories match your current filter settings.</p></td></tr>';
                 statsContainer.innerHTML = '';
                 return;
             }
@@ -285,15 +275,15 @@
                             <span class="summary-stat-label">Locations Impacted</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value"><span style="color: #dc3545;">${extremeCount}</span> / <span style="color: #fd7e14;">${severeCount}</span></span>
+                            <span class="summary-stat-value"><span class="text-severity-extreme">${extremeCount}</span> / <span class="text-severity-severe">${severeCount}</span></span>
                             <span class="summary-stat-label">Critical/Severe</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_offices}</span>
+                            <span class="summary-stat-value text-severity-moderate">${stats.elevated_offices}</span>
                             <span class="summary-stat-label">Moderate</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #28a745;">${stats.new_alerts}</span>
+                            <span class="summary-stat-value text-severity-minor">${stats.new_alerts}</span>
                             <span class="summary-stat-label">New Alerts</span>
                         </div>
                     </div>
@@ -323,7 +313,7 @@
                 const sevLower = site.highest_severity.toLowerCase();
                 
                 // Office header row
-                rowsHtml += `<tr class="site-group-header site-group-${escapeHtml(sevLower)}" data-office-code="${escapeHtml(site.office_code)}">
+                rowsHtml += `<tr class="office-group-header office-group-${escapeHtml(sevLower)}" data-office-code="${escapeHtml(site.office_code)}">
                     <td colspan="11">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
                             <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
@@ -348,7 +338,7 @@
                 // Alert sub-rows
                 sortedAdvs.forEach(adv => {
                     const headlineShort = truncate(adv.headline || '', 80);
-                    rowsHtml += html`<tr class="site-group-row">
+                    rowsHtml += html`<tr class="office-group-row">
                         <td colspan="6" class="ps-4 text-muted">
                             <small>${headlineShort}</small>
                         </td>
@@ -364,7 +354,7 @@
             tbody.innerHTML = rowsHtml;
             
             // Click handlers: office header rows navigate to office detail
-            tbody.querySelectorAll('.site-group-header').forEach(row => {
+            tbody.querySelectorAll('.office-group-header').forEach(row => {
                 row.addEventListener('click', () => {
                     window.location.href = `office-detail.html?office=${row.dataset.officeCode}`;
                 });
@@ -425,7 +415,7 @@
                     <div class="filter-warning-banner ${criticalClass}">
                         <div class="filter-warning-content">
                             <div class="filter-warning-text">
-                                <span class="filter-warning-icon">⚠️</span>
+                                <span class="filter-warning-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
                                 <span>
                                     <strong>Filters Active:</strong> ${warning.hidden_count} alerts hidden${criticalText}
                                 </span>
@@ -450,7 +440,7 @@
             const statsContainer = document.getElementById('summaryStatsContainer');
             
             if (sites.length === 0) {
-                container.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="bi bi-cloud-sun fs-1 d-block mb-2"></i><strong>No advisories match your filters</strong><p class="mb-0 small mt-1">Try adjusting your filter settings to see more results.</p></div>';
+                container.innerHTML = renderEmptyHtml('cloud-sun', 'No advisories match your filters', 'Try adjusting your filter settings to see more results.');
                 statsContainer.innerHTML = '';
                 return;
             }
@@ -467,15 +457,15 @@
                             <span class="summary-stat-label">Locations Impacted</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value"><span style="color: #dc3545;">${extremeCount}</span> / <span style="color: #fd7e14;">${severeCount}</span></span>
+                            <span class="summary-stat-value"><span class="text-severity-extreme">${extremeCount}</span> / <span class="text-severity-severe">${severeCount}</span></span>
                             <span class="summary-stat-label">Critical/Severe</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #ffc107;">${stats.elevated_offices}</span>
+                            <span class="summary-stat-value text-severity-moderate">${stats.elevated_offices}</span>
                             <span class="summary-stat-label">Moderate</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value" style="color: #28a745;">${stats.new_alerts}</span>
+                            <span class="summary-stat-value text-severity-minor">${stats.new_alerts}</span>
                             <span class="summary-stat-label">New Alerts</span>
                         </div>
                     </div>
@@ -486,12 +476,12 @@
             const sorted = [...sites].sort((a, b) =>
                 a.office_code.localeCompare(b.office_code, undefined, { numeric: true })
             );
-            container.innerHTML = sorted.map(site => renderSiteCard(site, observationsMap[site.office_code])).join('');
+            container.innerHTML = sorted.map(office => renderOfficeCard(office, observationsMap[office.office_code])).join('');
         }
-        
-        // Render individual site card
-        function renderSiteCard(site, obs) {
-            const severityClass = `site-card-${escapeHtml(site.highest_severity.toLowerCase())}`;
+
+        // Render individual office card
+        function renderOfficeCard(site, obs) {
+            const severityClass = `office-card-${escapeHtml(site.highest_severity.toLowerCase())}`;
             const highestAlert = site.highest_severity_advisory;
             const headlineText = truncate(highestAlert.headline || '', 120);
             
@@ -502,12 +492,12 @@
                 const tempC = Math.round(parseFloat(obs.temperature_c));
                 const stale = isStale(obs.observed_at);
                 if (stale) {
-                    tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
+                    tempHtml = `<div class="temp-display">
                         <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
                         <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
                     </div>`;
                 } else {
-                    tempHtml = `<div style="margin-top: 0.35rem; font-size: 0.85rem;">
+                    tempHtml = `<div class="temp-display">
                         <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
                         <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
                     </div>`;
@@ -517,28 +507,28 @@
             return html`
                 <div class="col-lg-6 col-12">
                     <a href="office-detail.html?office=${site.office_code}" class="text-decoration-none">
-                        <div class="card site-card site-card-clickable ${raw(severityClass)}">
-                            <div class="site-card-header">
+                        <div class="card office-card card-clickable ${raw(severityClass)}">
+                            <div class="office-card-header">
                                 <div>
-                                    <h5 class="site-card-title text-dark">
+                                    <h5 class="office-card-title text-dark">
                                         <strong>${site.office_code}</strong> - ${site.office_name}
                                     </h5>
-                                    <div class="site-card-location">
+                                    <div class="office-card-location">
                                         <i class="bi bi-geo-alt"></i> ${site.city}, ${site.state}
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <span class="badge severity-badge-large severity-${raw(escapeHtml(site.highest_severity.toLowerCase()))}">
+                                    <span class="badge severity-badge severity-${raw(escapeHtml(site.highest_severity.toLowerCase()))}">
                                         ${site.highest_severity}
                                     </span>
                                     ${raw(tempHtml)}
                                 </div>
                             </div>
-                            <div class="site-card-body">
+                            <div class="office-card-body">
                                 <!-- Highest severity alert -->
                                 <div style="margin-bottom: 0.75rem;">
                                     <strong class="text-dark">${highestAlert.advisory_type}</strong>
-                                    ${raw(highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2">🆕 NEW</span>' : '')}
+                                    ${raw(highestAlert.vtec_action === 'NEW' ? '<span class="badge action-badge-new ms-2"><i class="bi bi-bell-fill"></i> NEW</span>' : '')}
                                     ${raw(headlineText ? '<br><small class="text-muted" style="line-height: 1.3; display: inline-block; margin-top: 0.25rem;">' + escapeHtml(headlineText) + '</small>' : '')}
                                     <br>
                                     <small class="text-muted">
@@ -559,13 +549,13 @@
                                     </div>
                                     ${raw(site.new_count > 0 ? `
                                     <div class="alert-stat">
-                                        <span class="alert-stat-icon">🆕</span>
+                                        <span class="alert-stat-icon"><i class="bi bi-bell-fill"></i></span>
                                         <span class="text-dark"><span class="alert-stat-value">${site.new_count}</span> new</span>
                                     </div>
                                     ` : '')}
                                     ${raw(site.continued_count > 0 ? `
                                     <div class="alert-stat">
-                                        <span class="alert-stat-icon">🔄</span>
+                                        <span class="alert-stat-icon"><i class="bi bi-arrow-repeat"></i></span>
                                         <span class="text-dark"><span class="alert-stat-value">${site.continued_count}</span> continued</span>
                                     </div>
                                     ` : '')}
@@ -578,11 +568,11 @@
                                             <span class="advisory-type-name">${group.type}</span>
                                             <div class="advisory-type-meta">
                                                 ${raw(`<span class="badge ${getSeverityBadge(group.severity)}">${escapeHtml(group.severity)}</span>`)}
-                                                ${raw(group.zone_count > 1 ? 
-                                                    `<span class="zone-badge zone-badge-multi" title="${group.zone_count} NWS zones">
+                                                ${raw(group.zone_count > 1 ?
+                                                    `<span class="badge zone-badge zone-badge-multi" title="${group.zone_count} NWS zones">
                                                         <i class="bi bi-layers"></i> ${group.zone_count} zones
-                                                    </span>` : 
-                                                    `<span class="zone-badge">${escapeHtml(group.representative.source || 'NWS')}</span>`
+                                                    </span>` :
+                                                    `<span class="badge zone-badge">${escapeHtml(group.representative.source || 'NWS')}</span>`
                                                 )}
                                             </div>
                                         </div>

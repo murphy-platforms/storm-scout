@@ -47,7 +47,7 @@ async function removeDuplicatesByExternalId() {
   
   console.log('\n=== Removing Duplicates by External ID ===');
   
-  // Find duplicates by external_id + site_id (same alert for same site)
+  // Find duplicates by external_id + office_id (same alert for same office)
   const [duplicates] = await db.query(`
     SELECT external_id, office_id, GROUP_CONCAT(id ORDER BY id DESC) as ids, COUNT(*) as count
     FROM advisories
@@ -85,7 +85,7 @@ async function removeDuplicatesByVTECEventId() {
   
   console.log('\n=== Removing Duplicates by VTEC Event ID ===');
   
-  // Find duplicates: same event ID, site, and type
+  // Find duplicates: same event ID, office, and type
   const [duplicateGroups] = await db.query(`
     SELECT vtec_event_id, office_id, advisory_type, 
            GROUP_CONCAT(
@@ -162,8 +162,8 @@ async function removeDuplicatesByVTECCode() {
 }
 
 /**
- * Remove duplicate advisory types per site
- * Keeps only the most severe of each advisory type per site
+ * Remove duplicate advisory types per office
+ * Keeps only the most severe of each advisory type per office
  */
 async function removeDuplicateTypes() {
   const db = getDatabase();
@@ -311,7 +311,7 @@ async function populateExternalIds() {
           );
           
           if (sameRow.length > 0) {
-            // Duplicate for same site - delete this one
+            // Duplicate for same office - delete this one
             await connection.query(`DELETE FROM advisories WHERE id = ?`, [advisory.id]);
             duplicatesRemoved++;
           } else {

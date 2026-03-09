@@ -15,6 +15,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.2] - 2026-03-09
+
+### Changed (UI/UX Audit — 31 issues resolved, closes #26–#60)
+
+#### CSS Design System
+- **CSS variable consolidation** — renamed all `--pm-*` (Prometric legacy) variables to `--ss-*`; removed 6 unused `:root` variables
+- **Z-index scale** — added `--z-sticky-content`, `--z-sticky`, `--z-banner`, `--z-skip-link`, `--z-tooltip` to `:root`; all hardcoded z-index values replaced with variables across 5 CSS files
+- **Transition durations** — added `--transition-base: 0.2s ease` and `--transition-slow: 0.3s ease`; replaced all hardcoded `0.2s`/`0.3s`/`0.15s` values across `style.css`, `filters.css`, `map.css`, `tooltips.css`
+- **Card header system** — added `--ss-card-header-bg`, `--ss-card-header-notice-bg` variables; new `.card-header-brand` and `.card-header-notice` classes; removed Bootstrap `bg-primary`/`bg-secondary`/`bg-warning-subtle` utility overrides on card headers
+- **Severity badge sizing** — added `.severity-badge` (standard, 0.75rem) alongside existing `.severity-badge-large` (1rem, hero display only); card-level badges now use the standard size
+- **Clickable card utility** — consolidated `.weather-card-clickable` and `.office-card-clickable` into a single `.card-clickable` utility class
+- **Badge font-weight** — removed custom `font-weight: 600` override on `.badge`; Bootstrap default `700` now applies uniformly
+- **Dead CSS removed** — Beta UI sidebar/sparkline `@media` block (~110 lines) removed from `mobile.css`; 6 unused `:root` variables removed from `style.css`
+
+#### Icons & Visual Consistency
+- **Icon system** — standardized on Bootstrap Icons for all UI chrome; replaced emoji (🆕 ❌ ✅ ⚠️ 🔄 🚫 ✏️ 📋 ⏱️) in VTEC action badges, status badges, alert-stat-icons, and filter-warning-icon; 🌡️ temperature and color circles in `<select>` options retained as appropriate
+- **Severity text colors** — `map.html` stat card numbers now use `.text-severity-*` classes (was Bootstrap `text-danger/warning/secondary`); `advisories.html` summary stats replace hardcoded hex values (`#dc3545`, `#fd7e14`, `#ffc107`, `#28a745`) with `.text-severity-*` classes
+- **Filter indicator badge** — replaced `bg-info text-dark` with `.badge-filter-active` (uses `--ss-navy`); updated `print.css` hide-on-print selector accordingly
+
+#### Page Improvements
+- **Favicon** — added `favicon.svg` (navy circle + green lightning bolt); `<link rel="icon">` added to all 8 live pages
+- **Update banner on map** — `map.html` now shows the data-freshness update banner (was missing; present on index, offices, advisories)
+- **Tooltip component** — `tooltips.css` now loaded on all 8 pages (was index.html only); `.tooltip-wrapper`/`.help-icon`/`.tooltip-content` pattern available everywhere
+- **Breadcrumb office name** — `office-detail.html` breadcrumb active item now shows dynamic `"{code} — {name}"` instead of static "Office Detail"
+- **Shared utilities** — `utils.js`: added `VTEC_ACTION_CONFIG`, `getActionBadge()`, `getActionBadgeWithTime()`, `renderEmptyHtml()`, `renderErrorHtml()`; local duplicates removed from `advisories.html` and `office-detail.html`
+
+#### Standardized States
+- **Loading states** — all spinners have `role="status"` + `<span class="visually-hidden">Loading...</span>` and consistent padding (`py-4`/`py-5`)
+- **Error states** — standardized to Bootstrap `alert-danger` with `role="alert"` and `bi-exclamation-triangle-fill` icon via `renderErrorHtml()`
+- **Empty states** — standardized to icon + title + subtitle layout via `renderEmptyHtml()`
+- **Temperature display** — extracted inline `margin-top: 0.35rem; font-size: 0.85rem;` to `.temp-display` CSS class; applied across all 5 pages
+- **Footer** — updated to consistent two-column layout (copyright left, nav links right) across all pages; pages do not self-link in their footer nav
+
 ## [1.9.1] - 2026-03-08
 
 ### Fixed

@@ -49,10 +49,10 @@ function isValidUGCFormat(code) {
 }
 
 /**
- * Fetch expected UGC codes for a site from NOAA /points API
+ * Fetch expected UGC codes for an office from NOAA /points API
  */
-async function fetchExpectedUGC(site) {
-  const url = `https://api.weather.gov/points/${site.latitude},${site.longitude}`;
+async function fetchExpectedUGC(office) {
+  const url = `https://api.weather.gov/points/${office.latitude},${office.longitude}`;
   
   try {
     const response = await axios.get(url, {
@@ -157,11 +157,11 @@ function compareUGCCodes(stored, expected) {
 /**
  * Validate data integrity fields
  */
-function validateDataIntegrity(site) {
+function validateDataIntegrity(office) {
   const issues = [];
   
   // Check ugc_codes is not null/empty
-  if (!site.ugc_codes || (Array.isArray(site.ugc_codes) && site.ugc_codes.length === 0)) {
+  if (!office.ugc_codes || (Array.isArray(office.ugc_codes) && office.ugc_codes.length === 0)) {
     issues.push({
       type: 'MISSING_UGC',
       severity: 'error',
@@ -170,7 +170,7 @@ function validateDataIntegrity(site) {
   }
   
   // Check county is not null (field is county_name in ugc-codes-output.json)
-  if (!site.county && !site.county_name) {
+  if (!office.county && !office.county_name) {
     issues.push({
       type: 'MISSING_COUNTY',
       severity: 'warning',
@@ -179,8 +179,8 @@ function validateDataIntegrity(site) {
   }
   
   // Validate coordinate bounds
-  const lat = parseFloat(site.latitude);
-  const lon = parseFloat(site.longitude);
+  const lat = parseFloat(office.latitude);
+  const lon = parseFloat(office.longitude);
   
   if (isNaN(lat) || isNaN(lon)) {
     issues.push({
@@ -231,16 +231,16 @@ async function main() {
   }
   
   const data = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
-  const sites = data.sites;
+  const offices = data.offices;
   
   console.log(`Data file generated: ${data.generated_at}`);
-  console.log(`Total sites: ${sites.length}`);
+  console.log(`Total offices: ${offices.length}`);
   console.log(`Mode: ${skipApiCheck ? 'Quick (data integrity only)' : 'Full (including NOAA API validation)'}\n`);
   
   const report = {
     generated_at: new Date().toISOString(),
     data_file_date: data.generated_at,
-    total_sites: sites.length,
+    total_offices: offices.length,
     summary: {
       valid: 0,
       warnings: 0,
@@ -248,21 +248,21 @@ async function main() {
       cross_state: 0
     },
     issues: [],
-    sites_with_issues: []
+    offices_with_issues: []
   };
   
   // Phase 1: Data integrity validation (quick, no API calls)
   console.log('─── Phase 1: Data Integrity Validation ───\n');
   
   let integrityIssues = 0;
-  for (const site of sites) {
-    const issues = validateDataIntegrity(site);
+  for (const office of offices) {
+    const issues = validateDataIntegrity(office);
     if (issues.length > 0) {
       integrityIssues++;
-      report.sites_with_issues.push({
-        site_code: site.site_code,
-        name: site.name,
-        state: site.state,
+      report.offices_with_issues.push({
+        site_code: office.site_code,
+        name: office.name,
+        state: office.state,
         phase: 'integrity',
         issues
       });
@@ -276,21 +276,21 @@ async function main() {
   }
   
   if (integrityIssues === 0) {
-    console.log('✓ All sites pass data integrity checks\n');
+    console.log('✓ All offices pass data integrity checks\n');
   } else {
-    console.log(`✗ ${integrityIssues} sites have data integrity issues\n`);
+    console.log(`✗ ${integrityIssues} offices have data integrity issues\n`);
   }
   
   // Phase 2: UGC format validation
   console.log('─── Phase 2: UGC Format Validation ───\n');
   
   let formatIssues = 0;
-  for (const site of sites) {
-    const codes = site.ugc_codes || [];
+  for (const office of offices) {
+    const codes = office.ugc_codes || [];
     for (const code of codes) {
       if (!isValidUGCFormat(code)) {
         formatIssues++;
-        console.log(`  ✗ ${site.site_code} (${site.name}): Invalid format - ${code}`);
+        console.log(`  ✗ ${office.site_code} (${office.name}): Invalid format - ${code}`);
       }
     }
   }
@@ -306,18 +306,18 @@ async function main() {
   console.log('─── Phase 3: Cross-State Site Detection ───\n');
   
   const crossStateSites = [];
-  for (const site of sites) {
-    const codes = site.ugc_codes || [];
+  for (const office of offices) {
+    const codes = office.ugc_codes || [];
     const ugcStates = [...new Set(codes.map(c => c.substring(0, 2)))];
     
-    if (ugcStates.length > 0 && !ugcStates.includes(site.state)) {
+    if (ugcStates.length > 0 && !ugcStates.includes(office.state)) {
       crossStateSites.push({
-        site_code: site.site_code,
-        name: site.name,
-        listed_state: site.state,
+        site_code: office.site_code,
+        name: office.name,
+        listed_state: office.state,
         ugc_states: ugcStates,
         ugc_codes: codes,
-        county: site.county_name
+        county: office.county_name
       });
     }
   }
@@ -325,45 +325,45 @@ async function main() {
   report.summary.cross_state = crossStateSites.length;
   
   if (crossStateSites.length === 0) {
-    console.log('✓ No cross-state sites detected\n');
+    console.log('✓ No cross-state offices detected\n');
   } else {
-    console.log(`ℹ ${crossStateSites.length} sites have UGC codes from different states:\n`);
-    console.log('  (This is normal for testing centers located across state lines)\n');
+    console.log(`ℹ ${crossStateSites.length} offices have UGC codes from different states:\n`);
+    console.log('  (This is normal for USPS offices located across state lines)\n');
     
-    for (const site of crossStateSites) {
-      console.log(`  • ${site.site_code} "${site.name}" (${site.listed_state})`);
-      console.log(`    UGC: ${site.ugc_codes.join(', ')} → ${site.county}\n`);
+    for (const office of crossStateSites) {
+      console.log(`  • ${office.site_code} "${office.name}" (${site.listed_state})`);
+      console.log(`    UGC: ${office.ugc_codes.join(', ')} → ${office.county}\n`);
     }
   }
   
   // Phase 4: NOAA API validation (optional, takes time)
   if (!skipApiCheck) {
     console.log('─── Phase 4: NOAA API Validation ───\n');
-    console.log(`Checking ${sites.length} sites against NOAA API...`);
-    console.log(`Estimated time: ~${Math.ceil(sites.length * DELAY_MS / 1000 / 60)} minutes\n`);
+    console.log(`Checking ${offices.length} offices against NOAA API...`);
+    console.log(`Estimated time: ~${Math.ceil(offices.length * DELAY_MS / 1000 / 60)} minutes\n`);
     
     let apiMatches = 0;
     let apiMismatches = 0;
     let apiErrors = 0;
     
-    for (let i = 0; i < sites.length; i++) {
-      const site = sites[i];
-      const progress = `[${i + 1}/${sites.length}]`;
+    for (let i = 0; i < offices.length; i++) {
+      const office = offices[i];
+      const progress = `[${i + 1}/${offices.length}]`;
       
-      process.stdout.write(`${progress} ${site.site_code} (${site.name})... `);
+      process.stdout.write(`${progress} ${office.site_code} (${office.name})... `);
       
-      const expected = await fetchExpectedUGC(site);
+      const expected = await fetchExpectedUGC(office);
       
       if (!expected.success) {
         apiErrors++;
         console.log(`✗ API Error: ${expected.error}`);
         report.issues.push({
-          site_code: site.site_code,
+          site_code: office.site_code,
           type: 'API_ERROR',
           message: expected.error
         });
       } else {
-        const comparison = compareUGCCodes(site, expected);
+        const comparison = compareUGCCodes(office, expected);
         
         if (comparison.match) {
           apiMatches++;
@@ -375,7 +375,7 @@ async function main() {
           console.log(`    Expected: ${comparison.expectedCodes.join(', ')}`);
           
           report.issues.push({
-            site_code: site.site_code,
+            site_code: office.site_code,
             type: 'UGC_MISMATCH',
             stored: comparison.storedCodes,
             expected: comparison.expectedCodes,
@@ -385,7 +385,7 @@ async function main() {
       }
       
       // Rate limiting delay (skip on last item)
-      if (i < sites.length - 1) {
+      if (i < offices.length - 1) {
         await sleep(DELAY_MS);
       }
     }
@@ -398,7 +398,7 @@ async function main() {
     report.summary.valid = apiMatches;
     report.summary.errors += apiMismatches + apiErrors;
   } else {
-    report.summary.valid = sites.length - report.summary.errors - report.summary.warnings;
+    report.summary.valid = offices.length - report.summary.errors - report.summary.warnings;
   }
   
   // Final Summary
@@ -406,7 +406,7 @@ async function main() {
   console.log('                      Validation Summary');
   console.log('═══════════════════════════════════════════════════════════════\n');
   
-  console.log(`  Total Sites:     ${report.total_sites}`);
+  console.log(`  Total Offices:     ${report.total_sites}`);
   console.log(`  Valid:           ${report.summary.valid}`);
   console.log(`  Warnings:        ${report.summary.warnings}`);
   console.log(`  Errors:          ${report.summary.errors}`);

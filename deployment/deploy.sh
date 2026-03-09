@@ -137,7 +137,7 @@ echo ""
 echo "📊 Application Status:"
 pm2 status storm-scout
 echo ""
-echo "🌐 Your site: https://$DOMAIN"
+echo "🌐 Storm Scout: https://$DOMAIN"
 echo ""
 echo "💡 Useful commands:"
 echo "   pm2 logs storm-scout     - View logs"

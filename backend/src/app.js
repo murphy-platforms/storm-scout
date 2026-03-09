@@ -8,7 +8,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const config = require('./config/config');
-const { apiLimiter, writeLimiter } = require('./middleware/rateLimiter');
+const { apiLimiter, writeLimiter, authLimiter } = require('./middleware/rateLimiter');
+const { requireApiKey } = require('./middleware/apiKey');
 
 // Import routes
 const sitesRouter = require('./routes/offices');
@@ -98,6 +99,15 @@ app.use('/api', apiLimiter);
 
 // Stricter rate limiting for write operations
 app.use('/api/operational-status', writeLimiter);
+
+// API key authentication for write endpoints.
+// Read endpoints remain open (public NOAA data only).
+//
+// FUTURE: when this app is deployed to the USPS production environment,
+// replace / supplement this with enterprise IDM SAML/SSO at the reverse-proxy
+// layer (Option C).  See backend/src/middleware/apiKey.js for full strategy
+// notes.
+app.use('/api/operational-status', authLimiter, requireApiKey);
 
 // Serve static files (if path configured)
 if (config.staticFiles.path) {

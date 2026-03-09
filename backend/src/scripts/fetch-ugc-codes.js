@@ -1,9 +1,9 @@
 /**
- * Fetch UGC Codes from NOAA for All Sites
- * 
- * This script queries the NOAA /points API for each site's coordinates
+ * Fetch UGC Codes from NOAA for All Offices
+ *
+ * This script queries the NOAA /points API for each office's coordinates
  * and extracts the forecast zone and county UGC codes.
- * 
+ *
  * Usage: node src/scripts/fetch-ugc-codes.js
  * Output: Creates ugc-codes-output.json in the data directory
  */
@@ -36,11 +36,11 @@ function extractUGCFromUrl(url) {
 }
 
 /**
- * Fetch UGC codes for a single site from NOAA /points API
+ * Fetch UGC codes for a single office from NOAA /points API
  */
-async function fetchUGCForSite(site) {
-  const url = `https://api.weather.gov/points/${site.latitude},${site.longitude}`;
-  
+async function fetchUGCForOffice(office) {
+  const url = `https://api.weather.gov/points/${office.latitude},${office.longitude}`;
+
   try {
     const response = await axios.get(url, {
       headers: {
@@ -49,19 +49,19 @@ async function fetchUGCForSite(site) {
       },
       timeout: 10000
     });
-    
+
     const props = response.data.properties;
-    
+
     // Extract UGC codes from URLs
     const forecastZone = extractUGCFromUrl(props.forecastZone);
     const countyZone = extractUGCFromUrl(props.county);
     const fireWeatherZone = extractUGCFromUrl(props.fireWeatherZone);
-    
+
     // Get county name from relativeLocation
-    const countyName = props.relativeLocation?.properties?.city 
+    const countyName = props.relativeLocation?.properties?.city
       ? `${props.relativeLocation.properties.city} area`
       : null;
-    
+
     // Get the actual county from the county URL by fetching zone details
     let actualCountyName = null;
     if (props.county) {
@@ -75,15 +75,15 @@ async function fetchUGCForSite(site) {
         // Ignore errors fetching county name
       }
     }
-    
+
     return {
-      site_code: site.site_code,
-      site_id: site.id,
-      name: site.name,
-      city: site.city,
-      state: site.state,
-      latitude: site.latitude,
-      longitude: site.longitude,
+      site_code: office.site_code,
+      office_id: office.id,
+      name: office.name,
+      city: office.city,
+      state: office.state,
+      latitude: office.latitude,
+      longitude: office.longitude,
       ugc_codes: [forecastZone, countyZone].filter(Boolean),
       forecast_zone: forecastZone,
       county_zone: countyZone,
@@ -93,15 +93,15 @@ async function fetchUGCForSite(site) {
       success: true
     };
   } catch (error) {
-    console.error(`  ✗ Error fetching UGC for ${site.site_code} (${site.name}): ${error.message}`);
+    console.error(`  ✗ Error fetching UGC for ${office.site_code} (${office.name}): ${error.message}`);
     return {
-      site_code: site.site_code,
-      site_id: site.id,
-      name: site.name,
-      city: site.city,
-      state: site.state,
-      latitude: site.latitude,
-      longitude: site.longitude,
+      site_code: office.site_code,
+      office_id: office.id,
+      name: office.name,
+      city: office.city,
+      state: office.state,
+      latitude: office.latitude,
+      longitude: office.longitude,
       ugc_codes: [],
       success: false,
       error: error.message
@@ -110,38 +110,38 @@ async function fetchUGCForSite(site) {
 }
 
 /**
- * Main function to fetch UGC codes for all sites
+ * Main function to fetch UGC codes for all offices
  */
 async function main() {
   console.log('═══ Fetching UGC Codes from NOAA ═══\n');
-  
-  // Load sites from JSON file (or could use database)
+
+  // Load offices from JSON file (or could use database)
   const sitesFile = path.join(__dirname, '../data/sites.json');
-  
+
   if (!fs.existsSync(sitesFile)) {
     console.error('Error: sites.json not found at', sitesFile);
     process.exit(1);
   }
-  
-  const sites = JSON.parse(fs.readFileSync(sitesFile, 'utf8'));
-  console.log(`Loaded ${sites.length} sites from sites.json`);
+
+  const offices = JSON.parse(fs.readFileSync(sitesFile, 'utf8'));
+  console.log(`Loaded ${offices.length} offices from sites.json`);
   console.log(`Using User-Agent: ${USER_AGENT}`);
   console.log(`Delay between requests: ${DELAY_MS}ms`);
-  console.log(`Estimated time: ~${Math.ceil(sites.length * DELAY_MS / 1000 / 60)} minutes\n`);
-  
+  console.log(`Estimated time: ~${Math.ceil(offices.length * DELAY_MS / 1000 / 60)} minutes\n`);
+
   const results = [];
   let successCount = 0;
   let errorCount = 0;
-  
-  for (let i = 0; i < sites.length; i++) {
-    const site = sites[i];
-    const progress = `[${i + 1}/${sites.length}]`;
-    
-    process.stdout.write(`${progress} Fetching ${site.site_code} (${site.name}, ${site.state})...`);
-    
-    const result = await fetchUGCForSite(site);
+
+  for (let i = 0; i < offices.length; i++) {
+    const office = offices[i];
+    const progress = `[${i + 1}/${offices.length}]`;
+
+    process.stdout.write(`${progress} Fetching ${office.site_code} (${office.name}, ${office.state})...`);
+
+    const result = await fetchUGCForOffice(office);
     results.push(result);
-    
+
     if (result.success) {
       successCount++;
       console.log(` ✓ ${result.ugc_codes.join(', ')}`);
@@ -149,40 +149,40 @@ async function main() {
       errorCount++;
       console.log(` ✗ Failed`);
     }
-    
+
     // Rate limiting delay (skip on last item)
-    if (i < sites.length - 1) {
+    if (i < offices.length - 1) {
       await sleep(DELAY_MS);
     }
   }
-  
+
   // Write results to file
   const output = {
     generated_at: new Date().toISOString(),
-    total_sites: sites.length,
+    total_offices: offices.length,
     successful: successCount,
     errors: errorCount,
-    sites: results
+    offices: results
   };
-  
+
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
-  
+
   console.log('\n═══ Fetch Complete ═══');
-  console.log(`Success: ${successCount}/${sites.length}`);
+  console.log(`Success: ${successCount}/${offices.length}`);
   console.log(`Errors: ${errorCount}`);
   console.log(`Output saved to: ${OUTPUT_FILE}`);
-  
+
   // Show sample of results
   console.log('\n═══ Sample Results ═══');
   const sample = results.filter(r => r.success).slice(0, 5);
   sample.forEach(r => {
     console.log(`  ${r.site_code} (${r.city}, ${r.state}): ${r.ugc_codes.join(', ')}`);
   });
-  
+
   // Show any errors
   const errors = results.filter(r => !r.success);
   if (errors.length > 0) {
-    console.log('\n═══ Sites with Errors ═══');
+    console.log('\n═══ Offices with Errors ═══');
     errors.forEach(r => {
       console.log(`  ${r.site_code} (${r.city}, ${r.state}): ${r.error}`);
     });

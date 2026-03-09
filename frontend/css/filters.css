@@ -3,7 +3,7 @@
  */
 
 .alert-type-card {
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow);
     border: 2px solid transparent;
     border-left-width: 4px;
 }
@@ -16,7 +16,7 @@
 /* Enabled state - white background with green border */
 .alert-type-card:not(.disabled) {
     background-color: #ffffff;
-    border-left-color: #28a745;
+    border-left-color: var(--ss-green);
 }
 
 /* Disabled state - gray background */
@@ -36,8 +36,8 @@
 
 /* Green toggle when checked */
 .form-check-input:checked {
-    background-color: #28a745;
-    border-color: #28a745;
+    background-color: var(--ss-green);
+    border-color: var(--ss-green);
 }
 
 .impact-badge {

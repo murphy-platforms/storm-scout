@@ -3,7 +3,7 @@
  */
 
 const { query } = require('express-validator');
-const { validateId, validateState, validateLimit, validateSiteId } = require('./common');
+const { validateId, validateState, validateLimit, validateOfficeId } = require('./common');
 
 /**
  * Valid severity values
@@ -59,7 +59,7 @@ const getAll = [
   validateStatus,
   validateSeverity,
   validateState,
-  validateSiteId,
+  validateOfficeId,
   validateAdvisoryType
 ];
 

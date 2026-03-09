@@ -16,7 +16,7 @@
     a,
     .nav-item,
     .filter-pill,
-    .site-item,
+    .office-item,
     .card-header,
     .badge,
     .toggle-switch,
@@ -65,12 +65,6 @@
         max-width: 50%;
     }
     
-    /* Stack cards */
-    .content-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-    
     /* Readable font sizes */
     body {
         font-size: 16px; /* Prevent iOS zoom on input focus */
@@ -82,21 +76,14 @@
    ============================================ */
 @media (max-width: 767px) and (orientation: landscape) {
     /* Reduce header height in landscape */
-    .navbar,
-    .top-bar {
+    .navbar {
         padding: 8px 16px;
     }
-    
+
     /* Compact severity cards */
     .severity-card,
     .weather-card {
         padding: 12px;
-    }
-    
-    /* 2-column grid for landscape phones */
-    .severity-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
     }
 }
 
@@ -178,7 +165,7 @@
         position: sticky;
         top: 0;
         background: white;
-        z-index: 10;
+        z-index: var(--z-sticky-content);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
@@ -289,11 +276,11 @@
     }
     
     /* Compact site cards */
-    .site-card {
+    .office-card {
         padding: 12px;
     }
     
-    .site-card-header {
+    .office-card-header {
         font-size: 1rem;
     }
     
@@ -303,9 +290,7 @@
     }
     
     /* Stack all grids single column */
-    .row,
-    .severity-grid,
-    .content-grid {
+    .row {
         grid-template-columns: 1fr !important;
     }
     
@@ -376,112 +361,6 @@
     }
 }
 
-/* ============================================
-   BETA UI SPECIFIC MOBILE IMPROVEMENTS
-   ============================================ */
-@media (max-width: 768px) {
-    /* Sidebar overlay */
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 280px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-out;
-        z-index: 1000;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
-    }
-    
-    .sidebar.open {
-        transform: translateX(0);
-    }
-    
-    /* Overlay backdrop */
-    .sidebar.open::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 280px;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: -1;
-    }
-    
-    /* Mobile menu button */
-    .mobile-menu-btn {
-        display: block;
-        position: relative;
-        z-index: 1001;
-    }
-    
-    /* Main content - Full width */
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
-    
-    /* Top bar - Compact */
-    .top-bar {
-        padding: 12px 16px;
-        gap: 12px;
-    }
-    
-    .page-title {
-        font-size: 1.25rem;
-    }
-    
-    /* Dashboard content */
-    .dashboard-content {
-        padding: 16px 12px;
-    }
-    
-    /* Severity grid - Single column */
-    .severity-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    /* Critical alerts */
-    .critical-alerts-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    /* Export buttons in top bar */
-    .top-bar-actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .top-bar-actions .btn {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-    
-    /* Hide button text, keep icons */
-    .top-bar-actions .btn span:not([aria-hidden="true"]) {
-        display: none;
-    }
-    
-    /* Update status - Show only countdown */
-    .update-status {
-        font-size: 0.85rem;
-    }
-    
-    .update-status span:not(.next-update):not(.update-dot) {
-        display: none;
-    }
-    
-    /* Sparklines - Reduce bar count on mobile */
-    .sparkline {
-        max-width: 100px;
-    }
-    
-    .sparkline-bar:nth-child(n+9) {
-        display: none; /* Show only 8 bars on mobile */
-    }
-}
 
 /* ============================================
    PERFORMANCE OPTIMIZATIONS FOR MOBILE
@@ -507,15 +386,13 @@
         
         .card:hover,
         .severity-card:hover,
-        .site-item:hover {
+        .office-item:hover {
             transform: none;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
     }
     
     /* Force GPU acceleration for smoother scrolling */
-    .sidebar,
-    .mobile-menu-btn,
     .quick-filters {
         will-change: transform;
         -webkit-transform: translateZ(0);
@@ -543,7 +420,7 @@
     background: #1B2845;
     color: white;
     padding: 12px 20px;
-    z-index: 9999;
+    z-index: var(--z-skip-link);
     text-decoration: none;
     font-weight: 600;
 }
@@ -578,14 +455,6 @@
         padding-right: max(0px, env(safe-area-inset-right));
     }
     
-    .sidebar {
-        padding-left: max(16px, env(safe-area-inset-left));
-    }
-    
-    .top-bar {
-        padding-left: max(16px, env(safe-area-inset-left));
-        padding-right: max(16px, env(safe-area-inset-right));
-    }
 }
 
 /* Prevent text selection on UI controls (improves touch UX) */
