@@ -8,7 +8,8 @@ const { validateId, validateState, validateBooleanQuery } = require('./common');
 /**
  * Valid jurisdiction types
  */
-const VALID_JURISDICTIONS = ['federal', 'state', 'county', 'city'];
+// Title-Case matches values stored in the notices table (e.g. 'Federal', 'State')
+const VALID_JURISDICTIONS = ['Federal', 'State', 'County', 'City'];
 
 /**
  * Validate jurisdiction_type query parameter
@@ -16,7 +17,6 @@ const VALID_JURISDICTIONS = ['federal', 'state', 'county', 'city'];
 const validateJurisdiction = query('jurisdiction_type')
   .optional()
   .trim()
-  .toLowerCase()
   .isIn(VALID_JURISDICTIONS)
   .withMessage(`jurisdiction_type must be one of: ${VALID_JURISDICTIONS.join(', ')}`);
 
