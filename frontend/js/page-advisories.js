@@ -116,9 +116,9 @@
                 if (tempF != null) {
                     const stale = isStale(obs.observed_at);
                     if (stale) {
-                        tempSpan = `<span class="text-muted ms-3">🌡️ ${tempF}°F / ${tempC}°C</span> <small class="text-danger"><strong>${escapeHtml(obs.station_id)} OFFLINE</strong></small>`;
+                        tempSpan = `<span class="text-muted ms-3"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span> <small class="text-danger"><strong>${escapeHtml(obs.station_id)} OFFLINE</strong></small>`;
                     } else {
-                        tempSpan = `<span class="text-muted ms-3">🌡️ ${tempF}°F / ${tempC}°C</span>`;
+                        tempSpan = `<span class="text-muted ms-3"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>`;
                     }
                 }
                 const alertCount = site.advisories.length;
@@ -305,12 +305,12 @@
                 const stale = isStale(obs.observed_at);
                 if (stale) {
                     tempHtml = `<div class="temp-display">
-                        <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
+                        <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
                         <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
                     </div>`;
                 } else {
                     tempHtml = `<div class="temp-display">
-                        <span class="text-dark">🌡️ ${tempF}°F / ${tempC}°C</span>
+                        <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
                         <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
                     </div>`;
                 }

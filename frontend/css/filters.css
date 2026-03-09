@@ -25,9 +25,13 @@
     border-color: #dee2e6;
 }
 
-/* Keep text slightly dimmed but toggle fully visible */
+/* Keep text visually dimmed without using opacity (which reduces contrast below WCAG AA) */
 .alert-type-card.disabled .card-body {
-    opacity: 0.7;
+    color: #6c757d; /* ~4.5:1 on #f8f9fa — meets WCAG AA */
+}
+.alert-type-card.disabled .form-check-label,
+.alert-type-card.disabled p.text-muted {
+    color: #6c757d !important;
 }
 
 .alert-type-card.disabled .form-check-input {

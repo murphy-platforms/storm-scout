@@ -82,10 +82,10 @@
                 const tempC = Math.round(parseFloat(obs.temperature_c));
                 const stale = isStale(obs.observed_at);
                 if (stale) {
-                    tempContainer.innerHTML = html`<span class="text-dark">🌡️ ${raw(`${tempF}`)}°F / ${raw(`${tempC}`)}°C</span>
+                    tempContainer.innerHTML = html`<span class="text-dark"><span aria-hidden="true">🌡️</span> ${raw(`${tempF}`)}°F / ${raw(`${tempC}`)}°C</span>
                         <small class="text-danger ms-2"><strong>${obs.station_id} - OFFLINE</strong></small>`;
                 } else {
-                    tempContainer.innerHTML = html`<span class="text-dark">🌡️ ${raw(`${tempF}`)}°F / ${raw(`${tempC}`)}°C</span>
+                    tempContainer.innerHTML = html`<span class="text-dark"><span aria-hidden="true">🌡️</span> ${raw(`${tempF}`)}°F / ${raw(`${tempC}`)}°C</span>
                         <small class="text-muted ms-2">${raw(timeAgo(obs.observed_at))}</small>`;
                 }
             }
