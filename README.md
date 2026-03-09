@@ -30,6 +30,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on office detail pages
 - **Enhanced Alert Cards** - Office detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
+- **Consistent Design System** - CSS variable-driven colors, z-index scale, and transition durations; Bootstrap Icons used throughout (no mixed emoji in UI chrome); unified loading/error/empty states across all pages
 
 ### Version & Release
 - **Version Display** - Footer on all pages shows version number and release date

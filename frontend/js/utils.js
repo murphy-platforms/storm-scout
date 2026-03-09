@@ -98,15 +98,17 @@ function html(strings, ...values) {
 // =============================================================================
 
 /**
- * Get Bootstrap badge class for severity
+ * Get severity badge class for severity level.
+ * Uses custom .severity-* classes (defined in style.css) so all badge
+ * contexts — inline, large, grouped — render the same colours.
  */
 function getSeverityBadge(severity) {
     const badges = {
-        'Extreme': 'bg-danger',
-        'Severe': 'bg-warning text-dark',
-        'Moderate': 'bg-info text-dark',
-        'Minor': 'bg-secondary',
-        'Unknown': 'bg-light text-dark'
+        'Extreme':  'severity-extreme',
+        'Severe':   'severity-severe',
+        'Moderate': 'severity-moderate',
+        'Minor':    'severity-minor',
+        'Unknown':  'bg-light text-dark'
     };
     return badges[severity] || 'bg-light text-dark';
 }
@@ -124,6 +126,54 @@ function getStatusBadge(status) {
         'cancelled': 'bg-secondary'
     };
     return badges[status] || 'bg-secondary';
+}
+
+/**
+ * Shared VTEC action code config.
+ * Uses custom action-badge-* CSS classes where defined; falls back to Bootstrap.
+ */
+const VTEC_ACTION_CONFIG = {
+    'NEW': { label: 'NEW',       class: 'action-badge-new',       icon: '<i class="bi bi-bell-fill"></i>',           title: 'New alert issued' },
+    'CON': { label: 'CONTINUED', class: 'action-badge-continued', icon: '<i class="bi bi-arrow-repeat"></i>',        title: 'Alert continuing' },
+    'EXT': { label: 'EXTENDED',  class: 'action-badge-extended',  icon: '<i class="bi bi-clock-history"></i>',      title: 'Alert time extended' },
+    'EXA': { label: 'EXTENDED',  class: 'action-badge-extended',  icon: '<i class="bi bi-clock-history"></i>',      title: 'Alert extended (A)' },
+    'EXB': { label: 'EXTENDED',  class: 'action-badge-extended',  icon: '<i class="bi bi-clock-history"></i>',      title: 'Alert extended (B)' },
+    'UPG': { label: 'UPGRADED',  class: 'bg-warning text-dark',   icon: '<i class="bi bi-arrow-up-circle-fill"></i>', title: 'Alert upgraded' },
+    'EXP': { label: 'EXPIRED',   class: 'bg-secondary',           icon: '<i class="bi bi-hourglass-bottom"></i>',   title: 'Alert expired' },
+    'CAN': { label: 'CANCELLED', class: 'bg-dark',                icon: '<i class="bi bi-x-circle-fill"></i>',      title: 'Alert cancelled' },
+    'COR': { label: 'CORRECTED', class: 'bg-warning text-dark',   icon: '<i class="bi bi-pencil-fill"></i>',        title: 'Correction issued' },
+    'ROU': { label: 'ROUTINE',   class: 'bg-secondary',           icon: '<i class="bi bi-clipboard"></i>',          title: 'Routine update' }
+};
+
+/**
+ * Return a VTEC action badge HTML string.
+ * @param {string|null} action - VTEC action code (e.g. 'NEW', 'EXT')
+ * @returns {string} HTML badge string
+ */
+function getActionBadge(action) {
+    if (!action) {
+        return '<span class="badge bg-secondary" title="No VTEC action code">-</span>';
+    }
+    const config = VTEC_ACTION_CONFIG[action] || { label: action, class: 'bg-secondary', icon: '', title: `Action: ${action}` };
+    return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
+}
+
+/**
+ * Return a VTEC action badge HTML string, with time-aware styling for NEW alerts.
+ * Alerts marked NEW within the last 2 hours use the animated action-badge-new class.
+ * @param {Object} advisory - Advisory object with vtec_action and last_updated fields
+ * @returns {string} HTML badge string
+ */
+function getActionBadgeWithTime(advisory) {
+    if (!advisory.vtec_action) {
+        return '<span class="badge bg-secondary">-</span>';
+    }
+    const config = { ...( VTEC_ACTION_CONFIG[advisory.vtec_action] || { label: advisory.vtec_action, class: 'bg-secondary', icon: '', title: `Action: ${advisory.vtec_action}` }) };
+    if (advisory.vtec_action === 'NEW') {
+        const hoursOld = (Date.now() - new Date(advisory.last_updated)) / 3600000;
+        if (hoursOld >= 2) config.class = 'bg-success';
+    }
+    return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
 }
 
 /**
@@ -145,12 +195,51 @@ function formatDate(dateString) {
 }
 
 /**
- * Show error message (placeholder - enhance as needed)
+ * Return a standard empty-state HTML string for block-level containers.
+ * @param {string} icon     - Bootstrap Icon name without the 'bi-' prefix (e.g. 'cloud-sun')
+ * @param {string} title    - Bold primary message
+ * @param {string} [subtitle] - Optional secondary message
+ * @returns {string} HTML string (wraps in col-12 for use inside a .row container)
  */
-function showError(message) {
+function renderEmptyHtml(icon, title, subtitle) {
+    const sub = subtitle ? `<p class="mb-0 small mt-1">${escapeHtml(subtitle)}</p>` : '';
+    return `<div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-${icon} fs-1 d-block mb-2"></i>
+        <strong>${escapeHtml(title)}</strong>${sub}
+    </div>`;
+}
+
+/**
+ * Return a standard Bootstrap error alert HTML string.
+ * Use for injecting into a container element's innerHTML.
+ * @param {string} message - User-facing error message
+ * @returns {string} HTML string
+ */
+function renderErrorHtml(message) {
+    return `<div class="col-12">
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>${escapeHtml(message)}
+        </div>
+    </div>`;
+}
+
+/**
+ * Show an error alert inside a named container element.
+ * Falls back to the first .container/.container-fluid on the page.
+ * @param {string} message - User-facing error message
+ * @param {string} [containerId] - Optional element ID to inject into
+ */
+function showError(message, containerId) {
     console.error(message);
-    // Could enhance this to show toast notifications
-    alert(message);
+    const target = containerId
+        ? document.getElementById(containerId)
+        : document.querySelector('.container-fluid, .container');
+    if (target) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'row mt-3';
+        wrapper.innerHTML = renderErrorHtml(message);
+        target.prepend(wrapper);
+    }
 }
 
 // =============================================================================

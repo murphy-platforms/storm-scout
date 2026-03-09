@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=***REDACTED_GA_ID***"></script>
     <script src="js/analytics.js"></script>
@@ -10,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css?v=1.9.1">
+    <link rel="stylesheet" href="css/tooltips.css?v=1.9.1">
     <link rel="stylesheet" href="css/mobile.css?v=1.9.1">
 </head>
 <body>
@@ -25,7 +27,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
                     <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
                     <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
@@ -43,7 +45,7 @@
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="index.html">Overview</a></li>
                         <li class="breadcrumb-item"><a href="offices.html">Offices Impacted</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Office Detail</li>
+                        <li class="breadcrumb-item active" aria-current="page" id="breadcrumbOffice">Office Detail</li>
                     </ol>
                 </nav>
             </div>
@@ -52,16 +54,18 @@
         <!-- Loading State -->
         <div id="loadingState" class="row">
             <div class="col-12 text-center py-5">
-                <span class="spinner-border spinner-border-lg"></span>
-                <p class="mt-3">Loading office details...</p>
+                <span class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </span>
+                <p class="mt-2 text-muted">Loading office details...</p>
             </div>
         </div>
 
         <!-- Error State -->
         <div id="errorState" class="row" style="display: none;">
             <div class="col-12">
-                <div class="alert alert-danger">
-                    <h4><i class="bi bi-exclamation-triangle"></i> Error Loading Site</h4>
+                <div class="alert alert-danger" role="alert">
+                    <h4><i class="bi bi-exclamation-triangle-fill me-2"></i>Error Loading Office</h4>
                     <p id="errorMessage"></p>
                     <a href="offices.html" class="btn btn-primary">View All Offices</a>
                 </div>
@@ -69,24 +73,24 @@
         </div>
 
         <!-- Office Detail Content -->
-        <div id="siteContent" style="display: none;">
+        <div id="officeContent" style="display: none;">
             <!-- Office Header -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card site-card" id="siteHeaderCard">
+                    <div class="card office-card" id="officeHeaderCard">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h1 class="h3 mb-1">
-                                        <strong id="siteCode"></strong> - <span id="siteName"></span>
+                                        <strong id="officeCode"></strong> - <span id="officeName"></span>
                                     </h1>
                                     <p class="text-muted mb-0">
-                                        <i class="bi bi-geo-alt"></i> <span id="siteLocation"></span>
+                                        <i class="bi bi-geo-alt"></i> <span id="officeLocation"></span>
                                     </p>
                                 </div>
                                 <div style="text-align: right;">
                                     <span class="badge severity-badge-large" id="highestSeverityBadge"></span>
-                                    <div id="siteTempDisplay" style="margin-top: 0.35rem; font-size: 0.85rem;"></div>
+                                    <div id="officeTempDisplay" class="temp-display"></div>
                                 </div>
                             </div>
                         </div>
@@ -163,9 +167,21 @@
         </div>
     </div>
 
-    <footer class="footer-scout text-center py-3 mt-5">
+    <footer class="footer-scout py-3 mt-5">
         <div class="container">
-            <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | USPS Operations Tool | <span id="appVersion"></span></p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="sources.html" class="text-muted text-decoration-none me-3">
+                        <i class="bi bi-info-circle"></i> About &amp; Data Sources
+                    </a>
+                    <a href="filters.html" class="text-muted text-decoration-none">
+                        <i class="bi bi-sliders"></i> Filter Settings
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -176,60 +192,60 @@
     <script src="js/alert-filters.js?v=1.9.1"></script>
     <script src="js/aggregation.js?v=1.9.1"></script>
     <script>
-        let siteData = null;
-        let siteAdvisories = [];
-        
-        async function loadSiteDetail() {
+        let officeData = null;
+        let officeAdvisories = [];
+
+        async function loadOfficeDetail() {
             try {
                 // Get office code from URL (?office= preferred, ?site= for legacy links)
                 const urlParams = new URLSearchParams(window.location.search);
-                const siteCode = urlParams.get('office') || urlParams.get('site');
+                const officeCode = urlParams.get('office') || urlParams.get('site');
 
-                if (!siteCode) {
+                if (!officeCode) {
                     showError('No office code provided in URL');
                     return;
                 }
-                
-                // Load all advisories, sites, and observations
-                const [allAdvisories, allSites, obsData] = await Promise.all([
+
+                // Load all advisories, offices, and observations
+                const [allAdvisories, allOffices, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
                     API.getOffices(),
                     API.getObservations().catch(() => [])
                 ]);
-                
+
                 // Find the office
-                siteData = allSites.find(s => s.office_code === siteCode);
-                if (!siteData) {
-                    showError(`Office ${siteCode} not found`);
+                officeData = allOffices.find(s => s.office_code === officeCode);
+                if (!officeData) {
+                    showError(`Office ${officeCode} not found`);
                     return;
                 }
 
                 // Get advisories for this office
-                siteAdvisories = allAdvisories.filter(a => a.office_code === siteCode);
+                officeAdvisories = allAdvisories.filter(a => a.office_code === officeCode);
 
-                if (siteAdvisories.length === 0) {
-                    showError(`No active advisories for office ${siteCode}`);
+                if (officeAdvisories.length === 0) {
+                    showError(`No active advisories for office ${officeCode}`);
                     return;
                 }
-                
+
                 // Aggregate with deduplication
-                const aggregated = OfficeAggregator.aggregateByOffice(siteAdvisories, { deduplicateZones: true });
-                const siteAggData = aggregated[0]; // Should only be one site
-                
+                const aggregated = OfficeAggregator.aggregateByOffice(officeAdvisories, { deduplicateZones: true });
+                const officeAggData = aggregated[0]; // Should only be one office
+
                 // Find observation for this office
-                const siteObs = obsData.find(o => o.office_code === siteCode) || null;
-                
+                const officeObs = obsData.find(o => o.office_code === officeCode) || null;
+
                 // Render the page
-                renderSiteHeader(siteData, siteAggData, siteObs);
-                renderHighestAlert(siteAggData);
-                renderImpactSummary(siteAggData);
-                renderTimeline(siteAggData);
-                renderAllAdvisories(siteAggData);
-                
+                renderOfficeHeader(officeData, officeAggData, officeObs);
+                renderHighestAlert(officeAggData);
+                renderImpactSummary(officeAggData);
+                renderTimeline(officeAggData);
+                renderAllAdvisories(officeAggData);
+
                 // Show content, hide loading
                 document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('siteContent').style.display = 'block';
-                
+                document.getElementById('officeContent').style.display = 'block';
+
             } catch (error) {
                 console.error('Error loading office detail:', error);
                 showError('Failed to load office details: ' + error.message);
@@ -242,18 +258,19 @@
             document.getElementById('errorState').style.display = 'block';
         }
         
-        function renderSiteHeader(site, aggData, obs) {
-            document.getElementById('siteCode').textContent = site.office_code;
-            document.getElementById('siteName').textContent = site.name;
-            document.getElementById('siteLocation').textContent = `${site.city}, ${site.state}`;
-            
+        function renderOfficeHeader(office, aggData, obs) {
+            document.getElementById('officeCode').textContent = office.office_code;
+            document.getElementById('officeName').textContent = office.name;
+            document.getElementById('breadcrumbOffice').textContent = `${office.office_code} — ${office.name}`;
+            document.getElementById('officeLocation').textContent = `${office.city}, ${office.state}`;
+
             const severity = aggData.highest_severity;
             const severityBadge = document.getElementById('highestSeverityBadge');
             severityBadge.textContent = severity;
             severityBadge.className = `badge severity-badge-large severity-${severity.toLowerCase()}`;
-            
+
             // Temperature display
-            const tempContainer = document.getElementById('siteTempDisplay');
+            const tempContainer = document.getElementById('officeTempDisplay');
             if (obs && obs.temperature_c != null) {
                 const tempF = cToF(obs.temperature_c);
                 const tempC = Math.round(parseFloat(obs.temperature_c));
@@ -266,9 +283,9 @@
                         <small class="text-muted ms-2">${raw(timeAgo(obs.observed_at))}</small>`;
                 }
             }
-            
-            const headerCard = document.getElementById('siteHeaderCard');
-            headerCard.className = `card site-card site-card-${severity.toLowerCase()}`;
+
+            const headerCard = document.getElementById('officeHeaderCard');
+            headerCard.className = `card office-card office-card-${severity.toLowerCase()}`;
         }
         
         /**
@@ -432,28 +449,7 @@
             container.innerHTML = html`<div class="row">${raw(advisories)}</div>`;
         }
         
-        function getActionBadgeWithTime(advisory) {
-            if (!advisory.vtec_action) {
-                return '<span class="badge bg-secondary">-</span>';
-            }
-            
-            const hoursOld = (Date.now() - new Date(advisory.last_updated)) / 3600000;
-            
-            const actionConfig = {
-                'NEW': { 
-                    label: 'NEW', 
-                    class: hoursOld < 2 ? 'action-badge-new' : 'bg-success',
-                    icon: '🆕'
-                },
-                'CON': { label: 'CONTINUED', class: 'action-badge-continued', icon: '🔄' },
-                'EXT': { label: 'EXTENDED', class: 'action-badge-extended', icon: '⏱️' },
-                'UPG': { label: 'UPGRADED', class: 'bg-warning text-dark', icon: '⚠️' }
-            };
-            
-            const config = actionConfig[advisory.vtec_action] || { label: advisory.vtec_action, class: 'bg-secondary', icon: '' };
-            
-            return `<span class="badge ${config.class}">${config.icon} ${config.label}</span>`;
-        }
+        // getActionBadgeWithTime() is defined in js/utils.js
         
         function getTimeRemaining(expiresISO) {
             const hours = Math.round((new Date(expiresISO) - new Date()) / 3600000);
@@ -474,8 +470,8 @@
             const links = [];
             
             // NWS office homepage (shows local forecasts, alerts, and radar for the region)
-            if (siteData && siteData.cwa) {
-                const nwsUrl = `https://www.weather.gov/${siteData.cwa.toLowerCase()}`;
+            if (officeData && officeData.cwa) {
+                const nwsUrl = `https://www.weather.gov/${officeData.cwa.toLowerCase()}`;
                 links.push(`
                     <a href="${nwsUrl}" 
                        target="_blank" 
@@ -591,7 +587,7 @@
         });
         
         // Initialize
-        loadSiteDetail();
+        loadOfficeDetail();
     </script>
 </body>
 </html>

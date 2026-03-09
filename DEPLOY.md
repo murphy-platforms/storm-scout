@@ -314,3 +314,4 @@ systemctl --user restart storm-scout-dev
 | `NOAA_API_USER_AGENT` | NOAA API contact | `(Storm Scout, ops@example.com)` |
 | `CORS_ORIGIN` | Allowed CORS origin (required — no default) | `https://your-domain.example.com` |
 | `TRUST_PROXY` | Set `true` when behind LiteSpeed/Nginx/Apache reverse proxy | `false` |
+| `API_KEY` | Shared secret for write endpoints (`/api/operational-status`). Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` | *(required)* |

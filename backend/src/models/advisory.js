@@ -8,8 +8,8 @@ const { getDatabase } = require('../config/database');
 const AdvisoryModel = {
   /**
    * Get all advisories with optional filters
-   * @param {Object} filters - Optional filters (status, severity, state, site_id, advisory_type)
-   * @returns {Promise<Array>} Array of advisory objects with site data
+   * @param {Object} filters - Optional filters (status, severity, state, office_id, advisory_type)
+   * @returns {Promise<Array>} Array of advisory objects with office data
    */
   async getAll(filters = {}) {
     const db = getDatabase();
@@ -130,21 +130,21 @@ const AdvisoryModel = {
 
   /**
    * Find advisory by external ID (NOAA's unique identifier)
-   * Primary deduplication strategy - external_id is unique per alert+site
+   * Primary deduplication strategy - external_id is unique per alert+office
    * @param {string} externalId - External ID from NOAA API
-   * @param {number} siteId - Site ID (required for composite unique lookup)
+   * @param {number} officeId - Office ID (required for composite unique lookup)
    * @returns {Promise<Object|null>} Existing advisory or null
    */
-  async findByExternalID(externalId, siteId) {
+  async findByExternalID(externalId, officeId) {
     if (!externalId) return null;
     
     const db = getDatabase();
     
-    // When siteId is provided, look up the specific (external_id, site_id) pair
-    if (siteId) {
+    // When officeId is provided, look up the specific (external_id, office_id) pair
+    if (officeId) {
       const query = 'SELECT * FROM advisories WHERE external_id = ? AND office_id = ? LIMIT 1';
       try {
-        const [rows] = await db.query(query, [externalId, siteId]);
+        const [rows] = await db.query(query, [externalId, officeId]);
         return rows[0] || null;
       } catch (error) {
         console.error('Error finding advisory by external ID:', error);
@@ -152,7 +152,7 @@ const AdvisoryModel = {
       }
     }
     
-    // Fallback: no siteId (legacy callers)
+    // Fallback: no officeId (legacy callers)
     const query = 'SELECT * FROM advisories WHERE external_id = ? LIMIT 1';
     try {
       const [rows] = await db.query(query, [externalId]);
@@ -168,16 +168,16 @@ const AdvisoryModel = {
    * Used to check if an alert update already exists before creating a duplicate
    * Event ID stays the same across NEW→CON→EXT→EXP updates
    * @param {string} vtecEventId - VTEC event ID (e.g., "PAJK.HW.W.0006")
-   * @param {number} siteId - Site ID
+   * @param {number} officeId - Office ID
    * @param {string} advisoryType - Advisory type (optional for additional validation)
    * @returns {Promise<Object|null>} Existing advisory or null
    */
-  async findByVTECEventID(vtecEventId, siteId, advisoryType = null) {
+  async findByVTECEventID(vtecEventId, officeId, advisoryType = null) {
     if (!vtecEventId) return null;
     
     const db = getDatabase();
     let query = 'SELECT * FROM advisories WHERE vtec_event_id = ? AND office_id = ? AND status = ?';
-    const params = [vtecEventId, siteId, 'active'];
+    const params = [vtecEventId, officeId, 'active'];
     
     // Optional: also match on advisory_type for extra safety
     if (advisoryType) {
@@ -200,12 +200,12 @@ const AdvisoryModel = {
    * Find advisory by VTEC code (legacy - for backward compatibility)
    * @deprecated Use findByVTECEventID instead
    */
-  async findByVTEC(vtecCode, siteId, advisoryType = null) {
+  async findByVTEC(vtecCode, officeId, advisoryType = null) {
     if (!vtecCode) return null;
     
     const db = getDatabase();
     let query = 'SELECT * FROM advisories WHERE vtec_code = ? AND office_id = ?';
-    const params = [vtecCode, siteId];
+    const params = [vtecCode, officeId];
     
     if (advisoryType) {
       query += ' AND advisory_type = ?';
@@ -249,7 +249,7 @@ const AdvisoryModel = {
         const existing = await this.findByExternalID(externalId, advisory.office_id);
         if (existing) {
           const action = advisory.vtec_action || 'UPD';
-          console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for site ${advisory.office_id}`);
+          console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for office ${advisory.office_id}`);
           return this.update(existing.id, advisory);
         }
       }
@@ -267,7 +267,7 @@ const AdvisoryModel = {
         if (existing) {
           // Update existing alert with new data
           const action = advisory.vtec_action || 'UNK';
-          console.log(`Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for site ${advisory.office_id}`);
+          console.log(`Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for office ${advisory.office_id}`);
           return this.update(existing.id, advisory);
         }
       }

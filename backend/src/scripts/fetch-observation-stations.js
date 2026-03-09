@@ -2,9 +2,9 @@
 
 /**
  * Fetch Observation Stations
- * One-time script to map each site to its nearest NWS observation station.
+ * One-time script to map each office to its nearest NWS observation station.
  * Calls /points/{lat},{lon} -> follows observationStations URL -> takes nearest station.
- * Stores the station ICAO code in sites.observation_station.
+ * Stores the station ICAO code in offices.observation_station.
  *
  * Usage:
  *   node src/scripts/fetch-observation-stations.js              # Apply changes
@@ -25,35 +25,35 @@ async function fetchObservationStations() {
   await initDatabase();
   const db = getDatabase();
 
-  // Get all sites
-  const [sites] = await db.query('SELECT id, site_code, name, city, state, latitude, longitude, observation_station FROM sites ORDER BY state, city');
-  console.log(`Found ${sites.length} sites\n`);
+  // Get all offices
+  const [offices] = await db.query('SELECT id, site_code, name, city, state, latitude, longitude, observation_station FROM offices ORDER BY state, city');
+  console.log(`Found ${offices.length} offices\n`);
 
   let updated = 0;
   let skipped = 0;
   let failed = 0;
   const failures = [];
 
-  for (let i = 0; i < sites.length; i++) {
-    const site = sites[i];
-    const progress = `[${i + 1}/${sites.length}]`;
+  for (let i = 0; i < offices.length; i++) {
+    const office = offices[i];
+    const progress = `[${i + 1}/${offices.length}]`;
 
     // Skip if already has a station mapped (use --force to override)
-    if (site.observation_station && !process.argv.includes('--force')) {
-      console.log(`${progress} ${site.site_code} (${site.city}, ${site.state}) - Already mapped to ${site.observation_station}, skipping`);
+    if (office.observation_station && !process.argv.includes('--force')) {
+      console.log(`${progress} ${office.site_code} (${office.city}, ${office.state}) - Already mapped to ${office.observation_station}, skipping`);
       skipped++;
       continue;
     }
 
     try {
       const stations = await getObservationStations(
-        parseFloat(site.latitude),
-        parseFloat(site.longitude)
+        parseFloat(office.latitude),
+        parseFloat(office.longitude)
       );
 
       if (stations.length === 0) {
-        console.warn(`${progress} ${site.site_code} (${site.city}, ${site.state}) - No stations found`);
-        failures.push({ site_code: site.site_code, reason: 'No stations returned' });
+        console.warn(`${progress} ${office.site_code} (${office.city}, ${office.state}) - No stations found`);
+        failures.push({ site_code: office.site_code, reason: 'No stations returned' });
         failed++;
         continue;
       }
@@ -62,19 +62,19 @@ async function fetchObservationStations() {
       const stationId = nearest.stationIdentifier;
       const stationName = nearest.name;
 
-      console.log(`${progress} ${site.site_code} (${site.city}, ${site.state}) -> ${stationId} (${stationName})`);
+      console.log(`${progress} ${office.site_code} (${office.city}, ${office.state}) -> ${stationId} (${stationName})`);
 
       if (!isDryRun) {
         await db.query(
-          'UPDATE sites SET observation_station = ? WHERE id = ?',
-          [stationId, site.id]
+          'UPDATE offices SET observation_station = ? WHERE id = ?',
+          [stationId, office.id]
         );
       }
 
       updated++;
     } catch (error) {
-      console.error(`${progress} ${site.site_code} (${site.city}, ${site.state}) - ERROR: ${error.message}`);
-      failures.push({ site_code: site.site_code, reason: error.message });
+      console.error(`${progress} ${office.site_code} (${office.city}, ${office.state}) - ERROR: ${error.message}`);
+      failures.push({ site_code: office.site_code, reason: error.message });
       failed++;
     }
   }
@@ -85,7 +85,7 @@ async function fetchObservationStations() {
   console.log(`Failed: ${failed}`);
 
   if (failures.length > 0) {
-    console.log('\nFailed sites:');
+    console.log('\nFailed offices:');
     failures.forEach(f => console.log(`  ${f.site_code}: ${f.reason}`));
   }
 

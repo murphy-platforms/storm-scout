@@ -93,7 +93,7 @@ else
   fail "Health check — HTTP $HEALTH_CODE"
 fi
 check_endpoint "/api" "API info" '"endpoints"'
-check_endpoint "/api/sites" "Sites list" '"success"'
+check_endpoint "/api/offices" "Offices list" '"success"'
 check_endpoint "/api/advisories/active" "Active advisories" '"success"'
 check_endpoint "/api/status/overview" "Status overview" '"success"'
 check_endpoint "/api/filters" "Filter presets" '"success"'
@@ -102,13 +102,13 @@ echo ""
 
 # Validate data
 echo "Validating data..."
-SITES_RESPONSE=$(curl -s "$BASE_URL/api/sites")
-SITE_COUNT=$(echo "$SITES_RESPONSE" | grep -o '"site_code"' | wc -l | xargs)
+OFFICES_RESPONSE=$(curl -s "$BASE_URL/api/offices")
+OFFICE_COUNT=$(echo "$OFFICES_RESPONSE" | grep -o '"site_code"' | wc -l | xargs)
 
-if [ "$SITE_COUNT" -ge 229 ]; then
-  pass "Sites loaded: $SITE_COUNT (expected ≥229)"
+if [ "$OFFICE_COUNT" -ge 300 ]; then
+  pass "Offices loaded: $OFFICE_COUNT (expected ≥300)"
 else
-  fail "Sites loaded: $SITE_COUNT (expected ≥229)"
+  fail "Offices loaded: $OFFICE_COUNT (expected ≥300)"
 fi
 
 # Test frontend serving

@@ -67,12 +67,12 @@ const validateBooleanQuery = (fieldName) =>
     .withMessage(`${fieldName} must be 'true' or 'false'`);
 
 /**
- * Validate site_id query parameter
+ * Validate office_id query parameter
  */
-const validateSiteId = query('site_id')
+const validateOfficeId = query('office_id')
   .optional()
   .isInt({ min: 1 })
-  .withMessage('site_id must be a positive integer')
+  .withMessage('office_id must be a positive integer')
   .toInt();
 
 /**
@@ -91,6 +91,6 @@ module.exports = {
   validateDays,
   validateHours,
   validateBooleanQuery,
-  validateSiteId,
+  validateOfficeId,
   validateRegion
 };
