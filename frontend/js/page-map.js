@@ -15,51 +15,61 @@
             markerLayer = L.layerGroup().addTo(map);
         }
 
+        function debugStep(text) {
+            const list = document.getElementById('mapDebugSteps');
+            if (list) {
+                const li = document.createElement('li');
+                li.textContent = text;
+                list.appendChild(li);
+            }
+        }
+
         async function loadMapData() {
             try {
-                // Initialize filters first
+                debugStep('Starting: AlertFilters.init()');
                 const filtersLoaded = await AlertFilters.init();
+                debugStep('AlertFilters.init() returned: ' + filtersLoaded);
                 if (!filtersLoaded) throw new Error('Alert filter initialization failed');
 
+                debugStep('Fetching advisories, offices, observations...');
                 const [allAdvisories, allOffices, obsData] = await Promise.all([
                     API.getActiveAdvisories(),
                     API.getOffices(),
                     API.getObservations().catch(() => [])
                 ]);
+                debugStep('APIs returned — advisories:' + allAdvisories.length + ' offices:' + allOffices.length + ' obs:' + obsData.length);
 
-                // Build observations lookup by office_code
                 observationsMap = {};
                 obsData.forEach(obs => { observationsMap[obs.office_code] = obs; });
 
-                // Apply user's filter preferences
+                debugStep('Filtering advisories...');
                 const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
+                debugStep('filteredAdvisories: ' + filteredAdvisories.length);
 
-                // Aggregate FILTERED advisories by office
+                debugStep('Aggregating by office...');
                 const aggregated = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
+                debugStep('aggregated offices: ' + aggregated.length);
 
-                // Create map of aggregated data
                 const aggMap = new Map();
-                aggregated.forEach(office => {
-                    aggMap.set(office.office_id, office);
-                });
+                aggregated.forEach(office => { aggMap.set(office.office_id, office); });
 
-                // Filter to offices with advisories and add coordinates
                 const officesWithAdvisories = allOffices
                     .filter(office => aggMap.has(office.id))
-                    .map(office => ({
-                        ...office,
-                        ...aggMap.get(office.id)
-                    }));
+                    .map(office => ({ ...office, ...aggMap.get(office.id) }));
+                debugStep('officesWithAdvisories: ' + officesWithAdvisories.length);
 
+                debugStep('Calling renderMarkers...');
                 renderMarkers(officesWithAdvisories);
+                debugStep('Calling updateStats...');
                 updateStats(aggregated);
+                debugStep('Done.');
 
             } catch (error) {
                 console.error('Failed to load map data:', error);
                 const banner = document.getElementById('mapErrorBanner');
                 const msg = document.getElementById('mapErrorMessage');
-                if (msg) msg.textContent = 'Failed to load map data. Please refresh the page.';
-                if (banner) banner.style.display = '';
+                if (msg) msg.textContent = 'Error: ' + error.message + ' (' + error.constructor.name + ')';
+                if (banner) banner.classList.remove('d-none');
             }
         }
 
