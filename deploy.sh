@@ -234,36 +234,56 @@ restart_app() {
     log_info "Application restarted"
 }
 
-# [OPS-1] Pause ingestion before schema migration to prevent old-code/new-schema conflicts
+# [OPS-1] Pause ingestion via the admin API before migration/deploy.
+# Calls POST /api/admin/pause-ingestion which stops the scheduler in-process and
+# waits for any active cycle to finish — the old sed+sleep approach edited .env
+# but Node reads env at startup only, so it had no effect on the running process. (closes #112)
+# Requires DEPLOY_API_KEY env var (same value as API_KEY on the server).
 pause_ingestion() {
-    log_step "Pausing weather data ingestion..."
-    
-    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
-        cd ~/storm-scout
-        # Set INGESTION_ENABLED=false in .env
-        if grep -q '^INGESTION_ENABLED=' .env 2>/dev/null; then
-            sed -i 's/^INGESTION_ENABLED=.*/INGESTION_ENABLED=false/' .env
-        else
-            echo 'INGESTION_ENABLED=false' >> .env
-        fi
-        echo "Ingestion paused. Waiting 30s for any in-progress cycle to complete..."
-        sleep 30
-EOF
-    
-    log_info "Ingestion paused on production"
+    log_step "Pausing weather data ingestion via admin API..."
+
+    if [ -z "${DEPLOY_API_KEY:-}" ]; then
+        log_warn "DEPLOY_API_KEY not set — skipping ingestion pause (set it to API_KEY from server .env)"
+        return 0
+    fi
+
+    local base_url="https://$SERVER_HOST"
+    local response
+    response=$(curl -s -o /tmp/pause_response.json -w "%{http_code}" \
+        -X POST \
+        -H "X-Api-Key: $DEPLOY_API_KEY" \
+        "$base_url/api/admin/pause-ingestion" 2>/dev/null || echo "000")
+
+    if [ "$response" = "200" ]; then
+        log_info "Ingestion paused — active cycle (if any) has completed"
+    else
+        log_warn "Pause API returned HTTP $response (server may not be running yet — continuing)"
+        cat /tmp/pause_response.json 2>/dev/null || true
+    fi
 }
 
-# [OPS-1] Resume ingestion after deploy
+# [OPS-1] Resume ingestion after deploy completes.
+# On error, this is also called by the ERR trap to prevent permanently disabled ingestion.
 resume_ingestion() {
-    log_step "Resuming weather data ingestion..."
-    
-    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
-        cd ~/storm-scout
-        sed -i 's/^INGESTION_ENABLED=.*/INGESTION_ENABLED=true/' .env
-        echo "Ingestion resumed."
-EOF
-    
-    log_info "Ingestion resumed on production"
+    log_step "Resuming weather data ingestion via admin API..."
+
+    if [ -z "${DEPLOY_API_KEY:-}" ]; then
+        log_warn "DEPLOY_API_KEY not set — skipping ingestion resume"
+        return 0
+    fi
+
+    local base_url="https://$SERVER_HOST"
+    local response
+    response=$(curl -s -o /dev/null -w "%{http_code}" \
+        -X POST \
+        -H "X-Api-Key: $DEPLOY_API_KEY" \
+        "$base_url/api/admin/resume-ingestion" 2>/dev/null || echo "000")
+
+    if [ "$response" = "200" ]; then
+        log_info "Ingestion resumed"
+    else
+        log_warn "Resume API returned HTTP $response — manually restart the app if ingestion remains paused"
+    fi
 }
 
 # Main deployment flow
@@ -308,8 +328,9 @@ main() {
     echo ""
 }
 
-# Handle errors
-trap 'log_error "Deployment failed!"; exit 1' ERR
+# Handle errors — resume ingestion before exiting so a failed deploy does not
+# leave the scheduler permanently stopped on the production server.
+trap 'log_error "Deployment failed!"; resume_ingestion; exit 1' ERR
 
 # Run deployment
 main

@@ -295,6 +295,57 @@ function truncate(str, max) {
 }
 
 /**
+ * Return a debounced version of fn that fires only after `wait` ms of inactivity. (closes #115)
+ * @param {Function} fn - Function to debounce
+ * @param {number} wait - Milliseconds to wait after last call before firing
+ * @returns {Function} Debounced function
+ */
+function debounce(fn, wait) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), wait);
+    };
+}
+
+/**
+ * Show a non-intrusive Bootstrap Toast notification. (closes #118)
+ * Creates and appends a toast container if one is not already present.
+ * @param {string} message - Text to display in the toast
+ * @param {'warning'|'info'|'danger'} [type='warning'] - Bootstrap contextual color
+ */
+function showToast(message, type = 'warning') {
+    let container = document.getElementById('stormScoutToastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'stormScoutToastContainer';
+        container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        container.style.zIndex = 'var(--z-tooltip, 1100)';
+        document.body.appendChild(container);
+    }
+
+    const id = 'toast-' + Date.now();
+    const toast = document.createElement('div');
+    toast.id = id;
+    toast.className = `toast align-items-center text-bg-${type} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${escapeHtml(message)}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Dismiss"></button>
+        </div>`;
+    container.appendChild(toast);
+
+    // Bootstrap 5 Toast API
+    const bsToast = new bootstrap.Toast(toast, { delay: 6000 });
+    bsToast.show();
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+}
+
+/**
  * Format an ISO timestamp in the user's local timezone.
  * @param {string} isoString - ISO date string
  * @returns {string} Formatted local date/time string

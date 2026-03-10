@@ -112,6 +112,23 @@ const UpdateBanner = {
     },
     
     /**
+     * Clear all active intervals and reset polling state.
+     * Called on page unload and when the tab is hidden to prevent zombie timers
+     * and unnecessary API polling in background tabs. (closes #117)
+     */
+    destroy() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+            this.pollingInterval = null;
+        }
+        this.isPollingIngestion = false;
+    },
+
+    /**
      * Render the banner HTML
      * Returns HTML string to be inserted into page
      */
@@ -138,4 +155,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('lastUpdated') || document.getElementById('nextUpdate')) {
         UpdateBanner.init();
     }
+
+    // Clear intervals on page unload to prevent timer leaks across navigations
+    window.addEventListener('beforeunload', () => UpdateBanner.destroy());
+
+    // Pause countdown when tab is hidden; resume when it becomes visible again
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            UpdateBanner.destroy();
+        } else {
+            // Tab is visible again — re-sync with server
+            if (document.getElementById('lastUpdated') || document.getElementById('nextUpdate')) {
+                UpdateBanner.init();
+            }
+        }
+    });
 });

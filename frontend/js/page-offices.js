@@ -189,7 +189,7 @@
             filterOffices();
         }
 
-        document.getElementById('searchBox').addEventListener('input', filterOffices);
+        document.getElementById('searchBox').addEventListener('input', debounce(filterOffices, 300));
         document.getElementById('stateFilter').addEventListener('change', filterOffices);
         document.getElementById('weatherImpactFilter').addEventListener('change', function() {
             // Hide banner when manually changing filter

@@ -197,6 +197,42 @@ const AdvisoryModel = {
   },
 
   /**
+   * Find advisory by natural key — last-resort dedup when external_id and VTEC are both null.
+   * Matches on (office_id, advisory_type, source, start_time). start_time may be null;
+   * two rows with null start_time and the same other fields are treated as the same alert.
+   * @param {number} officeId
+   * @param {string} advisoryType
+   * @param {string} source
+   * @param {string|null} startTime
+   * @returns {Promise<Object|null>}
+   */
+  async findByNaturalKey(officeId, advisoryType, source, startTime) {
+    const db = getDatabase();
+    let query = `
+      SELECT * FROM advisories
+      WHERE office_id = ? AND advisory_type = ? AND source = ? AND status = 'active'
+    `;
+    const params = [officeId, advisoryType, source];
+
+    if (startTime != null) {
+      query += ' AND start_time = ?';
+      params.push(startTime);
+    } else {
+      query += ' AND start_time IS NULL';
+    }
+
+    query += ' ORDER BY last_updated DESC LIMIT 1';
+
+    try {
+      const [rows] = await db.query(query, params);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error finding advisory by natural key:', error);
+      return null;
+    }
+  },
+
+  /**
    * Find advisory by VTEC code (legacy - for backward compatibility)
    * @deprecated Use findByVTECEventID instead
    */
@@ -257,6 +293,22 @@ const AdvisoryModel = {
         if (existing) {
           const action = advisory.vtec_action || 'UPD';
           console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for office ${advisory.office_id}`);
+          return this.update(existing.id, advisory);
+        }
+      }
+
+      // Tertiary deduplication: natural key when both external_id and VTEC are absent.
+      // Malformed/legacy NOAA payloads may omit both fields; without this guard a
+      // retry of the same payload produces a duplicate row. (closes #114)
+      if (!externalId && !advisory.vtec_event_id) {
+        const existing = await this.findByNaturalKey(
+          advisory.office_id,
+          advisory.advisory_type,
+          advisory.source,
+          advisory.start_time
+        );
+        if (existing) {
+          console.warn(`[Advisory] Fallback natural-key dedup matched existing #${existing.id} (no external_id/VTEC). Updating instead of inserting.`);
           return this.update(existing.id, advisory);
         }
       }
