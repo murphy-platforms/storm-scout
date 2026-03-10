@@ -169,7 +169,9 @@ CREATE TABLE IF NOT EXISTS office_status (
     weather_impact_level VARCHAR(20) DEFAULT 'green',  -- 'green', 'yellow', 'orange', 'red'
     reason TEXT,                          -- Legacy: why the status changed
     -- Decision tracking
-    decision_by VARCHAR(100),             -- Who made the operational decision
+    -- PRIVACY NOTE: decision_by should contain role identifiers (e.g., 'weather_system',
+    -- 'ops_team', 'duty_manager'), NOT personal names. Avoid storing PII in this field.
+    decision_by VARCHAR(100),             -- Role or system that made the operational decision
     decision_at DATETIME,                 -- When the decision was made
     decision_reason TEXT,                 -- Reason for the operational decision
     last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

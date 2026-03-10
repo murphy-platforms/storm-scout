@@ -105,6 +105,8 @@ router.get('/summary', async (req, res) => {
     `);
 
     // Get offices that need attention (high impact but not closed/restricted)
+    // NOTE: decision_by should contain role identifiers (e.g., 'ops_team'),
+    // not personal names, to avoid exposing PII via the API.
     const [needsAttention] = await db.query(`
       SELECT s.id, s.office_code, s.name, s.state,
              ss.weather_impact_level, ss.operational_status,
