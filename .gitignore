@@ -61,3 +61,9 @@ staging/
 
 # USPS-internal migration
 backend/src/data/migrations/20260220-add-site-reference-table.sql
+
+# Build-time data artifacts (Issue #152)
+backend/src/data/new-sites-output.json
+backend/src/data/verified-sites.json
+backend/src/data/site-corrections.sql
+backend/src/data/ugc-codes-output.json
