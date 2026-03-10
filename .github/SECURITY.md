@@ -47,3 +47,7 @@ Security updates will be:
 
 - Project Maintainers (via GitHub)
 - Organization Security Team (per internal directory)
+
+---
+
+For the internal vulnerability tracking table, dependency override documentation, and secret rotation policy, see [`docs/security/README.md`](../docs/security/README.md).

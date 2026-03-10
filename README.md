@@ -82,6 +82,8 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ## Quick Start
 
+> **Terminology:** Throughout this documentation, "USPS locations" and "offices" refer to the same 300 USPS operational facilities. The codebase and API use "office" consistently; "USPS location" appears in user-facing UI copy.
+
 ### Prerequisites
 
 - Node.js 20 LTS (recommended) or 18+
@@ -132,6 +134,28 @@ npm run init-db
 # Load USPS office data (run import script first, then seed)
 node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
 npm run seed-db
+```
+
+**CSV format requirements:**
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| `zip` | Yes | 5-digit USPS zip code (becomes `site_code`) |
+| `name` | Yes | Office name |
+| `city` | Yes | City name |
+| `state` | Yes | 2-letter state code |
+| `latitude` | Yes | Decimal latitude |
+| `longitude` | Yes | Decimal longitude |
+| `region` | Optional | USPS region name |
+| `county` | Optional | County name (used for UGC matching) |
+| `ugc_codes` | Optional | JSON array string, e.g. `["TXZ123","TXC456"]` |
+| `cwa` | Optional | NWS County Warning Area code |
+
+Example header: `zip,name,city,state,latitude,longitude,region,county`
+
+The import **overwrites** `backend/src/data/offices.json` on each run. Rows missing required fields are skipped with a warning. Run summary prints total rows processed, rows skipped, and output path.
+
+```bash
 
 # Start the API server
 npm start
@@ -224,20 +248,27 @@ npm start
 
 ### Key API Endpoints
 
+- `GET /ping` - Liveness probe (always 200, no DB I/O)
+- `GET /health` - Readiness and operational health check
 - `GET /api/status/overview` - Dashboard statistics (with filter-aware frontend calculations)
-- `GET /api/advisories/active` - All active advisories
+- `GET /api/advisories/active` - All active advisories. Supports `?page=N&limit=N` pagination; returns full dataset by default for backward compatibility.
 - `GET /api/offices` - All 300 USPS offices
 - `GET /api/status/offices-impacted` - Offices with Closed or At Risk status
 - `GET /api/filters` - Available filter presets
 - `GET /api/filters/types/all` - All NOAA alert types by impact level
 - `GET /api/observations` - Current weather observations for all offices
 - `GET /api/observations/:officeCode` - Weather observation for a specific office
+- `GET /api/trends` - Advisory trend data for all offices
+- `GET /api/trends/:officeId` - Trend data for a single office
+- `POST /api/admin/pause-ingestion` - Pause ingestion before deploy (API key required)
+- `POST /api/admin/resume-ingestion` - Resume ingestion after maintenance (API key required)
+- `GET /api/admin/status` - Ingestion scheduler state (API key required)
 
-See `backend/README.md` for complete API documentation.
+See `docs/api.md` for complete API documentation.
 
 ## Filter Configuration
 
-The default filter preset is **"Site Default" (CUSTOM)** with 47 of 94 alert types enabled:
+The default filter preset is **"Office Default" (CUSTOM)** with 47 of 94 alert types enabled:
 
 - **CRITICAL**: 13/13 enabled (all — Tornado Warning, Hurricane Warning, Blizzard Warning, etc.)
 - **HIGH**: 17/17 enabled (all — Tornado Watch, Flood Warning, High Wind Warning, etc.)
@@ -259,6 +290,10 @@ DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
 
 See `DEPLOY.md` for detailed deployment instructions.
 
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for local development setup, code style guide, commit conventions, and pull request process.
+
 ## Security
 
 Storm Scout implements multiple security controls:
@@ -278,6 +313,12 @@ Storm Scout implements multiple security controls:
 **Security documentation:** See `docs/security/` for detailed guides, vulnerability tracking, dependency override rationale, and secret rotation policy.
 
 **Architecture & scale:** See `docs/ARCHITECTURE.md` for system overview, scale ceilings, and pre-500-location upgrade requirements.
+
+**Database schema reference:** See [`docs/DATA-DICTIONARY.md`](docs/DATA-DICTIONARY.md) for complete column definitions, enumerations, and table relationships.
+
+**Frontend development:** See [`docs/FRONTEND-GUIDE.md`](docs/FRONTEND-GUIDE.md) for page structure, state management, XSS safety requirements, and the guide to adding new pages.
+
+**Quick reference:** See [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) for a developer cheat sheet of CLI commands, environment variables, and curl examples.
 
 ## License
 

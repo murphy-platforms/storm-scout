@@ -171,6 +171,32 @@ docker exec -i storm-scout-db mariadb -u storm_scout -p<password> storm_scout_de
 systemctl --user restart storm-scout-dev
 ```
 
+### Rolling Back a Migration
+
+If a migration causes issues in production:
+
+1. Check current migration state:
+   ```bash
+   cd backend && node src/scripts/run-migrations.js --status
+   ```
+
+2. Identify the migration to revert. Migrations are in `backend/src/data/migrations/` and are applied in filename order.
+
+3. Manually revert the schema change:
+   ```sql
+   -- Example: reverting an ADD COLUMN migration
+   ALTER TABLE advisories DROP COLUMN IF EXISTS new_column;
+   ```
+
+4. Remove the migration record from the tracking table so it will re-apply cleanly on the next deploy:
+   ```sql
+   DELETE FROM schema_migrations WHERE filename = '20260220-migration-name.sql';
+   ```
+
+5. Restart the application and verify with `GET /health`.
+
+> **Note:** Not all migrations are reversible. Always test migrations on a staging database before production deployment. The `backups/` directory (if maintained) may contain a pre-deploy dump.
+
 ---
 
 ## Post-Deployment Verification
@@ -242,6 +268,59 @@ pm2 restart storm-scout
 
 ---
 
+## Operational Runbooks
+
+### Pausing Ingestion for Maintenance
+
+Before maintenance tasks that require a clean system state, pause the ingestion scheduler:
+
+```bash
+# Pause ingestion (waits for active cycle to finish, up to 60s)
+curl -s -X POST -H "X-Api-Key: $DEPLOY_API_KEY" https://<host>/api/admin/pause-ingestion
+
+# Verify paused
+curl -s -H "X-Api-Key: $DEPLOY_API_KEY" https://<host>/api/admin/status
+
+# Resume when maintenance is complete
+curl -s -X POST -H "X-Api-Key: $DEPLOY_API_KEY" https://<host>/api/admin/resume-ingestion
+```
+
+### Triggering a Manual Ingestion Run
+
+```bash
+# From the backend directory on the server
+node src/ingestion/run-ingestion.js
+```
+
+Ingestion logs are written to stdout/PM2 logs. Check `/health` after completion to verify advisory counts updated.
+
+### Interpreting /health Output
+
+`GET /health` returns:
+- `status`: `ok` (all checks pass) or `degraded` (one or more checks failed)
+- `checks.database.status`: `ok` or `error` — database connectivity
+- `checks.ingestion.status`: `ok` (current), `stale` (last run >30 min ago), `unknown`, or `error`
+- `checks.ingestion.minutesAgo`: minutes since last successful ingestion
+- `ingestion.active`: `true` if an ingestion cycle is currently running
+- `ingestion.startedAt`: ISO timestamp of when the current cycle started, or `null`
+- `uptime`: process uptime in seconds
+- `memory.heapUsed` / `memory.rss`: current Node.js memory in MB
+
+A `degraded` status with `checks.database.status: error` indicates the DB connection pool is exhausted or MariaDB is unreachable. To check consecutive failure counts and scheduler state, use `GET /api/admin/status` (API key required).
+
+### Log Management
+
+If using PM2, install log rotation once on the server:
+```bash
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:max_size 100M
+pm2 set pm2-logrotate:retain 7
+```
+
+Expected log volume: ~50–200 MB/day depending on ingestion frequency and advisory volume. Allocate at least 5 GB disk for 30 days of logs.
+
+---
+
 ## Boot Sequence
 
 On system reboot the startup order is:
@@ -290,7 +369,7 @@ cd /srv/projects/storm-scout-usps/backend && node src/ingestion/run-ingestion.js
 
 ### Rate limit hit during testing
 
-The API has a 500 requests/15 min limit. If hit during smoke testing:
+The API general tier allows 30,000 requests/60 min per IP (write endpoints: 20 req/15 min). If the rate limit is hit during smoke testing:
 
 ```bash
 systemctl --user restart storm-scout-dev
