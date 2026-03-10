@@ -24,7 +24,21 @@ Note: Use `/health` for readiness checks — `/ping` does not verify database co
 
 #### GET `/health`
 
-System health check — database connectivity, ingestion state, data integrity.
+Public liveness probe — returns database connectivity status only. For detailed diagnostics (memory, circuit breaker, ingestion), use the authenticated `GET /api/admin/health` endpoint.
+
+**Response**:
+```json
+{
+    "status": "ok",
+    "timestamp": "2026-03-10T14:00:00.000Z"
+}
+```
+
+Returns HTTP 200 if healthy, HTTP 503 if degraded (database unreachable).
+
+#### GET `/api/admin/health` _(requires API key)_
+
+Detailed health diagnostics — database, ingestion freshness, data integrity, memory, circuit breaker state.
 
 **Response**:
 ```json

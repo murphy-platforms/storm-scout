@@ -95,8 +95,8 @@ if (config.cors.origin === false) {
 }
 app.use(cors({ origin: config.cors.origin }));
 app.use(compression());  // Gzip API responses and static files (~85% size reduction)
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 // Rate limiting - apply to all /api routes
 app.use('/api', apiLimiter);
@@ -158,145 +158,21 @@ if (config.env === 'development' || jsonLogging) {
 // Liveness probe — always returns 200 with no I/O, for supervisor keep-alive checks. (closes #104)
 app.get('/ping', (req, res) => res.json({ status: 'ok' }));
 
-// Health check endpoint (enhanced with database, ingestion, and data integrity status)
+// Public health check — returns only status for load balancers and supervisors.
+// Detailed diagnostics (memory, circuit breaker, ingestion) are at /api/admin/health behind API key auth.
 app.get('/health', async (req, res) => {
-  const fs = require('fs');
-  const path = require('path');
   const { getDatabase } = require('./config/database');
-  const { getIngestionStatus } = require('./ingestion/noaa-ingestor');
-  const { getCircuitBreakerState } = require('./ingestion/utils/api-client');
 
-  const mem = process.memoryUsage();
-
-  const health = {
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: config.env,
-    uptime: {
-      seconds: Math.floor(process.uptime()),
-      human: (() => {
-        const s = Math.floor(process.uptime());
-        const h = Math.floor(s / 3600);
-        const m = Math.floor((s % 3600) / 60);
-        return `${h}h ${m}m ${s % 60}s`;
-      })()
-    },
-    memory: {
-      heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
-      heapTotalMb: Math.round(mem.heapTotal / 1024 / 1024),
-      rssMb: Math.round(mem.rss / 1024 / 1024),
-      externalMb: Math.round(mem.external / 1024 / 1024)
-    },
-    noaaCircuitBreaker: getCircuitBreakerState(),
-    checks: {
-      database: { status: 'unknown' },
-      ingestion: { status: 'unknown' },
-      data_integrity: { status: 'unknown' }
-    },
-    ingestion: getIngestionStatus()
-  };
-  
+  let status = 'ok';
   try {
-    // Check database connection
     const db = getDatabase();
     await db.query('SELECT 1');
-    health.checks.database = { 
-      status: 'ok',
-      message: 'Database connection successful'
-    };
-  } catch (error) {
-    health.status = 'degraded';
-    health.checks.database = {
-      status: 'error',
-      message: error.message
-    };
+  } catch {
+    status = 'degraded';
   }
-  
-  try {
-    // Check last ingestion time
-    const ingestionFile = path.join(__dirname, '../.last-ingestion.json');
-    if (fs.existsSync(ingestionFile)) {
-      const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
-      const lastUpdate = new Date(data.lastUpdated);
-      const minutesAgo = (Date.now() - lastUpdate.getTime()) / (1000 * 60);
-      
-      health.checks.ingestion = {
-        status: minutesAgo <= 30 ? 'ok' : 'stale',
-        lastUpdated: data.lastUpdated,
-        minutesAgo: Math.round(minutesAgo),
-        message: minutesAgo <= 30 
-          ? 'Ingestion is current' 
-          : `Last ingestion was ${Math.round(minutesAgo)} minutes ago (expected: <= 30 min)`
-      };
-      
-      if (minutesAgo > 30) {
-        health.status = 'degraded';
-      }
-    } else {
-      health.checks.ingestion = {
-        status: 'unknown',
-        message: 'No ingestion history found (ingestion may not have run yet)'
-      };
-    }
-  } catch (error) {
-    health.checks.ingestion = {
-      status: 'error',
-      message: `Error checking ingestion status: ${error.message}`
-    };
-  }
-  
-  try {
-    // Check data integrity - UGC codes and county fields
-    const db = getDatabase();
-    
-    // Check for sites missing UGC codes
-    const [missingUgc] = await db.query(
-      "SELECT COUNT(*) as count FROM offices WHERE ugc_codes IS NULL OR ugc_codes = '[]'"
-    );
-    
-    // Check for sites missing county
-    const [missingCounty] = await db.query(
-      "SELECT COUNT(*) as count FROM offices WHERE county IS NULL OR county = ''"
-    );
-    
-    // Validate UGC code format (should match pattern like MNZ060 or MNC053)
-    const [invalidFormat] = await db.query(
-      `SELECT COUNT(*) as count FROM offices 
-       WHERE ugc_codes IS NOT NULL 
-       AND ugc_codes NOT REGEXP '"[A-Z]{2}[ZC][0-9]{3}"'`
-    );
-    
-    const ugcMissing = missingUgc[0]?.count || 0;
-    const countyMissing = missingCounty[0]?.count || 0;
-    const formatInvalid = invalidFormat[0]?.count || 0;
-    
-    if (ugcMissing === 0 && countyMissing === 0 && formatInvalid === 0) {
-      health.checks.data_integrity = {
-        status: 'ok',
-        message: 'All offices have valid UGC codes and county data'
-      };
-    } else {
-      health.status = 'degraded';
-      health.checks.data_integrity = {
-        status: 'warning',
-        message: 'Data integrity issues detected',
-        details: {
-          sites_missing_ugc: ugcMissing,
-          sites_missing_county: countyMissing,
-          sites_invalid_ugc_format: formatInvalid
-        }
-      };
-    }
-  } catch (error) {
-    health.checks.data_integrity = {
-      status: 'error',
-      message: `Error checking data integrity: ${error.message}`
-    };
-  }
-  
-  // Set HTTP status based on overall health
-  const httpStatus = health.status === 'ok' ? 200 : 503;
-  res.status(httpStatus).json(health);
+
+  const httpStatus = status === 'ok' ? 200 : 503;
+  res.status(httpStatus).json({ status, timestamp: new Date().toISOString() });
 });
 
 // X-Data-Age header — tells the frontend how old the data is (seconds since last ingestion)
