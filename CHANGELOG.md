@@ -11,9 +11,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
 - Predictive analytics based on historical patterns
-- Unit tests with Jest
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
+
+## [1.10.0] - 2026-03-10
+
+### Added
+
+- **#109 Jest test suite** — `jest.config.js` added (testEnvironment: `node`, explicit roots, 40% coverage thresholds); `supertest` added to devDependencies; three new test files: `tests/unit/apiKey.middleware.test.js` (5 cases: valid key, missing key, wrong key, same-length wrong key, unconfigured key → 503), `tests/unit/advisory.model.test.js` (dedup by external_id, VTEC, natural key, new insert; `findByNaturalKey` null handling), `tests/integration/advisories.route.test.js` (active list, empty state, severity filter, invalid input → 400, `/ping` liveness)
+- **#112 API-driven ingestion pause** — `backend/src/routes/admin.js` adds `POST /api/admin/pause-ingestion`, `POST /api/admin/resume-ingestion`, and `GET /api/admin/status` endpoints, all protected by `requireApiKey`; pause waits for any active ingestion cycle to complete via `waitForIngestionIdle()` before returning; both endpoints are idempotent; `deploy.sh` updated to call these endpoints via curl using `DEPLOY_API_KEY` env var; `DEPLOY_API_KEY` documented in `.env.production.example`; ERR trap in `deploy.sh` now calls `resume_ingestion()` on failure so a failed deploy cannot leave ingestion permanently stopped
+- **#115 Search input debounce** — `debounce(fn, wait)` utility added to `frontend/js/utils.js`; applied at 300ms to the `searchBox` `input` listener in `page-offices.js` and `page-advisories.js`; `select`/`change` listeners left unbounced (discrete actions)
+- **#118 localStorage error handling** — `loadUserPreferences()` in `alert-filters.js` wrapped in try/catch; on `SecurityError`, `SyntaxError`, or any localStorage failure, default preset is applied and a toast notification is shown; `showToast(message, type)` helper added to `utils.js` using Bootstrap 5.3 Toast API
+
+### Fixed
+
+- **#113 DB statement timeout** — `database.js` `pool.on('acquire')` handler executes `SET SESSION max_statement_time = N` on every connection; prevents long-running queries (Haversine geo, history scans) from hanging indefinitely and exhausting the pool; configurable via `DB_STATEMENT_TIMEOUT_SECONDS` env var (default 30s); falls back gracefully with a console warning when the session variable is unsupported
+- **#114 Natural-key dedup guard** — `advisory.js` `create()` now performs a last-resort `findByNaturalKey()` lookup `(office_id, advisory_type, source, start_time)` before the bare INSERT when both `external_id` and `vtec_event_id` are null; prevents duplicate rows from malformed NOAA payloads on retry; `start_time IS NULL` handled correctly in the query; fallback logs a warning when triggered
+- **#116 Empty-state consistency** — `page-advisories.js` table-view empty state replaced with `renderEmptyHtml()` utility call (was hardcoded inline HTML); now matches the card view and offices page pattern
+- **#117 UpdateBanner interval cleanup** — `update-banner.js` `destroy()` method clears both `countdownInterval` and `pollingInterval` and resets the polling guard flag; `beforeunload` listener calls `destroy()` to prevent timer leaks on navigation; `visibilitychange` listener calls `destroy()` when tab is hidden and re-calls `init()` when tab becomes visible again, preventing unnecessary API polling in background tabs
+
+### Closed (no code change)
+
+- **#110 PM2 log rotation** — `deployment/ecosystem.config.js` already contained `log_date_format: 'YYYY-MM-DD HH:mm:ss Z'` and `merge_logs: true`; no code change required; note: `pm2 install pm2-logrotate` is a one-time server setup step
+- **#111 Health check backoff in deployment/deploy.sh** — 5-attempt exponential backoff loop was already present from commit `e38101f`; cPanel `deploy.sh` has no automated health check by design (restart is manual via cPanel UI)
 
 ## [1.9.9] - 2026-03-10
 

@@ -43,9 +43,11 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **Client-Side Caching** - `localStorage` TTL cache (5 min) for advisories, overview, and observations reduces redundant full-dataset fetches on page load and tab switch
 - **Pagination** - `GET /api/advisories/active?page=N&limit=N`; default (no params) returns full dataset for backward compatibility
 - **DB Connection Pool** - Configurable via `DB_POOL_LIMIT` (default 40); pool exhaustion returns HTTP 503 + `Retry-After: 5` instead of generic 500
+- **DB Statement Timeout** - `pool.on('acquire')` sets `max_statement_time` per connection; prevents long-running queries from hanging and exhausting the pool; configurable via `DB_STATEMENT_TIMEOUT_SECONDS` (default 30s)
 - **NOAA Circuit Breaker** - CLOSED/OPEN/HALF_OPEN state machine; opens after 3 consecutive exhausted-retry failures; 60s recovery window; state visible in `/health`
 - **Graceful Shutdown** - SIGTERM/SIGINT handler drains HTTP connections → stops scheduler → waits for active ingestion (up to 60s) → closes DB pool cleanly
 - **Ingestion Performance** - Bulk pre-fetch of existing advisories inside transaction eliminates per-row SELECT round-trips; expiration query chunked into 500-ID batches to avoid `max_allowed_packet` limits
+- **Search Debounce** - 300ms debounce on all free-text search inputs eliminates per-keystroke re-renders; `debounce()` utility in `utils.js`
 - **Observability** - `/health` exposes uptime, memory (heap/RSS in MB), circuit breaker state, ingestion status, and data integrity; structured JSON request logging via `LOG_FORMAT=json`; `X-Data-Age` header on all API responses
 
 ### Security
@@ -61,13 +63,15 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
-- **Database Optimization** - UPSERT operations prevent duplicate advisories, unique indexes on external IDs
-- **Safe Deploys** - `deploy.sh` pauses ingestion before rsync, resumes after restart
+- **Database Optimization** - UPSERT operations prevent duplicate advisories, unique indexes on external IDs; natural-key fallback dedup guards against malformed payloads with no external_id or VTEC
+- **Safe Deploys** - `deploy.sh` calls `POST /api/admin/pause-ingestion` (API key authenticated) before rsync and waits for any active cycle to finish; ERR trap calls resume on deploy failure; ingestion auto-resumes on app restart
+- **Admin API** - `POST /api/admin/pause-ingestion`, `POST /api/admin/resume-ingestion`, `GET /api/admin/status` endpoints (all behind API key); used by deploy script and available for manual operational control
 - **Pre-Deploy Smoke Test** - 11 automated checks including API validation and XSS audit; aborts deploy on any failure
 - **Deterministic Builds** - `npm ci` (not `npm install`) in all deploy paths ensures package-lock.json is honored
 - **Automated Migrations** - `npm run migrate` runs idempotent migrations before app restart on every deploy; `APPLY_MIGRATIONS=false` escape hatch available
 - **CI Pipeline** - GitHub Actions runs `npm ci`, `npm audit --audit-level=high`, and `npm test` on every push and pull request
 - **Liveness vs Readiness** - `/ping` (no I/O, always 200) for supervisor keep-alive; `/health` (may 503) for readiness monitoring
+- **Test Suite** - Jest unit and integration tests for advisory model dedup paths, API key middleware, and advisories route; `supertest` for HTTP-level assertions
 
 ### Global Architecture (Planned)
 - **Multi-Country Design** - Adapter pattern for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico)
