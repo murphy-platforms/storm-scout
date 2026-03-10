@@ -1,6 +1,42 @@
+        /**
+         * page-office-detail.js
+         * Office detail page — loads a single USPS office, its active advisories,
+         * and current weather observations; renders advisory cards with VTEC metadata.
+         *
+         * Key responsibilities:
+         *   - Reads the office code from the URL (?office= preferred, ?site= for legacy)
+         *   - Fetches all advisories, offices, and observations in parallel
+         *   - Aggregates and deduplicates advisories for the target office
+         *   - Renders: office header, highest alert card, impact summary, timeline,
+         *     and full advisory list with VTEC action badges and NWS external links
+         *   - Provides a modal detail view with full NOAA alert narrative
+         *
+         * State variables:
+         *   officeData       - The matched office record from the offices API
+         *   officeAdvisories - Raw advisory records for this office (pre-aggregation)
+         *
+         * External dependencies (globals):
+         *   API, OfficeAggregator, html, raw, escapeHtml, truncate, cToF, isStale,
+         *   timeAgo, formatDate, getSeverityBadge, getActionBadge, getActionBadgeWithTime,
+         *   renderEmptyHtml, renderErrorHtml — from utils.js / shared helpers
+         *   bootstrap (for modal instantiation)
+         */
+
         let officeData = null;
         let officeAdvisories = [];
 
+        /**
+         * Main entry point — reads the office code from URL params, fetches all
+         * required data in parallel, matches the target office, and orchestrates
+         * the render sequence for each page section.
+         *
+         * URL parameter handling:
+         *   ?office=XXXXX  - preferred format (5-digit USPS zip code)
+         *   ?site=XXXXX    - legacy alias retained for backwards compatibility
+         *                    with bookmarked or externally shared links
+         *
+         * @returns {Promise<void>}
+         */
         async function loadOfficeDetail() {
             try {
                 // Get office code from URL (?office= preferred, ?site= for legacy links)
@@ -58,12 +94,30 @@
             }
         }
 
+        /**
+         * Display the error state panel with the provided message.
+         * Hides the loading spinner and the main content section so the page
+         * degrades gracefully when an office is not found or the API fails.
+         *
+         * @param {string} message - Human-readable error description
+         * @returns {void}
+         */
         function showError(message) {
             document.getElementById('errorMessage').textContent = message;
             document.getElementById('loadingState').classList.add('d-none');
             document.getElementById('errorState').classList.remove('d-none');
         }
 
+        /**
+         * Populate the office header card with identity, location, severity badge,
+         * and current temperature display.
+         *
+         * @param {Object}      office  - Office record from the offices API
+         * @param {Object}      aggData - Aggregated office data from OfficeAggregator
+         * @param {Object|null} obs     - Current weather observation for this office,
+         *                               or null if no observation is available
+         * @returns {void}
+         */
         function renderOfficeHeader(office, aggData, obs) {
             document.getElementById('officeCode').textContent = office.office_code;
             document.getElementById('officeName').textContent = office.name;
@@ -116,6 +170,15 @@
             return match ? match[1].replace(/\s+/g, ' ').trim() : null;
         }
 
+        /**
+         * Render the "highest alert" hero card with the most severe active advisory.
+         * Extracts the WHAT and WHEN sections from the NOAA narrative for a quick
+         * plain-language summary without displaying the full multi-paragraph text.
+         *
+         * @param {Object} aggData - Aggregated office object from OfficeAggregator;
+         *                          must contain highest_severity_advisory
+         * @returns {void}
+         */
         function renderHighestAlert(aggData) {
             const advisory = aggData.highest_severity_advisory;
             const card = document.getElementById('highestAlertCard');
@@ -146,6 +209,13 @@
             `;
         }
 
+        /**
+         * Render the impact summary grid — one card per unique alert type showing
+         * severity, alert count, and (if applicable) the number of NWS forecast zones.
+         *
+         * @param {Object} aggData - Aggregated office object; must contain type_groups
+         * @returns {void}
+         */
         function renderImpactSummary(aggData) {
             const container = document.getElementById('impactSummaryContainer');
 
@@ -171,6 +241,15 @@
             container.innerHTML = html`<div class="row">${raw(summary)}</div>`;
         }
 
+        /**
+         * Render the advisory timeline sorted newest-first.
+         * Each entry shows the alert type, VTEC action badge, severity, and a
+         * human-readable relative timestamp (e.g. "3 hours ago") alongside the
+         * formatted absolute date for auditability.
+         *
+         * @param {Object} aggData - Aggregated office object; must contain advisories array
+         * @returns {void}
+         */
         function renderTimeline(aggData) {
             const container = document.getElementById('timelineContainer');
 
@@ -204,6 +283,17 @@
             container.innerHTML = timeline || '<p class="text-center text-muted py-3 mb-0"><i class="bi bi-clock-history me-1"></i>No timeline data available</p>';
         }
 
+        /**
+         * Render the full advisory list grouped by alert type.
+         * Each group card includes action badges, zone counts, WHAT/WHEN summaries,
+         * a "View Full Alert" button that opens the detail modal, and NWS links.
+         * Groups are sourced from aggData.type_groups so zone-deduplicated counts
+         * are used rather than raw advisory rows.
+         *
+         * @param {Object} aggData - Aggregated office object; must contain
+         *                          type_groups and total_zone_count
+         * @returns {void}
+         */
         function renderAllAdvisories(aggData) {
             const container = document.getElementById('allAdvisoriesContainer');
             document.getElementById('totalAdvisoryCount').textContent = aggData.total_zone_count;
@@ -257,6 +347,13 @@
 
         // getActionBadgeWithTime() is defined in js/utils.js
 
+        /**
+         * Return a human-readable time-remaining string for an advisory expiry.
+         *
+         * @param {string} expiresISO - ISO 8601 expiry datetime string
+         * @returns {string} e.g. "Expired", "Expires soon", "3 hours remaining",
+         *                   "2 days remaining"
+         */
         function getTimeRemaining(expiresISO) {
             const hours = Math.round((new Date(expiresISO) - new Date()) / 3600000);
             if (hours < 0) return 'Expired';

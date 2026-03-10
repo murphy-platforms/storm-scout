@@ -11,15 +11,26 @@ const config = require('../config/config');
 const ALERT_CONFIG = {
   webhookUrl: process.env.ALERT_WEBHOOK_URL || null,
   email: process.env.ALERT_EMAIL || null,
-  // Throttle alerts to prevent spam (minimum time between alerts in ms)
-  throttleMs: 5 * 60 * 1000,  // 5 minutes
+  // 5-minute throttle window: prevents notification spam during rapid NOAA API
+  // instability while still surfacing repeated failures to operators.
+  // Each alert type has its own independent throttle bucket (keyed by type in
+  // lastAlertTime) so a failure alert and its subsequent recovery alert do not
+  // share a window and suppress each other.
+  // Configurable via ALERT_THROTTLE_MS env var if the default is too aggressive.
+  throttleMs: parseInt(process.env.ALERT_THROTTLE_MS) || 5 * 60 * 1000,  // 5 minutes
   lastAlertTime: {}
 };
 
 /**
- * Check if we should throttle an alert
- * @param {string} alertType - Type of alert for throttling
- * @returns {boolean} True if should throttle
+ * Determine whether an alert of the given type should be suppressed.
+ * Prevents notification spam during sustained outages by enforcing a minimum
+ * interval between alerts of the same type. Each alert type has an independent
+ * throttle bucket so failure and recovery alerts (INGESTION_FAILURE vs.
+ * INGESTION_RECOVERY) do not block each other — operators always see the
+ * all-clear even if the failure was recently alerted.
+ *
+ * @param {string} alertType - AlertTypes constant (e.g. AlertTypes.INGESTION_FAILURE)
+ * @returns {boolean} True if the alert should be suppressed; false if it should fire
  */
 function shouldThrottle(alertType) {
   const now = Date.now();
@@ -34,9 +45,31 @@ function shouldThrottle(alertType) {
 }
 
 /**
- * Send alert to configured webhook (Slack, Discord, etc.)
- * @param {Object} payload - Alert payload
- * @returns {Promise<boolean>} Success status
+ * POST an alert payload to the configured webhook URL.
+ * Compatible with Slack incoming webhooks and any service that accepts a JSON
+ * POST body (Discord, Teams, PagerDuty event webhooks, etc.).
+ *
+ * Expected payload shape (as produced by formatSlackAlert):
+ * ```json
+ * {
+ *   "text": ":rotating_light: Storm Scout Alert: <title>",
+ *   "attachments": [{
+ *     "color": "#dc3545",
+ *     "fields": [
+ *       { "title": "Type",      "value": "<alertType>", "short": true },
+ *       { "title": "Severity",  "value": "CRITICAL",    "short": true },
+ *       { "title": "Details",   "value": "<message>",   "short": false },
+ *       { "title": "Timestamp", "value": "<ISO string>","short": true }
+ *     ]
+ *   }]
+ * }
+ * ```
+ *
+ * Returns false without throwing when the webhook URL is not configured so
+ * environments without alerting set up still function normally.
+ *
+ * @param {Object} payload - JSON-serialisable webhook payload
+ * @returns {Promise<boolean>} True if the webhook returned 2xx; false otherwise
  */
 async function sendWebhookAlert(payload) {
   if (!ALERT_CONFIG.webhookUrl) {
@@ -188,9 +221,17 @@ const AlertTypes = {
 };
 
 /**
- * Send ingestion failure alert
- * @param {Error} error - The error that occurred
- * @param {Object} context - Additional context
+ * Send a critical alert when the NOAA ingestion pipeline fails.
+ * Uses AlertTypes.INGESTION_FAILURE as the throttle key so repeated failures
+ * within the throttle window are suppressed — only the first failure in a streak
+ * fires an alert; subsequent ones are logged to console only.
+ *
+ * @param {Error}  error          - The error that caused the ingestion failure
+ * @param {Object} [context={}]   - Additional diagnostic context passed as metadata;
+ *   common keys: consecutiveFailures {number}, maxConsecutiveFailures {number},
+ *   type {string} (for snapshot failures)
+ * @returns {Promise<boolean>} True if the alert was dispatched; false if throttled
+ *   or no webhook is configured
  */
 async function alertIngestionFailure(error, context = {}) {
   return sendAlert({
@@ -206,9 +247,14 @@ async function alertIngestionFailure(error, context = {}) {
 }
 
 /**
- * Send anomaly detection alert
- * @param {string} message - Anomaly description
- * @param {Object} data - Anomaly data
+ * Send an anomaly detection alert for unexpected system behaviour (e.g. advisory
+ * count spikes, unexpected data shapes, duplicate rates above threshold).
+ * Uses AlertTypes.ANOMALY_DETECTED as its throttle key.
+ *
+ * @param {string} message       - Human-readable description of the anomaly
+ * @param {Object} [data={}]     - Supporting data for diagnostics (any serialisable shape)
+ * @returns {Promise<boolean>} True if the alert was dispatched; false if throttled
+ *   or no webhook is configured
  */
 async function alertAnomaly(message, data = {}) {
   return sendAlert({
@@ -221,8 +267,14 @@ async function alertAnomaly(message, data = {}) {
 }
 
 /**
- * Send cleanup failure alert
- * @param {Error} error - The error that occurred
+ * Send an alert when the advisory cleanup process fails (expired/duplicate
+ * advisory removal). Uses AlertTypes.CLEANUP_FAILURE as its throttle key.
+ * Cleanup failures are non-critical but may indicate database issues and
+ * should be investigated to prevent advisory table bloat.
+ *
+ * @param {Error} error - The error thrown by the cleanup process
+ * @returns {Promise<boolean>} True if the alert was dispatched; false if throttled
+ *   or no webhook is configured
  */
 async function alertCleanupFailure(error) {
   return sendAlert({
@@ -237,8 +289,14 @@ async function alertCleanupFailure(error) {
 }
 
 /**
- * Send ingestion recovery alert (all-clear after a failure streak)
- * @param {Object} context - Recovery context (e.g., previousConsecutiveFailures)
+ * Send an all-clear alert when ingestion succeeds after a failure streak.
+ * Uses AlertTypes.INGESTION_RECOVERY as its throttle key — independent of the
+ * failure key — so recovery alerts are never suppressed by a recent failure alert.
+ *
+ * @param {Object} [context={}] - Recovery context; common keys:
+ *   previousConsecutiveFailures {number} — number of failures before recovery
+ * @returns {Promise<boolean>} True if the alert was dispatched; false if throttled
+ *   or no webhook is configured
  */
 async function alertIngestionRecovery(context = {}) {
   return sendAlert({

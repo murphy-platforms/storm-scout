@@ -1,3 +1,29 @@
+        /**
+         * page-filters.js
+         * Filter settings page — lets users configure which of the 94 NOAA alert
+         * types to include; saves preferences to localStorage.
+         *
+         * Key responsibilities:
+         *   - Fetches the full NOAA alert-type taxonomy (grouped by impact level)
+         *     and the available filter presets from the backend API
+         *   - Loads existing preferences from localStorage (STORAGE_KEY) and
+         *     falls back to the DEFAULT_PRESET when no saved state is found
+         *   - Renders a toggle card for each alert type, grouped by impact level
+         *     (CRITICAL, HIGH, MODERATE, LOW, INFO)
+         *   - Supports preset application (Standard, Minimal, Full, Custom) and
+         *     per-level bulk enable/disable
+         *   - Persists the current toggle state to localStorage on save; the
+         *     AlertFilters utility reads this key on all other pages
+         *
+         * State variables:
+         *   alertTypesByLevel - Object keyed by impact level; value is string[] of types
+         *   filterPresets     - Named preset configs fetched from the backend
+         *   currentFilters    - Map of alertType → true|undefined (undefined = disabled)
+         *
+         * External dependencies (globals):
+         *   API_BASE_URL, html, raw, escapeHtml, renderEmptyHtml, renderErrorHtml
+         */
+
         const STORAGE_KEY = 'stormScout_alertFilters';
         const DEFAULT_PRESET = 'CUSTOM';
 
@@ -49,7 +75,14 @@
             'INFO': 'light'
         };
 
-        // Load alert types and presets
+        /**
+         * Fetch alert-type taxonomy and filter presets from the API, then
+         * restore saved preferences and render the full settings page.
+         * Both fetch calls are sequential (presets depend on knowing the type list
+         * to validate categories) and failures show an inline error.
+         *
+         * @returns {Promise<void>}
+         */
         async function loadData() {
             try {
                 // Load alert types
@@ -76,7 +109,15 @@
             }
         }
 
-        // Load user preferences from localStorage
+        /**
+         * Restore saved filter preferences from localStorage into currentFilters.
+         * Falls back to the DEFAULT_PRESET when no saved state exists (e.g. first visit).
+         * The save=false argument prevents applyPreset from immediately re-saving,
+         * which would overwrite existing preferences before the user has a chance to
+         * review them.
+         *
+         * @returns {void}
+         */
         function loadPreferences() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
@@ -88,7 +129,14 @@
             }
         }
 
-        // Save preferences to localStorage
+        /**
+         * Persist the current toggle state to localStorage and show a 2-second
+         * success confirmation in the status element.
+         * Saving to localStorage means the preference is instantly available to
+         * AlertFilters on all other pages without a round-trip to the server.
+         *
+         * @returns {void}
+         */
         function savePreferences() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(currentFilters));
 
@@ -106,7 +154,19 @@
             }, 2000);
         }
 
-        // Apply a preset filter
+        /**
+         * Apply a named filter preset to currentFilters and re-render.
+         * Preset application logic:
+         *   1. Reset currentFilters to an empty object (all disabled)
+         *   2. For each impact level in the preset's includeCategories, enable every
+         *      alert type in that level unless it appears in excludeTypes
+         * This additive model (enable-then-exclude) keeps preset definitions concise
+         * since most presets include whole levels with only a few exceptions.
+         *
+         * @param {string}  presetName - Key in filterPresets (e.g. 'STANDARD', 'FULL')
+         * @param {boolean} [save=true] - Whether to immediately persist to localStorage
+         * @returns {void}
+         */
         function applyPreset(presetName, save = true) {
             const preset = filterPresets[presetName];
             if (!preset) return;
@@ -133,14 +193,30 @@
             }
         }
 
-        // Reset to default settings
+        /**
+         * Prompt the user for confirmation, then reset to the DEFAULT_PRESET.
+         * The confirmation dialog prevents accidental resets of carefully customised
+         * configurations.
+         *
+         * @returns {void}
+         */
         function resetToDefaults() {
             if (confirm('Reset to default filter settings (Office Default)?')) {
                 applyPreset(DEFAULT_PRESET, true);
             }
         }
 
-        // Toggle individual alert type
+        /**
+         * Toggle a single alert type between enabled (true) and disabled (undefined).
+         * Undefined rather than false is used for the disabled state to keep the stored
+         * object sparse — only enabled types are written, matching how AlertFilters
+         * reads preferences on other pages.
+         * The DOM card is updated immediately (without a full re-render) for instant
+         * visual feedback.
+         *
+         * @param {string} alertType - NOAA alert type string to toggle
+         * @returns {void}
+         */
         function toggleAlertType(alertType) {
             // Toggle state
             const newState = currentFilters[alertType] === true ? undefined : true;
@@ -169,7 +245,13 @@
             updateStatus();
         }
 
-        // Render all alert types
+        /**
+         * Re-render the full alert-type grid from alertTypesByLevel and currentFilters.
+         * Each impact level gets a section heading with bulk enable/disable buttons,
+         * followed by one toggle card per alert type.
+         *
+         * @returns {void}
+         */
         function renderAlertTypes() {
             const container = document.getElementById('alertTypesContainer');
             let htmlContent = '';
@@ -227,7 +309,13 @@
             container.innerHTML = htmlContent;
         }
 
-        // Toggle all alerts in a level
+        /**
+         * Bulk-enable or bulk-disable all alert types within an impact level.
+         *
+         * @param {string}  level  - Impact level key (e.g. 'CRITICAL', 'HIGH')
+         * @param {boolean} enable - True to enable all types; false to disable
+         * @returns {void}
+         */
         function toggleLevel(level, enable) {
             const types = alertTypesByLevel[level];
             if (!types) return;
@@ -240,7 +328,14 @@
             updateStatus();
         }
 
-        // Update status display
+        /**
+         * Refresh the enabled-count display and detect whether the current
+         * filter configuration exactly matches a known preset.
+         * The preset label ("Standard", "Full", etc.) is shown in the status bar
+         * so users know which preset is active without opening the dropdown.
+         *
+         * @returns {void}
+         */
         function updateStatus() {
             const totalTypes = Object.values(alertTypesByLevel).flat().length;
             const enabledTypes = Object.values(currentFilters).filter(v => v === true).length;
@@ -260,7 +355,16 @@
             document.getElementById('activeFilterStatus').textContent = matchingPreset;
         }
 
-        // Check if current config matches a preset
+        /**
+         * Test whether the current currentFilters state exactly matches a preset.
+         * Iterates every known alert type and compares its expected state (derived
+         * from the preset's includeCategories and excludeTypes) against the actual
+         * state in currentFilters. A single mismatch returns false.
+         *
+         * @param {Object} preset - Preset config object with includeCategories and
+         *                          optional excludeTypes arrays
+         * @returns {boolean} True if currentFilters matches the preset exactly
+         */
         function isPresetMatch(preset) {
             const enabledTypes = Object.entries(currentFilters)
                 .filter(([type, enabled]) => enabled === true)
