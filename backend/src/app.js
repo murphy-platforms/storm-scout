@@ -4,6 +4,7 @@
  */
 
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
@@ -92,6 +93,7 @@ if (config.cors.origin === false) {
   }
 }
 app.use(cors({ origin: config.cors.origin }));
+app.use(compression());  // Gzip API responses and static files (~85% size reduction)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -127,10 +129,29 @@ if (config.staticFiles.path) {
   }));
 }
 
-// Request logging middleware (development)
-if (config.env === 'development') {
+// Request logging middleware
+// In development: always log. In production: log only when LOG_FORMAT=json (structured).
+// Structured JSON format is parsed by log aggregators (Splunk, CloudWatch, etc.).
+const jsonLogging = process.env.LOG_FORMAT === 'json';
+if (config.env === 'development' || jsonLogging) {
   app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
+    const start = Date.now();
+    res.on('finish', () => {
+      const ms = Date.now() - start;
+      if (jsonLogging) {
+        console.log(JSON.stringify({
+          ts: new Date().toISOString(),
+          method: req.method,
+          path: req.path,
+          status: res.statusCode,
+          ms,
+          ip: req.ip,
+          ua: req.headers['user-agent']?.substring(0, 120) || ''
+        }));
+      } else {
+        console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${ms}ms`);
+      }
+    });
     next();
   });
 }
@@ -141,11 +162,30 @@ app.get('/health', async (req, res) => {
   const path = require('path');
   const { getDatabase } = require('./config/database');
   const { getIngestionStatus } = require('./ingestion/noaa-ingestor');
-  
+  const { getCircuitBreakerState } = require('./ingestion/utils/api-client');
+
+  const mem = process.memoryUsage();
+
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: config.env,
+    uptime: {
+      seconds: Math.floor(process.uptime()),
+      human: (() => {
+        const s = Math.floor(process.uptime());
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        return `${h}h ${m}m ${s % 60}s`;
+      })()
+    },
+    memory: {
+      heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
+      heapTotalMb: Math.round(mem.heapTotal / 1024 / 1024),
+      rssMb: Math.round(mem.rss / 1024 / 1024),
+      externalMb: Math.round(mem.external / 1024 / 1024)
+    },
+    noaaCircuitBreaker: getCircuitBreakerState(),
     checks: {
       database: { status: 'unknown' },
       ingestion: { status: 'unknown' },
@@ -322,6 +362,14 @@ app.use('/api/*', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
+  // Pool exhaustion: return 503 with Retry-After so clients back off gracefully
+  if (err.isPoolExhausted) {
+    res.setHeader('Retry-After', '5');
+    return res.status(503).json({
+      success: false,
+      error: 'Service temporarily unavailable — please retry shortly.'
+    });
+  }
   console.error('Error:', err);
   res.status(500).json({
     success: false,

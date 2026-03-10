@@ -215,7 +215,33 @@ async function ingestNOAAData() {
     
     try {
       await connection.beginTransaction();
-      
+
+      // Bulk pre-fetch all existing active advisories for the affected offices.
+      // Runs inside the transaction on the same connection for read consistency.
+      // Eliminates per-row SELECT queries in the insert loop (2 SELECTs × N → 1 query).
+      const existingByExternalId = new Map();
+      const existingByVtec = new Map();
+      const affectedOfficeIds = Array.from(officeAdvisories.keys());
+
+      if (affectedOfficeIds.length > 0) {
+        const [existingRows] = await connection.query(
+          `SELECT id, external_id, vtec_event_id, advisory_type, office_id
+           FROM advisories
+           WHERE office_id IN (?) AND status = 'active'`,
+          [affectedOfficeIds]
+        );
+        for (const row of existingRows) {
+          if (row.external_id) {
+            existingByExternalId.set(`${row.external_id}|${row.office_id}`, row);
+          }
+          if (row.vtec_event_id) {
+            existingByVtec.set(`${row.vtec_event_id}|${row.office_id}|${row.advisory_type}`, row);
+          }
+        }
+        console.log(`Pre-fetched ${existingRows.length} existing advisories for ${affectedOfficeIds.length} offices`);
+      }
+      const existingLookup = { byExternalId: existingByExternalId, byVtec: existingByVtec };
+
       // Create/update advisories and track processed external IDs
       for (const [officeId, advisories] of officeAdvisories.entries()) {
         // Create/update advisories
@@ -227,7 +253,7 @@ async function ingestNOAAData() {
               'INSERT IGNORE INTO alert_types (type_name, category) VALUES (?, ?)',
               [advisory.advisory_type, 'UNKNOWN']
             );
-            await AdvisoryModel.create(advisory);
+            await AdvisoryModel.create(advisory, existingLookup);
             advisoriesCreated++;
             
             // Track external_id for later cleanup
@@ -294,19 +320,25 @@ async function ingestNOAAData() {
     `);
     console.log(`Marked ${endTimeExpired.affectedRows} advisories as expired (end_time passed)`);
     
-    // Step 6: Mark advisories not in current batch as expired
+    // Step 6: Mark advisories not in current batch as expired.
+    // Chunked into 500-ID batches to avoid MySQL max_allowed_packet limits
+    // and parser stress when advisory counts are high during major events.
     console.log('\nMarking missing advisories as expired...');
     let expiredCount = 0;
-    
+
     if (processedExternalIds.length > 0) {
-      const [result] = await db.query(`
-        UPDATE advisories
-        SET status = 'expired', last_updated = CURRENT_TIMESTAMP
-        WHERE status = 'active' 
-          AND external_id IS NOT NULL
-          AND external_id NOT IN (?)
-      `, [processedExternalIds]);
-      expiredCount = result.affectedRows;
+      const CHUNK_SIZE = 500;
+      for (let i = 0; i < processedExternalIds.length; i += CHUNK_SIZE) {
+        const chunk = processedExternalIds.slice(i, i + CHUNK_SIZE);
+        const [result] = await db.query(`
+          UPDATE advisories
+          SET status = 'expired', last_updated = CURRENT_TIMESTAMP
+          WHERE status = 'active'
+            AND external_id IS NOT NULL
+            AND external_id NOT IN (?)
+        `, [chunk]);
+        expiredCount += result.affectedRows;
+      }
       console.log(`Marked ${expiredCount} advisories as expired`);
     }
     
@@ -391,8 +423,23 @@ async function ingestNOAAData() {
     // Step 9: Ingest weather observations from nearest stations
     const observationResult = await ingestObservations(offices);
     
-    // Invalidate cache to ensure fresh data is served
-    cache.invalidateAll();
+    // Invalidate dynamic cache keys (advisories, status).
+    // Static keys (sites, states, regions) are preserved to avoid thundering herd.
+    cache.invalidateDynamic();
+
+    // Pre-warm the most expensive key so the first user post-ingestion gets a
+    // cache hit rather than hitting the database cold.
+    try {
+      const fresh = await AdvisoryModel.getActive();
+      cache.set(
+        cache.CACHE_KEYS.ACTIVE_ADVISORIES,
+        { success: true, data: fresh, count: fresh.length },
+        cache.TTL.SHORT
+      );
+      console.log(`[CACHE] Pre-warmed ACTIVE_ADVISORIES with ${fresh.length} advisories`);
+    } catch (warmErr) {
+      console.warn('[CACHE] Pre-warm failed (non-fatal):', warmErr.message);
+    }
     
     // Save timestamp of successful ingestion
     const timestamp = new Date().toISOString();
