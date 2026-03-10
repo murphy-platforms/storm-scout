@@ -64,7 +64,7 @@ const STATE_REGIONS = {
 const NEW_SITES = [
   {
     site_code: '0313',
-    name: 'Waco Testing Center',
+    name: 'Waco',
     city: 'Waco',
     state_full: 'TEXAS',
     address: '5020 W Waco Dr',
@@ -73,7 +73,7 @@ const NEW_SITES = [
   },
   {
     site_code: '0383',
-    name: 'Irving Testing Center',
+    name: 'Irving',
     city: 'Irving',
     state_full: 'TEXAS',
     address: null, // New site - no confirmed address
@@ -83,7 +83,7 @@ const NEW_SITES = [
   },
   {
     site_code: '0624',
-    name: 'Miami Testing Center',
+    name: 'Miami',
     city: 'Miami',
     state_full: 'FLORIDA',
     address: null, // "Waterford District Drive" - no house number found
@@ -94,7 +94,7 @@ const NEW_SITES = [
   },
   {
     site_code: '1908',
-    name: 'Santa Fe Testing Center',
+    name: 'Santa Fe',
     city: 'Santa Fe',
     state_full: 'NEW MEXICO',
     address: '720 St Michaels Dr Suite G',
@@ -103,7 +103,7 @@ const NEW_SITES = [
   },
   {
     site_code: '1910',
-    name: 'Albuquerque Testing Center',
+    name: 'Albuquerque',
     city: 'Albuquerque',
     state_full: 'NEW MEXICO',
     address: '9500 Montgomery Blvd NE Suite 121',
@@ -112,7 +112,7 @@ const NEW_SITES = [
   },
   {
     site_code: '3700',
-    name: 'Billings Testing Center',
+    name: 'Billings',
     city: 'Billings',
     state_full: 'MONTANA',
     address: '2103 Central Ave',
@@ -121,7 +121,7 @@ const NEW_SITES = [
   },
   {
     site_code: '3702',
-    name: 'Helena Testing Center',
+    name: 'Helena',
     city: 'Helena',
     state_full: 'MONTANA',
     address: '1075 N Rodney St Suite 110',
@@ -130,7 +130,7 @@ const NEW_SITES = [
   },
   {
     site_code: '5298',
-    name: 'Wichita Falls Testing Center',
+    name: 'Wichita Falls',
     city: 'Wichita Falls',
     state_full: 'TEXAS',
     address: '3410 Taft Blvd',
@@ -139,7 +139,7 @@ const NEW_SITES = [
   },
   {
     site_code: '6752',
-    name: 'NYC Downtown Testing Center',
+    name: 'NYC Downtown',
     city: 'New York',
     state_full: 'NEW YORK',
     address: null,
@@ -149,7 +149,7 @@ const NEW_SITES = [
   },
   {
     site_code: '6753',
-    name: 'NYC Downtown Testing Center 2',
+    name: 'NYC Downtown 2',
     city: 'New York',
     state_full: 'NEW YORK',
     address: null,

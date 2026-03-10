@@ -135,13 +135,6 @@
                     noSitesMsg.classList.add('d-none');
                 }
 
-                // Operational Status Counts - Coming Soon (manual operations tracking not yet implemented)
-                // const statusCounts = overviewData.operational_status_counts || [];
-                // document.getElementById('statusClosed').textContent = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
-                // document.getElementById('statusRestricted').textContent = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;
-                // document.getElementById('statusPending').textContent = statusCounts.find(s => s.operational_status === 'pending')?.count || 0;
-                // document.getElementById('statusOpen').textContent = statusCounts.find(s => s.operational_status === 'open_normal')?.count || 0;
-
                 // Recalculate severity counts from filtered advisories
                 const severityCounts = {};
                 filteredAdvisories.forEach(adv => {

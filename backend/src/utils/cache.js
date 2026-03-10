@@ -5,6 +5,8 @@
 
 const NodeCache = require('node-cache');
 
+const isDevMode = process.env.NODE_ENV !== 'production';
+
 // Default TTL: 15 minutes (matches NOAA ingestion interval)
 const DEFAULT_TTL_SECONDS = 900;
 
@@ -44,10 +46,10 @@ const TTL = {
 function get(key) {
   const value = cache.get(key);
   if (value !== undefined) {
-    console.log(`[CACHE] HIT: ${key}`);
+    if (isDevMode) console.log(`[CACHE] HIT: ${key}`);
     return value;
   }
-  console.log(`[CACHE] MISS: ${key}`);
+  if (isDevMode) console.log(`[CACHE] MISS: ${key}`);
   return undefined;
 }
 
@@ -60,7 +62,7 @@ function get(key) {
  */
 function set(key, value, ttl = DEFAULT_TTL_SECONDS) {
   const success = cache.set(key, value, ttl);
-  if (success) {
+  if (success && isDevMode) {
     console.log(`[CACHE] SET: ${key} (TTL: ${ttl}s)`);
   }
   return success;
@@ -73,7 +75,7 @@ function set(key, value, ttl = DEFAULT_TTL_SECONDS) {
  */
 function del(key) {
   const count = cache.del(key);
-  if (count > 0) {
+  if (count > 0 && isDevMode) {
     console.log(`[CACHE] DEL: ${key}`);
   }
   return count;
@@ -86,7 +88,7 @@ function del(key) {
 function invalidateAll() {
   const keys = cache.keys();
   cache.flushAll();
-  console.log(`[CACHE] INVALIDATED: ${keys.length} keys cleared`);
+  if (isDevMode) console.log(`[CACHE] INVALIDATED: ${keys.length} keys cleared`);
 }
 
 /**
@@ -107,7 +109,7 @@ function invalidateDynamic() {
     .filter(k => k.startsWith('advisories:filtered:'))
     .forEach(k => cache.del(k));
 
-  console.log('[CACHE] Dynamic data invalidated (static keys preserved)');
+  if (isDevMode) console.log('[CACHE] Dynamic data invalidated (static keys preserved)');
 }
 
 /**

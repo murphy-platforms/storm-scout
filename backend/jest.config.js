@@ -11,7 +11,7 @@ module.exports = {
     '!src/data/**',
     '!src/scripts/**'
   ],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 40,
       functions: 40,

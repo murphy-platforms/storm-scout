@@ -37,6 +37,9 @@ logs/
 dist/
 build/
 
+# Test coverage
+backend/coverage/
+
 # Temporary files
 tmp/
 temp/
@@ -67,3 +70,9 @@ backend/src/data/new-sites-output.json
 backend/src/data/verified-sites.json
 backend/src/data/site-corrections.sql
 backend/src/data/ugc-codes-output.json
+
+# Development/debugging artifacts (Issue #154)
+fix-severity-bug.sh
+test-database.sh
+test-production-ssh.sh
+storm-scout-alert-types*.csv

@@ -20,7 +20,19 @@ jest.mock('../../src/utils/cache', () => ({
   get:           jest.fn().mockReturnValue(null),
   set:           jest.fn(),
   invalidate:    jest.fn(),
-  invalidateAll: jest.fn()
+  invalidateAll: jest.fn(),
+  CACHE_KEYS: {
+    STATUS_OVERVIEW: 'status:overview',
+    ALL_SITES: 'sites:all',
+    ACTIVE_ADVISORIES: 'advisories:active',
+    STATES_LIST: 'sites:states',
+    REGIONS_LIST: 'sites:regions'
+  },
+  TTL: {
+    SHORT: 900,
+    LONG: 3600,
+    VERY_LONG: 86400
+  }
 }));
 
 // Prevent scheduler from starting during tests
@@ -56,7 +68,8 @@ describe('GET /api/advisories/active', () => {
     const res = await request(app).get('/api/advisories/active');
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(expect.arrayContaining([
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: 1, advisory_type: 'Tornado Warning' })
     ]));
   });
@@ -67,7 +80,8 @@ describe('GET /api/advisories/active', () => {
     const res = await request(app).get('/api/advisories/active');
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([]);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual([]);
   });
 
   test('supports severity filter query param', async () => {
