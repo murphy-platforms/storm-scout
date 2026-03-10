@@ -88,7 +88,11 @@ async function initDatabase() {
     // Set DB_SSL=false (default) for localhost/Unix socket deployments. (closes #97)
     ssl: config.database.ssl ? { rejectUnauthorized: true } : false,
     waitForConnections: true,
-    connectionLimit: parseInt(process.env.DB_POOL_LIMIT) || 40,  // Configurable; verify MariaDB max_connections before raising
+    // Default of 40 balances connection overhead vs. parallelism for 300 offices.
+    // Review against MariaDB `SHOW VARIABLES LIKE 'max_connections'` before scaling
+    // beyond 300 offices — each pool connection holds a server-side thread.
+    // See ARCHITECTURE.md for scale thresholds. Configurable via DB_POOL_LIMIT env var.
+    connectionLimit: parseInt(process.env.DB_POOL_LIMIT) || 40,
     queueLimit: 100,                // Prevent runaway queue
     // acquireTimeout is not a valid mysql2 option (it is a mysql v1 option and is silently ignored)
     connectTimeout: 10000,          // 10s timeout for initial TCP connection
@@ -99,6 +103,10 @@ async function initDatabase() {
   // Per-statement timeout: set max_statement_time on every acquired connection.
   // mysql2 v3.x has no pool-level queryTimeout option; the session variable is the
   // correct mechanism for MariaDB. Falls back gracefully on MySQL < 5.7. (closes #113)
+  //
+  // 30s covers worst-case Haversine geo queries and full history scans across 30 days
+  // of advisory_history. Lower to 10s once query performance is profiled in production
+  // and slow queries are indexed. Configurable via DB_STATEMENT_TIMEOUT_SECONDS env var.
   const statementTimeoutSec = parseInt(process.env.DB_STATEMENT_TIMEOUT_SECONDS) || 30;
   pool.on('acquire', (connection) => {
     connection.query(`SET SESSION max_statement_time = ${statementTimeoutSec}`, (err) => {

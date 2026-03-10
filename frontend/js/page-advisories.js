@@ -1,9 +1,49 @@
+        /**
+         * page-advisories.js
+         * Advisories page — renders active NOAA advisories in card and table views;
+         * applies user filter preferences; supports free-text search with debounce.
+         *
+         * Key responsibilities:
+         *   - Loads all active NOAA advisories and weather observations in parallel
+         *   - Applies user-configured alert-type filters (AlertFilters), state, severity,
+         *     and free-text search
+         *   - Supports two views: card view (office cards) and grouped table view
+         *   - Shows a filter-warning banner when hidden alerts include critical types
+         *   - Handles ?severity= URL parameter to pre-select a severity filter on load
+         *
+         * State variables:
+         *   allAdvisories          - Current working set of advisories (may be pre-filtered
+         *                            by applyURLParameters if ?severity= is set)
+         *   allAdvisoriesUnfiltered - Full raw advisory list used for filter-warning diff
+         *   observationsMap        - Keyed by office_code; provides temperature readings
+         *   currentView            - 'card' or 'table'; controls which renderer runs
+         *
+         * External dependencies (globals from loaded scripts):
+         *   API               - backend REST client (api.js)
+         *   AlertFilters      - user preference engine (alert-filters.js)
+         *   OfficeAggregator  - aggregation/severity helpers (office-aggregator.js)
+         *   debounce, html, raw, escapeHtml, truncate, cToF, isStale, timeAgo,
+         *   formatDate, getSeverityBadge, getActionBadge, renderEmptyHtml,
+         *   renderErrorHtml, renderFilterWarning  — from utils.js / shared helpers
+         */
+
         let allAdvisories = [];
         let allAdvisoriesUnfiltered = [];
         let observationsMap = {};
         let currentView = 'card';
 
-        // Check if alert type should be included
+        /**
+         * Determine whether an advisory type should be shown under a given named filter preset.
+         * When no filterName is supplied the user's saved AlertFilters preferences govern.
+         * When a preset name is supplied the preset's includeCategories and excludeTypes
+         * fields are applied directly — enabling the filter dropdown to override preferences
+         * without permanently mutating localStorage.
+         *
+         * @param {string} alertType   - NOAA alert type string (e.g. "Tornado Warning")
+         * @param {string} filterName  - Optional named preset key from AlertFilters.filterConfigs;
+         *                               pass '' or null to use the user's active preferences
+         * @returns {boolean} True if the alert type should be included in the current view
+         */
         function shouldIncludeAlertType(alertType, filterName) {
             if (!filterName || filterName === '') {
                 return AlertFilters.shouldIncludeAlertType(alertType);
@@ -28,6 +68,15 @@
             return config.includeCategories && config.includeCategories.includes(impactLevel);
         }
 
+        /**
+         * Fetch all active advisories and current weather observations, then
+         * build the observations lookup map and trigger the initial render.
+         * Advisories and observations are loaded in parallel via Promise.all to
+         * minimise total wait time; an observation failure is non-fatal (caught
+         * inline) so the page still loads if the observations endpoint is down.
+         *
+         * @returns {Promise<void>}
+         */
         async function loadAdvisories() {
             try {
                 const [data, obsData] = await Promise.all([
@@ -65,6 +114,20 @@
 
         // getActionBadge() is defined in js/utils.js
 
+        /**
+         * Render all offices with active advisories as a grouped HTML table.
+         * Each office is represented by a clickable header row summarising its
+         * highest severity and alert count, followed by one sub-row per alert
+         * sorted highest-severity-first within each office group.
+         * Summary stats (unique offices, critical/severe counts, etc.) are also
+         * re-rendered so they stay in sync when the filter state changes in table view.
+         *
+         * @param {Array<Object>} sites             - Aggregated office objects from
+         *                                            OfficeAggregator.aggregateByOffice
+         * @param {Array<Object>} filteredAdvisories - Flat advisory array used to
+         *                                            compute summary stats
+         * @returns {void}
+         */
         function renderGroupedTable(sites, filteredAdvisories) {
             const tbody = document.getElementById('advisoriesTable');
             const statsContainer = document.getElementById('summaryStatsContainer');
@@ -173,12 +236,27 @@
             });
         }
 
-        // Render everything
+        /**
+         * Entry point for all re-renders — delegates to filterAndRender so that
+         * every render path always applies the current filter state.
+         * Named `renderAll` for external callers (e.g. event listeners) that
+         * need a stable reference even if the internal implementation changes.
+         *
+         * @returns {void}
+         */
         function renderAll() {
             filterAndRender();
         }
 
-        // Main filter and render function
+        /**
+         * Read all active filter controls, apply them to the full advisory list,
+         * aggregate results by office, then delegate to the correct view renderer.
+         * The dual-view design (card vs. table) keeps the same filter+aggregate
+         * pipeline but hands off to different renderers so each view can optimise
+         * its own DOM structure independently.
+         *
+         * @returns {void}
+         */
         function filterAndRender() {
             const search = document.getElementById('searchBox').value.toLowerCase();
             const alertTypeFilter = document.getElementById('alertTypeFilter').value;
@@ -209,7 +287,17 @@
             }
         }
 
-        // Render filter warning banner
+        /**
+         * Show or clear the filter-warning banner.
+         * The banner is shown when the user's active filter settings hide at least
+         * one advisory; it escalates to a critical style when any hidden advisory
+         * has Extreme or Severe severity so operators cannot inadvertently miss
+         * high-impact events.
+         *
+         * @param {Array<Object>} allAdv      - Unfiltered advisory list
+         * @param {Array<Object>} filteredAdv - Currently visible advisory list after filters
+         * @returns {void}
+         */
         function renderFilterWarning(allAdv, filteredAdv) {
             const warning = OfficeAggregator.getFilterWarning(allAdv, filteredAdv);
             const container = document.getElementById('filterWarningContainer');
@@ -246,7 +334,16 @@
             document.getElementById('showAllAlertsBtn').addEventListener('click', showAllAlerts);
         }
 
-        // Render card view
+        /**
+         * Render the card-view grid of impacted offices.
+         * One Bootstrap card is emitted per aggregated office, sorted ascending
+         * by office code. The summary stats bar is re-rendered alongside the
+         * cards so it reflects the current filter state.
+         *
+         * @param {Array<Object>} sites             - Aggregated office objects
+         * @param {Array<Object>} originalAdvisories - Flat advisory array for stats calculation
+         * @returns {void}
+         */
         function renderCardView(sites, originalAdvisories) {
             const container = document.getElementById('cardViewContainer');
             const statsContainer = document.getElementById('summaryStatsContainer');
@@ -291,7 +388,15 @@
             container.innerHTML = sorted.map(office => renderOfficeCard(office, observationsMap[office.office_code])).join('');
         }
 
-        // Render individual office card
+        /**
+         * Build and return the HTML string for a single office advisory card.
+         * Includes the highest-severity alert summary, zone count, action badges,
+         * and current temperature if an observation is available.
+         *
+         * @param {Object}      site - Aggregated office object from OfficeAggregator
+         * @param {Object|null} obs  - Weather observation for this office, or null
+         * @returns {string} HTML string for the card column element
+         */
         function renderOfficeCard(site, obs) {
             const severityClass = `office-card-${escapeHtml(site.highest_severity.toLowerCase())}`;
             const highestAlert = site.highest_severity_advisory;
@@ -397,7 +502,17 @@
             `;
         }
 
-        // View switching
+        /**
+         * Switch between card and table views.
+         * Toggles active state on the view-selector buttons, shows/hides the
+         * corresponding container elements, and triggers a full re-render so the
+         * new view reflects the current filter state immediately.
+         * Both containers remain in the DOM at all times (toggled via d-none) to
+         * avoid losing scroll position on the inactive container when switching back.
+         *
+         * @param {'card'|'table'} view - Target view identifier
+         * @returns {void}
+         */
         function switchView(view) {
             currentView = view;
 
@@ -416,7 +531,13 @@
             renderAll();
         }
 
-        // Show all alerts (disable filters)
+        /**
+         * Reset all filter controls to their "show everything" state and re-render.
+         * Called by the "Show All Alerts" button in the filter-warning banner so
+         * operators can quickly clear accidental over-filtering with a single click.
+         *
+         * @returns {void}
+         */
         function showAllAlerts() {
             document.getElementById('searchBox').value = '';
             document.getElementById('alertTypeFilter').value = 'FULL';
@@ -426,6 +547,8 @@
         }
 
         // Event listeners
+        // 300ms debounce on the search box: balances immediate-feeling response
+        // against avoiding a render on every keystroke during fast typing.
         document.getElementById('searchBox').addEventListener('input', debounce(renderAll, 300));
         document.getElementById('alertTypeFilter').addEventListener('change', renderAll);
         document.getElementById('stateFilter').addEventListener('change', renderAll);
@@ -434,7 +557,14 @@
         document.getElementById('cardViewBtn').addEventListener('click', () => switchView('card'));
         document.getElementById('tableViewBtn').addEventListener('click', () => switchView('table'));
 
-        // Check for URL parameters on page load
+        /**
+         * Read URL query parameters and pre-populate filter controls accordingly.
+         * Supports ?severity= so that links from the dashboard's severity badges
+         * open the advisories page pre-filtered to the clicked severity level.
+         * Called after advisories are loaded so the filter applies to real data.
+         *
+         * @returns {void}
+         */
         function applyURLParameters() {
             const urlParams = new URLSearchParams(window.location.search);
             const severityParam = urlParams.get('severity');

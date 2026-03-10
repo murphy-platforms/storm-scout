@@ -8,7 +8,13 @@ const config = require('../../config/config');
 
 // Rate limiting configuration
 const RATE_LIMIT = {
-  minRequestIntervalMs: 500,  // Minimum time between requests (2 req/sec max)
+  // 500ms between NOAA API requests: conservative rate to avoid 429 responses.
+  // NOAA publishes no official rate limit, so this is based on observed behaviour.
+  // Adjust via NOAA_REQUEST_DELAY_MS env var if needed.
+  // Monitor for 429 responses in logs before reducing this value.
+  // At 300 offices × 1 request each, a full ingestion cycle takes ~2.5 minutes
+  // at this rate — well within the default 15-minute ingestion interval.
+  minRequestIntervalMs: parseInt(process.env.NOAA_REQUEST_DELAY_MS) || 500,
   lastRequestTime: 0
 };
 
@@ -44,7 +50,11 @@ const CIRCUIT_BREAKER = {
   successCount: 0,
   // Thresholds
   failureThreshold: 3,          // Open after 3 consecutive requestWithRetry failures
-  recoveryTimeMs: 60 * 1000,    // Try recovery after 60 seconds
+  // 60s recovery window (HALF_OPEN state): balances quick recovery vs. hammering
+  // a genuinely down API. NOAA outages typically resolve in 2–5 minutes so 60s
+  // gives one probe attempt before the next ingestion cycle fires, avoiding a
+  // full ingestion blackout for longer than one cycle.
+  recoveryTimeMs: 60 * 1000,
   halfOpenSuccessThreshold: 2   // Close after 2 consecutive successful probes
 };
 

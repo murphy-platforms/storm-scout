@@ -1,8 +1,44 @@
+        /**
+         * page-index.js
+         * Dashboard index page — loads overview stats, impacted offices, top advisories,
+         * and weather observations; drives the update countdown timer.
+         *
+         * Key responsibilities:
+         *   - Fetches overview stats, all active advisories, and weather observations
+         *     in parallel on load and on each countdown expiry
+         *   - Applies user-configured alert-type filters (AlertFilters) before
+         *     aggregating and rendering so dashboards counts match the offices page
+         *   - Groups impacted offices by severity (Extreme/Severe/Moderate/Minor)
+         *     and renders collapsible severity sections (Moderate and Minor collapsed
+         *     by default to keep the critical information above the fold)
+         *   - Drives a per-second countdown to the next scheduled ingestion cycle
+         *   - Shows a filter indicator in the nav when non-default filters are active
+         *   - Exposes window.exportCurrentData for the export dropdown buttons
+         *
+         * State variables:
+         *   nextUpdateTime    - Date object for the next ingestion cycle; drives countdown
+         *   countdownInterval - setInterval handle; cleared/replaced on each data reload
+         *   observationsMap   - Keyed by office_code; provides temperature for each card
+         *
+         * External dependencies (globals):
+         *   API, AlertFilters, OfficeAggregator, StormScoutExport, debounce, html, raw,
+         *   escapeHtml, truncate, cToF, isStale, timeAgo, formatDate, formatLocalTime,
+         *   getSeverityBadge, renderEmptyHtml, renderErrorHtml, showError — from utils.js
+         */
+
         let nextUpdateTime = null;
         let countdownInterval = null;
         let observationsMap = {};
 
-        // Calculate and display countdown to next update
+        /**
+         * Update the "next update" countdown display.
+         * Called once immediately when a new nextUpdateTime is set, then via a
+         * 1-second setInterval. When the countdown expires it triggers a data
+         * reload (with a 2-second delay to allow the backend ingestion cycle to
+         * complete) and stops the current interval.
+         *
+         * @returns {void}
+         */
         function updateCountdown() {
             if (!nextUpdateTime) return;
 
@@ -21,7 +57,17 @@
             document.getElementById('nextUpdate').textContent = `${minutes}m ${seconds}s`;
         }
 
-        // Load overview data with filter application
+        /**
+         * Fetch all dashboard data in parallel and render the full page.
+         * Uses Promise.all for overview, advisories, and observations so
+         * the three independent requests do not wait on each other.
+         * Applies AlertFilters before aggregating so filtered counts match
+         * the offices and advisories pages.
+         * Wrapped so it can be called both on initial load and by the countdown
+         * when the next ingestion cycle is due.
+         *
+         * @returns {Promise<void>}
+         */
         async function loadOverview() {
             try {
                 // Get all raw data
@@ -155,8 +201,17 @@
             }
         }
 
-        // Render grouped site summaries
-        // Colors now align with Weather Impact Assessment
+        /**
+         * Render all four severity group sections.
+         * Colors align with the Weather Impact Assessment colour scheme:
+         *   Extreme → red, Severe → orange, Moderate → yellow, Minor → green.
+         * Moderate and Minor sections default to collapsed to keep the critical
+         * information visible without scrolling on typical dashboards.
+         *
+         * @param {Object} groupedSites - Object with extreme/severe/moderate/minor
+         *                               arrays from OfficeAggregator.groupBySeverity
+         * @returns {void}
+         */
         function renderSiteGroups(groupedSites) {
             renderSiteGroup('extremeSitesSection', 'extreme', '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> EXTREME - High Impact', groupedSites.extreme, false);
             renderSiteGroup('severeSitesSection', 'severe', '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> SEVERE - Severe Impact', groupedSites.severe, false);
@@ -164,6 +219,20 @@
             renderSiteGroup('minorSitesSection', 'minor', '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> MINOR - Low Impact', groupedSites.minor, true);
         }
 
+        /**
+         * Render a single severity group as a collapsible Bootstrap section.
+         * Shows up to 6 office cards inline; a "View All" link to offices.html
+         * is appended when the group has more than 6 members.
+         * Clears the container and returns early when the group is empty to avoid
+         * rendering an empty accordion section.
+         *
+         * @param {string}        containerId - ID of the DOM element to populate
+         * @param {string}        cssClass    - CSS severity class (e.g. 'extreme')
+         * @param {string}        title       - Section heading HTML (may contain icons)
+         * @param {Array<Object>} sites       - Aggregated office objects for this group
+         * @param {boolean}       collapsed   - Whether the section starts collapsed
+         * @returns {void}
+         */
         function renderSiteGroup(containerId, cssClass, title, sites, collapsed) {
             const container = document.getElementById(containerId);
 
@@ -205,6 +274,14 @@
             `;
         }
 
+        /**
+         * Build and return the HTML string for a single office summary card.
+         * Shown inside each severity group section on the dashboard.
+         *
+         * @param {Object}      site - Aggregated office object from OfficeAggregator
+         * @param {Object|null} obs  - Weather observation for this office, or null
+         * @returns {string} HTML string for the card column element
+         */
         function renderSiteSummary(site, obs) {
             const severityClass = `office-card-${escapeHtml(site.highest_severity.toLowerCase())}`;
             const advisory = site.highest_severity_advisory || {};
@@ -273,7 +350,13 @@
             `;
         }
 
-        // Update filter indicator
+        /**
+         * Show or update the filter indicator badge in the nav bar.
+         * Displayed only when AlertFilters.hasActiveFilters() returns true so that
+         * operators are reminded that some alert types are suppressed.
+         *
+         * @returns {void}
+         */
         function updateFilterIndicator() {
             const indicator = document.getElementById('filterIndicator');
             const filterCount = document.getElementById('filterCount');
