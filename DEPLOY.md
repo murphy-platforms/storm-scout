@@ -63,10 +63,10 @@ docker exec -i storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev 
   < backend/src/data/migrations/<migration-file>.sql
 ```
 
-### 4. Import USPS Office Data (one-time)
+### 4. Import Office Data (one-time)
 
 ```bash
-node backend/src/scripts/import-usps-offices.js /path/to/usps-locations.csv
+node backend/src/scripts/import-offices.js /path/to/locations.csv
 # Output: backend/src/data/offices.json (300 offices)
 npm run seed-db
 ```

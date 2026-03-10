@@ -159,7 +159,7 @@ ALTER TABLE advisories
 ADD CONSTRAINT chk_advisories_severity
 CHECK (severity IN ('Extreme', 'Severe', 'Moderate', 'Minor'));
 
--- Office status table: operational status of each USPS location
+-- Office status table: operational status of each office location
 CREATE TABLE IF NOT EXISTS office_status (
     id INT AUTO_INCREMENT PRIMARY KEY,
     office_id INT NOT NULL UNIQUE,

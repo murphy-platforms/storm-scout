@@ -3,7 +3,7 @@
  * Converts a locations CSV into backend/src/data/offices.json
  *
  * Usage:
- *   node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
+ *   node src/scripts/import-offices.js /path/to/locations.csv
  *
  * Expected CSV columns (header row required):
  *   zip, name, city, state, latitude, longitude
@@ -54,7 +54,7 @@ function parseCsvLine(line) {
 async function importCsv(csvPath) {
   if (!csvPath) {
     console.error('Error: No CSV file path provided.');
-    console.error('Usage: node src/scripts/import-usps-offices.js /path/to/usps-locations.csv');
+    console.error('Usage: node src/scripts/import-offices.js /path/to/locations.csv');
     process.exit(1);
   }
 

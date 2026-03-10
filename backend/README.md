@@ -77,7 +77,7 @@ npm run init-db
 Import locations from CSV, then seed:
 
 ```bash
-node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
+node src/scripts/import-offices.js /path/to/locations.csv
 # Output: src/data/offices.json (300 offices)
 
 npm run seed-db
@@ -219,7 +219,7 @@ backend/
 │   │   ├── cache.js                  # In-memory caching (node-cache)
 │   │   └── alerting.js              # Webhook failure notifications
 │   ├── scripts/
-│   │   ├── import-usps-offices.js    # Convert USPS CSV → offices.json
+│   │   ├── import-offices.js    # Convert CSV → offices.json
 │   │   ├── fetch-observation-stations.js  # Map offices to nearest NWS stations
 │   │   ├── capture-historical-snapshot.js # System-wide + per-office snapshot
 │   │   └── scheduled-cleanup.js     # Cron-friendly cleanup entry point

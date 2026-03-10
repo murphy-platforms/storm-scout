@@ -25,7 +25,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
 | `id` | INT AUTO_INCREMENT | No | Internal primary key |
-| `office_code` | VARCHAR(10) | No | 5-digit USPS zip code; primary external identifier |
+| `office_code` | VARCHAR(10) | No | 5-digit zip code; primary external identifier |
 | `name` | VARCHAR(255) | No | Full office name |
 | `city` | VARCHAR(100) | No | City name |
 | `state` | VARCHAR(2) | No | 2-letter US state/territory code |
@@ -34,7 +34,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 | `cwa` | VARCHAR(10) | Yes | NWS County Warning Area code (e.g. `PAFC`, `IND`). Identifies the NWS forecast office responsible for this location. |
 | `latitude` | DECIMAL(10,7) | No | Decimal latitude |
 | `longitude` | DECIMAL(10,7) | No | Decimal longitude |
-| `region` | VARCHAR(50) | Yes | USPS region name |
+| `region` | VARCHAR(50) | Yes | Region name |
 | `observation_station` | VARCHAR(10) | Yes | Nearest NWS observation station ICAO code (e.g. `KORD`). Used to fetch current weather conditions. |
 | `created_at` | DATETIME | No | Row creation timestamp (auto-set) |
 | `updated_at` | DATETIME | No | Last modification timestamp (auto-updated) |
@@ -188,7 +188,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 
 ## notices
 
-**Purpose:** Government and emergency notices that may affect USPS operations, such as state emergency declarations, evacuation orders, and federal disaster declarations. Manually curated; not ingested automatically.
+**Purpose:** Government and emergency notices that may affect operations, such as state emergency declarations, evacuation orders, and federal disaster declarations. Manually curated; not ingested automatically.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|

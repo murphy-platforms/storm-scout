@@ -5,7 +5,7 @@ Backend REST API for the Storm Scout weather advisory system.
 ## Base URL
 
 **Local Development**: `http://localhost:3000/api`
-**Production**: Update when USPS production server is configured.
+**Production**: Update when production server is configured.
 
 ---
 
@@ -123,7 +123,7 @@ Get all 300 office locations.
 ```
 
 **Notes**:
-- `office_code`: 5-digit USPS zip code (primary identifier)
+- `office_code`: 5-digit zip code (primary identifier)
 - `ugc_codes`: NWS Universal Geographic Code zones — used for precise alert geo-matching
 - `cwa`: NWS County Warning Area code
 
