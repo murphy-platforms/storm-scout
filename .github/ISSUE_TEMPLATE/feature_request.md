@@ -14,7 +14,7 @@ A clear and concise description of the feature you'd like to see.
 
 What problem does this feature solve? Who would benefit from it?
 
-**Example**: "As an [IMT Operations team member], I need [real-time alerts] so that [I can respond quickly to critical events]."
+**Example**: "As a [team member], I need [real-time alerts] so that [I can respond quickly to critical events]."
 
 ## Proposed Solution
 

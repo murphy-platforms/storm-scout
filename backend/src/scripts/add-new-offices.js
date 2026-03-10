@@ -58,7 +58,7 @@ const STATE_REGIONS = {
 };
 
 // ─── The 10 new sites with confirmed/best-available address data ─────────────
-// Addresses sourced from Prometric public test center lists, NCSF, DSST, and
+// Addresses sourced from public test center lists, NCSF, DSST, and
 // ERB/ISEE published PDFs. Sites marked "NEEDS VERIFICATION" could not be
 // confirmed via public sources and use approximate geocoding.
 const NEW_SITES = [
@@ -69,7 +69,7 @@ const NEW_SITES = [
     state_full: 'TEXAS',
     address: '5020 W Waco Dr',
     zip: '76710',
-    source: 'Prometric public listing (Waze, ChamberOfCommerce, MichiganAssessment)'
+    source: 'Public listing (Waze, ChamberOfCommerce, MichiganAssessment)'
   },
   {
     site_code: '0383',
@@ -78,7 +78,7 @@ const NEW_SITES = [
     state_full: 'TEXAS',
     address: null, // New site - no confirmed address
     zip: null,
-    note: 'NEEDS VERIFICATION - New Prometric site in Irving/Dallas metro. Coordinates geocoded from city center.',
+    note: 'NEEDS VERIFICATION - New site in Irving/Dallas metro. Coordinates geocoded from city center.',
     source: 'CSV delta import - city-level geocode'
   },
   {
@@ -99,7 +99,7 @@ const NEW_SITES = [
     state_full: 'NEW MEXICO',
     address: '720 St Michaels Dr Suite G',
     zip: '87505',
-    source: 'DSST test prep / Prometric public listing'
+    source: 'DSST test prep / public listing'
   },
   {
     site_code: '1910',
@@ -108,7 +108,7 @@ const NEW_SITES = [
     state_full: 'NEW MEXICO',
     address: '9500 Montgomery Blvd NE Suite 121',
     zip: '87111',
-    source: 'DSST test prep / Prometric public listing'
+    source: 'DSST test prep / public listing'
   },
   {
     site_code: '3700',
@@ -117,7 +117,7 @@ const NEW_SITES = [
     state_full: 'MONTANA',
     address: '2103 Central Ave',
     zip: '59102',
-    source: 'NCSF exam center listing / Prometric IQT site list'
+    source: 'NCSF exam center listing'
   },
   {
     site_code: '3702',
@@ -135,7 +135,7 @@ const NEW_SITES = [
     state_full: 'TEXAS',
     address: '3410 Taft Blvd',
     zip: '76308',
-    source: 'ISEE Prometric Locations PDF / CatPrep GRE Texas listing'
+    source: 'ISEE Locations PDF / CatPrep GRE Texas listing'
   },
   {
     site_code: '6752',
