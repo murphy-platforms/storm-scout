@@ -297,7 +297,7 @@ const AdvisoryModel = {
         }
       }
 
-      // Tertiary deduplication: natural key when both external_id and VTEC are absent.
+      // Secondary deduplication: natural key when both external_id and VTEC are absent.
       // Malformed/legacy NOAA payloads may omit both fields; without this guard a
       // retry of the same payload produces a duplicate row. (closes #114)
       if (!externalId && !advisory.vtec_event_id) {
@@ -313,7 +313,7 @@ const AdvisoryModel = {
         }
       }
 
-      // Secondary deduplication: VTEC Event ID (persistent across NEW→CON→EXT updates)
+      // Tertiary deduplication: VTEC Event ID (persistent across NEW→CON→EXT updates)
       if (advisory.vtec_event_id) {
         const vtecKey = `${advisory.vtec_event_id}|${advisory.office_id}|${advisory.advisory_type}`;
         const existing = existingLookup

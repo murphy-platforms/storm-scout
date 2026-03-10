@@ -171,7 +171,11 @@ async function sendAlert({ type, severity = 'warning', title, message, metadata 
 }
 
 /**
- * Alert types
+ * Enumeration of alert type identifiers used by alerting utility functions.
+ * Each value is passed as the `type` field in alert payloads dispatched to
+ * configured channels (webhook, email). Used for throttling logic — each type
+ * has its own independent throttle window so failure and recovery alerts do
+ * not share a throttle bucket.
  */
 const AlertTypes = {
   INGESTION_FAILURE: 'ingestion_failure',
