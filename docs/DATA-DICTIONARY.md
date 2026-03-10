@@ -20,7 +20,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 
 ## offices
 
-**Purpose:** Static reference list of all 300 USPS office locations. Loaded from `backend/src/data/offices.json` at database initialization and rarely modified thereafter.
+**Purpose:** Static reference list of all 300 office locations. Loaded from `backend/src/data/offices.json` at database initialization and rarely modified thereafter.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
@@ -149,13 +149,13 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 
 ## office_status
 
-**Purpose:** Operational status of each USPS office. Two independent status tracks are maintained: `operational_status` (set by USPS Operations staff) and `weather_impact_level` (set automatically by the ingestion pipeline based on advisory severity).
+**Purpose:** Operational status of each office. Two independent status tracks are maintained: `operational_status` (set by operations staff) and `weather_impact_level` (set automatically by the ingestion pipeline based on advisory severity).
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
 | `id` | INT AUTO_INCREMENT | No | Internal primary key |
 | `office_id` | INT | No | FK → `offices.id`; UNIQUE — one status row per office |
-| `operational_status` | VARCHAR(20) | No | Operational state set by USPS Operations. Default: `open_normal` |
+| `operational_status` | VARCHAR(20) | No | Operational state set by operations team. Default: `open_normal` |
 | `weather_impact_level` | VARCHAR(20) | Yes | Weather impact level auto-calculated by ingestion. Default: `green` |
 | `reason` | TEXT | Yes | Legacy free-text reason for current status |
 | `decision_by` | VARCHAR(100) | Yes | Who made the most recent operational decision |

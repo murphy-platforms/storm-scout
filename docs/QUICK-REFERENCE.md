@@ -24,7 +24,7 @@ Developer cheat sheet — CLI commands, environment variables, API endpoints, an
 ### Import and maintenance scripts
 
 ```bash
-# Import USPS offices from CSV (overwrites offices.json)
+# Import offices from CSV (overwrites offices.json)
 node src/scripts/import-usps-offices.js /path/to/offices.csv
 
 # Check migration status

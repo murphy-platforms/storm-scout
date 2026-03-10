@@ -135,7 +135,7 @@
                     noSitesMsg.classList.add('d-none');
                 }
 
-                // Operational Status Counts - Coming Soon (manual IMT tracking not yet implemented)
+                // Operational Status Counts - Coming Soon (manual operations tracking not yet implemented)
                 // const statusCounts = overviewData.operational_status_counts || [];
                 // document.getElementById('statusClosed').textContent = statusCounts.find(s => s.operational_status === 'closed')?.count || 0;
                 // document.getElementById('statusRestricted').textContent = statusCounts.find(s => s.operational_status === 'open_restricted')?.count || 0;

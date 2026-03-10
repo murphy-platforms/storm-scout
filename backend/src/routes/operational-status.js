@@ -1,6 +1,6 @@
 /**
  * Operational Status API Routes
- * Endpoints for USPS Operations to manually manage office operational status
+ * Endpoints to manually manage office operational status
  */
 
 const express = require('express');

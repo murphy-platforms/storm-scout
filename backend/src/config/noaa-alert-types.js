@@ -133,7 +133,7 @@ const DEFAULT_FILTERS = {
   // LOW and INFO categories are excluded via includeCategories (not listed here).
   CUSTOM: {
     name: 'Office Default',
-    description: 'Customized alert configuration for USPS operations',
+    description: 'Customized alert configuration for operations',
     includeCategories: ['CRITICAL', 'HIGH', 'MODERATE'],
     excludeTypes: [
       // MODERATE exclusions — coastal/lakeshore/surf not relevant to most inland sites

@@ -3,7 +3,7 @@
  *
  * Data access layer for the `notices` table. Notices are government or
  * operational announcements (e.g. federal emergency declarations, local
- * closures) that are not sourced from NOAA but are relevant to USPS location
+ * closures) that are not sourced from NOAA but are relevant to office location
  * operations. They are manually entered and have explicit effective/expiration
  * timestamps.
  *

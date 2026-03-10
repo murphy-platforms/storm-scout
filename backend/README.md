@@ -72,9 +72,9 @@ docker run -d --name storm-scout-db \
 npm run init-db
 ```
 
-### 5. Load USPS Office Data
+### 5. Load Office Data
 
-Import USPS locations from CSV, then seed:
+Import locations from CSV, then seed:
 
 ```bash
 node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
@@ -97,7 +97,7 @@ Server starts at **http://localhost:3000** and runs initial NOAA ingestion immed
 
 ### Offices
 
-- `GET /api/offices` — Get all 300 USPS offices (filters: state, region)
+- `GET /api/offices` — Get all 300 offices (filters: state, region)
 - `GET /api/offices/states` — List of states
 - `GET /api/offices/regions` — List of regions
 - `GET /api/offices/:id` — Get office by ID with status and advisories
@@ -226,7 +226,7 @@ backend/
 │   └── data/
 │       ├── schema.sql                # Full database schema
 │       ├── seed.sql                  # Sample notices + default office statuses
-│       ├── offices.json              # 300 USPS offices (zip-code based)
+│       ├── offices.json              # 300 offices (zip-code based)
 │       └── migrations/               # SQL migration files (date-prefixed)
 ├── .env.example
 ├── package.json

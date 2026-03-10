@@ -1,13 +1,13 @@
 # Storm Scout — Architecture & Scale Considerations
 
 **Last Updated:** 2026-03-10
-**Current Production Scale:** 300 USPS locations
+**Current Production Scale:** 300 locations
 
 ---
 
 ## System Overview
 
-Storm Scout is a Node.js + Express API backend paired with a Bootstrap 5.3 static frontend. It ingests NOAA weather advisories every 15 minutes, matches them to USPS office locations by UGC zone/county codes, and surfaces operational impact through a browser-based dashboard.
+Storm Scout is a Node.js + Express API backend paired with a Bootstrap 5.3 static frontend. It ingests NOAA weather advisories every 15 minutes, matches them to office locations by UGC zone/county codes, and surfaces operational impact through a browser-based dashboard.
 
 ```
 NOAA Weather API
@@ -31,7 +31,7 @@ Bootstrap 5.3 Frontend  (client-side filter/sort/aggregate over full dataset)
 
 | Resource | Current | Notes |
 |----------|---------|-------|
-| USPS locations | 300 | All 50 states + territories |
+| Office locations | 300 | All 50 states + territories |
 | Active advisories (peak) | ~800–1,200 | Per 15-min ingestion cycle |
 | DB connection pool | 40 | Configurable via `DB_POOL_LIMIT` |
 | API response (full advisory list) | ~80 KB gzipped | ~500 KB raw |
