@@ -27,7 +27,29 @@ const UpdateBanner = {
     
     isPollingIngestion: false,
     pollingInterval: null,
-    
+
+    /**
+     * Poll /health every 10s while ingestion is expected to be running.
+     * When ingestion.active flips to false, stop polling and re-initialize
+     * the banner with fresh data. Sets isPollingIngestion to prevent duplicate
+     * polling intervals from being started concurrently.
+     */
+    startIngestionPolling() {
+        this.isPollingIngestion = true;
+        this.pollingInterval = setInterval(async () => {
+            try {
+                const resp = await fetch(`${typeof API !== 'undefined' && API.baseUrl ? API.baseUrl.replace('/api', '') : ''}/health`);
+                const health = await resp.json();
+                if (health.ingestion && !health.ingestion.active) {
+                    // Ingestion finished — stop polling and re-init
+                    clearInterval(this.pollingInterval);
+                    this.isPollingIngestion = false;
+                    this.init();
+                }
+            } catch (_) { /* network hiccup — keep polling */ }
+        }, 10000);
+    },
+
     /**
      * Calculate and display countdown to next update.
      * When countdown reaches 0, poll /health to detect active ingestion.
@@ -54,27 +76,7 @@ const UpdateBanner = {
         const seconds = Math.floor((diff % 60000) / 1000);
         nextUpdateEl.textContent = `${minutes}m ${seconds}s`;
     },
-    
-    /**
-     * Poll /health every 10 s while ingestion is expected to be running.
-     * When ingestion.active flips to false, refresh the page data.
-     */
-    startIngestionPolling() {
-        this.isPollingIngestion = true;
-        this.pollingInterval = setInterval(async () => {
-            try {
-                const resp = await fetch(`${typeof API !== 'undefined' && API.baseUrl ? API.baseUrl.replace('/api', '') : ''}/health`);
-                const health = await resp.json();
-                if (health.ingestion && !health.ingestion.active) {
-                    // Ingestion finished — stop polling and re-init
-                    clearInterval(this.pollingInterval);
-                    this.isPollingIngestion = false;
-                    this.init();
-                }
-            } catch (_) { /* network hiccup — keep polling */ }
-        }, 10000);
-    },
-    
+
     /**
      * Initialize the banner with data from API
      */
