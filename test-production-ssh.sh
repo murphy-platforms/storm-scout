@@ -37,7 +37,7 @@ echo ""
 
 # Test 2: Node.js Environment
 echo "Test 2: Node.js Environment"
-NODE_VERSION=$(ssh -p $SSH_PORT $SSH_HOST "source ~/nodevenv/storm-scout/20/bin/activate && node --version")
+NODE_VERSION=$(ssh -p $SSH_PORT $SSH_HOST "source \"\${NODE_ENV_ACTIVATE:-/dev/null}\" 2>/dev/null; node --version")
 if [[ $NODE_VERSION == v20* ]]; then
     pass "Node.js $NODE_VERSION (expected v20.x)"
 else
@@ -131,10 +131,10 @@ echo "Test 8: Data Validation (via API)"
 OVERVIEW=$(curl -s $API_BASE/status/overview)
 
 TOTAL_SITES=$(echo $OVERVIEW | jq '.data.total_sites')
-if [[ $TOTAL_SITES == "219" ]]; then
+if [[ $TOTAL_SITES -gt 0 ]]; then
     pass "Total sites: $TOTAL_SITES"
 else
-    fail "Total sites: $TOTAL_SITES (expected 219)"
+    fail "Total sites: $TOTAL_SITES (expected > 0)"
 fi
 
 SITES_WITH_ADV=$(echo $OVERVIEW | jq '.data.sites_with_advisories')

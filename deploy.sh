@@ -1,6 +1,6 @@
 #!/bin/bash
 # Storm Scout Deployment Script
-# Deploy from local Mac to cPanel hosting
+# Deploy from local machine to remote server
 
 set -e  # Exit on error
 
@@ -196,8 +196,8 @@ post_deploy() {
         set -e
         cd ~/storm-scout
 
-        # Activate Node environment (cPanel)
-        source ~/nodevenv/storm-scout/20/bin/activate 2>/dev/null || true
+        # Activate Node environment (if applicable)
+        source "${NODE_ENV_ACTIVATE:-/dev/null}" 2>/dev/null || true
 
         # Install production dependencies (npm ci uses package-lock.json for
         # deterministic installs — no silent version drift).
@@ -219,18 +219,17 @@ EOF
     log_info "Dependencies installed and migrations applied"
 }
 
-# Restart Node.js app (via cPanel or PM2)
+# Restart Node.js app (via hosting control panel or process manager)
 restart_app() {
     log_step "Restarting application..."
-    
-    log_warn "Please restart your Node.js app in cPanel"
+
+    log_warn "Please restart your Node.js application"
     echo ""
-    echo "  1. Go to cPanel → Node.js"
-    echo "  2. Find 'storm-scout' application"
-    echo "  3. Click 'Restart'"
+    echo "  Restart using your hosting provider's control panel"
+    echo "  or process manager (PM2, systemd, etc.)"
     echo ""
     read -p "Press enter when done..."
-    
+
     log_info "Application restarted"
 }
 
@@ -314,7 +313,7 @@ main() {
     echo "║          ✓ Deployment Complete!                           ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
-    echo "  Storm Scout: https://$SERVER_HOST  (update DEPLOY_HOST for your USPS server)"
+    echo "  Storm Scout: https://$SERVER_HOST"
     echo ""
     echo "  Backup tag: $BACKUP_TIMESTAMP"
     echo "  To rollback if needed:"

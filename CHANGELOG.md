@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Closed (no code change)
 
 - **#110 PM2 log rotation** — `deployment/ecosystem.config.js` already contained `log_date_format: 'YYYY-MM-DD HH:mm:ss Z'` and `merge_logs: true`; no code change required; note: `pm2 install pm2-logrotate` is a one-time server setup step
-- **#111 Health check backoff in deployment/deploy.sh** — 5-attempt exponential backoff loop was already present from commit `e38101f`; cPanel `deploy.sh` has no automated health check by design (restart is manual via cPanel UI)
+- **#111 Health check backoff in deployment/deploy.sh** — 5-attempt exponential backoff loop was already present from commit `e38101f`; `deploy.sh` has no automated health check by design (restart is manual via hosting control panel)
 
 ## [1.9.9] - 2026-03-10
 
@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **#97 Database SSL support** — `config.js` reads `DB_SSL=true` env var and wires `{ rejectUnauthorized: true }` into the mysql2 connection pool; `.env.production.example` documents the option with guidance (leave `false` for localhost/cPanel Unix socket deployments)
+- **#97 Database SSL support** — `config.js` reads `DB_SSL=true` env var and wires `{ rejectUnauthorized: true }` into the mysql2 connection pool; `.env.production.example` documents the option with guidance (leave `false` for localhost/same-server Unix socket deployments)
 - **#98 Fail-fast startup validation** — `config.js` checks five required env vars (`DB_USER`, `DB_PASSWORD`, `DB_NAME`, `NOAA_API_USER_AGENT`, `API_KEY`) on startup when `NODE_ENV=production`; missing vars emit a single `[FATAL]` block to stderr and call `process.exit(1)`; skipped entirely in development so `init-db`/`seed-db` scripts run without a full `.env`
 - **#99 Pre-deploy smoke test gate** — `deploy.sh` calls `backend/scripts/smoke-test.sh` before any rsync; deploy aborts on any failing check; `SKIP_SMOKE_TEST=true` escape hatch for emergency deploys
 - **#100 Deterministic deploys + migrations** — `deploy.sh` `post_deploy()` replaced `npm install --production` with `npm ci --production`; `npm run migrate` (idempotent) added before app restart; `APPLY_MIGRATIONS=false` escape hatch; same changes applied to `deployment/deploy.sh` (PM2 variant) with exponential backoff health verification (5 attempts)
@@ -103,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Closed (no code change)
 
-- **#90 Process supervisor** — resolved by existing Passenger infrastructure on cPanel host; `ecosystem.config.js` created as documentation for non-Passenger deployments; `NODE_OPTIONS=--max-old-space-size=384` must be set in cPanel Node.js environment variables UI (not in `.env`)
+- **#90 Process supervisor** — resolved by existing process manager on hosting platform; `ecosystem.config.js` created for PM2 deployments; `NODE_OPTIONS=--max-old-space-size=384` must be set in your hosting environment
 
 ## [1.9.7] - 2026-03-09
 
@@ -217,7 +217,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Frontend HTML pages, JavaScript modules, and API client
   - File renames: `sites.html→offices.html`, `site-detail.html→office-detail.html`, `sites.json→offices.json`, `import-usps-sites.js→import-usps-offices.js`
   - Legacy `?site=` URL param accepted as fallback on `offices.html` and `office-detail.html`
-- **Deployment Platform** - Migrated from cPanel/Passenger to Ubuntu Linux with systemd + Docker; updated `DEPLOY.md` and `docs/deployment.md` accordingly
+- **Deployment Platform** - Migrated to Ubuntu Linux with systemd + Docker; updated `DEPLOY.md` and `docs/deployment.md` accordingly
 
 ### Fixed
 - **deploy.sh rsync excludes `tmp/`** - Added `--exclude 'tmp/'` to backend rsync to prevent overwriting the Passenger `tmp/` directory during deployment

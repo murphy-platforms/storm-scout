@@ -14,7 +14,7 @@ BACKEND_DIR="$APP_DIR/backend"
 FRONTEND_DIR="$APP_DIR/frontend"
 DATA_DIR="$APP_DIR/data"
 LOGS_DIR="$APP_DIR/logs"
-DOMAIN="${DEPLOY_DOMAIN:-your-usps-domain.example.com}"
+DOMAIN="${DEPLOY_DOMAIN:-your-domain.example.com}"
 
 # Colors
 RED='\033[0;31m'
