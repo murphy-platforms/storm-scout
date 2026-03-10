@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "jest": "^30.2.0",
-    "nodemon": "^3.0.2",
+    "nodemon": "^3.1.14",
     "supertest": "^7.0.0"
   },
   "overrides": {
