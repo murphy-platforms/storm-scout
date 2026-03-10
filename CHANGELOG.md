@@ -532,7 +532,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Downloaded InterVariable.woff2 from official rsms/inter repository
   - Created `beta/css/fonts.css` with @font-face declarations
   - Eliminates external CDN dependency that could break typography
-- **Google Analytics (GA4)** - Added tracking to all frontend pages (***REDACTED_GA_ID***)
+- **Analytics**: Added `frontend/js/analytics.js` placeholder (tracking implementation left to deployer)
   - Enables visitor analytics and usage monitoring
   - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
 
@@ -928,7 +928,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Links
 
-- [Production Site](https://your-domain.example.com)
+- [Production Site](https://your-deployment.example.com)
 - [GitHub Repository](https://github.com/404-nullsignal/storm-scout)
 - [Issue Tracker](https://github.com/404-nullsignal/storm-scout/issues)
 - [Roadmap](./ROADMAP.md)

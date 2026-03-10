@@ -16,7 +16,7 @@ const axios = require('axios');
 // Configuration
 const OUTPUT_FILE = path.join(__dirname, '../data/ugc-codes-output.json');
 const DELAY_MS = 500; // 500ms between requests to respect NOAA rate limits
-const USER_AGENT = process.env.NOAA_API_USER_AGENT || 'StormScout/1.0 (ugc-fetch@your-domain.example.com)';
+const USER_AGENT = process.env.NOAA_API_USER_AGENT || 'StormScout/1.0 (configure-NOAA_API_USER_AGENT-in-.env)';
 
 /**
  * Sleep for specified milliseconds

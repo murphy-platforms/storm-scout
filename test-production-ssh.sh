@@ -5,9 +5,9 @@
 
 set -e
 
-SSH_HOST="mwqtiakilx@your-domain.example.com"
+SSH_HOST="${DEPLOY_USER}@${DEPLOY_HOST}"
 SSH_PORT="21098"
-API_BASE="https://your-domain.example.com/api"
+API_BASE="https://${DEPLOY_HOST}/api"
 
 echo "=================================="
 echo "Storm Scout Production Test Suite"
