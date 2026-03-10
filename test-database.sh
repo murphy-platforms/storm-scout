@@ -5,10 +5,10 @@
 
 set -e
 
-SSH_HOST="REDACTED_USER@your-domain.example.com"
+SSH_HOST="${DEPLOY_USER}@${DEPLOY_HOST}"
 SSH_PORT="REDACTED_PORT"
-DB_USER="REDACTED_USER_stormsc"
-DB_NAME="***REDACTED***"
+DB_USER="${DB_USER:-storm_scout}"
+DB_NAME="${DB_NAME:-storm_scout_dev}"
 
 echo "=================================="
 echo "Storm Scout Database Test Suite"

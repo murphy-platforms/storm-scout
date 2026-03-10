@@ -50,7 +50,7 @@ mysql -h $DB_HOST -u $DB_USER -p $DB_NAME < src/data/migrations/20260214-migrate
 
 1. Log into cPanel
 2. Open phpMyAdmin
-3. Select `***REDACTED***` database
+3. Select `<your-db-name>` database
 4. Click "SQL" tab
 5. Paste contents of `src/data/migrations/20260214-migrate-operational-status-production.sql`
 6. Click "Go"
@@ -86,7 +86,7 @@ SELECT operational_status, COUNT(*) FROM site_status GROUP BY operational_status
 
 ```bash
 # Via SSH to production server
-ssh -p REDACTED_PORT REDACTED_USER@your-domain.example.com
+ssh -p $SSH_PORT $DEPLOY_USER@$DEPLOY_HOST
 touch ~/storm-scout/tmp/restart.txt
 ```
 
@@ -95,7 +95,7 @@ Or via cPanel → Node.js app → Restart
 ### 2. Verify API Response
 
 ```bash
-curl -s "https://your-domain.example.com/api/status/overview" | jq '.operational_status_counts'
+curl -s "https://your-deployment.example.com/api/status/overview" | jq '.operational_status_counts'
 ```
 
 **Expected output:**
@@ -113,12 +113,12 @@ curl -s "https://your-domain.example.com/api/status/overview" | jq '.operational
 ### 3. Verify Both UIs
 
 **Classic UI:**
-- Visit https://your-domain.example.com
+- Visit https://your-deployment.example.com
 - Check "Operational Status" section shows counts for all 4 categories
 - Counts should match API response
 
 **Beta UI:**
-- Visit https://your-domain.example.com/beta/index.html
+- Visit https://your-deployment.example.com/beta/index.html
 - Check "Operational Status" donut chart shows all 4 segments
 - Legend should show: Open, Restricted, Pending, Closed
 

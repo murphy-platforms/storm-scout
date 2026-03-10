@@ -4,10 +4,10 @@
 
 set -e
 
-SSH_HOST="REDACTED_USER@your-domain.example.com"
+SSH_HOST="${DEPLOY_USER}@${DEPLOY_HOST}"
 SSH_PORT="REDACTED_PORT"
-DB_USER="***REDACTED***"
-DB_NAME="***REDACTED***"
+DB_USER="${DB_USER:-storm_scout}"
+DB_NAME="${DB_NAME:-storm_scout_dev}"
 
 # Color codes
 RED='\033[0;31m'
