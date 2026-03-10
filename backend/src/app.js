@@ -30,11 +30,11 @@ const pkg = require('../package.json');
 // Create Express app
 const app = express();
 
-// Trust proxy — only enable when a reverse proxy (LiteSpeed, Nginx, etc.)
+// Trust proxy — only enable when a reverse proxy (Nginx, Apache, etc.)
 // sits in front of this app and strips/rewrites X-Forwarded-For.
 // Without a proxy, enabling this allows clients to spoof their IP address
 // and bypass rate limiting. Set TRUST_PROXY=true in .env when deploying
-// behind LiteSpeed on cPanel shared hosting.
+// behind a reverse proxy.
 if (process.env.TRUST_PROXY === 'true') {
   app.set('trust proxy', 1);
   console.info('[INFO] trust proxy enabled — ensure a reverse proxy is stripping X-Forwarded-For before forwarding requests.');
@@ -107,10 +107,8 @@ app.use('/api/operational-status', writeLimiter);
 // API key authentication for write endpoints.
 // Read endpoints remain open (public NOAA data only).
 //
-// FUTURE: when this app is deployed to the USPS production environment,
-// replace / supplement this with enterprise IDM SAML/SSO at the reverse-proxy
-// layer (Option C).  See backend/src/middleware/apiKey.js for full strategy
-// notes.
+// FUTURE: supplement this with SSO at the reverse-proxy layer for full
+// authentication.  See backend/src/middleware/apiKey.js for strategy notes.
 app.use('/api/operational-status', authLimiter, requireApiKey);
 
 // Serve static files (if path configured)

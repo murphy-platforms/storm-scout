@@ -9,7 +9,7 @@ This document outlines current deployment procedures and best practices.
 - **Platform**: Ubuntu Linux, systemd user service
 - **Database**: MariaDB 11 via Docker (`storm-scout-db` container)
 - **Node.js**: 18+ LTS
-- **Backend Path**: `/srv/projects/storm-scout-usps/backend/`
+- **Backend Path**: `$APP_ROOT/backend/`
 - **Frontend**: Served as static files by Express (same process)
 
 ## SSH Configuration
@@ -17,15 +17,15 @@ This document outlines current deployment procedures and best practices.
 Configure an SSH alias for easier remote access:
 
 ```
-Host stormscout
+Host your-server-alias
     HostName <server-ip>
     Port 22
-    User administrator
+    User your-ssh-user
     IdentityFile ~/.ssh/id_ed25519
 ```
 
 This allows simplified commands:
-- `ssh stormscout` instead of `ssh user@<ip>`
+- `ssh $DEPLOY_USER@$DEPLOY_HOST` instead of `ssh user@<ip>`
 - `rsync` and `scp` commands use the alias automatically
 
 ## Deployment Procedures
@@ -50,7 +50,7 @@ journalctl --user -u storm-scout-dev -f
 The frontend is served as static files by Express from `frontend/`. Deploy with rsync:
 
 ```bash
-rsync -avz frontend/ $DEPLOY_USER@$DEPLOY_HOST:/srv/projects/storm-scout-usps/frontend/
+rsync -avz frontend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/frontend/
 ```
 
 ### Backend Deployment
@@ -62,13 +62,13 @@ rsync -avz \
   --exclude='.env' \
   --exclude='*.log' \
   --exclude='tmp/' \
-  backend/ $DEPLOY_USER@$DEPLOY_HOST:/srv/projects/storm-scout-usps/backend/
+  backend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/backend/
 
 # Install/update dependencies on server
-ssh stormscout "cd /srv/projects/storm-scout-usps/backend && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd $APP_ROOT/backend && npm install --production"
 
 # Restart application
-ssh stormscout "systemctl --user restart storm-scout-dev"
+ssh $DEPLOY_USER@$DEPLOY_HOST "systemctl --user restart storm-scout-dev"
 ```
 
 **Important Notes**:
@@ -85,8 +85,8 @@ ssh stormscout "systemctl --user restart storm-scout-dev"
 scp -P $DEPLOY_PORT backend/migrations/YYYYMMDD-description.sql $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/migrations/
 
 # Execute on server
-ssh stormscout
-mysql -u storm_scout -p storm_scout < ~/storm-scout/migrations/YYYYMMDD-description.sql
+ssh $DEPLOY_USER@$DEPLOY_HOST
+mysql -u $DB_USER -p $DB_NAME < ~/storm-scout/migrations/YYYYMMDD-description.sql
 exit
 ```
 
@@ -97,7 +97,7 @@ exit
 scp -P $DEPLOY_PORT backend/scripts/migrate-vtec.js $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/scripts/
 
 # Execute via SSH
-ssh stormscout "cd ~/storm-scout && node scripts/migrate-vtec.js"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && node scripts/migrate-vtec.js"
 ```
 
 **Migration Best Practices**:
@@ -136,32 +136,32 @@ scp -P $DEPLOY_PORT frontend/advisories.html $DEPLOY_USER@$DEPLOY_HOST:~/public_
 rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # 2. Install dependencies (if package.json changed)
-ssh stormscout "cd ~/storm-scout && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && npm install --production"
 
 # 3. Restart app
-ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
+ssh $DEPLOY_USER@$DEPLOY_HOST "touch ~/storm-scout/tmp/restart.txt"
 
 # 4. Monitor logs for startup
-ssh stormscout "tail -f ~/storm-scout/logs/app.log"
+ssh $DEPLOY_USER@$DEPLOY_HOST "tail -f ~/storm-scout/logs/app.log"
 ```
 
 ### Database Schema Change
 
 ```bash
 # 1. Backup database first!
-ssh stormscout "mysqldump -u storm_scout -p storm_scout > ~/backups/pre-migration-$(date +%Y%m%d_%H%M%S).sql"
+ssh $DEPLOY_USER@$DEPLOY_HOST "mysqldump -u \$DB_USER -p \$DB_NAME > ~/backups/pre-migration-$(date +%Y%m%d_%H%M%S).sql"
 
 # 2. Deploy migration script
 scp -P $DEPLOY_PORT backend/scripts/add-vtec-columns.js $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/scripts/
 
 # 3. Run migration
-ssh stormscout "cd ~/storm-scout && node scripts/add-vtec-columns.js"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && node scripts/add-vtec-columns.js"
 
 # 4. Deploy updated backend code (if models changed)
 rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # 5. Restart
-ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
+ssh $DEPLOY_USER@$DEPLOY_HOST "touch ~/storm-scout/tmp/restart.txt"
 ```
 
 ## Pre-Deployment Checklist
@@ -265,7 +265,7 @@ SELECT * FROM advisories ORDER BY last_updated DESC LIMIT 5;
 Edit on server (never deploy .env from local):
 
 ```bash
-ssh stormscout "nano ~/storm-scout/.env"
+ssh $DEPLOY_USER@$DEPLOY_HOST "nano ~/storm-scout/.env"
 ```
 
 **Required Variables**:
@@ -316,7 +316,7 @@ journalctl --user -u storm-scout-dev -f
 curl http://localhost:3000/health | jq '.checks.ingestion'
 
 # Manually trigger ingestion
-cd /srv/projects/storm-scout-usps/backend && node src/ingestion/run-ingestion.js
+cd $APP_ROOT/backend && node src/ingestion/run-ingestion.js
 
 # Check ingestion log entries
 journalctl --user -u storm-scout-dev | grep -i ingest | tail -20
@@ -344,7 +344,7 @@ SELECT office_code, COUNT(*) as alert_count FROM advisories GROUP BY office_code
 2. Verify Node.js version: `node --version` (should be 18+)
 3. Check database connection in `.env`
 4. Verify Docker container is running: `docker ps | grep storm-scout-db`
-5. Reinstall dependencies: `cd /srv/projects/storm-scout-usps/backend && rm -rf node_modules && npm install --production`
+5. Reinstall dependencies: `cd $APP_ROOT/backend && rm -rf node_modules && npm install --production`
 
 #### Data Not Updating
 
@@ -360,14 +360,14 @@ If alerts remain `active` after their `end_time` has passed:
 
 ```bash
 # Check for stale alerts
-ssh stormscout "cd ~/storm-scout && node -e \"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && node -e \"
 require('dotenv').config();
 const {initDatabase, getDatabase} = require('./src/config/database.js');
 initDatabase().then(() => getDatabase().query('SELECT COUNT(*) as stale FROM advisories WHERE status=\\\"active\\\" AND end_time < NOW()')).then(([r]) => console.log('Stale alerts:', r[0].stale));
 \""
 
 # Run the expiration fix manually
-ssh stormscout "cd ~/storm-scout && node -e \"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && node -e \"
 require('dotenv').config();
 const {initDatabase} = require('./src/config/database.js');
 const {markExpiredByEndTime} = require('./src/utils/cleanup-advisories.js');
@@ -381,8 +381,8 @@ As of v1.2.1, alerts are automatically marked as expired when `end_time < NOW()`
 
 1. Hard refresh browser (clear cache)
 2. Check browser console for errors
-3. Verify file was deployed: `ssh stormscout "ls -lh ~/public_html/advisories.html"`
-4. Check file modification time: `ssh stormscout "stat ~/public_html/advisories.html"`
+3. Verify file was deployed: `ssh $DEPLOY_USER@$DEPLOY_HOST "ls -lh ~/public_html/advisories.html"`
+4. Check file modification time: `ssh $DEPLOY_USER@$DEPLOY_HOST "stat ~/public_html/advisories.html"`
 5. Clear CDN cache if using CloudFlare or similar
 
 #### Database Connection Errors
@@ -424,7 +424,7 @@ git checkout -b rollback-<issue> <commit-hash>
 rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # Restart
-ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
+ssh $DEPLOY_USER@$DEPLOY_HOST "touch ~/storm-scout/tmp/restart.txt"
 
 # If successful, can merge rollback to main
 # If not, can checkout main again
@@ -436,13 +436,13 @@ ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
 
 ```bash
 # Create backup before migration
-ssh stormscout "mysqldump -u storm_scout -p storm_scout > ~/backups/storm_scout_$(date +%Y%m%d_%H%M%S).sql"
+ssh $DEPLOY_USER@$DEPLOY_HOST "mysqldump -u \$DB_USER -p \$DB_NAME > ~/backups/db_backup_$(date +%Y%m%d_%H%M%S).sql"
 
 # If rollback needed, restore from backup
-ssh stormscout "mysql -u storm_scout -p storm_scout < ~/backups/storm_scout_YYYYMMDD_HHMMSS.sql"
+ssh $DEPLOY_USER@$DEPLOY_HOST "mysql -u \$DB_USER -p \$DB_NAME < ~/backups/db_backup_YYYYMMDD_HHMMSS.sql"
 
 # Restart application after restore
-ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
+ssh $DEPLOY_USER@$DEPLOY_HOST "touch ~/storm-scout/tmp/restart.txt"
 ```
 
 ## Backup Strategy
@@ -549,4 +549,4 @@ Currently, deployment is manual. Future improvements could include:
 ---
 
 **Last Updated**: March 8, 2026
-**Maintained By**: USPS Operations Team
+**Maintained By**: Storm Scout Team

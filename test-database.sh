@@ -7,8 +7,8 @@ set -e
 
 SSH_HOST="${DEPLOY_USER}@${DEPLOY_HOST}"
 SSH_PORT="${DEPLOY_PORT:-22}"
-DB_USER="${DB_USER:-storm_scout}"
-DB_NAME="${DB_NAME:-storm_scout_dev}"
+DB_USER="${DB_USER:-your_db_user}"
+DB_NAME="${DB_NAME:-your_db_name}"
 
 echo "=================================="
 echo "Storm Scout Database Test Suite"
@@ -20,7 +20,7 @@ if [ -z "$1" ]; then
     echo "Usage: $0 <database_password>"
     echo ""
     echo "To retrieve password from Keychain, try:"
-    echo "  security find-generic-password -s 'stormscout_db' -w"
+    echo "  security find-generic-password -s 'storm_scout_db' -w"
     echo ""
     echo "Or run manually with:"
     echo "  ./test-database.sh \$(security find-generic-password -s 'YOUR_KEYCHAIN_ENTRY' -w)"
@@ -76,10 +76,10 @@ echo ""
 echo "Test 3: Data Counts"
 
 SITES_COUNT=$(run_query "SELECT COUNT(*) FROM sites;" | tail -1)
-if [[ $SITES_COUNT == "219" ]]; then
-    pass "Sites table: $SITES_COUNT records (expected 219)"
+if [[ $SITES_COUNT -gt 0 ]]; then
+    pass "Sites table: $SITES_COUNT records"
 else
-    fail "Sites table: $SITES_COUNT records (expected 219)"
+    fail "Sites table: $SITES_COUNT records (expected > 0)"
 fi
 
 ADVISORIES_COUNT=$(run_query "SELECT COUNT(*) FROM advisories WHERE status='active';" | tail -1)
