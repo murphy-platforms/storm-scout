@@ -50,17 +50,24 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ### Security
 - **API Rate Limiting** - 30,000 requests/60 min general (accommodates corporate NAT environments); 20 req/15 min for write operations; configurable via `RATE_LIMIT_API_MAX`
-- **Input Validation** - All API endpoints validated and sanitized with express-validator
+- **Input Validation** - All API endpoints validated and sanitized with express-validator; advisory type query params whitelisted against the full 94-type NOAA enum
 - **Security Headers** - helmet.js with CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+- **Timing-Safe Auth** - API key comparison uses `crypto.timingSafeEqual()` with length pre-check to prevent side-channel timing attacks
 - **XSS Prevention** - Secure `html` tagged template for safe dynamic HTML rendering
 - **CDN Integrity** - Subresource Integrity (SRI) hashes on all external resources
 - **Cache-Control Headers** - HTML always revalidates (`no-cache`); static assets cached 7 days with versioned URLs
+- **Database SSL** - `DB_SSL=true` enables TLS with `rejectUnauthorized: true` for remote DB connections
+- **Fail-Fast Startup** - Production startup validates five required env vars and exits immediately with a clear error if any are missing
 
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
 - **Database Optimization** - UPSERT operations prevent duplicate advisories, unique indexes on external IDs
 - **Safe Deploys** - `deploy.sh` pauses ingestion before rsync, resumes after restart
-- **Pre-Deploy Smoke Test** - 11 automated checks including API validation and XSS audit
+- **Pre-Deploy Smoke Test** - 11 automated checks including API validation and XSS audit; aborts deploy on any failure
+- **Deterministic Builds** - `npm ci` (not `npm install`) in all deploy paths ensures package-lock.json is honored
+- **Automated Migrations** - `npm run migrate` runs idempotent migrations before app restart on every deploy; `APPLY_MIGRATIONS=false` escape hatch available
+- **CI Pipeline** - GitHub Actions runs `npm ci`, `npm audit --audit-level=high`, and `npm test` on every push and pull request
+- **Liveness vs Readiness** - `/ping` (no I/O, always 200) for supervisor keep-alive; `/health` (may 503) for readiness monitoring
 
 ### Global Architecture (Planned)
 - **Multi-Country Design** - Adapter pattern for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico)

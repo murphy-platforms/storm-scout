@@ -27,9 +27,17 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Graceful Shutdown**: SIGTERM/SIGINT drains HTTP → stops scheduler → waits for ingestion idle → closes DB pool
 - **Ingestion Performance**: Bulk pre-fetch eliminates per-row SELECT round-trips; NOT IN expiration chunked into 500-ID batches
 - **Pagination**: `GET /api/advisories/active?page=N&limit=N` — backward compatible (default returns full dataset)
-- **Observability**: `/health` includes uptime, memory (heap/RSS in MB), circuit breaker state; JSON logging via `LOG_FORMAT=json`
+- **Observability**: `/health` includes uptime, memory (heap/RSS in MB), circuit breaker state; JSON logging via `LOG_FORMAT=json`; `/ping` liveness endpoint (no I/O, always 200) for supervisor keep-alive checks
 - **API Rate Limiting**: 30,000 req/60 min general (corporate NAT-aware, configurable via `RATE_LIMIT_API_MAX`), 20 req/15 min for writes (express-rate-limit)
-- **Input Validation**: All API endpoints validated with express-validator
+- **Input Validation**: All API endpoints validated with express-validator; advisory type params whitelisted against 94-type NOAA enum Set
+- **Timing-Safe Auth**: API key comparison uses `crypto.timingSafeEqual()` with mandatory length pre-check (prevents timing side-channel); in `middleware/apiKey.js`
+- **Database SSL**: `DB_SSL=true` env var wires `{ rejectUnauthorized: true }` into mysql2 pool for encrypted remote DB connections
+- **Fail-Fast Startup**: `config.js` validates 5 required env vars on startup (`NODE_ENV=production` only); exits immediately with `[FATAL]` stderr block if missing
+- **Ingestion Alert Deduplication**: Alerts on first failure only; `alertIngestionRecovery()` sends all-clear when ingestion recovers after a failure streak
+- **N+1 Elimination**: `getAllTrends()` uses single SQL query + O(n) JS grouping (replaced 300-query `Promise.all` fan-out)
+- **Query Optimization**: `getImpacted()` uses derived-table `LEFT JOIN` instead of correlated subquery for advisory count aggregation
+- **Map Marker Clustering**: `leaflet.markercluster` groups overlapping markers; cluster icons colored by highest child severity
+- **CI Pipeline**: `.github/workflows/ci.yml` runs `npm ci`, `npm audit --audit-level=high`, `npm test` on push/PR
 - **Alert Detail Modal**: View full NOAA narrative descriptions on office-detail page
 - **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 USPS locations
 - **USPS Office Import**: One-time CSV import via `import-usps-offices.js` to load 300 USPS locations from zip-based CSV
