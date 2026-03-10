@@ -4,6 +4,13 @@
 
 const { query } = require('express-validator');
 const { validateId, validateState, validateLimit, validateOfficeId } = require('./common');
+const { NOAA_ALERT_TYPES } = require('../config/noaa-alert-types');
+
+// Flat Set of all known NOAA alert type strings built once at module load.
+// Used to whitelist advisory_type query param values. (closes #96)
+// Note: the ingestor auto-registers unknown NOAA types internally via
+// INSERT IGNORE into alert_types — this whitelist guards API query params only.
+const VALID_ADVISORY_TYPES = new Set(Object.values(NOAA_ALERT_TYPES).flat());
 
 /**
  * Valid severity values
@@ -44,13 +51,21 @@ const validateStatus = query('status')
 
 /**
  * Validate advisory_type query parameter
- * Supports comma-separated values
+ * Supports comma-separated values; each value must be a known NOAA alert type.
  */
 const validateAdvisoryType = query('advisory_type')
   .optional()
   .trim()
-  .isLength({ max: 500 })
-  .withMessage('advisory_type must be at most 500 characters');
+  .custom((value) => {
+    if (!value) return true;
+    const types = value.split(',').map(t => t.trim()).filter(Boolean);
+    for (const t of types) {
+      if (!VALID_ADVISORY_TYPES.has(t)) {
+        throw new Error(`Invalid advisory_type: "${t}". Must be a known NOAA alert type.`);
+      }
+    }
+    return true;
+  });
 
 /**
  * Validators for GET /api/advisories
