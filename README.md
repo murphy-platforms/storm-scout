@@ -31,6 +31,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **Enhanced Alert Cards** - Office detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
 - **Multiple Advisory Sources** - Currently NOAA/NWS, with support for state/local emergency notices
 - **Consistent Design System** - CSS variable-driven colors, z-index scale, and transition durations; Bootstrap Icons used throughout (no mixed emoji in UI chrome); unified loading/error/empty states across all pages
+- **Map Marker Clustering** - Leaflet MarkerCluster groups map pins with severity-aware cluster icons; dominant severity color reflected on each cluster badge
 
 ### Version & Release
 - **Version Display** - Footer on all pages shows version number and release date
@@ -48,6 +49,8 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **Graceful Shutdown** - SIGTERM/SIGINT handler drains HTTP connections → stops scheduler → waits for active ingestion (up to 60s) → closes DB pool cleanly
 - **Ingestion Performance** - Bulk pre-fetch of existing advisories inside transaction eliminates per-row SELECT round-trips; expiration query chunked into 500-ID batches to avoid `max_allowed_packet` limits
 - **Search Debounce** - 300ms debounce on all free-text search inputs eliminates per-keystroke re-renders; `debounce()` utility in `utils.js`
+- **UpdateBanner Lifecycle** - Countdown and ingestion-polling timers cleared on page unload (`beforeunload`) and tab hide (`visibilitychange`) to prevent resource leaks and unnecessary background API calls
+- **Ingestion Recovery Alerting** - Alert sent on first consecutive ingestion failure; all-clear notification sent automatically when ingestion recovers after a failure streak
 - **Observability** - `/health` exposes uptime, memory (heap/RSS in MB), circuit breaker state, ingestion status, and data integrity; structured JSON request logging via `LOG_FORMAT=json`; `X-Data-Age` header on all API responses
 
 ### Security
