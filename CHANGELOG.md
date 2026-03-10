@@ -15,6 +15,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.9] - 2026-03-10
+
+### Security
+
+- **#95 Timing-safe API key comparison** — `apiKey.js` middleware replaced `!==` string equality with `crypto.timingSafeEqual()` (with mandatory length pre-check) to prevent timing side-channel attacks against the API key; `require('crypto')` added at top of module
+- **#96 Advisory type enum whitelist** — `validators/advisories.js` builds a `Set` from all values in `NOAA_ALERT_TYPES` and validates each comma-separated `advisory_type` query param against it; unknown types are rejected before reaching SQL, preventing injection of arbitrary strings into queries
+
+### Added
+
+- **#97 Database SSL support** — `config.js` reads `DB_SSL=true` env var and wires `{ rejectUnauthorized: true }` into the mysql2 connection pool; `.env.production.example` documents the option with guidance (leave `false` for localhost/cPanel Unix socket deployments)
+- **#98 Fail-fast startup validation** — `config.js` checks five required env vars (`DB_USER`, `DB_PASSWORD`, `DB_NAME`, `NOAA_API_USER_AGENT`, `API_KEY`) on startup when `NODE_ENV=production`; missing vars emit a single `[FATAL]` block to stderr and call `process.exit(1)`; skipped entirely in development so `init-db`/`seed-db` scripts run without a full `.env`
+- **#99 Pre-deploy smoke test gate** — `deploy.sh` calls `backend/scripts/smoke-test.sh` before any rsync; deploy aborts on any failing check; `SKIP_SMOKE_TEST=true` escape hatch for emergency deploys
+- **#100 Deterministic deploys + migrations** — `deploy.sh` `post_deploy()` replaced `npm install --production` with `npm ci --production`; `npm run migrate` (idempotent) added before app restart; `APPLY_MIGRATIONS=false` escape hatch; same changes applied to `deployment/deploy.sh` (PM2 variant) with exponential backoff health verification (5 attempts)
+- **#101 GitHub Actions CI** — `.github/workflows/ci.yml` runs `npm ci`, `npm audit --audit-level=high`, and `npm test` on every push to `main` and all pull requests
+- **#103 Ingestion alert deduplication + recovery** — `scheduler.js` `handleIngestionResult()` now alerts only on the **first** failure (not first AND third); new `alertIngestionRecovery()` function in `alerting.js` sends an all-clear notification when ingestion succeeds after a failure streak; `INGESTION_RECOVERY` added to `AlertTypes`
+- **#104 /ping liveness endpoint** — `app.get('/ping')` returns `{ status: 'ok' }` with no database I/O; intended for process supervisor keep-alive checks (distinct from `/health` readiness probe which may return 503)
+- **#108 Map marker clustering** — `map.html` loads `leaflet.markercluster` CSS + JS; `page-map.js` replaces `L.layerGroup()` with `L.markerClusterGroup({ maxClusterRadius: 60, iconCreateFunction: createClusterIcon })`; `createClusterIcon()` colors cluster badges by highest child marker severity; `severity` stored as custom marker option
+
+### Fixed
+
+- **#105 N+1 query in getAllTrends()** — `advisoryHistory.js` `getAllTrends()` replaced a `DISTINCT office_id` query + `Promise.all(officeIds.map(getTrend))` fan-out (up to 300 concurrent queries) with a single SQL query fetching all rows in the window followed by O(n) JS grouping by `office_id`
+- **#107 Correlated subquery in getImpacted()** — `officeStatus.js` `getImpacted()` replaced a correlated `COUNT(*)` subquery (executed once per result row) with a derived-table `LEFT JOIN` that aggregates advisory counts in a single pass before joining; `COALESCE(ac.advisory_count, 0)` preserves zero-count behavior
+
+### Documented
+
+- **#102** — Closed without code change; `npm ci` in deploy scripts was already implemented in commit `e38101f`
+- **#106 FK constraint workaround** — `schema.sql` now includes a block comment before `CREATE TABLE advisories` explaining the MariaDB/MySQL limitation (FK not allowed on columns referenced by `GENERATED ALWAYS AS`), the application-layer enforcement via pre-insert `INSERT IGNORE INTO alert_types`, and the residual orphan risk + mitigations
+
 ## [1.9.8] - 2026-03-10
 
 ### Fixed
