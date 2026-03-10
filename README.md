@@ -19,7 +19,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **94 NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
 - **5 Impact Levels** - Alerts categorized as CRITICAL, HIGH, MODERATE, LOW, or INFO
 - **Customizable Filters** - Users can enable/disable individual alert types via interactive UI
-- **Quick Presets** - Site Default, Operations View, Executive Summary, Safety Focus, Full View
+- **Quick Presets** - Office Default, Operations View, Executive Summary, Safety Focus, All Alerts
 - **Persistent Preferences** - Filter settings saved to localStorage and applied across all pages
 - **Real-Time Recalculation** - Counts and impacted offices update based on active filter preferences
 
