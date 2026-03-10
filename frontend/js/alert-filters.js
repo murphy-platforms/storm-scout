@@ -39,15 +39,25 @@ const AlertFilters = {
     },
     
     /**
-     * Load user preferences from localStorage or use defaults
+     * Load user preferences from localStorage or use defaults.
+     * Wrapped in try/catch: localStorage may be unavailable (private browsing,
+     * quota exceeded, iframe restrictions) or the stored value may be corrupt JSON.
+     * On any failure, defaults are applied and the user is notified. (closes #118)
      */
     loadUserPreferences() {
-        const saved = localStorage.getItem(this.STORAGE_KEY);
-        if (saved) {
-            this.userFilters = JSON.parse(saved);
-        } else {
-            // Apply default preset
+        try {
+            const saved = localStorage.getItem(this.STORAGE_KEY);
+            if (saved) {
+                this.userFilters = JSON.parse(saved);
+            } else {
+                this.applyPreset(this.DEFAULT_PRESET);
+            }
+        } catch (e) {
+            console.warn('[Filters] localStorage unavailable or corrupt:', e.message);
             this.applyPreset(this.DEFAULT_PRESET);
+            if (typeof showToast === 'function') {
+                showToast('Filter preferences could not be loaded — defaults applied.', 'warning');
+            }
         }
     },
     

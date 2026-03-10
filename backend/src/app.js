@@ -22,6 +22,7 @@ const operationalStatusRouter = require('./routes/operational-status');
 const trendsRouter = require('./routes/trends');
 const historyRouter = require('./routes/history');
 const observationsRouter = require('./routes/observations');
+const adminRouter = require('./routes/admin');
 
 // Read version info from package.json at startup (not on each request)
 const pkg = require('../package.json');
@@ -324,6 +325,7 @@ app.use('/api/operational-status', operationalStatusRouter);
 app.use('/api/trends', trendsRouter);
 app.use('/api/history', historyRouter);
 app.use('/api/observations', observationsRouter);
+app.use('/api/admin', adminRouter);
 
 // Version endpoint
 app.get('/api/version', (req, res) => {

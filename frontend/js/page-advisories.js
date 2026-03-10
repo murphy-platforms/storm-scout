@@ -70,7 +70,7 @@
             const statsContainer = document.getElementById('summaryStatsContainer');
 
             if (sites.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-5 text-muted"><i class="bi bi-cloud-sun fs-1 d-block mb-2"></i><strong>No active advisories</strong><p class="mb-0 small mt-1">No advisories match your current filter settings.</p></td></tr>';
+                tbody.innerHTML = `<tr><td colspan="11">${renderEmptyHtml('cloud-sun', 'No active advisories', 'No advisories match your current filter settings.')}</td></tr>`;
                 statsContainer.innerHTML = '';
                 return;
             }
@@ -426,7 +426,7 @@
         }
 
         // Event listeners
-        document.getElementById('searchBox').addEventListener('input', renderAll);
+        document.getElementById('searchBox').addEventListener('input', debounce(renderAll, 300));
         document.getElementById('alertTypeFilter').addEventListener('change', renderAll);
         document.getElementById('stateFilter').addEventListener('change', renderAll);
         document.getElementById('severityFilter').addEventListener('change', renderAll);

@@ -96,13 +96,25 @@ async function initDatabase() {
     keepAliveInitialDelay: 30000    // 30s keepalive (was 0)
   });
 
+  // Per-statement timeout: set max_statement_time on every acquired connection.
+  // mysql2 v3.x has no pool-level queryTimeout option; the session variable is the
+  // correct mechanism for MariaDB. Falls back gracefully on MySQL < 5.7. (closes #113)
+  const statementTimeoutSec = parseInt(process.env.DB_STATEMENT_TIMEOUT_SECONDS) || 30;
+  pool.on('acquire', (connection) => {
+    connection.query(`SET SESSION max_statement_time = ${statementTimeoutSec}`, (err) => {
+      if (err) {
+        console.warn(`[DB] Could not set max_statement_time (${err.message}) — skipping statement timeout`);
+      }
+    });
+  });
+
   // Test the connection
   await withRetry(async () => {
     const connection = await pool.getConnection();
     connection.release();
   }, 'Initial database connection');
 
-  console.log(`✓ MySQL pool created: ${config.database.database}@${config.database.host}`);
+  console.log(`✓ MySQL pool created: ${config.database.database}@${config.database.host} (statement timeout: ${statementTimeoutSec}s)`);
   
   return pool;
 }
