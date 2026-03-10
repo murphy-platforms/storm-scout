@@ -1,6 +1,6 @@
         /**
          * page-office-detail.js
-         * Office detail page — loads a single USPS office, its active advisories,
+         * Office detail page — loads a single office, its active advisories,
          * and current weather observations; renders advisory cards with VTEC metadata.
          *
          * Key responsibilities:
@@ -31,7 +31,7 @@
          * the render sequence for each page section.
          *
          * URL parameter handling:
-         *   ?office=XXXXX  - preferred format (5-digit USPS zip code)
+         *   ?office=XXXXX  - preferred format (5-digit zip code)
          *   ?site=XXXXX    - legacy alias retained for backwards compatibility
          *                    with bookmarked or externally shared links
          *

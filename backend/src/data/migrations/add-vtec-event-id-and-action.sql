@@ -8,7 +8,7 @@
 ALTER TABLE advisories 
 ADD COLUMN vtec_event_id VARCHAR(50) AFTER vtec_code;
 
--- Step 2: Add vtec_action column (for display to operations/IMT)
+-- Step 2: Add vtec_action column (for display to operations team)
 -- Values: NEW, CON, EXT, EXP, CAN, UPG, EXA, EXB, ROU, COR
 -- This tells users whether an alert is new, continuing, extended, etc.
 ALTER TABLE advisories 

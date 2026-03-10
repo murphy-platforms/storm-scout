@@ -1,20 +1,20 @@
 # AGENTS.md - Storm Scout Project Context
 
 **Project**: Storm Scout  
-**Purpose**: Office-focused weather advisory dashboard for USPS Operations teams  
-**Production URL**: https://your-domain.example.com  (update when USPS server is configured)
-**Status**: Active — USPS deployment (300 locations, zip-code based)
+**Purpose**: Office-focused weather advisory dashboard for operations teams
+**Production URL**: https://your-domain.example.com
+**Status**: Active — Production deployment (300 locations, zip-code based)
 **Last Updated**: 2026-03-10
 
 ---
 
 ## Project Overview
 
-Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help USPS Operations teams quickly identify which of the 300 USPS locations may be impacted during severe weather events.
+Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help operations teams quickly identify which of the 300 monitored locations may be impacted during severe weather events.
 
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
-- **300 USPS Locations**: Monitoring offices across all 50 US states and territories
+- **300 Monitored Locations**: Monitoring offices across all 50 US states and territories
 - **Smart Filtering**: 94 NOAA alert types across 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes; natural-key fallback `(office_id, advisory_type, source, start_time)` guards against malformed payloads where both fields are absent
@@ -39,8 +39,8 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Map Marker Clustering**: `leaflet.markercluster` groups overlapping markers; cluster icons colored by highest child severity
 - **CI Pipeline**: `.github/workflows/ci.yml` runs `npm ci`, `npm audit --audit-level=high`, `npm test` on push/PR
 - **Alert Detail Modal**: View full NOAA narrative descriptions on office-detail page
-- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 USPS locations
-- **USPS Office Import**: One-time CSV import via `import-usps-offices.js` to load 300 USPS locations from zip-based CSV
+- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 monitored locations
+- **Office Import**: One-time CSV import via `import-usps-offices.js` to load 300 monitored locations from zip-based CSV
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
 - **Safe Deployment**: `deploy.sh` calls `POST /api/admin/pause-ingestion` (API-key authenticated) before rsync; waits for active cycle to finish; ERR trap resumes on failure; admin endpoints in `routes/admin.js` also available for manual ops control
@@ -157,7 +157,7 @@ strom-scout/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── offices.json            # 300 USPS locations
+│   │       ├── offices.json            # 300 monitored locations
 │   │       └── migrations/
 │   │           └── rollback-global-alert-sources.sql  # MariaDB-compatible rollback for global tables
 │   └── package.json
@@ -185,7 +185,7 @@ strom-scout/
 ### Database Schema
 
 **6 Main Tables**:
-1. **offices** - 300 USPS locations (office_code = 5-digit zip, includes observation_station ICAO code)
+1. **offices** - 300 monitored locations (office_code = 5-digit zip, includes observation_station ICAO code)
 2. **advisories** - Weather alerts mapped to offices (dynamic, updated every 15 min)
 3. **office_observations** - Current weather conditions per office (replaced each ingestion cycle, no history)
 4. **office_status** - Operational status tracking (manual overrides + auto-calculation)
@@ -294,7 +294,7 @@ CWA is the 3-letter NWS office code responsible for a geographic area. Used for 
 Each office is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `offices.observation_station`.
 
 **Key facts**:
-- 300 USPS offices map to 223 unique stations (some stations serve multiple nearby offices, e.g., KNYC→3 NYC offices)
+- 300 offices map to 223 unique stations (some stations serve multiple nearby offices, e.g., KNYC→3 NYC offices)
 - Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
 - NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
 - Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
@@ -320,7 +320,7 @@ Severity is determined by internal alert type categories, NOT NOAA's raw severit
 - **MODERATE** category → Moderate (🟡 YELLOW) - Winter Storm Watch, Wind Advisory, etc.
 - **LOW/INFO** category → Minor (🟢 GREEN) - Beach Hazards, Rip Current, etc.
 
-This aligns with USPS operational practices. Example: NOAA classifies Winter Storm Watch as "Severe", but Storm Scout displays it as Moderate/Yellow because it's in the MODERATE category.
+This aligns with operational practices. Example: NOAA classifies Winter Storm Watch as "Severe", but Storm Scout displays it as Moderate/Yellow because it's in the MODERATE category.
 
 ---
 
@@ -335,7 +335,7 @@ npm test               # Run unit tests (Jest)
 npm run test:watch     # Run tests in watch mode
 
 # Database
-npm run init-db        # Initialize schema + load 300 USPS locations
+npm run init-db        # Initialize schema + load 300 monitored locations
 npm run seed-db        # Load seed/sample data
 
 # Data Operations
@@ -348,7 +348,7 @@ node src/utils/cleanup-advisories.js vtec       # VTEC duplicates only
 node src/utils/cleanup-advisories.js event_id   # Event ID duplicates only
 node src/utils/cleanup-advisories.js expired    # Remove expired only
 
-# USPS Office Import (one-time, run before init-db)
+# Office Import (one-time, run before init-db)
 node src/scripts/import-usps-offices.js /path/to/usps-locations.csv   # Convert CSV to offices.json
 
 # Weather Observation Stations (one-time setup, or re-run with --force)
@@ -357,8 +357,8 @@ node src/scripts/fetch-observation-stations.js                  # Apply: maps of
 node src/scripts/fetch-observation-stations.js --force          # Re-map all (overwrite existing)
 ```
 
-### USPS Office Import Workflow
-One-time setup to load USPS locations from CSV:
+### Office Import Workflow
+One-time setup to load monitored locations from CSV:
 1. **Import**: `import-usps-offices.js` reads CSV with columns `zip, name, city, state, latitude, longitude` (plus optional `region, county, ugc_codes, cwa`) and writes `src/data/offices.json`.
 2. **Init DB**: `npm run init-db` creates schema and loads `offices.json` into the database.
 3. To update offices later, re-run `import-usps-offices.js` then `npm run init-db`.
@@ -430,7 +430,7 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ External ID unique constraint
 - ✅ Automated cleanup system
 - ✅ Production deployment
-- ✅ 300 USPS locations loaded
+- ✅ 300 monitored locations loaded
 - ✅ 15-minute NOAA ingestion working
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
@@ -440,13 +440,13 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ Storm Scout Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Offices Requiring Attention matches Weather Impact colors)
-- ✅ UGC code matching for all 300 USPS locations (precise zone/county geo-targeting)
+- ✅ UGC code matching for all 300 monitored locations (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to offices without UGC codes
-- ✅ USPS office import workflow (import-usps-offices.js converts CSV → offices.json)
+- ✅ office import workflow (import-usps-offices.js converts CSV → offices.json)
 - ✅ Dashboard cards show office_code + office_name (index.html, advisories.html, offices.html)
 - ✅ Office detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
-- ✅ Observation station mapping for all 300 USPS locations (223 unique stations)
+- ✅ Observation station mapping for all 300 monitored locations (223 unique stations)
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
 - ✅ Local development environment with MariaDB, Jest, and smoke test script
 - ✅ Frontend API client auto-detects local vs production (no hardcoded URL)
@@ -582,11 +582,11 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
 ### Database Backup & Disaster Recovery
 
 **Critical Data**: The Storm Scout database (`storm_scout`) contains:
-- **Static**: 300 USPS locations (offices table) - can be reloaded from `backend/src/data/offices.json`
+- **Static**: 300 monitored locations (offices table) - can be reloaded from `backend/src/data/offices.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
 - **Transient**: Weather observations (office_observations table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
-- **Configuration**: Office status overrides (office_status table) - manual USPS Operations decisions, **CRITICAL** to preserve
+- **Configuration**: Office status overrides (office_status table) - manual operations decisions, **CRITICAL** to preserve
 
 **Backup Strategy**:
 
@@ -656,10 +656,10 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
    
    | Scenario | Impact | Recovery Time | Steps |
    |----------|--------|---------------|-------|
-   | **Offices table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (300 USPS locations) |
+   | **Offices table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (300 monitored locations) |
    | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
    | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
-   | **Office_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
+   | **Office_status lost** | 🔴 Critical - Manual operations decisions lost | Varies | Restore from backup; Operations must re-enter manual overrides |
    | **Complete DB loss** | 🔴 Critical - Full outage | 10-15 min | Restore from latest backup, verify, restart |
 
 **Backup Verification**:
@@ -686,7 +686,7 @@ mysql -u root -p storm_scout_test -e "SELECT COUNT(*) FROM advisories;"
 **Documentation Updates**:
 - **Last Backup Verified**: [Add date after testing restore]
 - **Backup Location**: [Add your backup storage location]
-- **Contact for Restore**: [Add USPS/DevOps contact]
+- **Contact for Restore**: [Add DevOps contact]
 
 ---
 
@@ -745,7 +745,7 @@ The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy val
 1. Starts the server in the background
 2. Waits for it to be ready
 3. Validates all key API endpoints (health, offices, advisories, status, filters, observations)
-4. Verifies 300 USPS locations are loaded
+4. Verifies 300 monitored locations are loaded
 5. Confirms frontend is served correctly
 6. **innerHTML XSS safety audit** — scans all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (reports as warning, does not fail build)
 7. Shuts down the server and reports results

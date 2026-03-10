@@ -1,6 +1,6 @@
 /**
- * USPS Offices CSV Import Script
- * Converts a USPS locations CSV into backend/src/data/offices.json
+ * Offices CSV Import Script
+ * Converts a locations CSV into backend/src/data/offices.json
  *
  * Usage:
  *   node src/scripts/import-usps-offices.js /path/to/usps-locations.csv

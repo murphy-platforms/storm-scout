@@ -53,3 +53,11 @@ convert-models.sh
 
 # Runtime state
 backend/.last-ingestion.json
+
+# USPS internal site data (Issue #150)
+storm-scout-sites*.csv
+scout-sites*
+staging/
+
+# USPS-internal migration
+backend/src/data/migrations/20260220-add-site-reference-table.sql

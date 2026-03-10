@@ -83,7 +83,7 @@ Dashboard summary statistics.
 
 #### GET `/api/offices`
 
-Get all 300 USPS office locations.
+Get all 300 office locations.
 
 **Response**:
 ```json

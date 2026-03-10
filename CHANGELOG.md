@@ -209,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker MariaDB** - Database container configured with `restart=unless-stopped` so it survives reboots without manual intervention
 
 ### Changed
-- **USPS Refactor** - Replaced 229 legacy testing center locations with 300 USPS offices identified by 5-digit zip codes; removed all legacy references
+- **Office Refactor** - Replaced 229 legacy testing center locations with 300 offices identified by 5-digit zip codes; removed all legacy references
 - **site→office Rename (Full Stack)** - Renamed all `site`/`sites` terminology to `office`/`offices` across the entire codebase:
   - Database tables: `sites→offices`, `site_status→office_status`, `site_observations→office_observations`
   - Database columns: `site_code→office_code`, `site_id→office_id` in all tables
@@ -466,14 +466,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All pages now fully compliant with Content Security Policy
 
 ### Changed
-- **IMT Severity Alignment** - Severity now based on internal alert categories instead of NOAA's raw severity
+- **Severity Alignment** - Severity now based on internal alert categories instead of NOAA's raw severity
   - CRITICAL category → Extreme (🔴 RED)
   - HIGH category → Severe (🟠 ORANGE)
   - MODERATE category → Moderate (🟡 YELLOW)
   - LOW/INFO category → Minor (🟢 GREEN)
   - Example: Winter Storm Watch now shows as Moderate/Yellow (was Severe/Orange from NOAA)
   - Ran one-time database migration to update 126 existing alerts to new severity values
-  - Aligns with IMT operational practices
+  - Aligns with operational practices
 - **Default Alert Filters** - Reduced Site Default from 19 to 11 enabled alert types
   - Added to disabled list: Lake Effect Snow Warning, Lake Effect Snow Watch, High Wind Watch,
     Coastal Flood Watch, Lakeshore Flood Watch, Excessive Heat Watch, Hard Freeze Warning, Freeze Watch

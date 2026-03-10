@@ -169,7 +169,7 @@ const OfficeStatusModel = {
   },
 
   /**
-   * Set operational status manually (for USPS Operations use)
+   * Set operational status manually (for operations use)
    * @param {number} officeId - Office ID
    * @param {string} operationalStatus - Operational status (open_normal, open_restricted, closed, pending)
    * @param {string} decisionBy - User who made the decision

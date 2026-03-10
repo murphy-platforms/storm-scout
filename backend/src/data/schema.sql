@@ -2,7 +2,7 @@
 -- MySQL/MariaDB compatible
 -- Updated: 2026-03-08
 
--- Offices table: static list of USPS locations
+-- Offices table: static list of monitored locations
 CREATE TABLE IF NOT EXISTS offices (
     id INT AUTO_INCREMENT PRIMARY KEY,
     office_code VARCHAR(10) UNIQUE NOT NULL,  -- 5-digit zip code
@@ -163,7 +163,7 @@ CHECK (severity IN ('Extreme', 'Severe', 'Moderate', 'Minor'));
 CREATE TABLE IF NOT EXISTS office_status (
     id INT AUTO_INCREMENT PRIMARY KEY,
     office_id INT NOT NULL UNIQUE,
-    -- Operational status (set by USPS Operations)
+    -- Operational status (set by operations team)
     operational_status VARCHAR(20) NOT NULL DEFAULT 'open_normal',  -- 'open_normal', 'open_restricted', 'closed', 'pending'
     -- Weather impact level (set automatically by ingestion)
     weather_impact_level VARCHAR(20) DEFAULT 'green',  -- 'green', 'yellow', 'orange', 'red'
