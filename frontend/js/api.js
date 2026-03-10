@@ -27,21 +27,57 @@ const API = {
     },
     /**
      * Get dashboard overview data
+     * Cached in localStorage for 5 minutes to reduce redundant fetches on
+     * page load and tab switches. Hard-refresh (Ctrl+Shift+R) bypasses cache.
+     * Max staleness: 5-min client TTL + 15-min ingestion interval = 20 min.
      */
     async getOverview() {
+        const CACHE_KEY = 'cache:overview';
+        const CACHE_TTL = 5 * 60 * 1000;
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (raw) {
+                const { data, ts } = JSON.parse(raw);
+                if (Date.now() - ts < CACHE_TTL) return data;
+            }
+        } catch (e) { /* localStorage unavailable — proceed to fetch */ }
+
         const response = await fetch(`${API_BASE_URL}/status/overview`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch overview');
+
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ data: json.data, ts: Date.now() }));
+        } catch (e) { /* quota exceeded or private browsing — skip caching */ }
+
         return json.data;
     },
 
     /**
      * Get all active advisories
+     * Cached in localStorage for 5 minutes to reduce redundant full-dataset
+     * fetches on page load and tab switches.
+     * Max staleness: 5-min client TTL + 15-min ingestion interval = 20 min.
      */
     async getActiveAdvisories() {
+        const CACHE_KEY = 'cache:advisories';
+        const CACHE_TTL = 5 * 60 * 1000;
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (raw) {
+                const { data, ts } = JSON.parse(raw);
+                if (Date.now() - ts < CACHE_TTL) return data;
+            }
+        } catch (e) { /* localStorage unavailable — proceed to fetch */ }
+
         const response = await fetch(`${API_BASE_URL}/advisories/active`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch advisories');
+
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ data: json.data, ts: Date.now() }));
+        } catch (e) { /* quota exceeded or private browsing — skip caching */ }
+
         return json.data;
     },
 
@@ -67,11 +103,28 @@ const API = {
 
     /**
      * Get all current weather observations
+     * Cached in localStorage for 5 minutes — observation data refreshes on
+     * the same ingestion cycle as advisories.
      */
     async getObservations() {
+        const CACHE_KEY = 'cache:observations';
+        const CACHE_TTL = 5 * 60 * 1000;
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (raw) {
+                const { data, ts } = JSON.parse(raw);
+                if (Date.now() - ts < CACHE_TTL) return data;
+            }
+        } catch (e) { /* localStorage unavailable — proceed to fetch */ }
+
         const response = await fetch(`${API_BASE_URL}/observations`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch observations');
+
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ data: json.data, ts: Date.now() }));
+        } catch (e) { /* quota exceeded or private browsing — skip caching */ }
+
         return json.data;
     },
 

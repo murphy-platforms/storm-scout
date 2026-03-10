@@ -15,6 +15,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.9.8] - 2026-03-10
+
+### Fixed
+
+- **#82 map.html error banner always visible** — `#mapErrorBanner` had `style="display:none"` which Bootstrap's `.row { display: flex }` overrode before page JS ran; replaced with `.d-none` class (`display:none !important`); catch block updated from `banner.style.display = ''` to `banner.classList.remove('d-none')` (`map.html`, `page-map.js`)
+- **#83 Systemic inline style overridden by Bootstrap** — audited all pages; found 6 elements across 4 pages (`index.html`, `advisories.html`, `offices.html`, `office-detail.html`) using `style="display:none"` on Bootstrap `.row` elements; all replaced with `.d-none`; corresponding JS updated from `style.display` assignments to `classList.add/remove('d-none')`
+
+### Added
+
+- **#88 NOAA circuit breaker** — CLOSED/OPEN/HALF_OPEN state machine in `api-client.js`; opens after 3 consecutive exhausted-retry failures; rejects requests immediately while OPEN; probes recovery after 60s; closes after 2 successful probes; state exposed via `getCircuitBreakerState()` and surfaced in `/health`
+- **#91 Graceful shutdown** — SIGTERM/SIGINT handler in `server.js` drains HTTP connections (30s safety timeout), stops scheduler, waits for active ingestion cycle (up to 60s via `waitForIngestionIdle()`), closes DB pool via `pool.end()`; `waitForIngestionIdle` exported from `scheduler.js`
+- **#93A Gzip compression** — `compression` package added; `app.use(compression())` placed after `cors()` in middleware stack; ~85% reduction in API response payload
+- **#93B Client-side localStorage cache** — `getActiveAdvisories()`, `getOverview()`, `getObservations()` in `api.js` cache responses in localStorage with 5-min TTL; failures (private browsing, quota exceeded) silently bypass caching; max staleness 20 min (5-min client + 15-min ingestion interval)
+- **#93C Advisory pagination** — `GET /api/advisories/active?page=N&limit=N` (max limit 200); returns `{ total, pages, page, limit }` in envelope when paginated; default (no params) preserves existing full-dataset behaviour; paginated requests bypass server-side cache
+
+### Changed
+
+- **#89 Rate limiter** — `apiLimiter` window extended from 15 min to 60 min; limit raised from 5,000 to 30,000 req/window (same 500 req/min sustained rate); accommodates corporate NAT environments where many users share one IP; configurable via `RATE_LIMIT_API_MAX` env var
+- **#85 DB connection pool** — `connectionLimit` increased from 20 to 40 (configurable via `DB_POOL_LIMIT`); `queueLimit` raised from 50 to 100; `acquireTimeout` removed (not a valid mysql2 option — was silently ignored); pool exhaustion sets `error.isPoolExhausted` flag
+- **#86 Cache invalidation** — `cache.invalidateAll()` in ingestor replaced with `cache.invalidateDynamic()`; static keys (`ALL_SITES`, `STATES_LIST`, `REGIONS_LIST`) preserved across ingestion cycles; `advisories:filtered:*` keys cleared; `ACTIVE_ADVISORIES` pre-warmed immediately after invalidation
+- **#87 Ingestion performance** — bulk pre-fetch of all existing active advisories for affected offices added inside the transaction (one query replaces 2×N per-row SELECTs); `AdvisoryModel.create()` accepts optional `existingLookup` maps; NOT IN expiration query chunked into 500-ID batches
+- **#92 Filtered query caching** — filtered `GET /api/advisories/active` requests now cached with composite deterministic key `advisories:filtered:${sortedParams}` (5-min TTL); parameter order-independent; invalidated on each ingestion cycle
+- **#94 Observability** — `/health` now includes `uptime` (seconds + human-readable), `memory` (heapUsedMb, heapTotalMb, rssMb, externalMb), `noaaCircuitBreaker` state; request logging extended to production when `LOG_FORMAT=json` (structured JSON with ts, method, path, status, ms, ip, ua); `.env.production.example` updated with `LOG_FORMAT` and `RATE_LIMIT_API_MAX`
+
+### Closed (no code change)
+
+- **#90 Process supervisor** — resolved by existing Passenger infrastructure on cPanel host; `ecosystem.config.js` created as documentation for non-Passenger deployments; `NODE_OPTIONS=--max-old-space-size=384` must be set in cPanel Node.js environment variables UI (not in `.env`)
+
 ## [1.9.7] - 2026-03-09
 
 ### Fixed

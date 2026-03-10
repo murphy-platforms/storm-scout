@@ -37,15 +37,24 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 - **API Endpoint** - `GET /api/version` returns current version from `package.json`
 - **GitHub Releases** - Tagged releases with `v` prefix convention (e.g., `v1.7.5`)
 
-### Performance & Security
-- **In-Memory Caching** - node-cache for ~100x faster API responses on cache hits
-- **API Rate Limiting** - 500 requests/15 min general, 20/15 min for write operations
+### Performance & Reliability
+- **In-Memory Caching** - node-cache with targeted invalidation; static keys (sites, states) survive ingestion cycles to avoid thundering herd; dynamic keys (advisories, status) invalidated and pre-warmed after each ingestion
+- **Gzip Compression** - `compression` middleware reduces API response payload ~85% (~500 KB → ~80 KB for full advisory list)
+- **Client-Side Caching** - `localStorage` TTL cache (5 min) for advisories, overview, and observations reduces redundant full-dataset fetches on page load and tab switch
+- **Pagination** - `GET /api/advisories/active?page=N&limit=N`; default (no params) returns full dataset for backward compatibility
+- **DB Connection Pool** - Configurable via `DB_POOL_LIMIT` (default 40); pool exhaustion returns HTTP 503 + `Retry-After: 5` instead of generic 500
+- **NOAA Circuit Breaker** - CLOSED/OPEN/HALF_OPEN state machine; opens after 3 consecutive exhausted-retry failures; 60s recovery window; state visible in `/health`
+- **Graceful Shutdown** - SIGTERM/SIGINT handler drains HTTP connections → stops scheduler → waits for active ingestion (up to 60s) → closes DB pool cleanly
+- **Ingestion Performance** - Bulk pre-fetch of existing advisories inside transaction eliminates per-row SELECT round-trips; expiration query chunked into 500-ID batches to avoid `max_allowed_packet` limits
+- **Observability** - `/health` exposes uptime, memory (heap/RSS in MB), circuit breaker state, ingestion status, and data integrity; structured JSON request logging via `LOG_FORMAT=json`; `X-Data-Age` header on all API responses
+
+### Security
+- **API Rate Limiting** - 30,000 requests/60 min general (accommodates corporate NAT environments); 20 req/15 min for write operations; configurable via `RATE_LIMIT_API_MAX`
 - **Input Validation** - All API endpoints validated and sanitized with express-validator
 - **Security Headers** - helmet.js with CSP, HSTS, X-Frame-Options, X-Content-Type-Options
 - **XSS Prevention** - Secure `html` tagged template for safe dynamic HTML rendering
 - **CDN Integrity** - Subresource Integrity (SRI) hashes on all external resources
 - **Cache-Control Headers** - HTML always revalidates (`no-cache`); static assets cached 7 days with versioned URLs
-- **Ingestion Status API** - `/health` exposes real-time ingestion state; `X-Data-Age` header on all API responses
 
 ### Deployment
 - **Production Ready** - Running on Node.js 20 with MySQL/MariaDB backend
@@ -172,7 +181,7 @@ storm-scout/
 ## 🛠 Tech Stack
 
 **Backend:** Node.js 18+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
-**Middleware:** node-cache (caching), express-rate-limit, express-validator
+**Middleware:** node-cache (caching), compression (gzip), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
 **Data:** NOAA Weather API (94 alert types, 223 observation stations), 300 USPS locations
 **Deployment:** Ubuntu Linux, systemd user service, Docker (MariaDB)
@@ -246,7 +255,7 @@ Storm Scout implements multiple security controls:
 | Security Headers | helmet.js in `app.js` | CSP, HSTS, X-Frame-Options |
 | CDN Integrity | SRI hashes on all CDN resources | `docs/security/SRI.md` |
 | Input Validation | express-validator on all endpoints | `backend/src/validators/` |
-| Rate Limiting | express-rate-limit (500 req/15 min) | `backend/src/middleware/rateLimiter.js` |
+| Rate Limiting | express-rate-limit (30,000 req/60 min; corporate NAT-aware) | `backend/src/middleware/rateLimiter.js` |
 
 **Security Assessments:** Point-in-time security audits are stored in `docs/security/assessments/`.
 

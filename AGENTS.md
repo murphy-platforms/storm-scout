@@ -4,7 +4,7 @@
 **Purpose**: Office-focused weather advisory dashboard for USPS Operations teams  
 **Production URL**: https://your-usps-domain.example.com  (update when USPS server is configured)
 **Status**: Active — USPS deployment (300 locations, zip-code based)
-**Last Updated**: 2026-03-07
+**Last Updated**: 2026-03-10
 
 ---
 
@@ -20,8 +20,15 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
 - **Filter Presets**: Site Default, Operations View, Executive Summary, Safety Focus, Full View
 - **Data Integrity**: Database CHECK constraint enforces valid severity values
-- **In-Memory Caching**: node-cache for fast API responses (~100x faster on cache hits)
-- **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
+- **In-Memory Caching**: node-cache with targeted invalidation (static keys preserved across ingestion) and post-ingestion pre-warm to eliminate thundering herd
+- **Gzip Compression**: `compression` middleware for ~85% API response size reduction
+- **Client-Side Caching**: `localStorage` TTL cache (5 min) in `api.js` for advisories, overview, and observations
+- **NOAA Circuit Breaker**: CLOSED/OPEN/HALF_OPEN state machine in `api-client.js`; opens after 3 failures, recovers after 60s; state in `/health`
+- **Graceful Shutdown**: SIGTERM/SIGINT drains HTTP → stops scheduler → waits for ingestion idle → closes DB pool
+- **Ingestion Performance**: Bulk pre-fetch eliminates per-row SELECT round-trips; NOT IN expiration chunked into 500-ID batches
+- **Pagination**: `GET /api/advisories/active?page=N&limit=N` — backward compatible (default returns full dataset)
+- **Observability**: `/health` includes uptime, memory (heap/RSS in MB), circuit breaker state; JSON logging via `LOG_FORMAT=json`
+- **API Rate Limiting**: 30,000 req/60 min general (corporate NAT-aware, configurable via `RATE_LIMIT_API_MAX`), 20 req/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on office-detail page
 - **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 USPS locations
@@ -49,7 +56,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Caching**: node-cache for in-memory API response caching
 - **Validation**: express-validator for input sanitization
 - **Rate Limiting**: express-rate-limit for API protection
-- **Dependencies**: express, cors, mysql2, node-cron, axios, dotenv, node-cache, express-validator, express-rate-limit
+- **Dependencies**: express, compression, cors, mysql2, node-cron, axios, dotenv, node-cache, express-validator, express-rate-limit
 
 ### Frontend
 - **UI Framework**: Bootstrap 5.3.8, Bootstrap Icons 1.13.1

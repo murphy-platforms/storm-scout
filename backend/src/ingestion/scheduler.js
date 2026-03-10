@@ -217,5 +217,6 @@ function getSchedulerStatus() {
 module.exports = {
   startScheduler,
   stopScheduler,
-  getSchedulerStatus
+  getSchedulerStatus,
+  waitForIngestionIdle
 };

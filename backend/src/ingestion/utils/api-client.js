@@ -21,6 +21,106 @@ const RETRY_CONFIG = {
   retryableCodes: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND']
 };
 
+// ---------------------------------------------------------------------------
+// Circuit Breaker for NOAA API
+//
+// Counts failures at the requestWithRetry() call level, not per HTTP attempt.
+// One call to requestWithRetry() that exhausts all 3 retries = 1 failure.
+// This means the circuit opens after 3 fully-retried failures in a row,
+// avoiding false-opens from isolated transient errors.
+//
+// States:
+//   CLOSED    — Normal operation. Requests pass through.
+//   OPEN      — NOAA is down. Requests are rejected immediately without
+//               attempting a network call. Re-checks after recoveryTimeMs.
+//   HALF_OPEN — Testing recovery. One request is allowed through.
+//               Two consecutive successes → CLOSED.
+//               Any failure → back to OPEN.
+// ---------------------------------------------------------------------------
+const CIRCUIT_BREAKER = {
+  state: 'CLOSED',
+  failureCount: 0,
+  lastFailureTime: null,
+  successCount: 0,
+  // Thresholds
+  failureThreshold: 3,          // Open after 3 consecutive requestWithRetry failures
+  recoveryTimeMs: 60 * 1000,    // Try recovery after 60 seconds
+  halfOpenSuccessThreshold: 2   // Close after 2 consecutive successful probes
+};
+
+/**
+ * Returns a snapshot of current circuit breaker state (safe to expose in /health).
+ */
+function getCircuitBreakerState() {
+  return {
+    state: CIRCUIT_BREAKER.state,
+    failureCount: CIRCUIT_BREAKER.failureCount,
+    lastFailureTime: CIRCUIT_BREAKER.lastFailureTime
+      ? new Date(CIRCUIT_BREAKER.lastFailureTime).toISOString()
+      : null,
+    recoveryTimeMs: CIRCUIT_BREAKER.recoveryTimeMs
+  };
+}
+
+/**
+ * Call at the start of requestWithRetry. Throws if the circuit is OPEN and
+ * the recovery window has not yet elapsed.
+ */
+function checkCircuitBreaker() {
+  if (CIRCUIT_BREAKER.state === 'OPEN') {
+    const elapsed = Date.now() - CIRCUIT_BREAKER.lastFailureTime;
+    if (elapsed >= CIRCUIT_BREAKER.recoveryTimeMs) {
+      CIRCUIT_BREAKER.state = 'HALF_OPEN';
+      CIRCUIT_BREAKER.successCount = 0;
+      console.log('[CIRCUIT BREAKER] NOAA API: HALF_OPEN — testing recovery');
+      return; // Allow this request through as a probe
+    }
+    const waitSec = Math.ceil((CIRCUIT_BREAKER.recoveryTimeMs - elapsed) / 1000);
+    throw new Error(
+      `[CIRCUIT BREAKER] NOAA API circuit is OPEN — retry in ${waitSec}s`
+    );
+  }
+}
+
+/**
+ * Record a successful requestWithRetry completion.
+ */
+function recordCircuitSuccess() {
+  if (CIRCUIT_BREAKER.state === 'HALF_OPEN') {
+    CIRCUIT_BREAKER.successCount++;
+    if (CIRCUIT_BREAKER.successCount >= CIRCUIT_BREAKER.halfOpenSuccessThreshold) {
+      CIRCUIT_BREAKER.state = 'CLOSED';
+      CIRCUIT_BREAKER.failureCount = 0;
+      CIRCUIT_BREAKER.successCount = 0;
+      console.log('[CIRCUIT BREAKER] NOAA API: CLOSED — service recovered');
+    }
+  } else {
+    // Reset failure count on any success while CLOSED
+    CIRCUIT_BREAKER.failureCount = 0;
+  }
+}
+
+/**
+ * Record a failed requestWithRetry call (all retries exhausted).
+ */
+function recordCircuitFailure() {
+  CIRCUIT_BREAKER.failureCount++;
+  CIRCUIT_BREAKER.lastFailureTime = Date.now();
+
+  if (CIRCUIT_BREAKER.state === 'HALF_OPEN') {
+    CIRCUIT_BREAKER.state = 'OPEN';
+    console.error('[CIRCUIT BREAKER] NOAA API: back to OPEN — half-open probe failed');
+  } else if (
+    CIRCUIT_BREAKER.state === 'CLOSED' &&
+    CIRCUIT_BREAKER.failureCount >= CIRCUIT_BREAKER.failureThreshold
+  ) {
+    CIRCUIT_BREAKER.state = 'OPEN';
+    console.error(
+      `[CIRCUIT BREAKER] NOAA API: OPEN after ${CIRCUIT_BREAKER.failureCount} consecutive failures`
+    );
+  }
+}
+
 /**
  * Sleep for specified milliseconds
  */
@@ -58,20 +158,30 @@ function isRetryable(error) {
  * Execute request with retry logic
  */
 async function requestWithRetry(requestFn, description = 'API request') {
+  checkCircuitBreaker();  // Throws immediately if circuit is OPEN
+
   let lastError;
   let delay = RETRY_CONFIG.initialDelayMs;
-  
+
   for (let attempt = 1; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
     try {
       await enforceRateLimit();
-      return await requestFn();
+      const result = await requestFn();
+      recordCircuitSuccess();
+      return result;
     } catch (error) {
       lastError = error;
-      
+
       if (!isRetryable(error) || attempt === RETRY_CONFIG.maxRetries) {
+        // Only trip the circuit breaker when we've genuinely exhausted retries
+        // on a server-side problem. Non-retryable errors (4xx) are client errors
+        // and should not open the circuit.
+        if (attempt === RETRY_CONFIG.maxRetries && isRetryable(error)) {
+          recordCircuitFailure();
+        }
         throw error;
       }
-      
+
       // Handle rate limit (429) with Retry-After header
       if (error.response?.status === 429) {
         const retryAfter = error.response.headers['retry-after'];
@@ -79,13 +189,13 @@ async function requestWithRetry(requestFn, description = 'API request') {
           delay = parseInt(retryAfter, 10) * 1000;
         }
       }
-      
+
       console.warn(`${description} failed (attempt ${attempt}/${RETRY_CONFIG.maxRetries}): ${error.message}. Retrying in ${delay}ms...`);
       await sleep(delay);
       delay = Math.min(delay * 2, RETRY_CONFIG.maxDelayMs);
     }
   }
-  
+
   throw lastError;
 }
 
@@ -256,6 +366,7 @@ module.exports = {
   getUGCZoneInfo,
   getObservationStations,
   getLatestObservation,
+  getCircuitBreakerState,
   // Export for testing
   _internal: {
     requestWithRetry,
