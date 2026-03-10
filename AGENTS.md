@@ -86,7 +86,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 
 ### Infrastructure
 - **Hosting**: Ubuntu Linux, systemd user service, Docker (MariaDB)
-- **Server**: ***REDACTED_HOST***
+- **Server**: <your-cpanel-hostname>
 - **Database**: storm_scout (MariaDB 11.4.9)
 - **Deployment**: rsync over SSH (port 21098)
 
@@ -488,9 +488,9 @@ See `ROADMAP.md` for full list.
 ## Production Environment
 
 ### Server Details
-- **Host**: ***REDACTED_HOST***
+- **Host**: <your-cpanel-hostname>
 - **SSH**: `ssh -p 22 your_user@your-usps-server`
-- **cPanel**: https://***REDACTED_HOST***:2083
+- **cPanel**: https://<your-cpanel-hostname>:2083
 - **Node.js**: Version 20 LTS (via cPanel Node.js app)
 - **Process Manager**: Passenger (cPanel)
 
@@ -537,7 +537,7 @@ Set in cPanel → Node.js app interface:
    ```
 
 2. **Via phpMyAdmin (GUI)**:
-   - Go to https://***REDACTED_HOST***:2083 (cPanel)
+   - Go to https://<your-cpanel-hostname>:2083 (cPanel)
    - Click **phpMyAdmin** in the Databases section
    - Select `storm_scout` from the left sidebar
    - Use SQL tab to run queries
@@ -594,7 +594,7 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
    - **Frequency**: Daily at 2:00 AM EST (configured in cPanel)
    - **Retention**: 7 days (shared hosting default)
    - **Location**: cPanel → Backups → Download Full Backup
-   - **Access**: Log into https://***REDACTED_HOST***:2083, navigate to Backups
+   - **Access**: Log into https://<your-cpanel-hostname>:2083, navigate to Backups
    - **Restore**: cPanel → Backups → Restore → Select backup file
 
 2. **Manual Weekly Backups (Recommended)**

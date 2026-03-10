@@ -18,7 +18,7 @@ const axios = require('axios');
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 const DELAY_MS = 600; // Delay between API calls to respect rate limits
-const USER_AGENT = process.env.NOAA_API_USER_AGENT || 'StormScout/1.0 (new-sites@your-domain.example.com)';
+const USER_AGENT = process.env.NOAA_API_USER_AGENT || 'StormScout/1.0 (configure-NOAA_API_USER_AGENT-in-.env)';
 const SITES_JSON_PATH = path.join(__dirname, '../data/sites.json');
 const OUTPUT_DIR = path.join(__dirname, '../data');
 

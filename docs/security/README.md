@@ -4,7 +4,7 @@ This folder contains security-related documentation for the Storm Scout project.
 
 ## Classification
 
-**Internal Use Only** - This documentation is intended for authorized team members only.
+This documentation covers security controls, vulnerability tracking, and dependency overrides for the Storm Scout project.
 
 ## Contents
 
@@ -21,13 +21,13 @@ Point-in-time security assessments and vulnerability reports.
 
 | Issue | CVE | Severity | Package | Status |
 |-------|-----|----------|---------|--------|
-| [#1](https://github.com/Prometric-Site-Engineering/storm-scout/issues/1) | N/A | Critical | Backend Auth | ✅ Closed |
-| [#2](https://github.com/Prometric-Site-Engineering/storm-scout/issues/2) | N/A | High | Frontend XSS | ✅ Closed |
-| [#3](https://github.com/Prometric-Site-Engineering/storm-scout/issues/3) | N/A | Medium | Security Headers | ✅ Closed |
-| [#4](https://github.com/Prometric-Site-Engineering/storm-scout/issues/4) | N/A | Medium | CDN SRI | ✅ Closed |
-| [#5](https://github.com/Prometric-Site-Engineering/storm-scout/issues/5) | N/A | Medium | Trust Proxy | ✅ Closed |
-| [#6](https://github.com/Prometric-Site-Engineering/storm-scout/issues/6) | CVE-2026-2391 | Low | qs (transitive) | ✅ Closed — `qs` pinned to 6.14.2 via `overrides` |
-| [#119](https://github.com/murphy-platforms/storm-scout-usps/issues/119) | CVE-2026-27903 | Low | minimatch via qs | ✅ Closed — same `qs` 6.14.2 pin covers this ReDoS vector |
+| [#1] (legacy) | N/A | Critical | Backend Auth | ✅ Closed |
+| [#2] (legacy) | N/A | High | Frontend XSS | ✅ Closed |
+| [#3] (legacy) | N/A | Medium | Security Headers | ✅ Closed |
+| [#4] (legacy) | N/A | Medium | CDN SRI | ✅ Closed |
+| [#5] (legacy) | N/A | Medium | Trust Proxy | ✅ Closed |
+| [#6] (legacy) | CVE-2026-2391 | Low | qs (transitive) | ✅ Closed — `qs` pinned to 6.14.2 via `overrides` |
+| [#119](../../issues/119) | CVE-2026-27903 | Low | minimatch via qs | ✅ Closed — same `qs` 6.14.2 pin covers this ReDoS vector |
 
 ---
 

@@ -381,7 +381,7 @@ const StormScoutExport = {
     
     <p style="margin-top: 40px; color: #666; font-size: 12px;">
         This briefing is generated automatically from Storm Scout real-time data.<br>
-        For detailed information, access the Storm Scout dashboard at https://your-domain.example.com
+        For detailed information, access the Storm Scout dashboard at https://your-deployment.example.com
     </p>
 </body>
 </html>

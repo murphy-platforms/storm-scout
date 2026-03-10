@@ -34,7 +34,7 @@ If applicable, add screenshots to help explain your problem.
 - **Browser**: [e.g. Chrome 120, Safari 17]
 - **Device**: [e.g. Desktop, iPhone 14]
 - **OS**: [e.g. macOS 14.3, Windows 11]
-- **URL**: [e.g. https://your-domain.example.com/advisories.html]
+- **URL**: [e.g. https://your-deployment.example.com/advisories.html]
 
 ## Additional Context
 

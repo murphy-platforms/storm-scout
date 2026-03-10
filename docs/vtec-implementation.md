@@ -285,7 +285,7 @@ ORDER BY count DESC;
 
 ### Verify Frontend Display
 
-1. Navigate to https://your-domain.example.com/advisories.html
+1. Navigate to https://your-deployment.example.com/advisories.html
 2. Check "Action" column displays badges
 3. Hover over badges to see tooltips
 4. Verify no duplicate entries for same event

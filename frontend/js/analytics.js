@@ -1,8 +1,7 @@
-/* Google Analytics (gtag.js) initialisation
- * Loaded by all pages as an external script to avoid CSP unsafe-inline.
- * The async gtag.js loader must appear before this file in the HTML.
+/* Analytics placeholder
+ * Remove this file and add your own analytics implementation with an
+ * appropriate consent mechanism (cookie banner, privacy policy, opt-out).
+ *
+ * Example providers: Matomo (self-hosted, privacy-respecting),
+ * GA4 (requires GDPR/CCPA consent banner), Plausible (privacy-first).
  */
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '***REDACTED_GA_ID***');

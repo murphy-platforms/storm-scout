@@ -3,7 +3,7 @@
  * Handles all backend API requests
  */
 
-const API_BASE_URL = 'https://your-domain.example.com/api';
+const API_BASE_URL = 'https://your-domain.example.com/api'; // TODO: configure for your deployment
 
 const API = {
     /**
