@@ -124,6 +124,35 @@ ENDSSH
     log_info "Backup complete — tag: $timestamp"
 }
 
+# Run local smoke test as a pre-deploy gate. (closes #99)
+# Starts a local server instance, runs 11 endpoint checks, exits 1 on any failure.
+# Set SKIP_SMOKE_TEST=true to bypass (emergency deploys only).
+run_smoke_test() {
+    if [ "${SKIP_SMOKE_TEST:-false}" = "true" ]; then
+        log_warn "SKIP_SMOKE_TEST=true — skipping pre-deploy smoke test"
+        return 0
+    fi
+
+    log_step "Running pre-deploy smoke test..."
+
+    if [ ! -f "./backend/scripts/smoke-test.sh" ]; then
+        log_warn "Smoke test script not found — skipping"
+        return 0
+    fi
+
+    (cd ./backend && bash scripts/smoke-test.sh)
+    local exit_code=$?
+
+    if [ $exit_code -ne 0 ]; then
+        log_error "Smoke test FAILED — deploy aborted"
+        log_warn "Fix the failing checks above before deploying."
+        log_warn "To bypass in an emergency: SKIP_SMOKE_TEST=true ./deploy.sh"
+        exit 1
+    fi
+
+    log_info "Smoke test passed"
+}
+
 # Deploy backend
 deploy_backend() {
     log_step "Deploying backend..."
@@ -154,31 +183,40 @@ deploy_frontend() {
     log_info "Frontend files synced"
 }
 
-# Install dependencies and restart
+# Install dependencies, run migrations, prepare for restart. (closes #100)
+# Migrations run AFTER npm ci (new migration files may ship with this deploy)
+# and BEFORE the app restarts (new code expects the new schema).
+# Set APPLY_MIGRATIONS=false to skip migrations for code-only deploys.
 post_deploy() {
-    log_step "Installing dependencies and restarting app..."
-    
-    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << 'EOF'
+    log_step "Installing dependencies and running migrations..."
+
+    local apply_migrations="${APPLY_MIGRATIONS:-true}"
+
+    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << EOF
+        set -e
         cd ~/storm-scout
-        
-        # Activate Node environment
+
+        # Activate Node environment (cPanel)
         source ~/nodevenv/storm-scout/20/bin/activate 2>/dev/null || true
-        
-        # Install dependencies
+
+        # Install production dependencies (npm ci uses package-lock.json for
+        # deterministic installs — no silent version drift).
         echo "Installing npm packages..."
-        npm install --production
-        
-        # Check if database exists, if not initialize
-        if [ ! -f "storm-scout.db" ]; then
-            echo "Initializing database..."
-            npm run init-db
-            npm run seed-db
+        npm ci --production
+
+        # Run pending database migrations before app restart.
+        if [ "$apply_migrations" != "false" ]; then
+            echo "Running database migrations..."
+            npm run migrate || { echo "[ERROR] Migration failed — aborting deploy"; exit 1; }
+            echo "Migrations complete."
+        else
+            echo "APPLY_MIGRATIONS=false — skipping migrations"
         fi
-        
-        echo "Deployment complete on server!"
+
+        echo "Server-side deploy steps complete."
 EOF
-    
-    log_info "Dependencies installed"
+
+    log_info "Dependencies installed and migrations applied"
 }
 
 # Restart Node.js app (via cPanel or PM2)
@@ -239,6 +277,9 @@ main() {
 
     # Create backup before any destructive rsync --delete operations
     create_backup
+
+    # Gate deploy on local smoke test — catches regressions before push
+    run_smoke_test
 
     deploy_backend
     deploy_frontend

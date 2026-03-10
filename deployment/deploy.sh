@@ -56,7 +56,8 @@ git pull origin main
 # Step 2: Install backend dependencies
 log_info "Installing backend dependencies..."
 cd $BACKEND_DIR
-npm install --production
+# npm ci uses package-lock.json for deterministic installs (no silent version drift)
+npm ci --production
 
 # Step 3: Create required directories
 log_info "Creating required directories..."
@@ -89,6 +90,18 @@ else
     log_warn "To reset database: rm -f $DATA_DIR/storm-scout.db && npm run init-db"
 fi
 
+# Step 5b: Run database migrations before restart. (closes #100)
+# Migrations are idempotent — already-applied migrations are skipped safely.
+# Set APPLY_MIGRATIONS=false to skip for code-only deploys.
+APPLY_MIGRATIONS="${APPLY_MIGRATIONS:-true}"
+if [ "$APPLY_MIGRATIONS" != "false" ]; then
+    log_info "Running database migrations..."
+    npm run migrate || { log_error "Migration failed — aborting deploy"; exit 1; }
+    log_info "Migrations applied"
+else
+    log_warn "APPLY_MIGRATIONS=false — skipping migrations"
+fi
+
 # Step 6: Restart PM2 process
 log_info "Restarting application with PM2..."
 if pm2 describe storm-scout > /dev/null 2>&1; then
@@ -106,12 +119,24 @@ sleep 2
 log_info "Checking application status..."
 pm2 status storm-scout
 
-# Step 8: Test health endpoint
-log_info "Testing health endpoint..."
-if curl -s http://localhost:3000/health > /dev/null; then
-    log_info "Backend is responding ✓"
-else
-    log_error "Backend health check failed!"
+# Step 8: Test health and key API endpoints with exponential backoff. (closes #99)
+log_info "Verifying post-deploy endpoints..."
+VERIFIED=false
+for i in 1 2 3 4 5; do
+    sleep $((i * 2))
+    HEALTH_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/health 2>/dev/null || echo "000")
+    API_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/offices 2>/dev/null || echo "000")
+    # Health returns 200 (ok) or 503 (degraded but running); both mean the process is alive
+    if { [ "$HEALTH_CODE" = "200" ] || [ "$HEALTH_CODE" = "503" ]; } && [ "$API_CODE" = "200" ]; then
+        log_info "Health endpoint: HTTP $HEALTH_CODE ✓"
+        log_info "API endpoint:    HTTP $API_CODE ✓"
+        VERIFIED=true
+        break
+    fi
+    log_warn "Attempt $i/5 — health=$HEALTH_CODE api=$API_CODE — retrying..."
+done
+if [ "$VERIFIED" != "true" ]; then
+    log_error "Post-deploy endpoint verification failed after 5 attempts"
     pm2 logs storm-scout --lines 20
     exit 1
 fi

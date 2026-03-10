@@ -83,6 +83,10 @@ async function initDatabase() {
     user: config.database.user,
     password: config.database.password,
     database: config.database.database,
+    // SSL: enabled when DB_SSL=true (required for TCP connections not on localhost).
+    // rejectUnauthorized:true verifies the server certificate — prevents MITM.
+    // Set DB_SSL=false (default) for localhost/Unix socket deployments. (closes #97)
+    ssl: config.database.ssl ? { rejectUnauthorized: true } : false,
     waitForConnections: true,
     connectionLimit: parseInt(process.env.DB_POOL_LIMIT) || 40,  // Configurable; verify MariaDB max_connections before raising
     queueLimit: 100,                // Prevent runaway queue

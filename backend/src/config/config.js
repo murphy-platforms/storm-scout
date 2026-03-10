@@ -5,6 +5,22 @@
 
 require('dotenv').config();
 
+// Fail-fast startup validation — production only. (closes #98)
+// Skipped in development so local dev works without a full .env.
+// Setup scripts (init-db, seed-db) run with NODE_ENV=development by default
+// and are intentionally excluded from this check.
+if (process.env.NODE_ENV === 'production') {
+  const REQUIRED_ENV_VARS = ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'NOAA_API_USER_AGENT', 'API_KEY'];
+  const missing = REQUIRED_ENV_VARS.filter(v => !process.env[v]);
+  if (missing.length > 0) {
+    process.stderr.write(
+      `[FATAL] Missing required environment variables:\n${missing.map(v => `  - ${v}`).join('\n')}\n` +
+      `Copy backend/.env.production.example to backend/.env.production and fill in all values.\n`
+    );
+    process.exit(1);
+  }
+}
+
 const config = {
   // Server configuration
   port: process.env.PORT || 3000,
@@ -16,7 +32,10 @@ const config = {
     port: parseInt(process.env.DB_PORT) || 3306,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    // DB_SSL=true enforces TLS with certificate verification. Required when
+    // the app and DB communicate over TCP rather than a Unix socket. (closes #97)
+    ssl: process.env.DB_SSL === 'true'
   },
   
   // Ingestion configuration
