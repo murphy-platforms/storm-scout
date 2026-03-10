@@ -1,5 +1,28 @@
+        /**
+         * page-notices.js
+         * Notices page — displays active government and operational notices.
+         *
+         * Key responsibilities:
+         *   - Fetches all currently active notices from the API
+         *   - Renders each notice as a card with jurisdiction, type, description,
+         *     effective date, affected states, and an optional source link
+         *   - Supports filtering by jurisdiction type (Federal, State, Local)
+         *
+         * State variables:
+         *   allNotices - Full list of active notices; filtered client-side on change
+         *
+         * External dependencies (globals):
+         *   API, html, raw, escapeHtml, formatDate, renderEmptyHtml, renderErrorHtml
+         */
+
         let allNotices = [];
 
+        /**
+         * Fetch all active notices from the API and perform the initial render.
+         * On error, an inline error message is displayed in the container element.
+         *
+         * @returns {Promise<void>}
+         */
         async function loadNotices() {
             try {
                 const data = await API.getActiveNotices();
@@ -11,6 +34,15 @@
             }
         }
 
+        /**
+         * Render the provided notices list into the notices container.
+         * Shows an empty-state placeholder when the list is empty.
+         *
+         * @param {Array<Object>} notices - Notice records to render; each record
+         *   has at minimum: title, jurisdiction_type, jurisdiction, notice_type,
+         *   description, effective_time, affected_states, and optionally source_url
+         * @returns {void}
+         */
         function renderNotices(notices) {
             const container = document.getElementById('noticesContainer');
             if (notices.length === 0) {
@@ -51,6 +83,13 @@
             `).join('');
         }
 
+        /**
+         * Filter the cached notice list by jurisdiction type and re-render.
+         * Filtering is performed client-side against the full allNotices array
+         * so no additional API call is needed when the dropdown changes.
+         *
+         * @returns {void}
+         */
         function filterNotices() {
             const jurisdiction = document.getElementById('jurisdictionFilter').value;
 
