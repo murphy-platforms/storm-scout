@@ -17,7 +17,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **300 USPS Locations**: Monitoring offices across all 50 US states and territories
 - **Smart Filtering**: 94 NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
-- **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
+- **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes; natural-key fallback `(office_id, advisory_type, source, start_time)` guards against malformed payloads where both fields are absent
 - **Filter Presets**: Site Default, Operations View, Executive Summary, Safety Focus, Full View
 - **Data Integrity**: Database CHECK constraint enforces valid severity values
 - **In-Memory Caching**: node-cache with targeted invalidation (static keys preserved across ingestion) and post-ingestion pre-warm to eliminate thundering herd
@@ -43,7 +43,13 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **USPS Office Import**: One-time CSV import via `import-usps-offices.js` to load 300 USPS locations from zip-based CSV
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
-- **Safe Deployment**: `deploy.sh` pauses ingestion before deploy, resumes after — prevents mid-cycle data corruption
+- **Safe Deployment**: `deploy.sh` calls `POST /api/admin/pause-ingestion` (API-key authenticated) before rsync; waits for active cycle to finish; ERR trap resumes on failure; admin endpoints in `routes/admin.js` also available for manual ops control
+- **DB Statement Timeout**: `pool.on('acquire')` sets `SET SESSION max_statement_time` per connection (default 30s, configurable via `DB_STATEMENT_TIMEOUT_SECONDS`); prevents pool exhaustion from long-running queries
+- **Search Debounce**: `debounce(fn, 300)` applied to all free-text search inputs in `page-offices.js` and `page-advisories.js`; `debounce()` utility in `utils.js`
+- **LocalStorage Resilience**: `alert-filters.js` `loadUserPreferences()` catches `SecurityError`/`SyntaxError`; falls back to default preset and surfaces a Bootstrap Toast notification via `showToast()` in `utils.js`
+- **UpdateBanner Cleanup**: `destroy()` method clears `countdownInterval` and `pollingInterval`; wired to `beforeunload` and `visibilitychange` to stop background tab polling
+- **Empty-State Consistency**: All list pages use shared `renderEmptyHtml()` utility for zero-result states (advisories table, offices page, advisories card view)
+- **Jest Test Suite**: `jest.config.js` configured; `supertest` available; unit tests for `apiKey.js` middleware (5 cases) and `advisory.js` model (dedup paths + `findByNaturalKey`); integration tests for advisories route and `/ping`
 - **Automated XSS Audit**: Smoke test includes innerHTML safety check across all frontend files
 - **Version Display**: Footer on all 8 pages shows version number and release date via `/api/version` endpoint
 - **Stale Cache Safeguards**: Self-unregistering SW stub kills orphaned beta-era service worker; versioned asset URLs (`?v=X.Y.Z`) force cache busting on deploy
