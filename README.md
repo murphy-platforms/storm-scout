@@ -272,7 +272,9 @@ Storm Scout implements multiple security controls:
 
 **Reporting vulnerabilities:** See `.github/SECURITY.md` for our security policy.
 
-**Security documentation:** See `docs/security/` for detailed guides and vulnerability tracking.
+**Security documentation:** See `docs/security/` for detailed guides, vulnerability tracking, dependency override rationale, and secret rotation policy.
+
+**Architecture & scale:** See `docs/ARCHITECTURE.md` for system overview, scale ceilings, and pre-500-location upgrade requirements.
 
 ## License
 

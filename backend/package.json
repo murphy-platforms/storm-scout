@@ -1,6 +1,6 @@
 {
   "name": "storm-scout-backend",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "releasedDate": "2026-03-10",
   "description": "Storm Scout backend API - Weather advisory dashboard for USPS locations",
   "main": "src/server.js",
@@ -45,5 +45,8 @@
   },
   "overrides": {
     "qs": "6.14.2"
+  },
+  "overrideReasons": {
+    "qs": "Pinned to 6.14.2 to patch two transitive-dependency vulnerabilities: CVE-2026-2391 (prototype pollution via qs) and CVE-2026-27903 (minimatch ReDoS via qs transitive chain). Review on each major qs or axios release — remove override once upstream ships a clean version. See docs/security/README.md § Dependency Overrides."
   }
 }
