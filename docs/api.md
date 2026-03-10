@@ -21,16 +21,21 @@ System health check — database connectivity, ingestion state, data integrity.
 ```json
 {
     "status": "ok",
-    "timestamp": "2026-03-08T22:00:00.000Z",
-    "environment": "development",
+    "timestamp": "2026-03-10T14:00:00.000Z",
+    "environment": "production",
+    "uptime": { "seconds": 86400, "human": "24h 0m 0s" },
+    "memory": { "heapUsedMb": 112, "heapTotalMb": 180, "rssMb": 210, "externalMb": 3 },
+    "noaaCircuitBreaker": { "state": "CLOSED", "failureCount": 0, "lastFailureTime": null, "recoveryTimeMs": 60000 },
     "checks": {
         "database": { "status": "ok", "message": "Database connection successful" },
-        "ingestion": { "status": "ok", "lastUpdated": "2026-03-08T21:56:18.131Z", "minutesAgo": 4, "message": "Ingestion is current" },
+        "ingestion": { "status": "ok", "lastUpdated": "2026-03-10T13:45:00.000Z", "minutesAgo": 15, "message": "Ingestion is current" },
         "data_integrity": { "status": "ok", "message": "All offices have valid UGC codes and county data" }
     },
     "ingestion": { "active": false, "startedAt": null }
 }
 ```
+
+**Circuit breaker states**: `CLOSED` (normal), `OPEN` (NOAA unreachable — requests rejected), `HALF_OPEN` (testing recovery)
 
 ---
 
@@ -136,6 +141,15 @@ Get offices currently impacted by weather advisories (Closed or At Risk status).
 
 Get all currently active weather advisories.
 
+**Query Parameters** (all optional):
+- `severity` — comma-separated: `Extreme`, `Severe`, `Moderate`, `Minor`
+- `state` — two-letter state code (e.g. `FL`)
+- `advisory_type` — alert type name (e.g. `Tornado Warning`)
+- `page` — page number (default: 1); only applies when `limit` is set
+- `limit` — results per page (max 200); omit for full dataset (default behaviour)
+
+**Caching**: Unfiltered requests cached 15 min server-side. Filtered requests cached 5 min. Paginated requests bypass cache.
+
 **Response**:
 ```json
 {
@@ -175,6 +189,19 @@ Get all currently active weather advisories.
 - `EXP`: Alert expired
 - `CAN`: Alert cancelled
 - `COR`: Correction issued
+
+**Paginated response** (when `limit` is specified):
+```json
+{
+    "success": true,
+    "data": [...],
+    "count": 50,
+    "total": 312,
+    "pages": 7,
+    "page": 1,
+    "limit": 50
+}
+```
 
 #### GET `/api/advisories/:id`
 
@@ -331,6 +358,7 @@ All endpoints return standard HTTP status codes:
 | 404 | Resource not found |
 | 429 | Rate limit exceeded (500 req/15 min) |
 | 500 | Internal server error |
+| 503 | DB pool exhausted — retry after 5 seconds (`Retry-After: 5` header set) |
 
 Error body:
 ```json
@@ -341,12 +369,12 @@ Error body:
 
 ## Rate Limiting
 
-- **General endpoints**: 500 requests / 15 minutes
+- **General endpoints**: 30,000 requests / 60 minutes (corporate NAT-aware; configurable via `RATE_LIMIT_API_MAX`)
 - **Write operations**: 20 requests / 15 minutes
 
 `X-Data-Age` header is included on all `/api/*` responses — seconds since last successful NOAA ingestion.
 
 ---
 
-**Last Updated**: March 8, 2026
-**API Version**: 1.9.0
+**Last Updated**: March 10, 2026
+**API Version**: 1.9.7

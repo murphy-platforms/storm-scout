@@ -90,6 +90,27 @@ function invalidateAll() {
 }
 
 /**
+ * Invalidate only dynamic data changed by ingestion.
+ * Preserves static keys (ALL_SITES, STATES_LIST, REGIONS_LIST) which do not
+ * change during ingestion and are expensive to rebuild — avoiding thundering herd.
+ * Also clears filtered advisory keys cached under 'advisories:filtered:*'.
+ */
+function invalidateDynamic() {
+  const dynamicKeys = [
+    CACHE_KEYS.ACTIVE_ADVISORIES,
+    CACHE_KEYS.STATUS_OVERVIEW
+  ];
+  dynamicKeys.forEach(k => cache.del(k));
+
+  // Clear parameterised advisory filter keys (see routes/advisories.js #92)
+  cache.keys()
+    .filter(k => k.startsWith('advisories:filtered:'))
+    .forEach(k => cache.del(k));
+
+  console.log('[CACHE] Dynamic data invalidated (static keys preserved)');
+}
+
+/**
  * Get cache statistics
  * @returns {Object} Cache stats including hits, misses, keys
  */
@@ -110,6 +131,7 @@ module.exports = {
   set,
   del,
   invalidateAll,
+  invalidateDynamic,
   getStats,
   CACHE_KEYS,
   TTL

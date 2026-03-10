@@ -230,23 +230,30 @@ const AdvisoryModel = {
    *   2. If not found and has VTEC, check by vtec_event_id
    *   3. Create new or update existing
    * @param {Object} advisory - Advisory data
+   * @param {Object} [existingLookup] - Optional pre-fetched lookup maps to skip SELECT queries.
+   *   When provided by the ingestor's bulk pre-fetch, eliminates per-row DB round-trips.
+   *   The ER_DUP_ENTRY catch block below remains as a safety net for concurrent inserts.
+   * @param {Map} [existingLookup.byExternalId] - key: `${external_id}|${office_id}`
+   * @param {Map} [existingLookup.byVtec]        - key: `${vtec_event_id}|${office_id}|${advisory_type}`
    * @returns {Promise<Object>} Created/updated advisory with ID
    */
-  async create(advisory) {
+  async create(advisory, existingLookup = null) {
     const db = getDatabase();
     try {
       // Extract external_id early for deduplication check
       let externalId = advisory.external_id;
       if (!externalId && advisory.raw_payload) {
-        const payload = typeof advisory.raw_payload === 'string' 
+        const payload = typeof advisory.raw_payload === 'string'
           ? JSON.parse(advisory.raw_payload)
           : advisory.raw_payload;
         externalId = payload.id || payload.properties?.id;
       }
 
-      // Primary deduplication: Check by external_id + site_id (composite unique)
+      // Primary deduplication: Check by external_id + office_id (composite unique)
       if (externalId) {
-        const existing = await this.findByExternalID(externalId, advisory.office_id);
+        const existing = existingLookup
+          ? (existingLookup.byExternalId.get(`${externalId}|${advisory.office_id}`) || null)
+          : await this.findByExternalID(externalId, advisory.office_id);
         if (existing) {
           const action = advisory.vtec_action || 'UPD';
           console.log(`Updating existing advisory via external_id [${action}]: ${externalId.substring(0, 40)}... for office ${advisory.office_id}`);
@@ -254,18 +261,14 @@ const AdvisoryModel = {
         }
       }
 
-      // Secondary deduplication: VTEC Event ID (for alerts without external_id or as fallback)
-      // If VTEC event ID exists, check if we already have this event and update it
-      // Event ID stays consistent across NEW→CON→EXT updates
+      // Secondary deduplication: VTEC Event ID (persistent across NEW→CON→EXT updates)
       if (advisory.vtec_event_id) {
-        const existing = await this.findByVTECEventID(
-          advisory.vtec_event_id,
-          advisory.office_id,
-          advisory.advisory_type
-        );
-        
+        const vtecKey = `${advisory.vtec_event_id}|${advisory.office_id}|${advisory.advisory_type}`;
+        const existing = existingLookup
+          ? (existingLookup.byVtec.get(vtecKey) || null)
+          : await this.findByVTECEventID(advisory.vtec_event_id, advisory.office_id, advisory.advisory_type);
+
         if (existing) {
-          // Update existing alert with new data
           const action = advisory.vtec_action || 'UNK';
           console.log(`Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for office ${advisory.office_id}`);
           return this.update(existing.id, advisory);

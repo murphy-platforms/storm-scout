@@ -41,7 +41,17 @@ async function withRetry(operation, operationName = 'Database operation') {
       return await operation();
     } catch (error) {
       lastError = error;
-      const isRetryable = RETRY_CONFIG.retryableCodes.some(code => 
+
+      // Flag pool exhaustion so callers and the central error handler can
+      // return HTTP 503 instead of a generic 500.
+      if (
+        error.message?.includes('Pool is full') ||
+        error.message?.includes('No connections available')
+      ) {
+        error.isPoolExhausted = true;
+      }
+
+      const isRetryable = RETRY_CONFIG.retryableCodes.some(code =>
         error.code === code || error.message?.includes(code)
       );
       
@@ -74,10 +84,10 @@ async function initDatabase() {
     password: config.database.password,
     database: config.database.database,
     waitForConnections: true,
-    connectionLimit: 20,            // Increased for better concurrency
-    queueLimit: 50,                 // Prevent runaway queue (was unlimited)
-    acquireTimeout: 10000,          // 10s timeout to acquire connection
-    connectTimeout: 10000,          // 10s timeout for initial connection
+    connectionLimit: parseInt(process.env.DB_POOL_LIMIT) || 40,  // Configurable; verify MariaDB max_connections before raising
+    queueLimit: 100,                // Prevent runaway queue
+    // acquireTimeout is not a valid mysql2 option (it is a mysql v1 option and is silently ignored)
+    connectTimeout: 10000,          // 10s timeout for initial TCP connection
     enableKeepAlive: true,
     keepAliveInitialDelay: 30000    // 30s keepalive (was 0)
   });

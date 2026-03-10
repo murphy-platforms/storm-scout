@@ -7,15 +7,21 @@ const rateLimit = require('express-rate-limit');
 
 /**
  * General API rate limiter
- * 100 requests per 15 minutes per IP
+ * 30,000 requests per 60-minute window per IP.
+ * The 60-minute window (vs. the previous 15-minute window) accommodates
+ * USPS corporate environments where many users share a single NAT IP address.
+ * The per-minute allowance (500 req/min) is unchanged from the prior config
+ * (5000/15min = 333/min → 30000/60min = 500/min), providing the same
+ * sustained-rate protection with a larger burst tolerance for NAT clients.
+ * Configurable via RATE_LIMIT_API_MAX env var for production tuning.
  */
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,  // 15 minutes
-  max: 5000,                  // 5000 requests per window
+  windowMs: 60 * 60 * 1000,                              // 60 minutes
+  max: parseInt(process.env.RATE_LIMIT_API_MAX) || 30000, // 30,000 requests per window
   message: {
     success: false,
     error: 'Too many requests, please try again later',
-    retryAfter: '15 minutes'
+    retryAfter: '60 minutes'
   },
   standardHeaders: true,      // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false,       // Disable `X-RateLimit-*` headers
