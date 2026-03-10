@@ -630,16 +630,6 @@ function extractGeoFromAlert(properties) {
 }
 
 /**
- * Extract state codes from NOAA alert properties (legacy - for compatibility)
- * @param {Object} properties - NOAA alert properties
- * @returns {Array} Array of state codes
- */
-function extractStatesFromAlert(properties) {
-  const { states } = extractGeoFromAlert(properties);
-  return states;
-}
-
-/**
  * Convert state name to 2-letter code
  * @param {string} name - State name or partial name
  * @returns {string|null} State code or null

@@ -153,7 +153,7 @@ const StormScoutExport = {
 <body>
     <h1>🌩️ Storm Scout - Incident Report</h1>
     <div class="header-info">
-        <strong>Generated:</strong> ${timestamp}<br>
+        <strong>Generated:</strong> ${escapeHtml(timestamp)}<br>
         <strong>Report Type:</strong> Incident Report<br>
         <strong>Offices Affected:</strong> ${offices.length}
     </div>
@@ -172,13 +172,13 @@ const StormScoutExport = {
         </thead>
         <tbody>
             ${offices.map(office => `
-                <tr class="severity-${(office.highest_severity || '').toLowerCase()}">
-                    <td><strong>${office.office_code}</strong></td>
-                    <td>${office.name}</td>
-                    <td>${office.city}, ${office.state}</td>
-                    <td>${office.highest_severity || 'N/A'}</td>
+                <tr class="severity-${escapeHtml((office.highest_severity || '').toLowerCase())}">
+                    <td><strong>${escapeHtml(office.office_code)}</strong></td>
+                    <td>${escapeHtml(office.name)}</td>
+                    <td>${escapeHtml(office.city)}, ${escapeHtml(office.state)}</td>
+                    <td>${escapeHtml(office.highest_severity || 'N/A')}</td>
                     <td>${office.advisory_count || 0}</td>
-                    <td>${office.operational_status || 'Unknown'}</td>
+                    <td>${escapeHtml(office.operational_status || 'Unknown')}</td>
                 </tr>
             `).join('')}
         </tbody>
@@ -198,11 +198,11 @@ const StormScoutExport = {
         <tbody>
             ${advisories.slice(0, 50).map(adv => `
                 <tr>
-                    <td><strong>${adv.office_code}</strong> - ${adv.office_name}</td>
-                    <td>${adv.advisory_type}</td>
-                    <td>${adv.severity}</td>
-                    <td>${this.formatDateTime(adv.start_time)}</td>
-                    <td>${this.formatDateTime(adv.end_time)}</td>
+                    <td><strong>${escapeHtml(adv.office_code)}</strong> - ${escapeHtml(adv.office_name)}</td>
+                    <td>${escapeHtml(adv.advisory_type)}</td>
+                    <td>${escapeHtml(adv.severity)}</td>
+                    <td>${escapeHtml(this.formatDateTime(adv.start_time))}</td>
+                    <td>${escapeHtml(this.formatDateTime(adv.end_time))}</td>
                 </tr>
             `).join('')}
         </tbody>
@@ -256,7 +256,7 @@ const StormScoutExport = {
 </head>
 <body>
     <h1>📊 Storm Scout - Office Impact Summary</h1>
-    <p><strong>Generated:</strong> ${timestamp}</p>
+    <p><strong>Generated:</strong> ${escapeHtml(timestamp)}</p>
 
     <div class="summary-grid">
         <div class="summary-card extreme">
@@ -279,10 +279,10 @@ const StormScoutExport = {
 
     ${Object.entries(bySeverity).map(([severity, officesInCat]) =>
         officesInCat.length > 0 ? `
-        <h2>${severity} Impact Offices (${officesInCat.length})</h2>
+        <h2>${escapeHtml(severity)} Impact Offices (${officesInCat.length})</h2>
         <ul>
             ${officesInCat.map(office => `
-                <li><strong>${office.office_code}</strong> - ${office.name} (${office.city}, ${office.state}) - ${office.advisory_count} alerts</li>
+                <li><strong>${escapeHtml(office.office_code)}</strong> - ${escapeHtml(office.name)} (${escapeHtml(office.city)}, ${escapeHtml(office.state)}) - ${office.advisory_count} alerts</li>
             `).join('')}
         </ul>
         ` : ''
@@ -321,7 +321,7 @@ const StormScoutExport = {
 </head>
 <body>
     <h1>📋 Storm Scout - Executive Briefing</h1>
-    <p><strong>Date/Time:</strong> ${timestamp}</p>
+    <p><strong>Date/Time:</strong> ${escapeHtml(timestamp)}</p>
 
     <div class="executive-summary">
         <h2>Executive Summary</h2>
@@ -343,10 +343,10 @@ const StormScoutExport = {
         <h2>⚠️ Critical Offices Requiring Immediate Attention</h2>
         <ul>
             ${criticalOffices.map(office => `
-                <li><strong>${office.office_code}</strong> - ${office.name}, ${office.state}
-                    <br>Status: <strong>${office.highest_severity}</strong> |
+                <li><strong>${escapeHtml(office.office_code)}</strong> - ${escapeHtml(office.name)}, ${escapeHtml(office.state)}
+                    <br>Status: <strong>${escapeHtml(office.highest_severity)}</strong> |
                     ${office.advisory_count} active alerts |
-                    Ops Status: ${office.operational_status || 'Pending'}
+                    Ops Status: ${escapeHtml(office.operational_status || 'Pending')}
                 </li>
             `).join('')}
         </ul>

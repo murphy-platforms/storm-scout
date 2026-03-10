@@ -7,8 +7,10 @@ const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
+const fs = require('fs');
 const path = require('path');
 const config = require('./config/config');
+const { getDatabase } = require('./config/database');
 const { apiLimiter, writeLimiter, authLimiter } = require('./middleware/rateLimiter');
 const { requireApiKey } = require('./middleware/apiKey');
 
@@ -161,7 +163,6 @@ app.get('/ping', (req, res) => res.json({ status: 'ok' }));
 // Public health check — returns only status for load balancers and supervisors.
 // Detailed diagnostics (memory, circuit breaker, ingestion) are at /api/admin/health behind API key auth.
 app.get('/health', async (req, res) => {
-  const { getDatabase } = require('./config/database');
 
   let status = 'ok';
   try {
@@ -179,9 +180,8 @@ app.get('/health', async (req, res) => {
 app.use('/api', (req, res, next) => {
   try {
     const ingestionFile = path.join(__dirname, '../.last-ingestion.json');
-    const fs2 = require('fs');
-    if (fs2.existsSync(ingestionFile)) {
-      const data = JSON.parse(fs2.readFileSync(ingestionFile, 'utf8'));
+    if (fs.existsSync(ingestionFile)) {
+      const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
       const ageSec = Math.round((Date.now() - new Date(data.lastUpdated).getTime()) / 1000);
       res.setHeader('X-Data-Age', String(ageSec));
     }

@@ -556,26 +556,6 @@ a.badge:hover {
     letter-spacing: 0.5px;
 }
 
-.severity-extreme {
-    background-color: var(--severity-extreme);
-    color: white;
-}
-
-.severity-severe {
-    background-color: var(--severity-severe);
-    color: white;
-}
-
-.severity-moderate {
-    background-color: var(--severity-moderate);
-    color: #000;
-}
-
-.severity-minor {
-    background-color: var(--severity-minor);
-    color: white;
-}
-
 /* Site card body */
 .office-card-body {
     padding: 1rem 1.25rem;

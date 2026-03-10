@@ -199,7 +199,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Dashboard "Recently Updated Offices" always empty** - `recently_updated` items from the overview API have an `id` field (office_status row ID) and a separate `office_id` field (actual office ID); the filter was incorrectly comparing `adv.office_id === site.id` instead of `site.office_id`, so the panel always showed "No offices with advisories" even when active advisories existed
 - **Export button 404** - Export function fetched the non-existent `/api/sites/requiring-attention` endpoint; updated to use `/api/status/offices-impacted`
-- **CUSTOM filter preset name/description** - `noaa-alert-types.js` CUSTOM preset had stale name "Site Default" and description "testing center operations"; updated to "Office Default" and "operations"
+- **CUSTOM filter preset name/description** - `noaa-alert-types.js` CUSTOM preset had stale name "Site Default" and description "office operations"; updated to "Office Default" and "operations"
 - **Stale "Site" terminology in frontend** - Remaining `site`/`Site` copy in `advisories.html` (page heading, search placeholder, filter dropdown) and `filters.html` (preset button, reset confirm dialog) updated to `office`/`Office`
 
 ## [1.9.0] - 2026-03-08
@@ -209,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker MariaDB** - Database container configured with `restart=unless-stopped` so it survives reboots without manual intervention
 
 ### Changed
-- **Office Refactor** - Replaced 229 legacy testing center locations with 300 offices identified by 5-digit zip codes; removed all legacy references
+- **Office Refactor** - Replaced 229 legacy locations with 300 offices identified by 5-digit zip codes; removed all legacy references
 - **site→office Rename (Full Stack)** - Renamed all `site`/`sites` terminology to `office`/`offices` across the entire codebase:
   - Database tables: `sites→offices`, `site_status→office_status`, `site_observations→office_observations`
   - Database columns: `site_code→office_code`, `site_id→office_id` in all tables
@@ -365,7 +365,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 5 remaining sites (0313, 1908, 1910, 3700, 3702) verified with no changes needed
 
 ### Removed
-- **Site 6753 (NYC Downtown Testing Center 2)** - Removed as child site of 6752
+- **Site 6753 (NYC Downtown 2)** - Removed as child site of 6752
   - Both sites share same physical address (80 Maiden Lane, Suite 706, New York, NY 10038)
   - Storm Scout tracks parent site codes only; total sites: 230 → 229
 
@@ -377,7 +377,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.2] - 2026-02-20
 
 ### Added
-- **10 New Testing Centers** - Total sites increased from 220 to 230
+- **10 New Offices** - Total sites increased from 220 to 230
   - 0313 Waco, TX (McLennan County, FWD)
   - 0383 Irving, TX (Dallas County, FWD)
   - 0624 Miami, FL (Miami-Dade County, MFL)
@@ -404,7 +404,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.1] - 2026-02-19
 
 ### Added
-- **New Site: Concord, NH (5148)** - 220th testing center added
+- **New Site: Concord, NH (5148)** - 220th office added
   - Location: 2 Whitney Rd, Concord, NH 03301
   - UGC Codes: NHZ008, NHC013 (Merrimack County)
   - Region: Northeast
@@ -813,7 +813,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.0] - 2026-02-10
 
 ### Added
-- 219 US testing center locations across all 50 states and territories
+- 219 US office locations across all 50 states and territories
 - Real-time NOAA weather data ingestion every 15 minutes
 - Automated advisory cleanup removing expired alerts
 - Operational status calculation (Open/Closed/At Risk) based on severity
@@ -844,7 +844,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REST API with Express.js
 - `/api/status/overview` endpoint for dashboard statistics
 - `/api/advisories/active` endpoint for current advisories
-- `/api/sites` endpoint for testing center locations
+- `/api/sites` endpoint for office locations
 - `/api/status/sites-impacted` endpoint for affected facilities
 - `/api/notices/active` endpoint for government notices
 - CORS configuration for cross-origin requests
@@ -860,7 +860,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MySQL/MariaDB database schema
 - Three main tables: sites, advisories, notices
 - Database initialization scripts
-- Seed data for 219 US testing centers
+- Seed data for 219 US offices
 - Unique indexes on external IDs to prevent duplicates
 
 ### Technical
@@ -929,6 +929,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Links
 
 - [Production Site](https://your-deployment.example.com)
-- [GitHub Repository](https://github.com/404-nullsignal/storm-scout)
-- [Issue Tracker](https://github.com/404-nullsignal/storm-scout/issues)
-- [Roadmap](./ROADMAP.md)
+- [GitHub Repository](https://github.com/murphy-platforms/storm-scout-usps)
+- [Issue Tracker](https://github.com/murphy-platforms/storm-scout-usps/issues)
