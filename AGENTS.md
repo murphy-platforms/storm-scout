@@ -88,7 +88,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Hosting**: Ubuntu Linux, systemd user service, Docker (MariaDB)
 - **Server**: <your-cpanel-hostname>
 - **Database**: storm_scout (MariaDB 11.4.9)
-- **Deployment**: rsync over SSH (port 21098)
+- **Deployment**: rsync over SSH (configurable port via DEPLOY_PORT)
 
 ---
 

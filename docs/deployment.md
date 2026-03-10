@@ -50,7 +50,7 @@ journalctl --user -u storm-scout-dev -f
 The frontend is served as static files by Express from `frontend/`. Deploy with rsync:
 
 ```bash
-rsync -avz frontend/ stormscout:/srv/projects/storm-scout-usps/frontend/
+rsync -avz frontend/ $DEPLOY_USER@$DEPLOY_HOST:/srv/projects/storm-scout-usps/frontend/
 ```
 
 ### Backend Deployment
@@ -62,7 +62,7 @@ rsync -avz \
   --exclude='.env' \
   --exclude='*.log' \
   --exclude='tmp/' \
-  backend/ stormscout:/srv/projects/storm-scout-usps/backend/
+  backend/ $DEPLOY_USER@$DEPLOY_HOST:/srv/projects/storm-scout-usps/backend/
 
 # Install/update dependencies on server
 ssh stormscout "cd /srv/projects/storm-scout-usps/backend && npm install --production"
@@ -82,7 +82,7 @@ ssh stormscout "systemctl --user restart storm-scout-dev"
 
 ```bash
 # Copy migration SQL to server
-scp -P 21098 backend/migrations/YYYYMMDD-description.sql stormscout:~/storm-scout/migrations/
+scp -P $DEPLOY_PORT backend/migrations/YYYYMMDD-description.sql $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/migrations/
 
 # Execute on server
 ssh stormscout
@@ -94,7 +94,7 @@ exit
 
 ```bash
 # Copy migration script
-scp -P 21098 backend/scripts/migrate-vtec.js stormscout:~/storm-scout/scripts/
+scp -P $DEPLOY_PORT backend/scripts/migrate-vtec.js $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/scripts/
 
 # Execute via SSH
 ssh stormscout "cd ~/storm-scout && node scripts/migrate-vtec.js"
@@ -124,7 +124,7 @@ journalctl --user -u storm-scout-dev -n 20
 
 ```bash
 # Example: Update advisories page
-scp -P 21098 frontend/advisories.html stormscout:~/public_html/advisories.html
+scp -P $DEPLOY_PORT frontend/advisories.html $DEPLOY_USER@$DEPLOY_HOST:~/public_html/advisories.html
 
 # Hard refresh browser to see changes (Cmd+Shift+R on Mac)
 ```
@@ -133,7 +133,7 @@ scp -P 21098 frontend/advisories.html stormscout:~/public_html/advisories.html
 
 ```bash
 # 1. Deploy code
-rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ stormscout:~/storm-scout/
+rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # 2. Install dependencies (if package.json changed)
 ssh stormscout "cd ~/storm-scout && npm install --production"
@@ -152,13 +152,13 @@ ssh stormscout "tail -f ~/storm-scout/logs/app.log"
 ssh stormscout "mysqldump -u storm_scout -p storm_scout > ~/backups/pre-migration-$(date +%Y%m%d_%H%M%S).sql"
 
 # 2. Deploy migration script
-scp -P 21098 backend/scripts/add-vtec-columns.js stormscout:~/storm-scout/scripts/
+scp -P $DEPLOY_PORT backend/scripts/add-vtec-columns.js $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/scripts/
 
 # 3. Run migration
 ssh stormscout "cd ~/storm-scout && node scripts/add-vtec-columns.js"
 
 # 4. Deploy updated backend code (if models changed)
-rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ stormscout:~/storm-scout/
+rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # 5. Restart
 ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
@@ -405,7 +405,7 @@ git log --oneline frontend/
 git checkout <commit-hash> -- frontend/advisories.html
 
 # Deploy old version
-scp -P 21098 frontend/advisories.html stormscout:~/public_html/
+scp -P $DEPLOY_PORT frontend/advisories.html $DEPLOY_USER@$DEPLOY_HOST:~/public_html/
 
 # Restore to HEAD
 git checkout HEAD -- frontend/advisories.html
@@ -421,7 +421,7 @@ git log --oneline backend/
 git checkout -b rollback-<issue> <commit-hash>
 
 # Deploy rolled-back version
-rsync -avz -e "ssh -p 21098" --exclude='node_modules' --exclude='.env' backend/ stormscout:~/storm-scout/
+rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # Restart
 ssh stormscout "touch ~/storm-scout/tmp/restart.txt"
@@ -467,7 +467,7 @@ docker exec storm-scout-db mariadb-dump -u storm_scout -plocaldev storm_scout_de
   | gzip > ~/backups/manual_$(date +%Y%m%d_%H%M%S).sql.gz
 
 # Download backup locally
-scp stormscout:~/backups/manual_*.sql.gz ~/local-backups/
+scp $DEPLOY_USER@$DEPLOY_HOST:~/backups/manual_*.sql.gz ~/local-backups/
 ```
 
 ### Restore from Backup

@@ -92,21 +92,12 @@ These keys are commented out in `.env.production.example` and are not currently 
 
 ---
 
-#### Rotation Log
-
-Maintain a record of rotations (date only — never log the actual key values):
-
-| Secret | Last Rotated | Rotated By | Notes |
-|--------|-------------|------------|-------|
-| `API_KEY` | 2026-03-10 | Project initialization | Initial value set |
-| `DB_PASSWORD` | 2026-03-10 | Project initialization | Initial value set |
-
 ### `/policies` (Future)
 Security policies and procedures specific to Storm Scout.
 
 ## Access Control
 
-Access to this documentation is controlled through GitHub repository permissions. Only users with access to the `storm-scout` repository can view these files.
+This documentation is publicly available as part of the open-source Storm Scout project.
 
 ## Related Resources
 

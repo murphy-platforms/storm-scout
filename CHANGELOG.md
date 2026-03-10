@@ -166,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed (UI/UX Audit — 31 issues resolved, closes #26–#60)
 
 #### CSS Design System
-- **CSS variable consolidation** — renamed all `--pm-*` (Prometric legacy) variables to `--ss-*`; removed 6 unused `:root` variables
+- **CSS variable consolidation** — renamed all `--pm-*` (legacy) variables to `--ss-*`; removed 6 unused `:root` variables
 - **Z-index scale** — added `--z-sticky-content`, `--z-sticky`, `--z-banner`, `--z-skip-link`, `--z-tooltip` to `:root`; all hardcoded z-index values replaced with variables across 5 CSS files
 - **Transition durations** — added `--transition-base: 0.2s ease` and `--transition-slow: 0.3s ease`; replaced all hardcoded `0.2s`/`0.3s`/`0.15s` values across `style.css`, `filters.css`, `map.css`, `tooltips.css`
 - **Card header system** — added `--ss-card-header-bg`, `--ss-card-header-notice-bg` variables; new `.card-header-brand` and `.card-header-notice` classes; removed Bootstrap `bg-primary`/`bg-secondary`/`bg-warning-subtle` utility overrides on card headers
@@ -209,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker MariaDB** - Database container configured with `restart=unless-stopped` so it survives reboots without manual intervention
 
 ### Changed
-- **USPS Refactor** - Replaced 229 Prometric testing center locations with 300 USPS offices identified by 5-digit zip codes; removed all ProInsights/Prometric references
+- **USPS Refactor** - Replaced 229 legacy testing center locations with 300 USPS offices identified by 5-digit zip codes; removed all legacy references
 - **site→office Rename (Full Stack)** - Renamed all `site`/`sites` terminology to `office`/`offices` across the entire codebase:
   - Database tables: `sites→offices`, `site_status→office_status`, `site_observations→office_observations`
   - Database columns: `site_code→office_code`, `site_id→office_id` in all tables
@@ -299,20 +299,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Total Impact Card** - Replaced "Low/No Impact" (green) card with "Total Impact" aggregate card in Weather Impact Assessment (closes #53)
   - Displays sum of High Impact + Severe Impact + Moderate Impact site counts
-  - Navy-styled card using Prometric brand color (`--pm-navy`)
+  - Navy-styled card using brand color (`--pm-navy`)
   - Links to `sites.html` showing all impacted sites
 - **Weather Impact Card Order** - Reordered cards: Total Impact → High Impact → Severe Impact → Moderate Impact (closes #54)
 
 ## [1.7.0] - 2026-02-21
 
 ### Changed
-- **Prometric Visual Alignment** - Updated color palette and design elements to align with Prometric brand identity
-  - Added Prometric brand CSS variables: `--pm-navy` (#1B2845), `--pm-green` (#7AB648), `--pm-text` (#313131) (closes #41)
+- **Visual Alignment** - Updated color palette and design elements to align with brand identity
+  - Added brand CSS variables: `--pm-navy` (#1B2845), `--pm-green` (#7AB648), `--pm-text` (#313131) (closes #41)
   - Navbar changed from Bootstrap black to deep navy across all 8 pages (closes #42)
   - Sticky update banner on dashboard changed to navy background (closes #43)
-  - Body text color updated to Prometric charcoal #313131 (closes #44)
+  - Body text color updated to charcoal #313131 (closes #44)
   - Section headings (h1-h4) now use deep navy tint (closes #45)
-  - Primary buttons changed from Bootstrap blue to Prometric green; outline-primary buttons follow suit (closes #46)
+  - Primary buttons changed from Bootstrap blue to brand green; outline-primary buttons follow suit (closes #46)
   - All interactive accent colors in style.css updated from Bootstrap blue to navy/green variables (closes #47)
   - Tooltip hover/focus accents updated to navy in tooltips.css (closes #48)
   - Mobile focus-visible outline and skip-to-content updated to navy in mobile.css (closes #49)
@@ -397,7 +397,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Includes verification report with warnings for unconfirmed addresses
 
 ### Data Sources
-- Addresses sourced from Prometric public test center lists (NCSF, DSST, ISEE/ERB PDFs)
+- Addresses sourced from public test center lists
 - Coordinates from US Census Geocoder (6 sites) and Nominatim/OSM (4 sites)
 - Weather data from NOAA Weather API /points endpoint
 
