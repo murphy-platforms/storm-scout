@@ -6,7 +6,7 @@
 set -e
 
 SSH_HOST="${DEPLOY_USER}@${DEPLOY_HOST}"
-SSH_PORT="REDACTED_PORT"
+SSH_PORT="${DEPLOY_PORT:-22}"
 DB_USER="${DB_USER:-storm_scout}"
 DB_NAME="${DB_NAME:-storm_scout_dev}"
 

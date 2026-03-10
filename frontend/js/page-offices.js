@@ -275,7 +275,7 @@
          * Read URL query parameters and pre-populate filter controls.
          * Supports:
          *   ?office=      - Pre-fill the search box with an office code
-         *   ?site=        - Legacy alias for ?office= (from pre-USPS Prometric links)
+         *   ?site=        - Legacy alias for ?office= (from pre-USPS links)
          *   ?weather_impact= - Pre-select the weather-impact dropdown and show the
          *                       active-filter banner so users know filtering is active
          *

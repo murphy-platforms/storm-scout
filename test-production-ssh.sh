@@ -6,7 +6,7 @@
 set -e
 
 SSH_HOST="${DEPLOY_USER}@${DEPLOY_HOST}"
-SSH_PORT="REDACTED_PORT"
+SSH_PORT="${DEPLOY_PORT:-22}"
 API_BASE="https://${DEPLOY_HOST}/api"
 
 echo "=================================="
