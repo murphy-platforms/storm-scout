@@ -10,7 +10,7 @@
 
 ### Reverse Proxy Requirement
 
-This application **must** run behind a reverse proxy (LiteSpeed on cPanel shared hosting, or Nginx/Apache on a VPS). The proxy:
+This application **must** run behind a reverse proxy (Nginx, Apache, or similar). The proxy:
 
 - Terminates TLS (HTTPS)
 - Rewrites the `X-Forwarded-For` header with the real client IP
@@ -145,14 +145,14 @@ cd backend && bash scripts/smoke-test.sh
 
 # Deploy backend
 rsync -avz --exclude='node_modules' --exclude='.env' --exclude='tmp/' \
-  backend/ user@server:/srv/projects/storm-scout-usps/backend/
+  backend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/backend/
 
 # Deploy frontend
-rsync -avz frontend/ user@server:/srv/projects/storm-scout-usps/frontend/
+rsync -avz frontend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/frontend/
 
 # Install dependencies and restart
-ssh user@server "cd /srv/projects/storm-scout-usps/backend && npm install --production"
-ssh user@server "systemctl --user restart storm-scout-dev"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd $APP_ROOT/backend && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "systemctl --user restart storm-scout-dev"
 ```
 
 Or use the project deploy script (set `DEPLOY_HOST` and `DEPLOY_USER` first):
@@ -230,14 +230,14 @@ Expected `/health` response:
 
 `deploy.sh` creates a timestamped backup of both backend and frontend directories on the server **before** running `rsync --delete`. The backup tag is printed at the end of every successful deployment.
 
-### Rollback steps (deploy.sh / cPanel rsync deployments)
+### Rollback steps (deploy.sh / rsync deployments)
 
 ```bash
 # 1. SSH into the server
 ssh $SERVER_USER@$SERVER_HOST
 
 # 2. Stop the application
-#    (cPanel → Node.js → Stop, or: touch ~/storm-scout/tmp/restart.txt)
+#    (via hosting control panel or: touch ~/storm-scout/tmp/restart.txt)
 
 # 3. Restore backend and frontend from backup
 #    Replace <TAG> with the backup timestamp shown at deploy time (e.g. 20260309_142531)
@@ -245,7 +245,7 @@ cp -a ~/storm-scout.bak.<TAG> ~/storm-scout
 cp -a ~/public_html.bak.<TAG> ~/public_html
 
 # 4. Restart the application
-#    (cPanel → Node.js → Start)
+#    (via hosting control panel or process manager)
 ```
 
 Backups older than **7 days** are pruned automatically on each deploy run.
@@ -364,7 +364,7 @@ curl http://localhost:3000/health | python3 -c \
   "import json,sys; d=json.load(sys.stdin); print(d['checks']['ingestion'])"
 
 # Trigger manual ingestion
-cd /srv/projects/storm-scout-usps/backend && node src/ingestion/run-ingestion.js
+cd $APP_ROOT/backend && node src/ingestion/run-ingestion.js
 ```
 
 ### Rate limit hit during testing
@@ -392,5 +392,5 @@ systemctl --user restart storm-scout-dev
 | `INGESTION_INTERVAL_MINUTES` | Poll interval | `15` |
 | `NOAA_API_USER_AGENT` | NOAA API contact | `(Storm Scout, ops@example.com)` |
 | `CORS_ORIGIN` | Allowed CORS origin (required — no default) | `https://your-domain.example.com` |
-| `TRUST_PROXY` | Set `true` when behind LiteSpeed/Nginx/Apache reverse proxy | `false` |
+| `TRUST_PROXY` | Set `true` when behind a reverse proxy (Nginx, Apache, etc.) | `false` |
 | `API_KEY` | Shared secret for write endpoints (`/api/operational-status`). Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` | *(required)* |

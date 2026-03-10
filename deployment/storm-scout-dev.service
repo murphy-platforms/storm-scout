@@ -6,8 +6,8 @@ Requires=docker.service
 
 [Service]
 Type=simple
-User=administrator
-WorkingDirectory=/srv/projects/storm-scout-usps/backend
+User=your-ssh-user
+WorkingDirectory=/path/to/storm-scout/backend
 ExecStart=/usr/bin/node src/server.js
 Restart=on-failure
 RestartSec=10

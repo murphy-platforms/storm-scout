@@ -17,13 +17,12 @@
  *   are protected from day one.
  *
  * PRODUCTION (Option C — reverse-proxy / SSO, to be implemented at deploy):
- *   When this application is deployed to the USPS production environment it
- *   should be placed behind the enterprise reverse proxy and integrated with
- *   the business Identity Management (IDM) system for SAML 2.0 or SSO
- *   authentication.  That integration will gate access at the network/proxy
- *   layer before requests reach this Node.js process, providing full
- *   authentication for both read and write endpoints without requiring
- *   per-request token handling inside the application.
+ *   When deployed in a production environment, consider placing this
+ *   application behind a reverse proxy with SSO authentication.
+ *   That integration will gate access at the network/proxy layer before
+ *   requests reach this Node.js process, providing full authentication
+ *   for both read and write endpoints without requiring per-request
+ *   token handling inside the application.
  *
  *   At that point this API key middleware can be retired or kept as a
  *   defence-in-depth layer for service-to-service calls that bypass the

@@ -2,7 +2,7 @@
 
 **Project**: Storm Scout  
 **Purpose**: Office-focused weather advisory dashboard for USPS Operations teams  
-**Production URL**: https://your-usps-domain.example.com  (update when USPS server is configured)
+**Production URL**: https://your-domain.example.com  (update when USPS server is configured)
 **Status**: Active — USPS deployment (300 locations, zip-code based)
 **Last Updated**: 2026-03-10
 
@@ -86,7 +86,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 
 ### Infrastructure
 - **Hosting**: Ubuntu Linux, systemd user service, Docker (MariaDB)
-- **Server**: <your-cpanel-hostname>
+- **Server**: <your-server-hostname>
 - **Database**: storm_scout (MariaDB 11.4.9)
 - **Deployment**: rsync over SSH (configurable port via DEPLOY_PORT)
 
@@ -375,13 +375,13 @@ bash scripts/smoke-test.sh
 ./deploy.sh
 
 # Manual backend deploy
-rsync -avz -e "ssh -p 22" --exclude='node_modules' --exclude='.env' backend/ your_user@your-usps-server:~/storm-scout/
+rsync -avz -e "ssh -p 22" --exclude='node_modules' --exclude='.env' backend/ your_user@your-server:~/storm-scout/
 
 # Manual frontend deploy
-rsync -avz -e "ssh -p 22" frontend/ your_user@your-usps-server:~/public_html/
+rsync -avz -e "ssh -p 22" frontend/ your_user@your-server:~/public_html/
 
-# Restart (via cPanel or SSH)
-ssh -p 22 your_user@your-usps-server "touch ~/storm-scout/tmp/restart.txt"
+# Restart (via control panel or SSH)
+ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 ```
 
 **Deploy Safety**: `deploy.sh` includes `pause_ingestion()` and `resume_ingestion()` functions that disable the cron scheduler before rsync and re-enable it after restart. This prevents mid-cycle data corruption if an ingestion is running during deployment.
@@ -488,14 +488,14 @@ See `ROADMAP.md` for full list.
 ## Production Environment
 
 ### Server Details
-- **Host**: <your-cpanel-hostname>
-- **SSH**: `ssh -p 22 your_user@your-usps-server`
-- **cPanel**: https://<your-cpanel-hostname>:2083
-- **Node.js**: Version 20 LTS (via cPanel Node.js app)
-- **Process Manager**: Passenger (cPanel)
+- **Host**: <your-server-hostname>
+- **SSH**: `ssh -p 22 your_user@your-server`
+- **Admin Panel**: https://<your-server-hostname>/admin
+- **Node.js**: Version 20 LTS (via hosting control panel)
+- **Process Manager**: Passenger or PM2
 
 ### Environment Variables (Production)
-Set in cPanel → Node.js app interface:
+Set in hosting control panel or process manager environment:
 - `NODE_ENV=production`
 - `PORT=3000` (managed by Passenger)
 - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (MySQL connection)
@@ -505,9 +505,9 @@ Set in cPanel → Node.js app interface:
 - `ALERT_WEBHOOK_URL` (optional, for Slack notifications)
 
 ### Monitoring
-- **Health Check**: `curl https://your-usps-domain.example.com/health` (enhanced with database + ingestion status)
-- **Logs**: cPanel → Node.js → View Logs
-- **Database**: phpMyAdmin in cPanel
+- **Health Check**: `curl https://your-domain.example.com/health` (enhanced with database + ingestion status)
+- **Logs**: Process manager → View Logs
+- **Database**: phpMyAdmin or database GUI
 - **Ingestion Status**: Check `last_updated` in advisories table
 
 ### Database Access
@@ -524,7 +524,7 @@ Set in cPanel → Node.js app interface:
 1. **Via SSH (Command Line)**:
    ```bash
    # Connect to server
-   ssh -p 22 your_user@your-usps-server
+   ssh -p 22 your_user@your-server
    
    # Access MySQL (password from .env file)
    mysql -u storm_scout -p storm_scout
@@ -537,7 +537,7 @@ Set in cPanel → Node.js app interface:
    ```
 
 2. **Via phpMyAdmin (GUI)**:
-   - Go to https://<your-cpanel-hostname>:2083 (cPanel)
+   - Go to https://<your-server-hostname>/admin (hosting control panel)
    - Click **phpMyAdmin** in the Databases section
    - Select `storm_scout` from the left sidebar
    - Use SQL tab to run queries
@@ -545,7 +545,7 @@ Set in cPanel → Node.js app interface:
 3. **Via Local SSH Tunnel** (for GUI tools like TablePlus, DBeaver):
    ```bash
    # Create SSH tunnel (run locally)
-   ssh -p 22 -L 3307:localhost:3306 your_user@your-usps-server
+   ssh -p 22 -L 3307:localhost:3306 your_user@your-server
    
    # Then connect your GUI tool to:
    # Host: 127.0.0.1
@@ -590,12 +590,12 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
 
 **Backup Strategy**:
 
-1. **Automated Daily Backups (cPanel)**
-   - **Frequency**: Daily at 2:00 AM EST (configured in cPanel)
-   - **Retention**: 7 days (shared hosting default)
-   - **Location**: cPanel → Backups → Download Full Backup
-   - **Access**: Log into https://<your-cpanel-hostname>:2083, navigate to Backups
-   - **Restore**: cPanel → Backups → Restore → Select backup file
+1. **Automated Daily Backups (Server)**
+   - **Frequency**: Daily at 2:00 AM EST (configured in hosting control panel)
+   - **Retention**: 7 days (hosting default)
+   - **Location**: Control panel → Backups → Download Full Backup
+   - **Access**: Log into https://<your-server-hostname>/admin, navigate to Backups
+   - **Restore**: Control panel → Backups → Restore → Select backup file
 
 2. **Manual Weekly Backups (Recommended)**
    - **Frequency**: Every Sunday (or after major changes)
@@ -604,15 +604,15 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
    
    ```bash
    # Via SSH (requires password)
-   ssh -p 22 your_user@your-usps-server
-   mysqldump -u storm_scout_user -p storm_scout > stormscout_backup_$(date +%Y%m%d).sql
+   ssh -p 22 your_user@your-server
+   mysqldump -u your_db_user -p storm_scout > stormscout_backup_$(date +%Y%m%d).sql
    
    # Download backup to local machine
-   scp -P 22 your_user@your-usps-server:~/stormscout_backup_*.sql ~/backups/
+   scp -P 22 your_user@your-server:~/stormscout_backup_*.sql ~/backups/
    ```
    
    Via phpMyAdmin:
-   - Log into cPanel → phpMyAdmin
+   - Log into hosting control panel → phpMyAdmin
    - Select `storm_scout` database
    - Export → Quick → SQL → Go
    - Save `.sql` file locally
@@ -629,12 +629,12 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
 1. **Full Database Restore** (Disaster Recovery):
    ```bash
    # Via SSH
-   ssh -p 22 your_user@your-usps-server
-   mysql -u storm_scout_user -p storm_scout < stormscout_backup_YYYYMMDD.sql
+   ssh -p 22 your_user@your-server
+   mysql -u your_db_user -p storm_scout < stormscout_backup_YYYYMMDD.sql
    ```
    
    Via phpMyAdmin:
-   - cPanel → phpMyAdmin → Import
+   - Control panel → phpMyAdmin → Import
    - Choose backup `.sql` file
    - Execute
    
@@ -642,14 +642,14 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
    - Verify offices count: `SELECT COUNT(*) FROM offices;` (should be 300)
    - Check for active advisories: `SELECT COUNT(*) FROM advisories WHERE status='active';`
    - Restart ingestion: Backend will auto-populate advisories within 15 minutes
-   - Verify health: `curl https://your-usps-domain.example.com/health`
+   - Verify health: `curl https://your-domain.example.com/health`
 
 2. **Partial Recovery** (Specific Tables):
    - Export single table from backup:
      ```bash
      # Extract specific table from full backup
      sed -n '/DROP TABLE.*`advisory_history`/,/UNLOCK TABLES/p' backup.sql > advisory_history_only.sql
-     mysql -u storm_scout_user -p storm_scout < advisory_history_only.sql
+     mysql -u your_db_user -p storm_scout < advisory_history_only.sql
      ```
 
 3. **Data Loss Scenarios**:
@@ -765,11 +765,11 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 - [ ] `.env` changes documented (don't commit `.env`)
 
 ### Post-Deployment Verification
-- [ ] Health check passes: `https://your-usps-domain.example.com/health`
-- [ ] Frontend loads: `https://your-usps-domain.example.com`
-- [ ] API responds: `https://your-usps-domain.example.com/api/offices`
+- [ ] Health check passes: `https://your-domain.example.com/health`
+- [ ] Frontend loads: `https://your-domain.example.com`
+- [ ] API responds: `https://your-domain.example.com/api/offices`
 - [ ] Dashboard shows data (offices, advisories, counts)
-- [ ] No errors in cPanel logs
+- [ ] No errors in server logs
 
 ---
 
@@ -790,23 +790,23 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 **Mitigation**: Cleanup runs after each ingestion cycle, marks as expired and deletes.
 
 ### 4. Shared Hosting Limitations
-**Issue**: cPanel shared hosting has memory/CPU limits, can't use PM2.  
-**Mitigation**: Use Passenger (handles restarts), optimize queries, add Redis caching for high-traffic endpoints.
+**Issue**: Shared hosting may have memory/CPU limits.
+**Mitigation**: Use Passenger or PM2 (handles restarts), optimize queries, add Redis caching for high-traffic endpoints.
 
 ### 5. Node.js Version Pinning
 **Issue**: Production server requires Node.js 20 LTS.  
-**Mitigation**: Use `source ~/nodevenv/storm-scout/20/bin/activate` on server, document in deployment scripts.
+**Mitigation**: Use `source "${NODE_ENV_ACTIVATE:-/dev/null}"` on server, document in deployment scripts.
 
 ---
 
 ## Troubleshooting Guide
 
 ### Backend Won't Start
-1. Check MySQL connection: `mysql -u storm_scout_user -p storm_scout`
+1. Check MySQL connection: `mysql -u your_db_user -p storm_scout`
 2. Verify `.env` file exists and has correct values
 3. Check Node.js version: `node --version` (should be 20.x)
 4. Check for port conflicts: `lsof -i :3000`
-5. Review logs: cPanel → Node.js → View Logs
+5. Review logs: Process manager → View Logs
 
 ### Ingestion Failing
 1. Check User-Agent in `.env`: `NOAA_API_USER_AGENT` must include email
@@ -817,9 +817,9 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 
 ### Frontend Not Loading Data
 1. Check API base URL in `js/api.js` (auto-detects localhost vs production — no hardcoded URL)
-2. Test API directly: `curl https://your-usps-domain.example.com/api/offices`
+2. Test API directly: `curl https://your-domain.example.com/api/offices`
 3. Check browser console for CORS errors
-4. Verify backend is running: `curl https://your-usps-domain.example.com/health`
+4. Verify backend is running: `curl https://your-domain.example.com/health`
 5. Clear localStorage and refresh: `localStorage.clear()`
 
 ### Duplicate Alerts Appearing
@@ -830,10 +830,10 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 5. Verify unique constraint exists: `SHOW INDEX FROM advisories;`
 
 ### Deployment Fails
-1. Test SSH connection: `ssh -p 22 your_user@your-usps-server`
+1. Test SSH connection: `ssh -p 22 your_user@your-server`
 2. Check rsync is installed: `which rsync`
 3. Verify paths in `.deploy.config.local`
-4. Check server disk space: `ssh stormscout "df -h"`
+4. Check server disk space: `ssh $DEPLOY_USER@$DEPLOY_HOST "df -h"`
 5. Manual deployment as fallback (see `DEPLOY.md`)
 
 ---
@@ -841,7 +841,7 @@ Run from `backend/`: `bash scripts/smoke-test.sh`
 ## Git Workflow
 
 ### Branch Strategy
-- **main**: Production-ready code, deployed to https://your-usps-domain.example.com
+- **main**: Production-ready code, deployed to https://your-domain.example.com
 - Feature branches: Create for major features (e.g., `feature/zone-filtering`)
 - Hotfix branches: For urgent production fixes (e.g., `hotfix/ingestion-crash`)
 
@@ -896,10 +896,10 @@ When cutting a new release:
 # Quick status check
 git status
 npm run ingest  # Test ingestion locally
-curl https://your-usps-domain.example.com/health  # Check production
+curl https://your-domain.example.com/health  # Check production
 
 # Database inspection
-mysql -u storm_scout_user -p storm_scout
+mysql -u your_db_user -p storm_scout
 SELECT COUNT(*) FROM advisories WHERE status = 'active';
 SELECT office_code, name, COUNT(*) as alert_count 
 FROM offices s JOIN advisories a ON s.id = a.office_id 
@@ -907,7 +907,7 @@ WHERE a.status = 'active'
 GROUP BY s.id ORDER BY alert_count DESC LIMIT 10;
 
 # Log monitoring
-ssh -p 22 your_user@your-usps-server "tail -f ~/logs/storm-scout.log"
+ssh -p 22 your_user@your-server "tail -f ~/logs/storm-scout.log"
 ```
 
 ---
@@ -1110,16 +1110,16 @@ Run quarterly or after major changes:
 cd backend && npm audit
 
 # 2. Verify security headers in production
-curl -sI https://your-usps-domain.example.com | grep -iE "(strict-transport|x-frame|content-security|x-content-type)"
+curl -sI https://your-domain.example.com | grep -iE "(strict-transport|x-frame|content-security|x-content-type)"
 
 # 3. Search for unsafe innerHTML patterns
 grep -rn "\.innerHTML\s*=" frontend/ --include="*.html" --include="*.js" | grep -v "html\`"
 
 # 4. Verify SRI hashes on CDN resources
-curl -s https://your-usps-domain.example.com | grep -E 'integrity="sha'
+curl -s https://your-domain.example.com | grep -E 'integrity="sha'
 
 # 5. Test input validation
-curl -s "https://your-usps-domain.example.com/api/advisories?office_id=abc" | jq .error
+curl -s "https://your-domain.example.com/api/advisories?office_id=abc" | jq .error
 ```
 
 **Document findings** in `docs/security/assessments/` with date-stamped reports.

@@ -4,7 +4,7 @@ This document describes Storm Scout's Express trust proxy configuration for prop
 
 ## The Problem
 
-Storm Scout runs behind LiteSpeed (cPanel's reverse proxy). Without proper configuration:
+Storm Scout runs behind a reverse proxy. Without proper configuration:
 
 1. **Rate limiting fails** - All requests appear to come from the proxy's IP, not real clients
 2. **Logging is inaccurate** - `req.ip` returns the proxy IP, not the actual user
@@ -33,7 +33,7 @@ app.set('trust proxy', 1);  // Trust first proxy hop
 
 **Setting:** `trust proxy = 1`
 
-**Reason:** cPanel shared hosting uses LiteSpeed as a single reverse proxy layer. Setting `1` means:
+**Reason:** Shared hosting typically uses a single reverse proxy layer. Setting `1` means:
 - Express trusts the first (and only) `X-Forwarded-For` value
 - The rate limiter sees real client IPs
 - Spoofed headers from clients are ignored

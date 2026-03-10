@@ -261,8 +261,8 @@ Action codes are displayed as color-coded badges in `frontend/advisories.html`:
 
 ```bash
 # Check for event ID duplicates
-ssh stormscout
-mysql -u storm_scout -p storm_scout
+ssh $DEPLOY_USER@$DEPLOY_HOST
+mysql -u $DB_USER -p $DB_NAME
 
 SELECT vtec_event_id, site_id, COUNT(*) as count
 FROM advisories 

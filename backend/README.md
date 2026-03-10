@@ -244,9 +244,9 @@ Quick reference:
 ```bash
 # Deploy backend
 rsync -avz --exclude='node_modules' --exclude='.env' --exclude='tmp/' \
-  backend/ user@server:/srv/projects/storm-scout-usps/backend/
+  backend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/backend/
 
-ssh user@server "cd /srv/projects/storm-scout-usps/backend && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd $APP_ROOT/backend && npm install --production"
 ssh user@server "systemctl --user restart storm-scout-dev"
 
 # View logs

@@ -84,7 +84,7 @@ The following secrets require periodic rotation. "Zero-downtime" rotation means 
 3. Restart the application — the pool will reconnect with the new password.
 4. Verify: `GET /health` → `checks.database.status` should return `ok`.
 
-> **Note:** On cPanel shared hosting the DB password may also need to be updated in the cPanel MySQL Users interface. Change both simultaneously and restart immediately.
+> **Note:** On shared hosting, the DB password may also need to be updated in your hosting provider's database management interface. Change both simultaneously and restart immediately.
 
 #### Optional API Keys (`STATE_EMERGENCY_API_KEY`, `FEMA_API_KEY`)
 

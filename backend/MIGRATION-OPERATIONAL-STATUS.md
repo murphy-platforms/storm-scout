@@ -46,9 +46,9 @@ cd backend
 mysql -h $DB_HOST -u $DB_USER -p $DB_NAME < src/data/migrations/20260214-migrate-operational-status-production.sql
 ```
 
-### Option 3: Via cPanel phpMyAdmin
+### Option 3: Via phpMyAdmin or Database GUI
 
-1. Log into cPanel
+1. Log into your database management tool
 2. Open phpMyAdmin
 3. Select `<your-db-name>` database
 4. Click "SQL" tab
@@ -90,7 +90,7 @@ ssh -p $SSH_PORT $DEPLOY_USER@$DEPLOY_HOST
 touch ~/storm-scout/tmp/restart.txt
 ```
 
-Or via cPanel → Node.js app → Restart
+Or restart your application via your hosting control panel
 
 ### 2. Verify API Response
 
