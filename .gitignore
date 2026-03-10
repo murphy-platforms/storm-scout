@@ -50,3 +50,6 @@ temp/
 *.bak
 *-sqljs*
 convert-models.sh
+
+# Runtime state
+backend/.last-ingestion.json
