@@ -40,10 +40,16 @@
  *     X-Api-Key: <value of API_KEY>
  */
 
+const crypto = require('crypto');
+
 /**
  * Require a valid API key on the request.
  * Returns 401 if the header is missing or does not match API_KEY.
  * Returns 503 if the server has not been configured with an API_KEY (fail-closed).
+ *
+ * Uses crypto.timingSafeEqual() to prevent timing side-channel attacks that
+ * could allow an attacker to infer key validity character-by-character via
+ * network timing measurements. (closes #95)
  */
 function requireApiKey(req, res, next) {
   const configuredKey = process.env.API_KEY;
@@ -61,7 +67,19 @@ function requireApiKey(req, res, next) {
 
   const providedKey = req.headers['x-api-key'];
 
-  if (!providedKey || providedKey !== configuredKey) {
+  if (!providedKey) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized: valid X-Api-Key header required'
+    });
+  }
+
+  // Length must match before calling timingSafeEqual (throws on length mismatch).
+  // The length check itself leaks no useful information — it is an integer
+  // compare, not a character-by-character string walk.
+  const a = Buffer.from(providedKey);
+  const b = Buffer.from(configuredKey);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
     return res.status(401).json({
       success: false,
       error: 'Unauthorized: valid X-Api-Key header required'
