@@ -6,7 +6,7 @@
 const cron = require('node-cron');
 const config = require('../config/config');
 const { ingestNOAAData } = require('./noaa-ingestor');
-const { alertIngestionFailure } = require('../utils/alerting');
+const { alertIngestionFailure, alertIngestionRecovery } = require('../utils/alerting');
 const { captureSnapshot } = require('../scripts/capture-historical-snapshot');
 
 let scheduledTask = null;
@@ -52,9 +52,10 @@ async function handleIngestionResult(error) {
   if (error) {
     consecutiveFailures++;
     console.error(`Ingestion failed (${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES}):`, error.message);
-    
-    // Alert on first failure and after max consecutive failures
-    if (consecutiveFailures === 1 || consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+
+    // Alert only on the first failure to avoid notification spam.
+    // Subsequent consecutive failures are logged but not re-alerted. (closes #103)
+    if (consecutiveFailures === 1) {
       await alertIngestionFailure(error, {
         consecutiveFailures,
         maxConsecutiveFailures: MAX_CONSECUTIVE_FAILURES
@@ -62,7 +63,9 @@ async function handleIngestionResult(error) {
     }
   } else {
     if (consecutiveFailures > 0) {
+      // Send an all-clear recovery alert so the team knows ingestion is healthy again.
       console.log(`Ingestion recovered after ${consecutiveFailures} failure(s)`);
+      await alertIngestionRecovery({ previousConsecutiveFailures: consecutiveFailures });
     }
     consecutiveFailures = 0;
   }

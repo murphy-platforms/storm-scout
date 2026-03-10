@@ -88,6 +88,23 @@ INSERT IGNORE INTO alert_types (type_name, category) VALUES
     ('Weather Advisory','UNKNOWN');
 
 -- Advisories table: weather alerts and warnings mapped to offices
+--
+-- FK CONSTRAINT NOTE (closes #106):
+-- MariaDB/MySQL does not allow a FOREIGN KEY on a column that is referenced by a
+-- GENERATED ALWAYS AS (STORED) expression in the same table. The column
+-- `advisory_type` is used in `vtec_event_unique_key` (a GENERATED column), so a
+-- FK from advisory_type → alert_types.event_type cannot be declared here.
+--
+-- Application-layer enforcement: the NOAA ingestor executes
+--   INSERT IGNORE INTO alert_types (event_type, severity) VALUES (?, ?)
+-- before every advisory INSERT, guaranteeing that every advisory_type value
+-- exists in alert_types before it is written to this table.
+--
+-- Orphan risk: if a bug bypasses the ingestor and inserts an unknown advisory_type
+-- directly, referential integrity is NOT enforced by the DB engine. Mitigations:
+--   1. The `advisory_type` enum whitelist validator in validators/advisories.js
+--      rejects unknown types at the API boundary.
+--   2. The smoke test queries both tables after ingestion runs to confirm consistency.
 CREATE TABLE IF NOT EXISTS advisories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     external_id VARCHAR(255),             -- NOAA alert ID (unique per alert)

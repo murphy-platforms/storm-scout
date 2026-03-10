@@ -126,27 +126,47 @@ class AdvisoryHistory {
     }
     
     /**
-     * Get all sites with trends
+     * Get all sites with trends.
+     * Uses a single SQL query to fetch all advisory_history rows in the window,
+     * then groups them by office_id in JS — eliminating the N+1 query fan-out
+     * that fired one getTrend() call per office (up to 300 concurrent queries). (closes #105)
      */
     static async getAllTrends(days = 7) {
-        // Get all sites that have history
-        const query = `
-            SELECT DISTINCT office_id
+        const connection = getDatabase();
+        const [rows] = await connection.query(`
+            SELECT *
             FROM advisory_history
             WHERE snapshot_time >= DATE_SUB(NOW(), INTERVAL ? DAY)
-        `;
-        
-        const connection = getDatabase();
-        const [rows] = await connection.query(query, [days]);
-        const officeIds = rows.map(r => r.office_id);
+            ORDER BY office_id, snapshot_time ASC
+        `, [days]);
 
-        const trends = await Promise.all(
-            officeIds.map(async officeId => ({
+        // Group rows by office_id in one O(n) pass
+        const byOffice = new Map();
+        for (const row of rows) {
+            if (!byOffice.has(row.office_id)) byOffice.set(row.office_id, []);
+            byOffice.get(row.office_id).push(row);
+        }
+
+        const trends = [];
+        for (const [officeId, history] of byOffice) {
+            if (history.length === 0) continue;
+            const first = history[0];
+            const last = history[history.length - 1];
+            trends.push({
                 office_id: officeId,
-                ...(await this.getTrend(officeId, days))
-            }))
-        );
-        
+                trend: history.length > 1
+                    ? (last.advisory_count > first.advisory_count ? 'increasing'
+                        : last.advisory_count < first.advisory_count ? 'decreasing' : 'stable')
+                    : 'stable',
+                first_severity: first.highest_severity,
+                last_severity: last.highest_severity,
+                first_count: first.advisory_count,
+                last_count: last.advisory_count,
+                duration_hours: Math.floor((new Date(last.snapshot_time) - new Date(first.snapshot_time)) / (1000 * 60 * 60)),
+                history
+            });
+        }
+
         return trends;
     }
     

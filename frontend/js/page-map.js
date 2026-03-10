@@ -3,6 +3,31 @@
         let markerLayer;
         let observationsMap = {};
 
+        // Severity rank — lower index = higher priority (closes #108)
+        const SEVERITY_ORDER = ['Extreme', 'Severe', 'Moderate', 'Minor', 'Unknown'];
+
+        /**
+         * Create a severity-aware cluster icon.
+         * Colors the cluster badge by the highest-severity child marker.
+         */
+        function createClusterIcon(cluster) {
+            const children = cluster.getAllChildMarkers();
+            let topSeverity = 'Unknown';
+            for (const child of children) {
+                const s = child.options.severity || 'Unknown';
+                if (SEVERITY_ORDER.indexOf(s) < SEVERITY_ORDER.indexOf(topSeverity)) {
+                    topSeverity = s;
+                }
+            }
+            const severityClass = `marker-${topSeverity.toLowerCase()}`;
+            return L.divIcon({
+                html: `<div class="severity-marker ${escapeHtml(severityClass)}" style="width:36px;height:36px;font-size:14px;">${cluster.getChildCount()}</div>`,
+                className: '',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+        }
+
         // Initialize map
         function initMap() {
             map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
@@ -12,7 +37,10 @@
                 maxZoom: 19
             }).addTo(map);
 
-            markerLayer = L.layerGroup().addTo(map);
+            markerLayer = L.markerClusterGroup({
+                maxClusterRadius: 60,
+                iconCreateFunction: createClusterIcon
+            }).addTo(map);
         }
 
         function debugStep(text) {
@@ -94,8 +122,8 @@
                     popupAnchor: [0, -15]
                 });
 
-                // Create marker
-                const marker = L.marker([office.latitude, office.longitude], { icon: customIcon });
+                // Create marker — store severity as custom option for cluster icon access
+                const marker = L.marker([office.latitude, office.longitude], { icon: customIcon, severity });
 
                 // Create popup content using html tagged template for XSS prevention
                 // Build temperature HTML
