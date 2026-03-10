@@ -156,6 +156,9 @@ if (config.env === 'development' || jsonLogging) {
   });
 }
 
+// Liveness probe — always returns 200 with no I/O, for supervisor keep-alive checks. (closes #104)
+app.get('/ping', (req, res) => res.json({ status: 'ok' }));
+
 // Health check endpoint (enhanced with database, ingestion, and data integrity status)
 app.get('/health', async (req, res) => {
   const fs = require('fs');

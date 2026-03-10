@@ -175,6 +175,7 @@ async function sendAlert({ type, severity = 'warning', title, message, metadata 
  */
 const AlertTypes = {
   INGESTION_FAILURE: 'ingestion_failure',
+  INGESTION_RECOVERY: 'ingestion_recovery',
   INGESTION_PARTIAL: 'ingestion_partial',
   CLEANUP_FAILURE: 'cleanup_failure',
   DATABASE_ERROR: 'database_error',
@@ -231,9 +232,24 @@ async function alertCleanupFailure(error) {
   });
 }
 
+/**
+ * Send ingestion recovery alert (all-clear after a failure streak)
+ * @param {Object} context - Recovery context (e.g., previousConsecutiveFailures)
+ */
+async function alertIngestionRecovery(context = {}) {
+  return sendAlert({
+    type: AlertTypes.INGESTION_RECOVERY,
+    severity: 'warning',
+    title: 'NOAA Ingestion Recovered',
+    message: `Ingestion succeeded after ${context.previousConsecutiveFailures || 'unknown'} consecutive failure(s).`,
+    metadata: context
+  });
+}
+
 module.exports = {
   sendAlert,
   alertIngestionFailure,
+  alertIngestionRecovery,
   alertAnomaly,
   alertCleanupFailure,
   AlertTypes
