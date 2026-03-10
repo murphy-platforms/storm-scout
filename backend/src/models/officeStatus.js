@@ -69,11 +69,20 @@ const OfficeStatusModel = {
    */
   async getImpacted() {
     const db = getDatabase();
+    // Derived-table LEFT JOIN replaces a correlated subquery that executed once
+    // per result row. The derived table aggregates advisory counts in a single
+    // pass before joining, avoiding N sequential COUNT(*) executions. (closes #107)
     const [rows] = await db.query(`
       SELECT ss.*, s.office_code, s.name, s.city, s.state, s.region,
-             (SELECT COUNT(*) FROM advisories WHERE office_id = ss.office_id AND status = 'active') as advisory_count
+             COALESCE(ac.advisory_count, 0) as advisory_count
       FROM office_status ss
       JOIN offices s ON ss.office_id = s.id
+      LEFT JOIN (
+        SELECT office_id, COUNT(*) as advisory_count
+        FROM advisories
+        WHERE status = 'active'
+        GROUP BY office_id
+      ) ac ON ac.office_id = ss.office_id
       WHERE ss.operational_status IN ('Closed', 'At Risk')
       ORDER BY ss.operational_status DESC, s.state, s.city
     `);
