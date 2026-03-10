@@ -1064,15 +1064,32 @@ cd backend && npm audit
 1. Check if it affects Storm Scout's usage
 2. Update to patched version if available
 3. Document in commit message with CVE reference
+4. If a transitive dependency requires pinning via `overrides`, add an entry to both the `overrides` and `overrideReasons` fields in `backend/package.json`, and document the CVE(s) in `docs/security/README.md` § Dependency Overrides
+
+**Checking active dependency overrides:**
+```bash
+cd backend && npm ls qs  # verify pinned transitive deps are still effective
+```
 
 ### Security Documentation
 
 All security documentation is in `docs/security/`:
-- `README.md` - Vulnerability tracking table
+- `README.md` - Vulnerability tracking, dependency override rationale, secret rotation policy
 - `SECURE-TEMPLATES.md` - XSS prevention guide
 - `SRI.md` - Subresource Integrity hashes
 - `TRUST-PROXY.md` - Proxy configuration
 - `assessments/` - Point-in-time security assessments
+
+### Architecture & Scale Documentation
+
+`docs/ARCHITECTURE.md` documents:
+- System overview and data flow diagram
+- Current tested scale thresholds (300 locations, 40-connection pool)
+- Scale ceilings per component (UI, backend, database, infrastructure)
+- Five triggers for a scale review (500 locations, 2M advisory rows, etc.)
+- Minimum required changes before operating at >500 locations
+- Planned architectural work
+- Key file index
 
 ### Security Checklist for New Features
 
