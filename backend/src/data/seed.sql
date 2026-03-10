@@ -1,9 +1,9 @@
 -- Storm Scout Seed Data
 -- MySQL/MariaDB compatible
 
--- NOTE: Office data is loaded via import-usps-offices.js + init-db, not seeded here.
+-- NOTE: Office data is loaded via import-offices.js + init-db, not seeded here.
 -- To load 300 locations:
---   1. node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
+--   1. node src/scripts/import-offices.js /path/to/locations.csv
 --   2. npm run init-db   (loads offices.json into database)
 -- The advisory/status inserts below are optional sample data for development only.
 

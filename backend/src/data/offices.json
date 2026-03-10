@@ -1,6 +1,6 @@
 [
   {
-    "name": "USPS Downtown Albuquerque",
+    "name": "Downtown Albuquerque",
     "city": "Albuquerque",
     "state": "NM",
     "latitude": 35.0844,
@@ -11,7 +11,7 @@
     "office_code": "87102"
   },
   {
-    "name": "USPS Uptown Albuquerque",
+    "name": "Uptown Albuquerque",
     "city": "Albuquerque",
     "state": "NM",
     "latitude": 35.0967,
@@ -22,7 +22,7 @@
     "office_code": "87110"
   },
   {
-    "name": "USPS Downtown Santa Fe",
+    "name": "Downtown Santa Fe",
     "city": "Santa Fe",
     "state": "NM",
     "latitude": 35.6869,
@@ -33,7 +33,7 @@
     "office_code": "87501"
   },
   {
-    "name": "USPS South Santa Fe",
+    "name": "South Santa Fe",
     "city": "Santa Fe",
     "state": "NM",
     "latitude": 35.649,
@@ -44,7 +44,7 @@
     "office_code": "87505"
   },
   {
-    "name": "USPS Downtown Anchorage",
+    "name": "Downtown Anchorage",
     "city": "Anchorage",
     "state": "AK",
     "latitude": 61.2181,
@@ -55,7 +55,7 @@
     "office_code": "99501"
   },
   {
-    "name": "USPS South Anchorage",
+    "name": "South Anchorage",
     "city": "Anchorage",
     "state": "AK",
     "latitude": 61.1748,
@@ -66,7 +66,7 @@
     "office_code": "99507"
   },
   {
-    "name": "USPS Downtown Richmond",
+    "name": "Downtown Richmond",
     "city": "Richmond",
     "state": "VA",
     "latitude": 37.5407,
@@ -77,7 +77,7 @@
     "office_code": "23219"
   },
   {
-    "name": "USPS The Fan Richmond",
+    "name": "The Fan Richmond",
     "city": "Richmond",
     "state": "VA",
     "latitude": 37.5488,
@@ -88,7 +88,7 @@
     "office_code": "23220"
   },
   {
-    "name": "USPS Virginia Beach Oceanfront",
+    "name": "Virginia Beach Oceanfront",
     "city": "Virginia Beach",
     "state": "VA",
     "latitude": 36.8529,
@@ -99,7 +99,7 @@
     "office_code": "23451"
   },
   {
-    "name": "USPS Norfolk",
+    "name": "Norfolk",
     "city": "Norfolk",
     "state": "VA",
     "latitude": 36.8468,
@@ -110,7 +110,7 @@
     "office_code": "23502"
   },
   {
-    "name": "USPS Downtown Albany",
+    "name": "Downtown Albany",
     "city": "Albany",
     "state": "NY",
     "latitude": 42.6526,
@@ -121,7 +121,7 @@
     "office_code": "12207"
   },
   {
-    "name": "USPS Center Square Albany",
+    "name": "Center Square Albany",
     "city": "Albany",
     "state": "NY",
     "latitude": 42.6573,
@@ -132,7 +132,7 @@
     "office_code": "12210"
   },
   {
-    "name": "USPS Downtown Amarillo",
+    "name": "Downtown Amarillo",
     "city": "Amarillo",
     "state": "TX",
     "latitude": 35.222,
@@ -143,7 +143,7 @@
     "office_code": "79101"
   },
   {
-    "name": "USPS South Amarillo",
+    "name": "South Amarillo",
     "city": "Amarillo",
     "state": "TX",
     "latitude": 35.1936,
@@ -154,7 +154,7 @@
     "office_code": "79109"
   },
   {
-    "name": "USPS Downtown Syracuse",
+    "name": "Downtown Syracuse",
     "city": "Syracuse",
     "state": "NY",
     "latitude": 43.0481,
@@ -165,7 +165,7 @@
     "office_code": "13202"
   },
   {
-    "name": "USPS University Hill Syracuse",
+    "name": "University Hill Syracuse",
     "city": "Syracuse",
     "state": "NY",
     "latitude": 43.0353,
@@ -176,7 +176,7 @@
     "office_code": "13210"
   },
   {
-    "name": "USPS Downtown Scranton",
+    "name": "Downtown Scranton",
     "city": "Scranton",
     "state": "PA",
     "latitude": 41.409,
@@ -187,7 +187,7 @@
     "office_code": "18503"
   },
   {
-    "name": "USPS South Scranton",
+    "name": "South Scranton",
     "city": "Scranton",
     "state": "PA",
     "latitude": 41.3995,
@@ -198,7 +198,7 @@
     "office_code": "18505"
   },
   {
-    "name": "USPS Downtown Bismarck",
+    "name": "Downtown Bismarck",
     "city": "Bismarck",
     "state": "ND",
     "latitude": 46.8083,
@@ -209,7 +209,7 @@
     "office_code": "58501"
   },
   {
-    "name": "USPS North Bismarck",
+    "name": "North Bismarck",
     "city": "Bismarck",
     "state": "ND",
     "latitude": 46.8376,
@@ -220,7 +220,7 @@
     "office_code": "58504"
   },
   {
-    "name": "USPS Downtown Birmingham",
+    "name": "Downtown Birmingham",
     "city": "Birmingham",
     "state": "AL",
     "latitude": 33.5186,
@@ -231,7 +231,7 @@
     "office_code": "35203"
   },
   {
-    "name": "USPS Five Points South Birmingham",
+    "name": "Five Points South Birmingham",
     "city": "Birmingham",
     "state": "AL",
     "latitude": 33.5043,
@@ -242,7 +242,7 @@
     "office_code": "35205"
   },
   {
-    "name": "USPS Downtown Montgomery",
+    "name": "Downtown Montgomery",
     "city": "Montgomery",
     "state": "AL",
     "latitude": 32.3792,
@@ -253,7 +253,7 @@
     "office_code": "36104"
   },
   {
-    "name": "USPS Cloverdale Montgomery",
+    "name": "Cloverdale Montgomery",
     "city": "Montgomery",
     "state": "AL",
     "latitude": 32.379,
@@ -264,7 +264,7 @@
     "office_code": "36107"
   },
   {
-    "name": "USPS Downtown Boise",
+    "name": "Downtown Boise",
     "city": "Boise",
     "state": "ID",
     "latitude": 43.6187,
@@ -275,7 +275,7 @@
     "office_code": "83702"
   },
   {
-    "name": "USPS Southeast Boise",
+    "name": "Southeast Boise",
     "city": "Boise",
     "state": "ID",
     "latitude": 43.594,
@@ -286,7 +286,7 @@
     "office_code": "83706"
   },
   {
-    "name": "USPS Downtown Denver",
+    "name": "Downtown Denver",
     "city": "Denver",
     "state": "CO",
     "latitude": 39.7507,
@@ -297,7 +297,7 @@
     "office_code": "80202"
   },
   {
-    "name": "USPS University Park Denver",
+    "name": "University Park Denver",
     "city": "Denver",
     "state": "CO",
     "latitude": 39.7027,
@@ -308,7 +308,7 @@
     "office_code": "80210"
   },
   {
-    "name": "USPS Downtown Boulder",
+    "name": "Downtown Boulder",
     "city": "Boulder",
     "state": "CO",
     "latitude": 40.015,
@@ -319,7 +319,7 @@
     "office_code": "80302"
   },
   {
-    "name": "USPS East Boulder",
+    "name": "East Boulder",
     "city": "Boulder",
     "state": "CO",
     "latitude": 40.0059,
@@ -330,7 +330,7 @@
     "office_code": "80303"
   },
   {
-    "name": "USPS Downtown Fort Collins",
+    "name": "Downtown Fort Collins",
     "city": "Fort Collins",
     "state": "CO",
     "latitude": 40.5853,
@@ -341,7 +341,7 @@
     "office_code": "80521"
   },
   {
-    "name": "USPS South Fort Collins",
+    "name": "South Fort Collins",
     "city": "Fort Collins",
     "state": "CO",
     "latitude": 40.5353,
@@ -352,7 +352,7 @@
     "office_code": "80525"
   },
   {
-    "name": "USPS Downtown Springfield MA",
+    "name": "Downtown Springfield MA",
     "city": "Springfield",
     "state": "MA",
     "latitude": 42.1015,
@@ -363,7 +363,7 @@
     "office_code": "01103"
   },
   {
-    "name": "USPS South Springfield MA",
+    "name": "South Springfield MA",
     "city": "Springfield",
     "state": "MA",
     "latitude": 42.0862,
@@ -374,7 +374,7 @@
     "office_code": "01108"
   },
   {
-    "name": "USPS Downtown Worcester",
+    "name": "Downtown Worcester",
     "city": "Worcester",
     "state": "MA",
     "latitude": 42.2626,
@@ -385,7 +385,7 @@
     "office_code": "01602"
   },
   {
-    "name": "USPS South Worcester",
+    "name": "South Worcester",
     "city": "Worcester",
     "state": "MA",
     "latitude": 42.2529,
@@ -396,7 +396,7 @@
     "office_code": "01608"
   },
   {
-    "name": "USPS Beacon Hill Boston",
+    "name": "Beacon Hill Boston",
     "city": "Boston",
     "state": "MA",
     "latitude": 42.3588,
@@ -407,7 +407,7 @@
     "office_code": "02108"
   },
   {
-    "name": "USPS Fenway Boston",
+    "name": "Fenway Boston",
     "city": "Boston",
     "state": "MA",
     "latitude": 42.3467,
@@ -418,7 +418,7 @@
     "office_code": "02215"
   },
   {
-    "name": "USPS Downtown Providence",
+    "name": "Downtown Providence",
     "city": "Providence",
     "state": "RI",
     "latitude": 41.824,
@@ -429,7 +429,7 @@
     "office_code": "02903"
   },
   {
-    "name": "USPS East Side Providence",
+    "name": "East Side Providence",
     "city": "Providence",
     "state": "RI",
     "latitude": 41.8296,
@@ -440,7 +440,7 @@
     "office_code": "02906"
   },
   {
-    "name": "USPS Downtown Hartford",
+    "name": "Downtown Hartford",
     "city": "Hartford",
     "state": "CT",
     "latitude": 41.7658,
@@ -451,7 +451,7 @@
     "office_code": "06103"
   },
   {
-    "name": "USPS West End Hartford",
+    "name": "West End Hartford",
     "city": "Hartford",
     "state": "CT",
     "latitude": 41.77,
@@ -462,7 +462,7 @@
     "office_code": "06105"
   },
   {
-    "name": "USPS Downtown Brownsville",
+    "name": "Downtown Brownsville",
     "city": "Brownsville",
     "state": "TX",
     "latitude": 25.9017,
@@ -473,7 +473,7 @@
     "office_code": "78520"
   },
   {
-    "name": "USPS North Brownsville",
+    "name": "North Brownsville",
     "city": "Brownsville",
     "state": "TX",
     "latitude": 25.9442,
@@ -484,7 +484,7 @@
     "office_code": "78521"
   },
   {
-    "name": "USPS Downtown Burlington",
+    "name": "Downtown Burlington",
     "city": "Burlington",
     "state": "VT",
     "latitude": 44.4759,
@@ -495,7 +495,7 @@
     "office_code": "05401"
   },
   {
-    "name": "USPS South Burlington",
+    "name": "South Burlington",
     "city": "South Burlington",
     "state": "VT",
     "latitude": 44.4585,
@@ -506,7 +506,7 @@
     "office_code": "05403"
   },
   {
-    "name": "USPS Downtown Buffalo",
+    "name": "Downtown Buffalo",
     "city": "Buffalo",
     "state": "NY",
     "latitude": 42.8864,
@@ -517,7 +517,7 @@
     "office_code": "14202"
   },
   {
-    "name": "USPS University Heights Buffalo",
+    "name": "University Heights Buffalo",
     "city": "Buffalo",
     "state": "NY",
     "latitude": 42.9227,
@@ -528,7 +528,7 @@
     "office_code": "14214"
   },
   {
-    "name": "USPS Downtown Rochester",
+    "name": "Downtown Rochester",
     "city": "Rochester",
     "state": "NY",
     "latitude": 43.1566,
@@ -539,7 +539,7 @@
     "office_code": "14604"
   },
   {
-    "name": "USPS Park Avenue Rochester",
+    "name": "Park Avenue Rochester",
     "city": "Rochester",
     "state": "NY",
     "latitude": 43.1537,
@@ -550,7 +550,7 @@
     "office_code": "14607"
   },
   {
-    "name": "USPS Downtown Billings",
+    "name": "Downtown Billings",
     "city": "Billings",
     "state": "MT",
     "latitude": 45.7833,
@@ -561,7 +561,7 @@
     "office_code": "59101"
   },
   {
-    "name": "USPS West Billings",
+    "name": "West Billings",
     "city": "Billings",
     "state": "MT",
     "latitude": 45.7878,
@@ -572,7 +572,7 @@
     "office_code": "59102"
   },
   {
-    "name": "USPS Downtown Columbia SC",
+    "name": "Downtown Columbia SC",
     "city": "Columbia",
     "state": "SC",
     "latitude": 34.0007,
@@ -583,7 +583,7 @@
     "office_code": "29201"
   },
   {
-    "name": "USPS Shandon Columbia SC",
+    "name": "Shandon Columbia SC",
     "city": "Columbia",
     "state": "SC",
     "latitude": 33.9935,
@@ -594,7 +594,7 @@
     "office_code": "29205"
   },
   {
-    "name": "USPS Downtown Augusta",
+    "name": "Downtown Augusta",
     "city": "Augusta",
     "state": "GA",
     "latitude": 33.4735,
@@ -605,7 +605,7 @@
     "office_code": "30901"
   },
   {
-    "name": "USPS West Augusta",
+    "name": "West Augusta",
     "city": "Augusta",
     "state": "GA",
     "latitude": 33.4904,
@@ -616,7 +616,7 @@
     "office_code": "30904"
   },
   {
-    "name": "USPS Downtown Bangor",
+    "name": "Downtown Bangor",
     "city": "Bangor",
     "state": "ME",
     "latitude": 44.8012,
@@ -627,7 +627,7 @@
     "office_code": "04401"
   },
   {
-    "name": "USPS Brewer",
+    "name": "Brewer",
     "city": "Brewer",
     "state": "ME",
     "latitude": 44.7967,
@@ -638,7 +638,7 @@
     "office_code": "04412"
   },
   {
-    "name": "USPS Downtown Charleston SC",
+    "name": "Downtown Charleston SC",
     "city": "Charleston",
     "state": "SC",
     "latitude": 32.7765,
@@ -649,7 +649,7 @@
     "office_code": "29401"
   },
   {
-    "name": "USPS West Ashley Charleston",
+    "name": "West Ashley Charleston",
     "city": "Charleston",
     "state": "SC",
     "latitude": 32.7791,
@@ -660,7 +660,7 @@
     "office_code": "29407"
   },
   {
-    "name": "USPS Historic Savannah",
+    "name": "Historic Savannah",
     "city": "Savannah",
     "state": "GA",
     "latitude": 32.0809,
@@ -671,7 +671,7 @@
     "office_code": "31401"
   },
   {
-    "name": "USPS Southside Savannah",
+    "name": "Southside Savannah",
     "city": "Savannah",
     "state": "GA",
     "latitude": 31.9974,
@@ -682,7 +682,7 @@
     "office_code": "31405"
   },
   {
-    "name": "USPS Downtown Erie",
+    "name": "Downtown Erie",
     "city": "Erie",
     "state": "PA",
     "latitude": 42.1292,
@@ -693,7 +693,7 @@
     "office_code": "16501"
   },
   {
-    "name": "USPS East Erie",
+    "name": "East Erie",
     "city": "Erie",
     "state": "PA",
     "latitude": 42.1289,
@@ -704,7 +704,7 @@
     "office_code": "16507"
   },
   {
-    "name": "USPS Downtown Toledo",
+    "name": "Downtown Toledo",
     "city": "Toledo",
     "state": "OH",
     "latitude": 41.6639,
@@ -715,7 +715,7 @@
     "office_code": "43604"
   },
   {
-    "name": "USPS Old Orchard Toledo",
+    "name": "Old Orchard Toledo",
     "city": "Toledo",
     "state": "OH",
     "latitude": 41.672,
@@ -726,7 +726,7 @@
     "office_code": "43606"
   },
   {
-    "name": "USPS University Circle Cleveland",
+    "name": "University Circle Cleveland",
     "city": "Cleveland",
     "state": "OH",
     "latitude": 41.5088,
@@ -737,7 +737,7 @@
     "office_code": "44106"
   },
   {
-    "name": "USPS Downtown Cleveland",
+    "name": "Downtown Cleveland",
     "city": "Cleveland",
     "state": "OH",
     "latitude": 41.5051,
@@ -748,7 +748,7 @@
     "office_code": "44114"
   },
   {
-    "name": "USPS Downtown Akron",
+    "name": "Downtown Akron",
     "city": "Akron",
     "state": "OH",
     "latitude": 41.0814,
@@ -759,7 +759,7 @@
     "office_code": "44308"
   },
   {
-    "name": "USPS North Hill Akron",
+    "name": "North Hill Akron",
     "city": "Akron",
     "state": "OH",
     "latitude": 41.0878,
@@ -770,7 +770,7 @@
     "office_code": "44311"
   },
   {
-    "name": "USPS Downtown Laredo",
+    "name": "Downtown Laredo",
     "city": "Laredo",
     "state": "TX",
     "latitude": 27.5036,
@@ -781,7 +781,7 @@
     "office_code": "78040"
   },
   {
-    "name": "USPS North Laredo",
+    "name": "North Laredo",
     "city": "Laredo",
     "state": "TX",
     "latitude": 27.5516,
@@ -792,7 +792,7 @@
     "office_code": "78041"
   },
   {
-    "name": "USPS Downtown Corpus Christi",
+    "name": "Downtown Corpus Christi",
     "city": "Corpus Christi",
     "state": "TX",
     "latitude": 27.8006,
@@ -803,7 +803,7 @@
     "office_code": "78401"
   },
   {
-    "name": "USPS South Side Corpus Christi",
+    "name": "South Side Corpus Christi",
     "city": "Corpus Christi",
     "state": "TX",
     "latitude": 27.7549,
@@ -814,7 +814,7 @@
     "office_code": "78411"
   },
   {
-    "name": "USPS Downtown Harrisburg",
+    "name": "Downtown Harrisburg",
     "city": "Harrisburg",
     "state": "PA",
     "latitude": 40.2732,
@@ -825,7 +825,7 @@
     "office_code": "17101"
   },
   {
-    "name": "USPS South Harrisburg",
+    "name": "South Harrisburg",
     "city": "Harrisburg",
     "state": "PA",
     "latitude": 40.2538,
@@ -836,7 +836,7 @@
     "office_code": "17104"
   },
   {
-    "name": "USPS Downtown Lancaster",
+    "name": "Downtown Lancaster",
     "city": "Lancaster",
     "state": "PA",
     "latitude": 40.0379,
@@ -847,7 +847,7 @@
     "office_code": "17601"
   },
   {
-    "name": "USPS West Lancaster",
+    "name": "West Lancaster",
     "city": "Lancaster",
     "state": "PA",
     "latitude": 40.0274,
@@ -858,7 +858,7 @@
     "office_code": "17603"
   },
   {
-    "name": "USPS Downtown Cheyenne",
+    "name": "Downtown Cheyenne",
     "city": "Cheyenne",
     "state": "WY",
     "latitude": 41.14,
@@ -869,7 +869,7 @@
     "office_code": "82001"
   },
   {
-    "name": "USPS North Cheyenne",
+    "name": "North Cheyenne",
     "city": "Cheyenne",
     "state": "WY",
     "latitude": 41.1743,
@@ -880,7 +880,7 @@
     "office_code": "82009"
   },
   {
-    "name": "USPS Downtown Duluth",
+    "name": "Downtown Duluth",
     "city": "Duluth",
     "state": "MN",
     "latitude": 46.7867,
@@ -891,7 +891,7 @@
     "office_code": "55802"
   },
   {
-    "name": "USPS West Duluth",
+    "name": "West Duluth",
     "city": "Duluth",
     "state": "MN",
     "latitude": 46.8316,
@@ -902,7 +902,7 @@
     "office_code": "55811"
   },
   {
-    "name": "USPS Downtown Des Moines",
+    "name": "Downtown Des Moines",
     "city": "Des Moines",
     "state": "IA",
     "latitude": 41.5868,
@@ -913,7 +913,7 @@
     "office_code": "50309"
   },
   {
-    "name": "USPS South of Grand Des Moines",
+    "name": "South of Grand Des Moines",
     "city": "Des Moines",
     "state": "IA",
     "latitude": 41.5834,
@@ -924,7 +924,7 @@
     "office_code": "50312"
   },
   {
-    "name": "USPS Downtown Ann Arbor",
+    "name": "Downtown Ann Arbor",
     "city": "Ann Arbor",
     "state": "MI",
     "latitude": 42.2808,
@@ -935,7 +935,7 @@
     "office_code": "48104"
   },
   {
-    "name": "USPS South Ann Arbor",
+    "name": "South Ann Arbor",
     "city": "Ann Arbor",
     "state": "MI",
     "latitude": 42.2404,
@@ -946,7 +946,7 @@
     "office_code": "48108"
   },
   {
-    "name": "USPS Midtown Detroit",
+    "name": "Midtown Detroit",
     "city": "Detroit",
     "state": "MI",
     "latitude": 42.3584,
@@ -957,7 +957,7 @@
     "office_code": "48201"
   },
   {
-    "name": "USPS Downtown Detroit",
+    "name": "Downtown Detroit",
     "city": "Detroit",
     "state": "MI",
     "latitude": 42.3314,
@@ -968,7 +968,7 @@
     "office_code": "48226"
   },
   {
-    "name": "USPS Downtown Cedar Rapids",
+    "name": "Downtown Cedar Rapids",
     "city": "Cedar Rapids",
     "state": "IA",
     "latitude": 41.9779,
@@ -979,7 +979,7 @@
     "office_code": "52401"
   },
   {
-    "name": "USPS Northeast Cedar Rapids",
+    "name": "Northeast Cedar Rapids",
     "city": "Cedar Rapids",
     "state": "IA",
     "latitude": 42.0142,
@@ -990,7 +990,7 @@
     "office_code": "52402"
   },
   {
-    "name": "USPS Downtown Kansas City",
+    "name": "Downtown Kansas City",
     "city": "Kansas City",
     "state": "MO",
     "latitude": 39.1044,
@@ -1001,7 +1001,7 @@
     "office_code": "64106"
   },
   {
-    "name": "USPS Crossroads Kansas City",
+    "name": "Crossroads Kansas City",
     "city": "Kansas City",
     "state": "MO",
     "latitude": 39.092,
@@ -1012,7 +1012,7 @@
     "office_code": "64108"
   },
   {
-    "name": "USPS Downtown El Paso",
+    "name": "Downtown El Paso",
     "city": "El Paso",
     "state": "TX",
     "latitude": 31.7619,
@@ -1023,7 +1023,7 @@
     "office_code": "79901"
   },
   {
-    "name": "USPS East El Paso",
+    "name": "East El Paso",
     "city": "El Paso",
     "state": "TX",
     "latitude": 31.77,
@@ -1034,7 +1034,7 @@
     "office_code": "79925"
   },
   {
-    "name": "USPS Downtown San Antonio",
+    "name": "Downtown San Antonio",
     "city": "San Antonio",
     "state": "TX",
     "latitude": 29.4241,
@@ -1045,7 +1045,7 @@
     "office_code": "78205"
   },
   {
-    "name": "USPS Medical Center San Antonio",
+    "name": "Medical Center San Antonio",
     "city": "San Antonio",
     "state": "TX",
     "latitude": 29.5037,
@@ -1056,7 +1056,7 @@
     "office_code": "78229"
   },
   {
-    "name": "USPS Downtown Austin",
+    "name": "Downtown Austin",
     "city": "Austin",
     "state": "TX",
     "latitude": 30.2672,
@@ -1067,7 +1067,7 @@
     "office_code": "78701"
   },
   {
-    "name": "USPS South Austin",
+    "name": "South Austin",
     "city": "Austin",
     "state": "TX",
     "latitude": 30.2117,
@@ -1078,7 +1078,7 @@
     "office_code": "78745"
   },
   {
-    "name": "USPS Downtown Atlanta",
+    "name": "Downtown Atlanta",
     "city": "Atlanta",
     "state": "GA",
     "latitude": 33.749,
@@ -1089,7 +1089,7 @@
     "office_code": "30303"
   },
   {
-    "name": "USPS Buckhead Atlanta",
+    "name": "Buckhead Atlanta",
     "city": "Atlanta",
     "state": "GA",
     "latitude": 33.8226,
@@ -1100,7 +1100,7 @@
     "office_code": "30324"
   },
   {
-    "name": "USPS Downtown Fargo",
+    "name": "Downtown Fargo",
     "city": "Fargo",
     "state": "ND",
     "latitude": 46.8772,
@@ -1111,7 +1111,7 @@
     "office_code": "58102"
   },
   {
-    "name": "USPS South Fargo",
+    "name": "South Fargo",
     "city": "Fargo",
     "state": "ND",
     "latitude": 46.8516,
@@ -1122,7 +1122,7 @@
     "office_code": "58103"
   },
   {
-    "name": "USPS Downtown Sioux Falls",
+    "name": "Downtown Sioux Falls",
     "city": "Sioux Falls",
     "state": "SD",
     "latitude": 43.5473,
@@ -1133,7 +1133,7 @@
     "office_code": "57104"
   },
   {
-    "name": "USPS South Sioux Falls",
+    "name": "South Sioux Falls",
     "city": "Sioux Falls",
     "state": "SD",
     "latitude": 43.4994,
@@ -1144,7 +1144,7 @@
     "office_code": "57108"
   },
   {
-    "name": "USPS Downtown Dallas",
+    "name": "Downtown Dallas",
     "city": "Dallas",
     "state": "TX",
     "latitude": 32.7767,
@@ -1155,7 +1155,7 @@
     "office_code": "75201"
   },
   {
-    "name": "USPS Downtown Fort Worth",
+    "name": "Downtown Fort Worth",
     "city": "Fort Worth",
     "state": "TX",
     "latitude": 32.7555,
@@ -1166,7 +1166,7 @@
     "office_code": "76102"
   },
   {
-    "name": "USPS Downtown Green Bay",
+    "name": "Downtown Green Bay",
     "city": "Green Bay",
     "state": "WI",
     "latitude": 44.5133,
@@ -1177,7 +1177,7 @@
     "office_code": "54301"
   },
   {
-    "name": "USPS West Green Bay",
+    "name": "West Green Bay",
     "city": "Green Bay",
     "state": "WI",
     "latitude": 44.5218,
@@ -1188,7 +1188,7 @@
     "office_code": "54304"
   },
   {
-    "name": "USPS East Lansing",
+    "name": "East Lansing",
     "city": "Lansing",
     "state": "MI",
     "latitude": 42.7325,
@@ -1199,7 +1199,7 @@
     "office_code": "48912"
   },
   {
-    "name": "USPS Downtown Lansing",
+    "name": "Downtown Lansing",
     "city": "Lansing",
     "state": "MI",
     "latitude": 42.7325,
@@ -1210,7 +1210,7 @@
     "office_code": "48933"
   },
   {
-    "name": "USPS Downtown Kalamazoo",
+    "name": "Downtown Kalamazoo",
     "city": "Kalamazoo",
     "state": "MI",
     "latitude": 42.2917,
@@ -1221,7 +1221,7 @@
     "office_code": "49007"
   },
   {
-    "name": "USPS West Kalamazoo",
+    "name": "West Kalamazoo",
     "city": "Kalamazoo",
     "state": "MI",
     "latitude": 42.2823,
@@ -1232,7 +1232,7 @@
     "office_code": "49008"
   },
   {
-    "name": "USPS Downtown Grand Rapids",
+    "name": "Downtown Grand Rapids",
     "city": "Grand Rapids",
     "state": "MI",
     "latitude": 42.9634,
@@ -1243,7 +1243,7 @@
     "office_code": "49503"
   },
   {
-    "name": "USPS East Grand Rapids",
+    "name": "East Grand Rapids",
     "city": "Grand Rapids",
     "state": "MI",
     "latitude": 42.9451,
@@ -1254,7 +1254,7 @@
     "office_code": "49506"
   },
   {
-    "name": "USPS Uptown Charlotte",
+    "name": "Uptown Charlotte",
     "city": "Charlotte",
     "state": "NC",
     "latitude": 35.2271,
@@ -1265,7 +1265,7 @@
     "office_code": "28202"
   },
   {
-    "name": "USPS Plaza Midwood Charlotte",
+    "name": "Plaza Midwood Charlotte",
     "city": "Charlotte",
     "state": "NC",
     "latitude": 35.2215,
@@ -1276,7 +1276,7 @@
     "office_code": "28205"
   },
   {
-    "name": "USPS Downtown Asheville",
+    "name": "Downtown Asheville",
     "city": "Asheville",
     "state": "NC",
     "latitude": 35.5951,
@@ -1287,7 +1287,7 @@
     "office_code": "28801"
   },
   {
-    "name": "USPS West Asheville",
+    "name": "West Asheville",
     "city": "Asheville",
     "state": "NC",
     "latitude": 35.5775,
@@ -1298,7 +1298,7 @@
     "office_code": "28806"
   },
   {
-    "name": "USPS Downtown Greenville SC",
+    "name": "Downtown Greenville SC",
     "city": "Greenville",
     "state": "SC",
     "latitude": 34.8526,
@@ -1309,7 +1309,7 @@
     "office_code": "29601"
   },
   {
-    "name": "USPS East Greenville SC",
+    "name": "East Greenville SC",
     "city": "Greenville",
     "state": "SC",
     "latitude": 34.8403,
@@ -1320,7 +1320,7 @@
     "office_code": "29607"
   },
   {
-    "name": "USPS Downtown Manchester NH",
+    "name": "Downtown Manchester NH",
     "city": "Manchester",
     "state": "NH",
     "latitude": 42.9956,
@@ -1331,7 +1331,7 @@
     "office_code": "03101"
   },
   {
-    "name": "USPS East Manchester NH",
+    "name": "East Manchester NH",
     "city": "Manchester",
     "state": "NH",
     "latitude": 43.0009,
@@ -1342,7 +1342,7 @@
     "office_code": "03104"
   },
   {
-    "name": "USPS Downtown Portland ME",
+    "name": "Downtown Portland ME",
     "city": "Portland",
     "state": "ME",
     "latitude": 43.6591,
@@ -1353,7 +1353,7 @@
     "office_code": "04101"
   },
   {
-    "name": "USPS West Portland ME",
+    "name": "West Portland ME",
     "city": "Portland",
     "state": "ME",
     "latitude": 43.6601,
@@ -1364,7 +1364,7 @@
     "office_code": "04102"
   },
   {
-    "name": "USPS Downtown Honolulu",
+    "name": "Downtown Honolulu",
     "city": "Honolulu",
     "state": "HI",
     "latitude": 21.3069,
@@ -1375,7 +1375,7 @@
     "office_code": "96813"
   },
   {
-    "name": "USPS Waikiki",
+    "name": "Waikiki",
     "city": "Honolulu",
     "state": "HI",
     "latitude": 21.2793,
@@ -1386,7 +1386,7 @@
     "office_code": "96815"
   },
   {
-    "name": "USPS Downtown Houston",
+    "name": "Downtown Houston",
     "city": "Houston",
     "state": "TX",
     "latitude": 29.753,
@@ -1397,7 +1397,7 @@
     "office_code": "77002"
   },
   {
-    "name": "USPS Texas Medical Center",
+    "name": "Texas Medical Center",
     "city": "Houston",
     "state": "TX",
     "latitude": 29.7077,
@@ -1408,7 +1408,7 @@
     "office_code": "77030"
   },
   {
-    "name": "USPS Downtown Bakersfield",
+    "name": "Downtown Bakersfield",
     "city": "Bakersfield",
     "state": "CA",
     "latitude": 35.3733,
@@ -1419,7 +1419,7 @@
     "office_code": "93301"
   },
   {
-    "name": "USPS South Bakersfield",
+    "name": "South Bakersfield",
     "city": "Bakersfield",
     "state": "CA",
     "latitude": 35.3495,
@@ -1430,7 +1430,7 @@
     "office_code": "93304"
   },
   {
-    "name": "USPS Downtown Fresno",
+    "name": "Downtown Fresno",
     "city": "Fresno",
     "state": "CA",
     "latitude": 36.7378,
@@ -1441,7 +1441,7 @@
     "office_code": "93721"
   },
   {
-    "name": "USPS Northeast Fresno",
+    "name": "Northeast Fresno",
     "city": "Fresno",
     "state": "CA",
     "latitude": 36.791,
@@ -1452,7 +1452,7 @@
     "office_code": "93726"
   },
   {
-    "name": "USPS Downtown Huntsville",
+    "name": "Downtown Huntsville",
     "city": "Huntsville",
     "state": "AL",
     "latitude": 34.7304,
@@ -1463,7 +1463,7 @@
     "office_code": "35801"
   },
   {
-    "name": "USPS South Huntsville",
+    "name": "South Huntsville",
     "city": "Huntsville",
     "state": "AL",
     "latitude": 34.7041,
@@ -1474,7 +1474,7 @@
     "office_code": "35805"
   },
   {
-    "name": "USPS Downtown Wichita",
+    "name": "Downtown Wichita",
     "city": "Wichita",
     "state": "KS",
     "latitude": 37.6872,
@@ -1485,7 +1485,7 @@
     "office_code": "67202"
   },
   {
-    "name": "USPS College Hill Wichita",
+    "name": "College Hill Wichita",
     "city": "Wichita",
     "state": "KS",
     "latitude": 37.6882,
@@ -1496,7 +1496,7 @@
     "office_code": "67208"
   },
   {
-    "name": "USPS Downtown Wilmington NC",
+    "name": "Downtown Wilmington NC",
     "city": "Wilmington",
     "state": "NC",
     "latitude": 34.2257,
@@ -1507,7 +1507,7 @@
     "office_code": "28401"
   },
   {
-    "name": "USPS North Wilmington NC",
+    "name": "North Wilmington NC",
     "city": "Wilmington",
     "state": "NC",
     "latitude": 34.2602,
@@ -1518,7 +1518,7 @@
     "office_code": "28405"
   },
   {
-    "name": "USPS University District Columbus",
+    "name": "University District Columbus",
     "city": "Columbus",
     "state": "OH",
     "latitude": 39.9982,
@@ -1529,7 +1529,7 @@
     "office_code": "43202"
   },
   {
-    "name": "USPS Downtown Columbus",
+    "name": "Downtown Columbus",
     "city": "Columbus",
     "state": "OH",
     "latitude": 39.9612,
@@ -1540,7 +1540,7 @@
     "office_code": "43215"
   },
   {
-    "name": "USPS Downtown Cincinnati",
+    "name": "Downtown Cincinnati",
     "city": "Cincinnati",
     "state": "OH",
     "latitude": 39.1031,
@@ -1551,7 +1551,7 @@
     "office_code": "45202"
   },
   {
-    "name": "USPS Clifton Cincinnati",
+    "name": "Clifton Cincinnati",
     "city": "Cincinnati",
     "state": "OH",
     "latitude": 39.126,
@@ -1562,7 +1562,7 @@
     "office_code": "45219"
   },
   {
-    "name": "USPS Downtown Dayton",
+    "name": "Downtown Dayton",
     "city": "Dayton",
     "state": "OH",
     "latitude": 39.7589,
@@ -1573,7 +1573,7 @@
     "office_code": "45402"
   },
   {
-    "name": "USPS East Dayton",
+    "name": "East Dayton",
     "city": "Dayton",
     "state": "OH",
     "latitude": 39.7502,
@@ -1584,7 +1584,7 @@
     "office_code": "45410"
   },
   {
-    "name": "USPS Downtown Peoria",
+    "name": "Downtown Peoria",
     "city": "Peoria",
     "state": "IL",
     "latitude": 40.6936,
@@ -1595,7 +1595,7 @@
     "office_code": "61602"
   },
   {
-    "name": "USPS West Peoria",
+    "name": "West Peoria",
     "city": "Peoria",
     "state": "IL",
     "latitude": 40.6936,
@@ -1606,7 +1606,7 @@
     "office_code": "61604"
   },
   {
-    "name": "USPS Downtown Indianapolis",
+    "name": "Downtown Indianapolis",
     "city": "Indianapolis",
     "state": "IN",
     "latitude": 39.7684,
@@ -1617,7 +1617,7 @@
     "office_code": "46204"
   },
   {
-    "name": "USPS Broad Ripple Indianapolis",
+    "name": "Broad Ripple Indianapolis",
     "city": "Indianapolis",
     "state": "IN",
     "latitude": 39.8613,
@@ -1628,7 +1628,7 @@
     "office_code": "46220"
   },
   {
-    "name": "USPS Downtown South Bend",
+    "name": "Downtown South Bend",
     "city": "South Bend",
     "state": "IN",
     "latitude": 41.6764,
@@ -1639,7 +1639,7 @@
     "office_code": "46601"
   },
   {
-    "name": "USPS East South Bend",
+    "name": "East South Bend",
     "city": "South Bend",
     "state": "IN",
     "latitude": 41.6818,
@@ -1650,7 +1650,7 @@
     "office_code": "46615"
   },
   {
-    "name": "USPS Downtown Fort Wayne",
+    "name": "Downtown Fort Wayne",
     "city": "Fort Wayne",
     "state": "IN",
     "latitude": 41.0793,
@@ -1661,7 +1661,7 @@
     "office_code": "46802"
   },
   {
-    "name": "USPS South Fort Wayne",
+    "name": "South Fort Wayne",
     "city": "Fort Wayne",
     "state": "IN",
     "latitude": 41.0642,
@@ -1672,7 +1672,7 @@
     "office_code": "46806"
   },
   {
-    "name": "USPS Downtown Jackson MS",
+    "name": "Downtown Jackson MS",
     "city": "Jackson",
     "state": "MS",
     "latitude": 32.2988,
@@ -1683,7 +1683,7 @@
     "office_code": "39201"
   },
   {
-    "name": "USPS Northeast Jackson MS",
+    "name": "Northeast Jackson MS",
     "city": "Jackson",
     "state": "MS",
     "latitude": 32.3396,
@@ -1694,7 +1694,7 @@
     "office_code": "39206"
   },
   {
-    "name": "USPS Downtown Jacksonville",
+    "name": "Downtown Jacksonville",
     "city": "Jacksonville",
     "state": "FL",
     "latitude": 30.3322,
@@ -1705,7 +1705,7 @@
     "office_code": "32202"
   },
   {
-    "name": "USPS San Marco Jacksonville",
+    "name": "San Marco Jacksonville",
     "city": "Jacksonville",
     "state": "FL",
     "latitude": 30.3002,
@@ -1716,7 +1716,7 @@
     "office_code": "32207"
   },
   {
-    "name": "USPS Downtown Gainesville",
+    "name": "Downtown Gainesville",
     "city": "Gainesville",
     "state": "FL",
     "latitude": 29.652,
@@ -1727,7 +1727,7 @@
     "office_code": "32601"
   },
   {
-    "name": "USPS West Gainesville",
+    "name": "West Gainesville",
     "city": "Gainesville",
     "state": "FL",
     "latitude": 29.6459,
@@ -1738,7 +1738,7 @@
     "office_code": "32607"
   },
   {
-    "name": "USPS Downtown Beaumont",
+    "name": "Downtown Beaumont",
     "city": "Beaumont",
     "state": "TX",
     "latitude": 30.0802,
@@ -1749,7 +1749,7 @@
     "office_code": "77701"
   },
   {
-    "name": "USPS West Beaumont",
+    "name": "West Beaumont",
     "city": "Beaumont",
     "state": "TX",
     "latitude": 30.0802,
@@ -1760,7 +1760,7 @@
     "office_code": "77706"
   },
   {
-    "name": "USPS French Quarter New Orleans",
+    "name": "French Quarter New Orleans",
     "city": "New Orleans",
     "state": "LA",
     "latitude": 29.9584,
@@ -1771,7 +1771,7 @@
     "office_code": "70112"
   },
   {
-    "name": "USPS Marigny New Orleans",
+    "name": "Marigny New Orleans",
     "city": "New Orleans",
     "state": "LA",
     "latitude": 29.967,
@@ -1782,7 +1782,7 @@
     "office_code": "70116"
   },
   {
-    "name": "USPS Downtown Baton Rouge",
+    "name": "Downtown Baton Rouge",
     "city": "Baton Rouge",
     "state": "LA",
     "latitude": 30.4507,
@@ -1793,7 +1793,7 @@
     "office_code": "70801"
   },
   {
-    "name": "USPS Southdowns Baton Rouge",
+    "name": "Southdowns Baton Rouge",
     "city": "Baton Rouge",
     "state": "LA",
     "latitude": 30.4018,
@@ -1804,7 +1804,7 @@
     "office_code": "70808"
   },
   {
-    "name": "USPS Downtown Louisville",
+    "name": "Downtown Louisville",
     "city": "Louisville",
     "state": "KY",
     "latitude": 38.2527,
@@ -1815,7 +1815,7 @@
     "office_code": "40202"
   },
   {
-    "name": "USPS Highlands Louisville",
+    "name": "Highlands Louisville",
     "city": "Louisville",
     "state": "KY",
     "latitude": 38.2328,
@@ -1826,7 +1826,7 @@
     "office_code": "40205"
   },
   {
-    "name": "USPS Chevy Chase Lexington",
+    "name": "Chevy Chase Lexington",
     "city": "Lexington",
     "state": "KY",
     "latitude": 38.0406,
@@ -1837,7 +1837,7 @@
     "office_code": "40502"
   },
   {
-    "name": "USPS Downtown Lexington",
+    "name": "Downtown Lexington",
     "city": "Lexington",
     "state": "KY",
     "latitude": 38.0406,
@@ -1848,7 +1848,7 @@
     "office_code": "40507"
   },
   {
-    "name": "USPS Chicago Loop",
+    "name": "Chicago Loop",
     "city": "Chicago",
     "state": "IL",
     "latitude": 41.8827,
@@ -1859,7 +1859,7 @@
     "office_code": "60601"
   },
   {
-    "name": "USPS Lincoln Park Chicago",
+    "name": "Lincoln Park Chicago",
     "city": "Chicago",
     "state": "IL",
     "latitude": 41.9235,
@@ -1870,7 +1870,7 @@
     "office_code": "60614"
   },
   {
-    "name": "USPS Downtown Los Angeles",
+    "name": "Downtown Los Angeles",
     "city": "Los Angeles",
     "state": "CA",
     "latitude": 34.0522,
@@ -1881,7 +1881,7 @@
     "office_code": "90012"
   },
   {
-    "name": "USPS Hollywood",
+    "name": "Hollywood",
     "city": "Los Angeles",
     "state": "CA",
     "latitude": 34.1016,
@@ -1892,7 +1892,7 @@
     "office_code": "90028"
   },
   {
-    "name": "USPS Downtown Santa Barbara",
+    "name": "Downtown Santa Barbara",
     "city": "Santa Barbara",
     "state": "CA",
     "latitude": 34.4208,
@@ -1903,7 +1903,7 @@
     "office_code": "93101"
   },
   {
-    "name": "USPS East Santa Barbara",
+    "name": "East Santa Barbara",
     "city": "Santa Barbara",
     "state": "CA",
     "latitude": 34.4261,
@@ -1914,7 +1914,7 @@
     "office_code": "93103"
   },
   {
-    "name": "USPS Downtown St Louis",
+    "name": "Downtown St Louis",
     "city": "Saint Louis",
     "state": "MO",
     "latitude": 38.627,
@@ -1925,7 +1925,7 @@
     "office_code": "63101"
   },
   {
-    "name": "USPS South St Louis",
+    "name": "South St Louis",
     "city": "Saint Louis",
     "state": "MO",
     "latitude": 38.6085,
@@ -1936,7 +1936,7 @@
     "office_code": "63139"
   },
   {
-    "name": "USPS Downtown Columbia MO",
+    "name": "Downtown Columbia MO",
     "city": "Columbia",
     "state": "MO",
     "latitude": 38.9517,
@@ -1947,7 +1947,7 @@
     "office_code": "65201"
   },
   {
-    "name": "USPS South Columbia MO",
+    "name": "South Columbia MO",
     "city": "Columbia",
     "state": "MO",
     "latitude": 38.9332,
@@ -1958,7 +1958,7 @@
     "office_code": "65203"
   },
   {
-    "name": "USPS Downtown Lubbock",
+    "name": "Downtown Lubbock",
     "city": "Lubbock",
     "state": "TX",
     "latitude": 33.5779,
@@ -1969,7 +1969,7 @@
     "office_code": "79401"
   },
   {
-    "name": "USPS South Lubbock",
+    "name": "South Lubbock",
     "city": "Lubbock",
     "state": "TX",
     "latitude": 33.5571,
@@ -1980,7 +1980,7 @@
     "office_code": "79410"
   },
   {
-    "name": "USPS Downtown Washington",
+    "name": "Downtown Washington",
     "city": "Washington",
     "state": "DC",
     "latitude": 38.9101,
@@ -1991,7 +1991,7 @@
     "office_code": "20001"
   },
   {
-    "name": "USPS Foggy Bottom",
+    "name": "Foggy Bottom",
     "city": "Washington",
     "state": "DC",
     "latitude": 38.8994,
@@ -2002,7 +2002,7 @@
     "office_code": "20037"
   },
   {
-    "name": "USPS Downtown Baltimore",
+    "name": "Downtown Baltimore",
     "city": "Baltimore",
     "state": "MD",
     "latitude": 39.2904,
@@ -2013,7 +2013,7 @@
     "office_code": "21201"
   },
   {
-    "name": "USPS Canton Baltimore",
+    "name": "Canton Baltimore",
     "city": "Baltimore",
     "state": "MD",
     "latitude": 39.2762,
@@ -2024,7 +2024,7 @@
     "office_code": "21224"
   },
   {
-    "name": "USPS Downtown Little Rock",
+    "name": "Downtown Little Rock",
     "city": "Little Rock",
     "state": "AR",
     "latitude": 34.7465,
@@ -2035,7 +2035,7 @@
     "office_code": "72201"
   },
   {
-    "name": "USPS Hillcrest Little Rock",
+    "name": "Hillcrest Little Rock",
     "city": "Little Rock",
     "state": "AR",
     "latitude": 34.75,
@@ -2046,7 +2046,7 @@
     "office_code": "72205"
   },
   {
-    "name": "USPS Downtown Memphis",
+    "name": "Downtown Memphis",
     "city": "Memphis",
     "state": "TN",
     "latitude": 35.1495,
@@ -2057,7 +2057,7 @@
     "office_code": "38103"
   },
   {
-    "name": "USPS East Memphis",
+    "name": "East Memphis",
     "city": "Memphis",
     "state": "TN",
     "latitude": 35.1189,
@@ -2068,7 +2068,7 @@
     "office_code": "38117"
   },
   {
-    "name": "USPS Downtown Miami",
+    "name": "Downtown Miami",
     "city": "Miami",
     "state": "FL",
     "latitude": 25.7617,
@@ -2079,7 +2079,7 @@
     "office_code": "33101"
   },
   {
-    "name": "USPS Fort Lauderdale",
+    "name": "Fort Lauderdale",
     "city": "Fort Lauderdale",
     "state": "FL",
     "latitude": 26.1224,
@@ -2090,7 +2090,7 @@
     "office_code": "33301"
   },
   {
-    "name": "USPS Downtown Naples",
+    "name": "Downtown Naples",
     "city": "Naples",
     "state": "FL",
     "latitude": 26.142,
@@ -2101,7 +2101,7 @@
     "office_code": "34102"
   },
   {
-    "name": "USPS North Naples",
+    "name": "North Naples",
     "city": "Naples",
     "state": "FL",
     "latitude": 26.1974,
@@ -2112,7 +2112,7 @@
     "office_code": "34108"
   },
   {
-    "name": "USPS Downtown Milwaukee",
+    "name": "Downtown Milwaukee",
     "city": "Milwaukee",
     "state": "WI",
     "latitude": 43.0389,
@@ -2123,7 +2123,7 @@
     "office_code": "53202"
   },
   {
-    "name": "USPS Shorewood Milwaukee",
+    "name": "Shorewood Milwaukee",
     "city": "Milwaukee",
     "state": "WI",
     "latitude": 43.0779,
@@ -2134,7 +2134,7 @@
     "office_code": "53211"
   },
   {
-    "name": "USPS Isthmus Madison",
+    "name": "Isthmus Madison",
     "city": "Madison",
     "state": "WI",
     "latitude": 43.0731,
@@ -2145,7 +2145,7 @@
     "office_code": "53703"
   },
   {
-    "name": "USPS West Madison",
+    "name": "West Madison",
     "city": "Madison",
     "state": "WI",
     "latitude": 43.0607,
@@ -2156,7 +2156,7 @@
     "office_code": "53711"
   },
   {
-    "name": "USPS Downtown Orlando",
+    "name": "Downtown Orlando",
     "city": "Orlando",
     "state": "FL",
     "latitude": 28.5383,
@@ -2167,7 +2167,7 @@
     "office_code": "32801"
   },
   {
-    "name": "USPS International Drive Orlando",
+    "name": "International Drive Orlando",
     "city": "Orlando",
     "state": "FL",
     "latitude": 28.4399,
@@ -2178,7 +2178,7 @@
     "office_code": "32819"
   },
   {
-    "name": "USPS Downtown Pensacola",
+    "name": "Downtown Pensacola",
     "city": "Pensacola",
     "state": "FL",
     "latitude": 30.4213,
@@ -2189,7 +2189,7 @@
     "office_code": "32501"
   },
   {
-    "name": "USPS East Hill Pensacola",
+    "name": "East Hill Pensacola",
     "city": "Pensacola",
     "state": "FL",
     "latitude": 30.4394,
@@ -2200,7 +2200,7 @@
     "office_code": "32503"
   },
   {
-    "name": "USPS Downtown Mobile",
+    "name": "Downtown Mobile",
     "city": "Mobile",
     "state": "AL",
     "latitude": 30.6954,
@@ -2211,7 +2211,7 @@
     "office_code": "36602"
   },
   {
-    "name": "USPS Midtown Mobile",
+    "name": "Midtown Mobile",
     "city": "Mobile",
     "state": "AL",
     "latitude": 30.6884,
@@ -2222,7 +2222,7 @@
     "office_code": "36607"
   },
   {
-    "name": "USPS Downtown St Paul",
+    "name": "Downtown St Paul",
     "city": "Saint Paul",
     "state": "MN",
     "latitude": 44.9537,
@@ -2233,7 +2233,7 @@
     "office_code": "55101"
   },
   {
-    "name": "USPS Downtown Minneapolis",
+    "name": "Downtown Minneapolis",
     "city": "Minneapolis",
     "state": "MN",
     "latitude": 44.9778,
@@ -2244,7 +2244,7 @@
     "office_code": "55401"
   },
   {
-    "name": "USPS Downtown Chattanooga",
+    "name": "Downtown Chattanooga",
     "city": "Chattanooga",
     "state": "TN",
     "latitude": 35.0456,
@@ -2255,7 +2255,7 @@
     "office_code": "37402"
   },
   {
-    "name": "USPS East Brainerd Chattanooga",
+    "name": "East Brainerd Chattanooga",
     "city": "Chattanooga",
     "state": "TN",
     "latitude": 35.0131,
@@ -2266,7 +2266,7 @@
     "office_code": "37411"
   },
   {
-    "name": "USPS Downtown Knoxville",
+    "name": "Downtown Knoxville",
     "city": "Knoxville",
     "state": "TN",
     "latitude": 35.9606,
@@ -2277,7 +2277,7 @@
     "office_code": "37902"
   },
   {
-    "name": "USPS West Knoxville",
+    "name": "West Knoxville",
     "city": "Knoxville",
     "state": "TN",
     "latitude": 35.9363,
@@ -2288,7 +2288,7 @@
     "office_code": "37919"
   },
   {
-    "name": "USPS Downtown Missoula",
+    "name": "Downtown Missoula",
     "city": "Missoula",
     "state": "MT",
     "latitude": 46.8721,
@@ -2299,7 +2299,7 @@
     "office_code": "59801"
   },
   {
-    "name": "USPS University Missoula",
+    "name": "University Missoula",
     "city": "Missoula",
     "state": "MT",
     "latitude": 46.8721,
@@ -2310,7 +2310,7 @@
     "office_code": "59802"
   },
   {
-    "name": "USPS Civic Center San Francisco",
+    "name": "Civic Center San Francisco",
     "city": "San Francisco",
     "state": "CA",
     "latitude": 37.7793,
@@ -2321,7 +2321,7 @@
     "office_code": "94102"
   },
   {
-    "name": "USPS Downtown Oakland",
+    "name": "Downtown Oakland",
     "city": "Oakland",
     "state": "CA",
     "latitude": 37.8044,
@@ -2332,7 +2332,7 @@
     "office_code": "94612"
   },
   {
-    "name": "USPS Downtown San Jose",
+    "name": "Downtown San Jose",
     "city": "San Jose",
     "state": "CA",
     "latitude": 37.3387,
@@ -2343,7 +2343,7 @@
     "office_code": "95113"
   },
   {
-    "name": "USPS West San Jose",
+    "name": "West San Jose",
     "city": "San Jose",
     "state": "CA",
     "latitude": 37.329,
@@ -2354,7 +2354,7 @@
     "office_code": "95126"
   },
   {
-    "name": "USPS Downtown Omaha",
+    "name": "Downtown Omaha",
     "city": "Omaha",
     "state": "NE",
     "latitude": 41.2524,
@@ -2365,7 +2365,7 @@
     "office_code": "68102"
   },
   {
-    "name": "USPS Dundee Omaha",
+    "name": "Dundee Omaha",
     "city": "Omaha",
     "state": "NE",
     "latitude": 41.2696,
@@ -2376,7 +2376,7 @@
     "office_code": "68132"
   },
   {
-    "name": "USPS Near South Lincoln",
+    "name": "Near South Lincoln",
     "city": "Lincoln",
     "state": "NE",
     "latitude": 40.8075,
@@ -2387,7 +2387,7 @@
     "office_code": "68502"
   },
   {
-    "name": "USPS Downtown Lincoln",
+    "name": "Downtown Lincoln",
     "city": "Lincoln",
     "state": "NE",
     "latitude": 40.8136,
@@ -2398,7 +2398,7 @@
     "office_code": "68508"
   },
   {
-    "name": "USPS Midtown Nashville",
+    "name": "Midtown Nashville",
     "city": "Nashville",
     "state": "TN",
     "latitude": 36.156,
@@ -2409,7 +2409,7 @@
     "office_code": "37203"
   },
   {
-    "name": "USPS East Nashville",
+    "name": "East Nashville",
     "city": "Nashville",
     "state": "TN",
     "latitude": 36.168,
@@ -2420,7 +2420,7 @@
     "office_code": "37206"
   },
   {
-    "name": "USPS Downtown New Haven",
+    "name": "Downtown New Haven",
     "city": "New Haven",
     "state": "CT",
     "latitude": 41.3083,
@@ -2431,7 +2431,7 @@
     "office_code": "06510"
   },
   {
-    "name": "USPS East Rock New Haven",
+    "name": "East Rock New Haven",
     "city": "New Haven",
     "state": "CT",
     "latitude": 41.3213,
@@ -2442,7 +2442,7 @@
     "office_code": "06511"
   },
   {
-    "name": "USPS Midtown Manhattan",
+    "name": "Midtown Manhattan",
     "city": "New York City",
     "state": "NY",
     "latitude": 40.7506,
@@ -2453,7 +2453,7 @@
     "office_code": "10001"
   },
   {
-    "name": "USPS South Bronx",
+    "name": "South Bronx",
     "city": "Bronx",
     "state": "NY",
     "latitude": 40.8193,
@@ -2464,7 +2464,7 @@
     "office_code": "10451"
   },
   {
-    "name": "USPS Downtown Spokane",
+    "name": "Downtown Spokane",
     "city": "Spokane",
     "state": "WA",
     "latitude": 47.6588,
@@ -2475,7 +2475,7 @@
     "office_code": "99201"
   },
   {
-    "name": "USPS Northeast Spokane",
+    "name": "Northeast Spokane",
     "city": "Spokane",
     "state": "WA",
     "latitude": 47.684,
@@ -2486,7 +2486,7 @@
     "office_code": "99207"
   },
   {
-    "name": "USPS Downtown Oklahoma City",
+    "name": "Downtown Oklahoma City",
     "city": "Oklahoma City",
     "state": "OK",
     "latitude": 35.4676,
@@ -2497,7 +2497,7 @@
     "office_code": "73102"
   },
   {
-    "name": "USPS North Oklahoma City",
+    "name": "North Oklahoma City",
     "city": "Oklahoma City",
     "state": "OK",
     "latitude": 35.5673,
@@ -2508,7 +2508,7 @@
     "office_code": "73120"
   },
   {
-    "name": "USPS Downtown Evansville",
+    "name": "Downtown Evansville",
     "city": "Evansville",
     "state": "IN",
     "latitude": 37.9716,
@@ -2519,7 +2519,7 @@
     "office_code": "47708"
   },
   {
-    "name": "USPS East Evansville",
+    "name": "East Evansville",
     "city": "Evansville",
     "state": "IN",
     "latitude": 37.9674,
@@ -2530,7 +2530,7 @@
     "office_code": "47714"
   },
   {
-    "name": "USPS Oakland Pittsburgh",
+    "name": "Oakland Pittsburgh",
     "city": "Pittsburgh",
     "state": "PA",
     "latitude": 40.4412,
@@ -2541,7 +2541,7 @@
     "office_code": "15213"
   },
   {
-    "name": "USPS Downtown Pittsburgh",
+    "name": "Downtown Pittsburgh",
     "city": "Pittsburgh",
     "state": "PA",
     "latitude": 40.4412,
@@ -2552,7 +2552,7 @@
     "office_code": "15222"
   },
   {
-    "name": "USPS Downtown Bend",
+    "name": "Downtown Bend",
     "city": "Bend",
     "state": "OR",
     "latitude": 44.0582,
@@ -2563,7 +2563,7 @@
     "office_code": "97701"
   },
   {
-    "name": "USPS South Bend OR",
+    "name": "South Bend OR",
     "city": "Bend",
     "state": "OR",
     "latitude": 44.029,
@@ -2574,7 +2574,7 @@
     "office_code": "97702"
   },
   {
-    "name": "USPS Downtown Trenton",
+    "name": "Downtown Trenton",
     "city": "Trenton",
     "state": "NJ",
     "latitude": 40.2206,
@@ -2585,7 +2585,7 @@
     "office_code": "08608"
   },
   {
-    "name": "USPS West Trenton",
+    "name": "West Trenton",
     "city": "Trenton",
     "state": "NJ",
     "latitude": 40.228,
@@ -2596,7 +2596,7 @@
     "office_code": "08618"
   },
   {
-    "name": "USPS Center City Philadelphia",
+    "name": "Center City Philadelphia",
     "city": "Philadelphia",
     "state": "PA",
     "latitude": 39.9496,
@@ -2607,7 +2607,7 @@
     "office_code": "19102"
   },
   {
-    "name": "USPS Kensington Philadelphia",
+    "name": "Kensington Philadelphia",
     "city": "Philadelphia",
     "state": "PA",
     "latitude": 39.9883,
@@ -2618,7 +2618,7 @@
     "office_code": "19134"
   },
   {
-    "name": "USPS Downtown Wilmington DE",
+    "name": "Downtown Wilmington DE",
     "city": "Wilmington",
     "state": "DE",
     "latitude": 39.7447,
@@ -2629,7 +2629,7 @@
     "office_code": "19801"
   },
   {
-    "name": "USPS West Wilmington DE",
+    "name": "West Wilmington DE",
     "city": "Wilmington",
     "state": "DE",
     "latitude": 39.7356,
@@ -2640,7 +2640,7 @@
     "office_code": "19805"
   },
   {
-    "name": "USPS Downtown Dover",
+    "name": "Downtown Dover",
     "city": "Dover",
     "state": "DE",
     "latitude": 39.1582,
@@ -2651,7 +2651,7 @@
     "office_code": "19901"
   },
   {
-    "name": "USPS North Dover",
+    "name": "North Dover",
     "city": "Dover",
     "state": "DE",
     "latitude": 39.1745,
@@ -2662,7 +2662,7 @@
     "office_code": "19904"
   },
   {
-    "name": "USPS Downtown Portland",
+    "name": "Downtown Portland",
     "city": "Portland",
     "state": "OR",
     "latitude": 45.5051,
@@ -2673,7 +2673,7 @@
     "office_code": "97201"
   },
   {
-    "name": "USPS Southeast Portland",
+    "name": "Southeast Portland",
     "city": "Portland",
     "state": "OR",
     "latitude": 45.5088,
@@ -2684,7 +2684,7 @@
     "office_code": "97214"
   },
   {
-    "name": "USPS Downtown Eugene",
+    "name": "Downtown Eugene",
     "city": "Eugene",
     "state": "OR",
     "latitude": 44.0521,
@@ -2695,7 +2695,7 @@
     "office_code": "97401"
   },
   {
-    "name": "USPS South Eugene",
+    "name": "South Eugene",
     "city": "Eugene",
     "state": "OR",
     "latitude": 44.0295,
@@ -2706,7 +2706,7 @@
     "office_code": "97405"
   },
   {
-    "name": "USPS Downtown Phoenix",
+    "name": "Downtown Phoenix",
     "city": "Phoenix",
     "state": "AZ",
     "latitude": 33.4484,
@@ -2717,7 +2717,7 @@
     "office_code": "85004"
   },
   {
-    "name": "USPS Tempe",
+    "name": "Tempe",
     "city": "Tempe",
     "state": "AZ",
     "latitude": 33.4255,
@@ -2728,7 +2728,7 @@
     "office_code": "85281"
   },
   {
-    "name": "USPS Downtown Colorado Springs",
+    "name": "Downtown Colorado Springs",
     "city": "Colorado Springs",
     "state": "CO",
     "latitude": 38.8339,
@@ -2739,7 +2739,7 @@
     "office_code": "80903"
   },
   {
-    "name": "USPS East Colorado Springs",
+    "name": "East Colorado Springs",
     "city": "Colorado Springs",
     "state": "CO",
     "latitude": 38.8449,
@@ -2750,7 +2750,7 @@
     "office_code": "80909"
   },
   {
-    "name": "USPS Downtown Greensboro",
+    "name": "Downtown Greensboro",
     "city": "Greensboro",
     "state": "NC",
     "latitude": 36.0726,
@@ -2761,7 +2761,7 @@
     "office_code": "27401"
   },
   {
-    "name": "USPS College Hill Greensboro",
+    "name": "College Hill Greensboro",
     "city": "Greensboro",
     "state": "NC",
     "latitude": 36.0891,
@@ -2772,7 +2772,7 @@
     "office_code": "27408"
   },
   {
-    "name": "USPS Downtown Raleigh",
+    "name": "Downtown Raleigh",
     "city": "Raleigh",
     "state": "NC",
     "latitude": 35.7796,
@@ -2783,7 +2783,7 @@
     "office_code": "27601"
   },
   {
-    "name": "USPS West Raleigh",
+    "name": "West Raleigh",
     "city": "Raleigh",
     "state": "NC",
     "latitude": 35.7751,
@@ -2794,7 +2794,7 @@
     "office_code": "27607"
   },
   {
-    "name": "USPS Downtown Durham",
+    "name": "Downtown Durham",
     "city": "Durham",
     "state": "NC",
     "latitude": 35.994,
@@ -2805,7 +2805,7 @@
     "office_code": "27701"
   },
   {
-    "name": "USPS West Durham",
+    "name": "West Durham",
     "city": "Durham",
     "state": "NC",
     "latitude": 35.9928,
@@ -2816,7 +2816,7 @@
     "office_code": "27705"
   },
   {
-    "name": "USPS Downtown Reno",
+    "name": "Downtown Reno",
     "city": "Reno",
     "state": "NV",
     "latitude": 39.5296,
@@ -2827,7 +2827,7 @@
     "office_code": "89501"
   },
   {
-    "name": "USPS South Reno",
+    "name": "South Reno",
     "city": "Reno",
     "state": "NV",
     "latitude": 39.5072,
@@ -2838,7 +2838,7 @@
     "office_code": "89509"
   },
   {
-    "name": "USPS Downtown Charleston WV",
+    "name": "Downtown Charleston WV",
     "city": "Charleston",
     "state": "WV",
     "latitude": 38.3498,
@@ -2849,7 +2849,7 @@
     "office_code": "25301"
   },
   {
-    "name": "USPS South Hills Charleston WV",
+    "name": "South Hills Charleston WV",
     "city": "Charleston",
     "state": "WV",
     "latitude": 38.3225,
@@ -2860,7 +2860,7 @@
     "office_code": "25304"
   },
   {
-    "name": "USPS Downtown Roanoke",
+    "name": "Downtown Roanoke",
     "city": "Roanoke",
     "state": "VA",
     "latitude": 37.271,
@@ -2871,7 +2871,7 @@
     "office_code": "24011"
   },
   {
-    "name": "USPS South Roanoke",
+    "name": "South Roanoke",
     "city": "Roanoke",
     "state": "VA",
     "latitude": 37.2589,
@@ -2882,7 +2882,7 @@
     "office_code": "24016"
   },
   {
-    "name": "USPS Downtown Seattle",
+    "name": "Downtown Seattle",
     "city": "Seattle",
     "state": "WA",
     "latitude": 47.6062,
@@ -2893,7 +2893,7 @@
     "office_code": "98101"
   },
   {
-    "name": "USPS University District Seattle",
+    "name": "University District Seattle",
     "city": "Seattle",
     "state": "WA",
     "latitude": 47.6816,
@@ -2904,7 +2904,7 @@
     "office_code": "98115"
   },
   {
-    "name": "USPS Downtown Tacoma",
+    "name": "Downtown Tacoma",
     "city": "Tacoma",
     "state": "WA",
     "latitude": 47.2529,
@@ -2915,7 +2915,7 @@
     "office_code": "98402"
   },
   {
-    "name": "USPS South Tacoma",
+    "name": "South Tacoma",
     "city": "Tacoma",
     "state": "WA",
     "latitude": 47.246,
@@ -2926,7 +2926,7 @@
     "office_code": "98405"
   },
   {
-    "name": "USPS West Springfield MO",
+    "name": "West Springfield MO",
     "city": "Springfield",
     "state": "MO",
     "latitude": 37.2255,
@@ -2937,7 +2937,7 @@
     "office_code": "65802"
   },
   {
-    "name": "USPS Downtown Springfield MO",
+    "name": "Downtown Springfield MO",
     "city": "Springfield",
     "state": "MO",
     "latitude": 37.209,
@@ -2948,7 +2948,7 @@
     "office_code": "65806"
   },
   {
-    "name": "USPS Downtown San Diego",
+    "name": "Downtown San Diego",
     "city": "San Diego",
     "state": "CA",
     "latitude": 32.7157,
@@ -2959,7 +2959,7 @@
     "office_code": "92101"
   },
   {
-    "name": "USPS Pacific Beach",
+    "name": "Pacific Beach",
     "city": "San Diego",
     "state": "CA",
     "latitude": 32.7971,
@@ -2970,7 +2970,7 @@
     "office_code": "92109"
   },
   {
-    "name": "USPS San Bernardino",
+    "name": "San Bernardino",
     "city": "San Bernardino",
     "state": "CA",
     "latitude": 34.1083,
@@ -2981,7 +2981,7 @@
     "office_code": "92401"
   },
   {
-    "name": "USPS Downtown Riverside",
+    "name": "Downtown Riverside",
     "city": "Riverside",
     "state": "CA",
     "latitude": 33.9806,
@@ -2992,7 +2992,7 @@
     "office_code": "92501"
   },
   {
-    "name": "USPS Downtown Shreveport",
+    "name": "Downtown Shreveport",
     "city": "Shreveport",
     "state": "LA",
     "latitude": 32.5252,
@@ -3003,7 +3003,7 @@
     "office_code": "71101"
   },
   {
-    "name": "USPS South Highlands Shreveport",
+    "name": "South Highlands Shreveport",
     "city": "Shreveport",
     "state": "LA",
     "latitude": 32.5073,
@@ -3014,7 +3014,7 @@
     "office_code": "71105"
   },
   {
-    "name": "USPS Downtown Salt Lake City",
+    "name": "Downtown Salt Lake City",
     "city": "Salt Lake City",
     "state": "UT",
     "latitude": 40.7608,
@@ -3025,7 +3025,7 @@
     "office_code": "84101"
   },
   {
-    "name": "USPS Sugar House Salt Lake City",
+    "name": "Sugar House Salt Lake City",
     "city": "Salt Lake City",
     "state": "UT",
     "latitude": 40.7242,
@@ -3036,7 +3036,7 @@
     "office_code": "84105"
   },
   {
-    "name": "USPS Downtown Provo",
+    "name": "Downtown Provo",
     "city": "Provo",
     "state": "UT",
     "latitude": 40.2338,
@@ -3047,7 +3047,7 @@
     "office_code": "84601"
   },
   {
-    "name": "USPS North Provo",
+    "name": "North Provo",
     "city": "Provo",
     "state": "UT",
     "latitude": 40.26,
@@ -3058,7 +3058,7 @@
     "office_code": "84604"
   },
   {
-    "name": "USPS Downtown Stockton",
+    "name": "Downtown Stockton",
     "city": "Stockton",
     "state": "CA",
     "latitude": 37.9577,
@@ -3069,7 +3069,7 @@
     "office_code": "95202"
   },
   {
-    "name": "USPS North Stockton",
+    "name": "North Stockton",
     "city": "Stockton",
     "state": "CA",
     "latitude": 37.9833,
@@ -3080,7 +3080,7 @@
     "office_code": "95207"
   },
   {
-    "name": "USPS West Modesto",
+    "name": "West Modesto",
     "city": "Modesto",
     "state": "CA",
     "latitude": 37.6391,
@@ -3091,7 +3091,7 @@
     "office_code": "95350"
   },
   {
-    "name": "USPS Downtown Modesto",
+    "name": "Downtown Modesto",
     "city": "Modesto",
     "state": "CA",
     "latitude": 37.6391,
@@ -3102,7 +3102,7 @@
     "office_code": "95354"
   },
   {
-    "name": "USPS Downtown Sacramento",
+    "name": "Downtown Sacramento",
     "city": "Sacramento",
     "state": "CA",
     "latitude": 38.5816,
@@ -3113,7 +3113,7 @@
     "office_code": "95814"
   },
   {
-    "name": "USPS Arden Arcade Sacramento",
+    "name": "Arden Arcade Sacramento",
     "city": "Sacramento",
     "state": "CA",
     "latitude": 38.6043,
@@ -3124,7 +3124,7 @@
     "office_code": "95821"
   },
   {
-    "name": "USPS Downtown Tallahassee",
+    "name": "Downtown Tallahassee",
     "city": "Tallahassee",
     "state": "FL",
     "latitude": 30.4518,
@@ -3135,7 +3135,7 @@
     "office_code": "32301"
   },
   {
-    "name": "USPS Midtown Tallahassee",
+    "name": "Midtown Tallahassee",
     "city": "Tallahassee",
     "state": "FL",
     "latitude": 30.4683,
@@ -3146,7 +3146,7 @@
     "office_code": "32303"
   },
   {
-    "name": "USPS Downtown Tampa",
+    "name": "Downtown Tampa",
     "city": "Tampa",
     "state": "FL",
     "latitude": 27.9506,
@@ -3157,7 +3157,7 @@
     "office_code": "33602"
   },
   {
-    "name": "USPS St Petersburg",
+    "name": "St Petersburg",
     "city": "Saint Petersburg",
     "state": "FL",
     "latitude": 27.7731,
@@ -3168,7 +3168,7 @@
     "office_code": "33701"
   },
   {
-    "name": "USPS South Sarasota",
+    "name": "South Sarasota",
     "city": "Sarasota",
     "state": "FL",
     "latitude": 27.2685,
@@ -3179,7 +3179,7 @@
     "office_code": "34231"
   },
   {
-    "name": "USPS Downtown Sarasota",
+    "name": "Downtown Sarasota",
     "city": "Sarasota",
     "state": "FL",
     "latitude": 27.3364,
@@ -3190,7 +3190,7 @@
     "office_code": "34237"
   },
   {
-    "name": "USPS Downtown Topeka",
+    "name": "Downtown Topeka",
     "city": "Topeka",
     "state": "KS",
     "latitude": 39.0473,
@@ -3201,7 +3201,7 @@
     "office_code": "66603"
   },
   {
-    "name": "USPS East Topeka",
+    "name": "East Topeka",
     "city": "Topeka",
     "state": "KS",
     "latitude": 39.0533,
@@ -3212,7 +3212,7 @@
     "office_code": "66607"
   },
   {
-    "name": "USPS Downtown Tulsa",
+    "name": "Downtown Tulsa",
     "city": "Tulsa",
     "state": "OK",
     "latitude": 36.154,
@@ -3223,7 +3223,7 @@
     "office_code": "74103"
   },
   {
-    "name": "USPS Brookside Tulsa",
+    "name": "Brookside Tulsa",
     "city": "Tulsa",
     "state": "OK",
     "latitude": 36.1299,
@@ -3234,7 +3234,7 @@
     "office_code": "74114"
   },
   {
-    "name": "USPS Downtown Tucson",
+    "name": "Downtown Tucson",
     "city": "Tucson",
     "state": "AZ",
     "latitude": 32.2217,
@@ -3245,7 +3245,7 @@
     "office_code": "85701"
   },
   {
-    "name": "USPS University Tucson",
+    "name": "University Tucson",
     "city": "Tucson",
     "state": "AZ",
     "latitude": 32.2352,
@@ -3256,7 +3256,7 @@
     "office_code": "85719"
   },
   {
-    "name": "USPS Downtown Rapid City",
+    "name": "Downtown Rapid City",
     "city": "Rapid City",
     "state": "SD",
     "latitude": 44.0805,
@@ -3267,7 +3267,7 @@
     "office_code": "57701"
   },
   {
-    "name": "USPS West Rapid City",
+    "name": "West Rapid City",
     "city": "Rapid City",
     "state": "SD",
     "latitude": 44.0767,
@@ -3278,7 +3278,7 @@
     "office_code": "57702"
   },
   {
-    "name": "USPS Downtown Las Vegas",
+    "name": "Downtown Las Vegas",
     "city": "Las Vegas",
     "state": "NV",
     "latitude": 36.1699,
@@ -3289,7 +3289,7 @@
     "office_code": "89101"
   },
   {
-    "name": "USPS The Strip Las Vegas",
+    "name": "The Strip Las Vegas",
     "city": "Las Vegas",
     "state": "NV",
     "latitude": 36.1147,

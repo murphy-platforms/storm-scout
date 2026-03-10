@@ -49,7 +49,7 @@ Thank you for your interest in contributing to Storm Scout! This guide covers ev
    ```bash
    npm run init-db
    # Then import your office data:
-   node src/scripts/import-usps-offices.js /path/to/offices.csv
+   node src/scripts/import-offices.js /path/to/offices.csv
    npm run seed-db
    ```
 
@@ -147,7 +147,7 @@ docs: add JSDoc to page-advisories.js (closes #128)
 
 ## Reporting Issues
 
-- **Security vulnerabilities**: See [`.github/SECURITY.md`](.github/SECURITY.md) — do **not** open a public issue
+- **Security vulnerabilities**: See [`SECURITY.md`](SECURITY.md) — do **not** open a public issue
 - **Bugs**: Open a [GitHub Issue](../../issues) with steps to reproduce
 - **Feature requests**: Open a GitHub Issue with the `enhancement` label
 

@@ -1,6 +1,6 @@
 [Unit]
 Description=Storm Scout DEV/QC Server
-Documentation=https://github.com/anthropics/storm-scout-usps
+Documentation=https://github.com/murphy-platforms/storm-scout-usps
 After=network.target docker.service
 Requires=docker.service
 

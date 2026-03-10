@@ -4,6 +4,8 @@
 
 Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which offices may be impacted during severe weather events.
 
+> **Note:** Storm Scout is an independent open-source project. It is not affiliated with, endorsed by, or connected to any government agency or postal service. See the full [Disclaimer](#disclaimer) below.
+
 ## ✨ Features
 
 ### Core Functionality
@@ -132,7 +134,7 @@ cp .env.example .env
 npm run init-db
 
 # Load office data (run import script first, then seed)
-node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
+node src/scripts/import-offices.js /path/to/locations.csv
 npm run seed-db
 ```
 
@@ -308,7 +310,7 @@ Storm Scout implements multiple security controls:
 
 **Security Assessments:** Point-in-time security audits are stored in `docs/security/assessments/`.
 
-**Reporting vulnerabilities:** See `.github/SECURITY.md` for our security policy.
+**Reporting vulnerabilities:** See [`SECURITY.md`](SECURITY.md) for our security policy.
 
 **Security documentation:** See `docs/security/` for detailed guides, vulnerability tracking, dependency override rationale, and secret rotation policy.
 

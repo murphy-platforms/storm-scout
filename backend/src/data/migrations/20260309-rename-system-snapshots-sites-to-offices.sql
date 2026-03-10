@@ -1,5 +1,5 @@
 -- Migration: Rename sites_* columns to offices_* in system_snapshots
--- Reason: USPS refactor — terminology standardised from "sites" to "offices"
+-- Reason: Terminology standardised from "sites" to "offices"
 -- Date: 2026-03-09
 -- MariaDB: RENAME COLUMN is metadata-only (no table rebuild, instant on any row count)
 --

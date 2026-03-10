@@ -40,7 +40,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **CI Pipeline**: `.github/workflows/ci.yml` runs `npm ci`, `npm audit --audit-level=high`, `npm test` on push/PR
 - **Alert Detail Modal**: View full NOAA narrative descriptions on office-detail page
 - **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 monitored locations
-- **Office Import**: One-time CSV import via `import-usps-offices.js` to load 300 monitored locations from zip-based CSV
+- **Office Import**: One-time CSV import via `import-offices.js` to load 300 monitored locations from zip-based CSV
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
 - **Safe Deployment**: `deploy.sh` calls `POST /api/admin/pause-ingestion` (API-key authenticated) before rsync; waits for active cycle to finish; ERR trap resumes on failure; admin endpoints in `routes/admin.js` also available for manual ops control
@@ -149,7 +149,7 @@ strom-scout/
 │   │   │   ├── fetch-ugc-codes.js        # Fetch UGC codes from NOAA for all offices
 │   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
 │   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
-│   │   │   ├── import-usps-offices.js      # Convert USPS CSV to offices.json (run once before init-db)
+│   │   │   ├── import-offices.js      # Convert CSV to offices.json (run once before init-db)
 │   │   │   ├── fetch-observation-stations.js  # Map offices to nearest NWS observation stations
 │   │   │   └── smoke-test.sh             # Pre-deploy validation (11 checks incl. XSS audit)
 │   │   ├── tests/
@@ -349,7 +349,7 @@ node src/utils/cleanup-advisories.js event_id   # Event ID duplicates only
 node src/utils/cleanup-advisories.js expired    # Remove expired only
 
 # Office Import (one-time, run before init-db)
-node src/scripts/import-usps-offices.js /path/to/usps-locations.csv   # Convert CSV to offices.json
+node src/scripts/import-offices.js /path/to/locations.csv   # Convert CSV to offices.json
 
 # Weather Observation Stations (one-time setup, or re-run with --force)
 node src/scripts/fetch-observation-stations.js --dry-run        # Preview station mappings
@@ -359,9 +359,9 @@ node src/scripts/fetch-observation-stations.js --force          # Re-map all (ov
 
 ### Office Import Workflow
 One-time setup to load monitored locations from CSV:
-1. **Import**: `import-usps-offices.js` reads CSV with columns `zip, name, city, state, latitude, longitude` (plus optional `region, county, ugc_codes, cwa`) and writes `src/data/offices.json`.
+1. **Import**: `import-offices.js` reads CSV with columns `zip, name, city, state, latitude, longitude` (plus optional `region, county, ugc_codes, cwa`) and writes `src/data/offices.json`.
 2. **Init DB**: `npm run init-db` creates schema and loads `offices.json` into the database.
-3. To update offices later, re-run `import-usps-offices.js` then `npm run init-db`.
+3. To update offices later, re-run `import-offices.js` then `npm run init-db`.
 
 ### Pre-Deploy Smoke Test
 ```bash
@@ -442,7 +442,7 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ 4-tier severity grouping (Offices Requiring Attention matches Weather Impact colors)
 - ✅ UGC code matching for all 300 monitored locations (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to offices without UGC codes
-- ✅ office import workflow (import-usps-offices.js converts CSV → offices.json)
+- ✅ office import workflow (import-offices.js converts CSV → offices.json)
 - ✅ Dashboard cards show office_code + office_name (index.html, advisories.html, offices.html)
 - ✅ Office detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)

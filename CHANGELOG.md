@@ -159,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Cache-busting strings** — updated `?v=1.9.1` → `?v=1.9.2` across all 8 HTML pages (`index.html` had already been updated; `advisories.html`, `filters.html`, `map.html`, `notices.html`, `office-detail.html`, `offices.html`, `sources.html` updated now)
 
 ### Changed
-- **Script terminology** — `add-new-offices.js` and `verify-offices.js` variable names updated from `site` to `office` to match USPS refactor naming conventions
+- **Script terminology** — `add-new-offices.js` and `verify-offices.js` variable names updated from `site` to `office` to match refactored naming conventions
 
 ## [1.9.2] - 2026-03-09
 
@@ -199,7 +199,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Dashboard "Recently Updated Offices" always empty** - `recently_updated` items from the overview API have an `id` field (office_status row ID) and a separate `office_id` field (actual office ID); the filter was incorrectly comparing `adv.office_id === site.id` instead of `site.office_id`, so the panel always showed "No offices with advisories" even when active advisories existed
 - **Export button 404** - Export function fetched the non-existent `/api/sites/requiring-attention` endpoint; updated to use `/api/status/offices-impacted`
-- **CUSTOM filter preset name/description** - `noaa-alert-types.js` CUSTOM preset had stale name "Site Default" and description "testing center operations"; updated to "Office Default" and "USPS operations"
+- **CUSTOM filter preset name/description** - `noaa-alert-types.js` CUSTOM preset had stale name "Site Default" and description "testing center operations"; updated to "Office Default" and "operations"
 - **Stale "Site" terminology in frontend** - Remaining `site`/`Site` copy in `advisories.html` (page heading, search placeholder, filter dropdown) and `filters.html` (preset button, reset confirm dialog) updated to `office`/`Office`
 
 ## [1.9.0] - 2026-03-08
@@ -215,7 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Database columns: `site_code→office_code`, `site_id→office_id` in all tables
   - Backend models, routes, ingestion pipeline, and utility scripts
   - Frontend HTML pages, JavaScript modules, and API client
-  - File renames: `sites.html→offices.html`, `site-detail.html→office-detail.html`, `sites.json→offices.json`, `import-usps-sites.js→import-usps-offices.js`
+  - File renames: `sites.html→offices.html`, `site-detail.html→office-detail.html`, `sites.json→offices.json`, `import-sites.js→import-offices.js`
   - Legacy `?site=` URL param accepted as fallback on `offices.html` and `office-detail.html`
 - **Deployment Platform** - Migrated to Ubuntu Linux with systemd + Docker; updated `DEPLOY.md` and `docs/deployment.md` accordingly
 
