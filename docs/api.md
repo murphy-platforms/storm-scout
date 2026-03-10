@@ -13,6 +13,15 @@ Backend REST API for the Storm Scout weather advisory system.
 
 ### Health
 
+#### GET `/ping`
+Liveness probe with no database I/O. Used by process supervisors (PM2, Passenger) for keep-alive checks. Always returns 200 if the Node.js process is running.
+
+**Response:**
+```json
+{ "status": "ok" }
+```
+Note: Use `/health` for readiness checks — `/ping` does not verify database connectivity.
+
 #### GET `/health`
 
 System health check — database connectivity, ingestion state, data integrity.
@@ -139,7 +148,7 @@ Get offices currently impacted by weather advisories (Closed or At Risk status).
 
 #### GET `/api/advisories/active`
 
-Get all currently active weather advisories.
+Get all currently active weather advisories. Supports `?page=N&limit=N` pagination; returns full dataset by default for backward compatibility.
 
 **Query Parameters** (all optional):
 - `severity` — comma-separated: `Extreme`, `Severe`, `Moderate`, `Minor`
@@ -214,6 +223,85 @@ Get recently updated advisories (last 24 hours).
 #### GET `/api/advisories/stats`
 
 Aggregate advisory statistics by severity, state, and type.
+
+---
+
+### Trends
+
+#### GET `/api/trends`
+
+Advisory trend data for all offices that have advisory history. Enriched with office details.
+
+**Query Parameters**:
+- `days` — number of days of history (default: 7)
+
+**Response**: Array of trend objects for all offices (uses `getAllTrends()` vocabulary):
+
+> **Note on trend vocabulary:** The bulk endpoint uses `"increasing"` / `"decreasing"` / `"stable"` to describe advisory count direction. The per-office endpoint (`/api/trends/:officeId`) uses `"worsening"` / `"improving"` / `"stable"` to describe severity direction. These are two different analytical methods.
+
+```json
+[
+    {
+        "office_id": 1,
+        "trend": "increasing",
+        "first_count": 1,
+        "last_count": 3,
+        "data_points": 4,
+        "office": {
+            "id": 1,
+            "office_code": "99501",
+            "name": "Anchorage Main Post Office",
+            "city": "Anchorage",
+            "state": "AK"
+        }
+    }
+]
+```
+
+#### GET `/api/trends/:officeId`
+
+Advisory trend data for a specific office by numeric office ID.
+
+**Query Parameters**:
+- `days` — number of days of history (default: 7)
+
+**Response**:
+```json
+{
+    "office_id": 1,
+    "trend": "worsening",
+    "severity_change": 1,
+    "advisory_change": 2,
+    "first_severity": "Moderate",
+    "last_severity": "Severe",
+    "first_count": 1,
+    "last_count": 3,
+    "duration_hours": 6,
+    "history": [...],
+    "office": {
+        "id": 1,
+        "office_code": "99501",
+        "name": "Anchorage Main Post Office",
+        "city": "Anchorage",
+        "state": "AK"
+    }
+}
+```
+
+#### GET `/api/trends/:officeId/history`
+
+Full advisory history snapshots for a specific office.
+
+**Query Parameters**:
+- `days` — number of days (default: 7)
+
+**Response**:
+```json
+{
+    "office": { ... },
+    "history": [...]
+}
+```
 
 ---
 
@@ -318,6 +406,61 @@ Advisory trend for a specific office over the last N days.
 
 ---
 
+### Admin
+
+All admin endpoints require the `X-Api-Key` header with a valid API key.
+
+**Example request header**: `X-Api-Key: <your-api-key>`
+
+#### POST `/api/admin/pause-ingestion`
+
+Stops the ingestion scheduler and waits for any active ingestion cycle to complete (up to 60s). Returns 200 when idle, 409 if already paused, 503 if the active cycle does not settle within the timeout. Used by `deploy.sh` before rsync.
+
+**Responses**:
+- `200` — ingestion paused successfully
+- `409` — ingestion already paused
+- `503` — active ingestion cycle did not complete within the 60s timeout
+
+#### POST `/api/admin/resume-ingestion`
+
+Restarts the ingestion scheduler. Returns 200. Idempotent — safe to call even if ingestion is already running.
+
+**Response**: `200`
+
+#### GET `/api/admin/status`
+
+Returns current scheduler state.
+
+**Response**:
+```json
+{
+    "ingestion": {
+        "running": true,
+        "inProgress": false,
+        "consecutiveFailures": 0,
+        "intervalMinutes": 15
+    },
+    "snapshot": {
+        "running": true,
+        "inProgress": false,
+        "consecutiveFailures": 0,
+        "intervalHours": 6
+    }
+}
+```
+
+**Fields**:
+- `ingestion.running`: whether the ingestion scheduler is active
+- `ingestion.inProgress`: whether an ingestion cycle is currently running
+- `ingestion.consecutiveFailures`: consecutive failed ingestion cycles; alert if > 0
+- `ingestion.intervalMinutes`: configured ingestion interval (default: 15)
+- `snapshot.running`: whether the advisory history snapshot scheduler is active
+- `snapshot.inProgress`: whether a snapshot is currently being captured
+- `snapshot.consecutiveFailures`: consecutive failed snapshot cycles
+- `snapshot.intervalHours`: snapshot interval (always 6)
+
+---
+
 ### Utilities
 
 #### GET `/api/version`
@@ -325,7 +468,7 @@ Advisory trend for a specific office over the last N days.
 Current application version from `package.json`.
 
 ```json
-{ "version": "1.9.0", "releasedDate": "2026-03-08" }
+{ "version": "1.10.1", "releasedDate": "2026-03-08" }
 ```
 
 ---
@@ -339,11 +482,64 @@ API.getOffices()                        // GET /api/offices
 API.getImpactedOffices()               // GET /api/status/offices-impacted
 API.getOverview()                       // GET /api/status/overview
 API.getActiveAdvisories()              // GET /api/advisories/active
-API.getOfficeTrend(officeId, days)     // GET /api/history/office-trends/:id
+API.getTrends(days)                     // GET /api/trends
+API.getOfficeTrend(officeId, days)     // GET /api/trends/:id
+API.getOfficeHistory(officeId, days)   // GET /api/trends/:id/history
 API.getActiveNotices()                  // GET /api/notices/active
 API.getFilters()                        // GET /api/filters
 API.getAllAlertTypes()                   // GET /api/filters/types/all
 ```
+
+---
+
+## Response Envelopes
+
+### Standard response
+```json
+{ "success": true, "data": [...], "count": 42 }
+```
+
+### Paginated response
+Returned by `GET /api/advisories/active?page=N&limit=N`:
+```json
+{
+  "success": true,
+  "data": [...],
+  "count": 25,
+  "total": 342,
+  "pages": 14,
+  "page": 2,
+  "limit": 25
+}
+```
+
+### Error response
+```json
+{ "success": false, "error": "Description of what went wrong" }
+```
+
+### HTTP 503 — connection pool exhausted
+```json
+{ "success": false, "error": "Service temporarily unavailable" }
+```
+Response includes `Retry-After: 5` header. Retry after 5 seconds.
+
+### HTTP 429 — rate limit exceeded
+Response includes `Retry-After` header indicating when the window resets.
+
+---
+
+## Rate Limiting
+
+Three rate limit tiers are applied independently:
+
+| Tier | Limit | Window | Applies to | Configurable |
+|------|-------|--------|------------|--------------|
+| General | 30,000 requests | 60 minutes | All `/api/*` routes | `RATE_LIMIT_API_MAX` env var |
+| Write | 20 requests | 15 minutes | `/api/operational-status` write endpoints | `RATE_LIMIT_WRITE_MAX` env var |
+| Admin | API key required | — | `/api/admin/*` | — |
+
+The general limit of 30,000 req/60 min is designed to accommodate corporate NAT environments where many users share a single IP address (equivalent to ~500 req/min). When the limit is exceeded, the API returns HTTP 429 with a `Retry-After` header.
 
 ---
 
@@ -356,7 +552,7 @@ All endpoints return standard HTTP status codes:
 | 200 | Success |
 | 400 | Bad request / invalid parameters |
 | 404 | Resource not found |
-| 429 | Rate limit exceeded (500 req/15 min) |
+| 429 | Rate limit exceeded |
 | 500 | Internal server error |
 | 503 | DB pool exhausted — retry after 5 seconds (`Retry-After: 5` header set) |
 
@@ -365,16 +561,9 @@ Error body:
 { "success": false, "error": "Error message description" }
 ```
 
----
-
-## Rate Limiting
-
-- **General endpoints**: 30,000 requests / 60 minutes (corporate NAT-aware; configurable via `RATE_LIMIT_API_MAX`)
-- **Write operations**: 20 requests / 15 minutes
-
 `X-Data-Age` header is included on all `/api/*` responses — seconds since last successful NOAA ingestion.
 
 ---
 
 **Last Updated**: March 10, 2026
-**API Version**: 1.9.7
+**API Version**: 1.10.1
