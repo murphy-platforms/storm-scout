@@ -72,8 +72,8 @@ Check logs show varied client IPs, not just `127.0.0.1` or the server IP.
 ## Infrastructure Context
 
 ```
-Client → LiteSpeed (Proxy) → Node.js/Express
-         adds X-Forwarded-For    reads header with trust proxy
+Client → Reverse Proxy → Node.js/Express
+         adds X-Forwarded-For   reads header with trust proxy
 ```
 
 ## References

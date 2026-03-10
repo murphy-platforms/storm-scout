@@ -41,7 +41,7 @@ Thank you for your interest in contributing to Storm Scout! This guide covers ev
      -e MYSQL_ROOT_PASSWORD=root \
      -e MYSQL_DATABASE=storm_scout \
      -e MYSQL_USER=storm_scout \
-     -e MYSQL_PASSWORD=localpass \
+     -e MYSQL_PASSWORD=localdev \
      -p 3306:3306 mariadb:10.6
    ```
 

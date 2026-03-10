@@ -8,14 +8,13 @@ This documentation covers security controls, vulnerability tracking, and depende
 
 ## Contents
 
-### `/assessments`
-Point-in-time security assessments and vulnerability reports.
+### Security Guides
 
 | File | Date | Type | Status |
 |------|------|------|--------|
-| `2026-02-15-security-assessment.html` | Feb 15, 2026 | Application Security Review | Active |
 | `SRI.md` | Feb 15, 2026 | Subresource Integrity Guide | Active |
 | `TRUST-PROXY.md` | Feb 15, 2026 | Trust Proxy Configuration | Active |
+| `SECURE-TEMPLATES.md` | Feb 15, 2026 | XSS Prevention Guide | Active |
 
 ### Active Vulnerability Tracking
 
@@ -77,7 +76,7 @@ The following secrets require periodic rotation. "Zero-downtime" rotation means 
 **Zero-downtime rotation steps:**
 1. Create the new password in the database **before** updating the app:
    ```sql
-   ALTER USER 'storm_scout'@'localhost' IDENTIFIED BY '<new-password>';
+   ALTER USER 'your_db_user'@'localhost' IDENTIFIED BY '<new-password>';
    FLUSH PRIVILEGES;
    ```
 2. Update `DB_PASSWORD` in `backend/.env.production`.
@@ -102,7 +101,7 @@ This documentation is publicly available as part of the open-source Storm Scout 
 ## Related Resources
 
 - **GitHub Issues**: Security findings are tracked as GitHub Issues with the `security` label
-- **SECURITY.md**: See `/.github/SECURITY.md` for vulnerability reporting procedures
+- **SECURITY.md**: See `/SECURITY.md` for vulnerability reporting procedures
 
 ## Document Retention
 
