@@ -14,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [1.10.1] - 2026-03-10
+
+### Security
+
+- **#119 CVE-2026-27903 (minimatch ReDoS)** — `qs` dependency pinned to `6.14.2` via `package.json` `overrides` block; same pin already applied for CVE-2026-2391 (prototype pollution) so no new `npm install` step required; `overrideReasons` field added to `package.json` documenting both CVEs and the review-and-remove trigger; CVE tracked in `docs/security/README.md`
+
+### Added
+
+- **#120 Architecture & scale documentation** — `docs/ARCHITECTURE.md` created; documents system overview diagram, current tested scale (300 locations, 40-connection pool, 80 KB gzipped advisory response), scale ceilings by component (UI, backend/API, database, infrastructure), five re-evaluation triggers, minimum required changes before >500 locations, planned architectural work, and key file index; all ceiling and pagination claims verified against source code
+
+### Changed
+
+- **docs/security/README.md** — Added "Active Vulnerability Tracking" row for CVE-2026-27903; added "Dependency Overrides" section with `npm ls qs` maintenance procedure; added "Secret Rotation Policy" with zero-downtime steps for `API_KEY` (90-day) and `DB_PASSWORD` (180-day); added optional API key rotation note (`STATE_EMERGENCY_API_KEY`, `FEMA_API_KEY`); added Rotation Log table
+
 ## [1.10.0] - 2026-03-10
 
 ### Added
