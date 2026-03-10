@@ -1,13 +1,13 @@
 # Storm Scout
 
-**An office-focused weather advisory dashboard for USPS Operations teams**
+**An office-focused weather advisory dashboard for operations teams**
 
-Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which USPS offices may be impacted and support go/no-go decisions during severe weather events.
+Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which offices may be impacted during severe weather events.
 
 ## ✨ Features
 
 ### Core Functionality
-- **300 USPS Locations** - Monitors offices across all 50 states and US territories, identified by 5-digit zip codes
+- **300 Locations** - Monitors offices across all 50 states and US territories, identified by 5-digit zip codes
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes
@@ -82,7 +82,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ## Quick Start
 
-> **Terminology:** Throughout this documentation, "USPS locations" and "offices" refer to the same 300 USPS operational facilities. The codebase and API use "office" consistently; "USPS location" appears in user-facing UI copy.
+> **Terminology:** Throughout this documentation, "locations" and "offices" refer to the same 300 monitored facilities. The codebase and API use "office" consistently.
 
 ### Prerequisites
 
@@ -131,7 +131,7 @@ cp .env.example .env
 # Initialize database with schema
 npm run init-db
 
-# Load USPS office data (run import script first, then seed)
+# Load office data (run import script first, then seed)
 node src/scripts/import-usps-offices.js /path/to/usps-locations.csv
 npm run seed-db
 ```
@@ -140,13 +140,13 @@ npm run seed-db
 
 | Column | Required | Description |
 |--------|----------|-------------|
-| `zip` | Yes | 5-digit USPS zip code (becomes `site_code`) |
+| `zip` | Yes | 5-digit zip code (becomes `site_code`) |
 | `name` | Yes | Office name |
 | `city` | Yes | City name |
 | `state` | Yes | 2-letter state code |
 | `latitude` | Yes | Decimal latitude |
 | `longitude` | Yes | Decimal longitude |
-| `region` | Optional | USPS region name |
+| `region` | Optional | Region name |
 | `county` | Optional | County name (used for UGC matching) |
 | `ugc_codes` | Optional | JSON array string, e.g. `["TXZ123","TXC456"]` |
 | `cwa` | Optional | NWS County Warning Area code |
@@ -191,8 +191,8 @@ storm-scout/
 │   │   ├── models/      # Data access layer (office, advisory, observation, etc.)
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA alert + observation fetching
-│   │   ├── scripts/     # Maintenance scripts (USPS import, station mapping)
-│   │   └── data/        # Schema, offices.json (300 USPS locations), migrations/
+│   │   ├── scripts/     # Maintenance scripts (office import, station mapping)
+│   │   └── data/        # Schema, offices.json (300 locations), migrations/
 │   ├── package.json
 │   └── README.md
 │
@@ -221,7 +221,7 @@ storm-scout/
 **Backend:** Node.js 18+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
 **Middleware:** node-cache (caching), compression (gzip), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (94 alert types, 223 observation stations), 300 USPS locations
+**Data:** NOAA Weather API (94 alert types, 223 observation stations), 300 office locations
 **Deployment:** Ubuntu Linux, systemd user service, Docker (MariaDB)
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
@@ -252,7 +252,7 @@ npm start
 - `GET /health` - Readiness and operational health check
 - `GET /api/status/overview` - Dashboard statistics (with filter-aware frontend calculations)
 - `GET /api/advisories/active` - All active advisories. Supports `?page=N&limit=N` pagination; returns full dataset by default for backward compatibility.
-- `GET /api/offices` - All 300 USPS offices
+- `GET /api/offices` - All 300 offices
 - `GET /api/status/offices-impacted` - Offices with Closed or At Risk status
 - `GET /api/filters` - Available filter presets
 - `GET /api/filters/types/all` - All NOAA alert types by impact level

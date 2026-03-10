@@ -272,7 +272,7 @@ async function ingestNOAAData() {
         
         try {
           // Update ONLY weather_impact_level, do NOT change operational_status
-          // Operational status is set manually by IMT/Operations
+          // Operational status is set manually by operations team
           await OfficeStatusModel.upsert(officeId, {
             weather_impact_level: weatherImpactLevel,
             reason: reason,

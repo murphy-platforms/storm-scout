@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
  * General API rate limiter
  * 30,000 requests per 60-minute window per IP.
  * The 60-minute window (vs. the previous 15-minute window) accommodates
- * USPS corporate environments where many users share a single NAT IP address.
+ * corporate environments where many users share a single NAT IP address.
  * The per-minute allowance (500 req/min) is unchanged from the prior config
  * (5000/15min = 333/min → 30000/60min = 500/min), providing the same
  * sustained-rate protection with a larger burst tolerance for NAT clients.

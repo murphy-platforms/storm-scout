@@ -4,7 +4,7 @@ Documentation of the VTEC (Valid Time Event Code) based deduplication system imp
 
 ## Problem Statement
 
-NOAA weather alerts were appearing as duplicates in the system when they were updated with different action codes (NEW → CON → EXT) despite representing the same underlying weather event. This created confusion for IMT and Operations teams trying to understand the current threat landscape.
+NOAA weather alerts were appearing as duplicates in the system when they were updated with different action codes (NEW → CON → EXT) despite representing the same underlying weather event. This created confusion for operations teams trying to understand the current threat landscape.
 
 ### Example of the Problem
 
@@ -165,7 +165,7 @@ static async createOrUpdate(advisoryData) {
 
 ### Action Codes
 
-The `vtec_action` field captures the lifecycle status for IMT/Operations visibility:
+The `vtec_action` field captures the lifecycle status for operations visibility:
 
 | Code | Meaning | Description |
 |------|---------|-------------|
@@ -292,11 +292,11 @@ ORDER BY count DESC;
 
 ## Benefits
 
-### For IMT/Operations Teams
+### For Operations Teams
 
 1. **Clear Event Tracking**: See when alerts are new, continuing, or extended
 2. **Accurate Counts**: Office advisory counts reflect unique events, not status updates
-3. **Decision Support**: Understand alert lifecycle for better go/no-go decisions
+3. **Decision Support**: Understand alert lifecycle for better operational decisions
 4. **Reduced Confusion**: No more duplicate entries for the same weather event
 
 ### Technical Benefits

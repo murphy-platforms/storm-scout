@@ -1,6 +1,6 @@
         /**
          * page-offices.js
-         * Offices page — loads all USPS office locations, applies advisory data
+         * Offices page — loads all office locations, applies advisory data
          * and weather observations, renders a filterable sortable card grid.
          *
          * Key responsibilities:
@@ -131,7 +131,7 @@
         function renderOffices(offices) {
             const container = document.getElementById('officesContainer');
             if (offices.length === 0) {
-                container.innerHTML = renderEmptyHtml('building', 'No offices currently impacted', 'No USPS locations are affected by active weather advisories.');
+                container.innerHTML = renderEmptyHtml('building', 'No offices currently impacted', 'No monitored locations are affected by active weather advisories.');
                 return;
             }
 
@@ -275,7 +275,7 @@
          * Read URL query parameters and pre-populate filter controls.
          * Supports:
          *   ?office=      - Pre-fill the search box with an office code
-         *   ?site=        - Legacy alias for ?office= (from pre-USPS links)
+         *   ?site=        - Legacy alias for ?office= (legacy alias)
          *   ?weather_impact= - Pre-select the weather-impact dropdown and show the
          *                       active-filter banner so users know filtering is active
          *

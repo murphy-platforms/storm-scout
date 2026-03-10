@@ -18,7 +18,7 @@ function toMySQLDatetime(isoString) {
 }
 
 /**
- * Get severity based on internal alert type category (IMT operational alignment)
+ * Get severity based on internal alert type category (operational alignment)
  * Maps our curated categories to severity levels:
  * - CRITICAL → Extreme (🔴 RED)
  * - HIGH → Severe (🟠 ORANGE)  
@@ -177,7 +177,7 @@ function normalizeNOAAAlert(noaaAlert) {
   
   return {
     advisory_type: alertType,
-    // Use internal category-based severity (IMT operational alignment)
+    // Use internal category-based severity (operational alignment)
     // instead of NOAA's raw severity field
     severity: getSeverityFromAlertType(alertType),
     status: properties.status === 'Actual' ? 'active' : 'expired',

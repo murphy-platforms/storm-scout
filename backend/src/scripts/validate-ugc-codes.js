@@ -328,7 +328,7 @@ async function main() {
     console.log('✓ No cross-state offices detected\n');
   } else {
     console.log(`ℹ ${crossStateSites.length} offices have UGC codes from different states:\n`);
-    console.log('  (This is normal for USPS offices located across state lines)\n');
+    console.log('  (This is normal for offices located across state lines)\n');
     
     for (const office of crossStateSites) {
       console.log(`  • ${office.site_code} "${office.name}" (${site.listed_state})`);
