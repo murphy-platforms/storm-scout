@@ -155,7 +155,7 @@ docs: add JSDoc to page-advisories.js (closes #128)
 
 ## Project Context
 
-Storm Scout is a weather advisory dashboard monitoring 300 office locations across all 50 US states. It ingests NOAA weather advisories every 15 minutes, matches them to offices by UGC zone codes, and surfaces operational impact through a browser-based dashboard.
+Storm Scout is a weather advisory dashboard monitoring 1610 office locations across all 50 US states. It ingests NOAA weather advisories every 15 minutes, matches them to offices by UGC zone codes, and surfaces operational impact through a browser-based dashboard.
 
 The project is designed as a reference implementation demonstrating:
 - Production-quality Node.js + Express API patterns

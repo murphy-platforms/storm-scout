@@ -73,7 +73,7 @@ Dashboard summary statistics.
 {
     "success": true,
     "data": {
-        "total_offices": 300,
+        "total_offices": 1682,
         "offices_with_advisories": 38,
         "total_active_advisories": 48,
         "advisories_by_severity": [
@@ -97,13 +97,13 @@ Dashboard summary statistics.
 
 #### GET `/api/offices`
 
-Get all 300 office locations.
+Get all 1560 office locations.
 
 **Response**:
 ```json
 {
     "success": true,
-    "count": 300,
+    "count": 1502,
     "data": [
         {
             "id": 1,

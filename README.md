@@ -9,7 +9,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 ## ✨ Features
 
 ### Core Functionality
-- **300 Locations** - Monitors offices across all 50 states and US territories, identified by 5-digit zip codes
+- **1299 Locations** - Monitors offices across all 50 states and US territories, identified by 5-digit zip codes
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes
@@ -84,7 +84,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ## Quick Start
 
-> **Terminology:** Throughout this documentation, "locations" and "offices" refer to the same 300 monitored facilities. The codebase and API use "office" consistently.
+> **Terminology:** Throughout this documentation, "locations" and "offices" refer to the same 1412 monitored facilities. The codebase and API use "office" consistently.
 
 ### Prerequisites
 
@@ -194,7 +194,7 @@ storm-scout/
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA alert + observation fetching
 │   │   ├── scripts/     # Maintenance scripts (office import, station mapping)
-│   │   └── data/        # Schema, offices.json (300 locations), migrations/
+│   │   └── data/        # Schema, offices.json (1343 locations), migrations/
 │   ├── package.json
 │   └── README.md
 │
@@ -223,7 +223,7 @@ storm-scout/
 **Backend:** Node.js 18+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
 **Middleware:** node-cache (caching), compression (gzip), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (94 alert types, 223 observation stations), 300 office locations
+**Data:** NOAA Weather API (94 alert types, 1140 observation stations), 1393 office locations
 **Deployment:** Ubuntu Linux, systemd user service, Docker (MariaDB)
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
@@ -254,7 +254,7 @@ npm start
 - `GET /health` - Readiness and operational health check
 - `GET /api/status/overview` - Dashboard statistics (with filter-aware frontend calculations)
 - `GET /api/advisories/active` - All active advisories. Supports `?page=N&limit=N` pagination; returns full dataset by default for backward compatibility.
-- `GET /api/offices` - All 300 offices
+- `GET /api/offices` - All 1496 offices
 - `GET /api/status/offices-impacted` - Offices with Closed or At Risk status
 - `GET /api/filters` - Available filter presets
 - `GET /api/filters/types/all` - All NOAA alert types by impact level
