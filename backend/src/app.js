@@ -231,7 +231,7 @@ app.get('/api', (req, res) => {
 });
 
 // 404 handler for API routes
-app.use('/api/*', (req, res) => {
+app.use('/api/*path', (req, res) => {
   res.status(404).json({
     success: false,
     error: 'API endpoint not found',
@@ -259,7 +259,7 @@ app.use((err, req, res, next) => {
 // Serve index.html for all other non-API routes (SPA fallback)
 // This must be last to avoid catching API routes
 if (config.staticFiles.path) {
-  app.get('*', (req, res) => {
+  app.get('*path', (req, res) => {
     const indexPath = path.resolve(config.staticFiles.path, 'index.html');
     res.sendFile(indexPath);
   });
