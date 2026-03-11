@@ -78,7 +78,7 @@ This creates all tables with proper indexes.
 npm run seed-db
 ```
 
-This loads all 229 US testing center locations into the database.
+This loads all 1125 US testing center locations into the database.
 
 ### 6. Start the Server
 
@@ -177,7 +177,7 @@ Cleanup features:
 
 Currently implemented:
 - **NOAA Weather API** - 80+ alert types covering all official weather alerts
-- **NWS Observation Stations** - Current conditions from 223 unique stations mapped to 229 sites by lat/lon
+- **NWS Observation Stations** - Current conditions from 1279 unique stations mapped to 1016 sites by lat/lon
 - **Alert Taxonomy** - 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
 - **UPSERT Operations** - Prevents duplicate advisories using unique external_id index
 - **Rate Limiting** - 500ms between NOAA API requests to prevent throttling
@@ -243,7 +243,7 @@ backend/
 │   └── data/              # Static data and schema
 │       ├── schema.sql     # Full schema with all columns
 │       ├── migrations/    # SQL migration files
-│       └── sites.json     # 229 testing centers
+│       └── sites.json     # 1281 testing centers
 ├── package.json
 └── README.md
 ```

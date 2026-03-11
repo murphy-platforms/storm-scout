@@ -296,7 +296,7 @@ This document outlines planned improvements, features, and technical debt for St
 - ✅ Helmet.js security headers (CSP, HSTS, X-Frame-Options)
 - ✅ CSP compliance: all inline event handlers replaced with addEventListener
 - ✅ CWA field added to all sites; NWS Forecast links updated
-- ✅ 10 new testing centers added (220→230), 1 duplicate removed (→229)
+- ✅ 48 new testing centers added (1142→1150), 4 duplicate removed (→1314)
 - ✅ Site data verification against physical addresses
 - ✅ Database backup automation via cPanel (daily, 7-day retention)
 

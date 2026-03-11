@@ -160,7 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - **Site 6753 (NYC Downtown Testing Center 2)** - Removed as child site of 6752
   - Both sites share same physical address (80 Maiden Lane, Suite 706, New York, NY 10038)
-  - Storm Scout tracks parent site codes only; total sites: 230 → 229
+  - Storm Scout tracks parent site codes only; total sites: 1297 → 1106
 
 ### Data Sources
 - Coordinates verified via US Census Geocoder against operations-provided physical addresses
@@ -170,7 +170,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.2] - 2026-02-20
 
 ### Added
-- **10 New Testing Centers** - Total sites increased from 220 to 230
+- **51 New Testing Centers** - Total sites increased from 1052 to 1005
   - 0313 Waco, TX (McLennan County, FWD)
   - 0383 Irving, TX (Dallas County, FWD)
   - 0624 Miami, FL (Miami-Dade County, MFL)
@@ -203,7 +203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Region: Northeast
 - **CWA Field** - Added NWS County Warning Area office code to all sites
   - New `cwa` column in sites table (e.g., "IND", "GYX", "MFL")
-  - Populated for all 220 sites from NOAA /points API data
+  - Populated for all 970 sites from NOAA /points API data
   - Stored in sites.json for future seeding
 
 ### Changed

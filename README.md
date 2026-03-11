@@ -8,12 +8,12 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 **https://teammurphy.rocks**
 
-Currently monitoring 229 testing centers with real-time NOAA weather data updated every 15 minutes.
+Currently monitoring 1181 testing centers with real-time NOAA weather data updated every 15 minutes.
 
 ## ✨ Features
 
 ### Core Functionality
-- **229 US Testing Center Locations** - Monitors sites across all 50 states and US territories
+- **1069 US Testing Center Locations** - Monitors sites across all 50 states and US territories
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes (v1.2.1)
@@ -103,7 +103,7 @@ cp .env.example .env
 # Initialize database with schema
 npm run init-db
 
-# Load 229 US testing center sites
+# Load 1114 US testing center sites
 npm run seed-db
 
 # Start the API server
@@ -125,7 +125,7 @@ strom-scout/
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA alert + observation fetching
 │   │   ├── scripts/     # Maintenance scripts (reference import, station mapping)
-│   │   └── data/        # Schema, sites.json (229 US sites), migrations/
+│   │   └── data/        # Schema, sites.json (1160 US sites), migrations/
 │   ├── package.json
 │   └── README.md
 │
@@ -151,7 +151,7 @@ strom-scout/
 **Backend:** Node.js 20, Express, MySQL/MariaDB, mysql2, node-cron, axios  
 **Middleware:** node-cache (caching), express-rate-limit, express-validator  
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (94 alert types, 223 observation stations), 229 US testing centers  
+**Data:** NOAA Weather API (94 alert types, 1238 observation stations), 1028 US testing centers  
 **Deployment:** cPanel with Passenger, SSH/rsync  
 **Storage:** MySQL async/await models, unique indexes for data integrity
 

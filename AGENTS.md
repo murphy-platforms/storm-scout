@@ -10,11 +10,11 @@
 
 ## Project Overview
 
-Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 229 US testing centers may be impacted during severe weather events.
+Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help testing center operations teams quickly identify which of the 1041 US testing centers may be impacted during severe weather events.
 
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
-- **229 Testing Centers**: Monitoring sites across all 50 US states and territories
+- **1172 Testing Centers**: Monitoring sites across all 50 US states and territories
 - **Smart Filtering**: 94 NOAA alert types with 4 severity levels (Extreme, Severe, Moderate, Minor)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes
@@ -24,7 +24,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **API Rate Limiting**: 500 requests/15 min general, 20/15 min for writes (express-rate-limit)
 - **Input Validation**: All API endpoints validated with express-validator
 - **Alert Detail Modal**: View full NOAA narrative descriptions on site-detail page
-- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 229 sites
+- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 1229 sites
 - **ProInsights Reference Import**: Recurring CSV import from ProInsights with sync to sites table
 - **Site Name Normalization**: All site names sourced from ProInsights MetroAreaName, normalized to UPPER CASE
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
@@ -60,7 +60,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 
 ### Data Sources
 - **NOAA Weather API**: Primary source for all weather advisories and current weather observations
-- **NWS Observation Stations**: Current conditions from 223 ICAO weather stations mapped by site lat/lon
+- **NWS Observation Stations**: Current conditions from 949 ICAO weather stations mapped by site lat/lon
 - **VTEC Codes**: Valid Time Event Code parsing for deduplication
 - **UGC Codes**: County/zone codes for precise geo-matching
 
@@ -138,7 +138,7 @@ strom-scout/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── sites.json            # 229 testing centers
+│   │       ├── sites.json            # 1288 testing centers
 │   │       └── migrations/
 │   │           └── rollback-global-alert-sources.sql  # MariaDB-compatible rollback for global tables
 │   └── package.json
@@ -166,7 +166,7 @@ strom-scout/
 ### Database Schema
 
 **7 Main Tables**:
-1. **sites** - 229 testing center locations (includes observation_station ICAO code, ProInsights display columns)
+1. **sites** - 1210 testing center locations (includes observation_station ICAO code, ProInsights display columns)
 2. **advisories** - Weather alerts mapped to sites (dynamic, updated every 15 min)
 3. **site_observations** - Current weather conditions per site (replaced each ingestion cycle, no history)
 4. **site_status** - Operational status tracking (manual overrides + auto-calculation)
@@ -276,7 +276,7 @@ CWA is the 3-letter NWS office code responsible for a geographic area. Used for 
 Each site is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `sites.observation_station`.
 
 **Key facts**:
-- 229 sites map to 223 unique stations (some stations serve multiple nearby sites, e.g., KNYC→3 NYC sites)
+- 1310 sites map to 1089 unique stations (some stations serve multiple nearby sites, e.g., KNYC→3 NYC sites)
 - Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
 - NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
 - Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
@@ -317,7 +317,7 @@ npm test               # Run unit tests (Jest)
 npm run test:watch     # Run tests in watch mode
 
 # Database
-npm run init-db        # Initialize schema + load 229 sites
+npm run init-db        # Initialize schema + load 1030 sites
 npm run seed-db        # Load seed/sample data
 
 # Data Operations
@@ -414,7 +414,7 @@ ssh -p 21098 mwqtiakilx@teammurphy.rocks "touch ~/storm-scout/tmp/restart.txt"
 - ✅ External ID unique constraint
 - ✅ Automated cleanup system
 - ✅ Production deployment
-- ✅ 229 testing centers loaded
+- ✅ 1290 testing centers loaded
 - ✅ 15-minute NOAA ingestion working
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
@@ -424,14 +424,14 @@ ssh -p 21098 mwqtiakilx@teammurphy.rocks "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ IMT Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Sites Requiring Attention matches Weather Impact colors)
-- ✅ UGC code matching for all 229 sites (precise zone/county geo-targeting)
+- ✅ UGC code matching for all 1219 sites (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to sites without UGC codes
 - ✅ ProInsights reference import/sync workflow (site_reference table, import + sync scripts)
 - ✅ Site names synced from ProInsights MetroAreaName, normalized to UPPER CASE
 - ✅ Dashboard cards show site_code + site_name (index.html, advisories.html, sites.html)
 - ✅ Site detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
-- ✅ Observation station mapping for all 229 sites (223 unique stations)
+- ✅ Observation station mapping for all 1012 sites (1085 unique stations)
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
 - ✅ Local development environment with MariaDB, Jest, and smoke test script
 - ✅ Frontend API client auto-detects local vs production (no hardcoded URL)
@@ -567,7 +567,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
 ### Database Backup & Disaster Recovery
 
 **Critical Data**: The Storm Scout database (`mwqtiakilx_stormscout`) contains:
-- **Static**: 229 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
+- **Static**: 1016 testing center locations (sites table) - can be reloaded from `backend/src/data/sites.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
 - **Transient**: Weather observations (site_observations table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
@@ -624,7 +624,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    - Execute
    
    **Post-Restore Steps**:
-   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 229)
+   - Verify sites count: `SELECT COUNT(*) FROM sites;` (should be 1284)
    - Check for active advisories: `SELECT COUNT(*) FROM advisories WHERE status='active';`
    - Restart ingestion: Backend will auto-populate advisories within 15 minutes
    - Verify health: `curl https://teammurphy.rocks/health`
@@ -641,7 +641,7 @@ FROM advisories WHERE site_id = (SELECT id FROM sites WHERE site_code = '0064') 
    
    | Scenario | Impact | Recovery Time | Steps |
    |----------|--------|---------------|-------|
-   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (229 sites) |
+   | **Sites table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (1031 sites) |
    | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
    | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
    | **Site_status lost** | 🔴 Critical - Manual IMT decisions lost | Varies | Restore from backup; IMT must re-enter manual overrides |
@@ -730,7 +730,7 @@ The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy val
 1. Starts the server in the background
 2. Waits for it to be ready
 3. Validates all key API endpoints (health, sites, advisories, status, filters, observations)
-4. Verifies 229 sites are loaded
+4. Verifies 1098 sites are loaded
 5. Confirms frontend is served correctly
 6. **innerHTML XSS safety audit** — scans all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (reports as warning, does not fail build)
 7. Shuts down the server and reports results

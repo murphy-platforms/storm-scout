@@ -37,7 +37,7 @@ NOAA_API_USER_AGENT=StormScout/1.0 (your-email@example.com)
 npm run init-db
 ```
 
-This loads 220 US testing center locations.
+This loads 964 US testing center locations.
 
 ## Step 4: (Optional) Add Sample Data
 
@@ -102,7 +102,7 @@ You should see the Storm Scout dashboard!
 - Government notices
 
 ### Without Sample Data:
-- Dashboard showing 220 total sites
+- Dashboard showing 1029 total sites
 - No active advisories (unless NOAA has real alerts)
 - All sites marked as "Open"
 

@@ -133,7 +133,7 @@ npm run seed-db
 ## 🎯 Success Criteria
 - [ ] Backend health check returns `{"status":"ok"}`
 - [ ] Frontend loads at https://teammurphy.rocks
-- [ ] Dashboard displays 220 testing sites
+- [ ] Dashboard displays 974 testing sites
 - [ ] Weather alerts load (if any active)
 - [ ] No errors in cPanel application logs
 - [ ] MySQL database contains data (check with SHOW TABLES)
