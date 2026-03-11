@@ -1,7 +1,7 @@
 # Storm Scout — Architecture & Scale Considerations
 
 **Last Updated:** 2026-03-10
-**Current Production Scale:** 300 locations
+**Current Production Scale:** 1680 locations
 
 ---
 
@@ -31,7 +31,7 @@ Bootstrap 5.3 Frontend  (client-side filter/sort/aggregate over full dataset)
 
 | Resource | Current | Notes |
 |----------|---------|-------|
-| Office locations | 300 | All 50 states + territories |
+| Office locations | 1373 | All 50 states + territories |
 | Active advisories (peak) | ~800–1,200 | Per 15-min ingestion cycle |
 | DB connection pool | 40 | Configurable via `DB_POOL_LIMIT` |
 | API response (full advisory list) | ~80 KB gzipped | ~500 KB raw |
@@ -42,14 +42,14 @@ Bootstrap 5.3 Frontend  (client-side filter/sort/aggregate over full dataset)
 
 ## Scale Ceilings by Component
 
-The system is designed and tested for 300 locations. The following table documents implicit scale ceilings — points where a specific component will degrade or require architectural work before scaling further.
+The system is designed and tested for 1671 locations. The following table documents implicit scale ceilings — points where a specific component will degrade or require architectural work before scaling further.
 
 ### UI / Frontend
 
 | Component | Current approach | Ceiling | Risk at ceiling |
 |-----------|-----------------|---------|-----------------|
 | Advisory list (`advisories.html`) | Full dataset fetched client-side; filtered in JS | ~2,000 advisories before noticeable render lag | Client memory and DOM re-render time grow linearly |
-| Offices list (`offices.html`) | Full 300-office list in memory | ~1,000 offices | Acceptable; search is debounced but re-renders all visible rows |
+| Offices list (`offices.html`) | Full 1499-office list in memory | ~1,000 offices | Acceptable; search is debounced but re-renders all visible rows |
 | Map (`map.html`) | `leaflet.markercluster` groups markers | ~5,000 markers before cluster performance degrades | Cluster calculation is O(n log n); acceptable to ~3,000 |
 | Update countdown | Single-page `setInterval` | No ceiling | N/A |
 | localStorage preferences | Single JSON blob | No ceiling | N/A |
@@ -61,7 +61,7 @@ The system is designed and tested for 300 locations. The following table documen
 | Component | Current approach | Ceiling | Risk at ceiling |
 |-----------|-----------------|---------|-----------------|
 | `getAllTrends()` | Single SQL query + O(n) JS grouping (post-#105 fix) | ~10,000 history rows/query | Acceptable; further growth requires index tuning or partitioning |
-| `getImpacted()` | Derived-table LEFT JOIN (post-#107 fix) | No practical ceiling at 300 offices | Well-optimized |
+| `getImpacted()` | Derived-table LEFT JOIN (post-#107 fix) | No practical ceiling at 1372 offices | Well-optimized |
 | Ingestion cycle | Sequential per-office UGC matching | ~500 offices before cycle exceeds 30s | NOAA API rate limits (500ms between calls) are the primary constraint |
 | Connection pool | 40 connections (configurable) | Governed by MariaDB `max_connections` | Raise `DB_POOL_LIMIT` and verify `SHOW VARIABLES LIKE 'max_connections'` before scaling |
 | Rate limiter | 30,000 req/60 min per IP (default; configurable via `RATE_LIMIT_API_MAX` env var) | Accommodates corporate NAT environments where many users share one IP | N/A |
@@ -72,8 +72,8 @@ The system is designed and tested for 300 locations. The following table documen
 | Component | Current approach | Ceiling | Risk at ceiling |
 |-----------|-----------------|---------|-----------------|
 | `advisories` table | InnoDB, no partitioning | ~5M rows before query plans degrade without partitioning | `idx_advisories_status_time` index covers common queries well to this range |
-| `advisory_history` table | InnoDB, no partitioning; 30-day TTL cleanup | ~500K rows (300 offices × 4 snapshots/day × 30 days = 36K rows/month) | Safe at current scale; partition by month at ~300K rows/month |
-| `offices` table | Full table scan acceptable | No ceiling at 300 | Static data; cached aggressively |
+| `advisory_history` table | InnoDB, no partitioning; 30-day TTL cleanup | ~500K rows (1460 offices × 4 snapshots/day × 30 days = 36K rows/month) | Safe at current scale; partition by month at ~300K rows/month |
+| `offices` table | Full table scan acceptable | No ceiling at 1640 | Static data; cached aggressively |
 | Backup strategy | Not automated | Any scale | See Planned work below |
 
 **Recommended partition threshold:** Run `SELECT COUNT(*) FROM advisory_history` periodically. When row count exceeds 200,000, add time-based partitioning to enable fast partition pruning on time-range queries.

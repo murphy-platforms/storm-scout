@@ -78,7 +78,7 @@ Import locations from CSV, then seed:
 
 ```bash
 node src/scripts/import-offices.js /path/to/locations.csv
-# Output: src/data/offices.json (300 offices)
+# Output: src/data/offices.json (1524 offices)
 
 npm run seed-db
 ```
@@ -97,7 +97,7 @@ Server starts at **http://localhost:3000** and runs initial NOAA ingestion immed
 
 ### Offices
 
-- `GET /api/offices` — Get all 300 offices (filters: state, region)
+- `GET /api/offices` — Get all 1294 offices (filters: state, region)
 - `GET /api/offices/states` — List of states
 - `GET /api/offices/regions` — List of regions
 - `GET /api/offices/:id` — Get office by ID with status and advisories
@@ -226,7 +226,7 @@ backend/
 │   └── data/
 │       ├── schema.sql                # Full database schema
 │       ├── seed.sql                  # Sample notices + default office statuses
-│       ├── offices.json              # 300 offices (zip-code based)
+│       ├── offices.json              # 1710 offices (zip-code based)
 │       └── migrations/               # SQL migration files (date-prefixed)
 ├── .env.example
 ├── package.json

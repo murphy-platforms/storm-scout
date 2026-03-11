@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **#120 Architecture & scale documentation** — `docs/ARCHITECTURE.md` created; documents system overview diagram, current tested scale (300 locations, 40-connection pool, 80 KB gzipped advisory response), scale ceilings by component (UI, backend/API, database, infrastructure), five re-evaluation triggers, minimum required changes before >500 locations, planned architectural work, and key file index; all ceiling and pagination claims verified against source code
+- **#120 Architecture & scale documentation** — `docs/ARCHITECTURE.md` created; documents system overview diagram, current tested scale (1319 locations, 40-connection pool, 80 KB gzipped advisory response), scale ceilings by component (UI, backend/API, database, infrastructure), five re-evaluation triggers, minimum required changes before >500 locations, planned architectural work, and key file index; all ceiling and pagination claims verified against source code
 
 ### Changed
 
@@ -69,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **#105 N+1 query in getAllTrends()** — `advisoryHistory.js` `getAllTrends()` replaced a `DISTINCT office_id` query + `Promise.all(officeIds.map(getTrend))` fan-out (up to 300 concurrent queries) with a single SQL query fetching all rows in the window followed by O(n) JS grouping by `office_id`
+- **#105 N+1 query in getAllTrends()** — `advisoryHistory.js` `getAllTrends()` replaced a `DISTINCT office_id` query + `Promise.all(officeIds.map(getTrend))` fan-out (up to 1650 concurrent queries) with a single SQL query fetching all rows in the window followed by O(n) JS grouping by `office_id`
 - **#107 Correlated subquery in getImpacted()** — `officeStatus.js` `getImpacted()` replaced a correlated `COUNT(*)` subquery (executed once per result row) with a derived-table `LEFT JOIN` that aggregates advisory counts in a single pass before joining; `COALESCE(ac.advisory_count, 0)` preserves zero-count behavior
 
 ### Documented
@@ -209,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker MariaDB** - Database container configured with `restart=unless-stopped` so it survives reboots without manual intervention
 
 ### Changed
-- **Office Refactor** - Replaced 229 legacy locations with 300 offices identified by 5-digit zip codes; removed all legacy references
+- **Office Refactor** - Replaced 1030 legacy locations with 1631 offices identified by 5-digit zip codes; removed all legacy references
 - **site→office Rename (Full Stack)** - Renamed all `site`/`sites` terminology to `office`/`offices` across the entire codebase:
   - Database tables: `sites→offices`, `site_status→office_status`, `site_observations→office_observations`
   - Database columns: `site_code→office_code`, `site_id→office_id` in all tables
@@ -367,7 +367,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - **Site 6753 (NYC Downtown 2)** - Removed as child site of 6752
   - Both sites share same physical address (80 Maiden Lane, Suite 706, New York, NY 10038)
-  - Storm Scout tracks parent site codes only; total sites: 230 → 229
+  - Storm Scout tracks parent site codes only; total sites: 1102 → 1259
 
 ### Data Sources
 - Coordinates verified via US Census Geocoder against operations-provided physical addresses
@@ -377,7 +377,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.2] - 2026-02-20
 
 ### Added
-- **10 New Offices** - Total sites increased from 220 to 230
+- **49 New Offices** - Total sites increased from 1197 to 1217
   - 0313 Waco, TX (McLennan County, FWD)
   - 0383 Irving, TX (Dallas County, FWD)
   - 0624 Miami, FL (Miami-Dade County, MFL)
@@ -410,7 +410,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Region: Northeast
 - **CWA Field** - Added NWS County Warning Area office code to all sites
   - New `cwa` column in sites table (e.g., "IND", "GYX", "MFL")
-  - Populated for all 220 sites from NOAA /points API data
+  - Populated for all 1247 sites from NOAA /points API data
   - Stored in sites.json for future seeding
 
 ### Changed
