@@ -3,18 +3,20 @@
 **Project**: Storm Scout  
 **Purpose**: Office-focused weather advisory dashboard for operations teams
 **Production URL**: https://your-domain.example.com
-**Status**: Active — Production deployment (1363 locations, zip-code based)
+**Status**: Active — Production deployment (300 locations, zip-code based)
 **Last Updated**: 2026-03-10
 
 ---
 
 ## Project Overview
 
-Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help operations teams quickly identify which of the 1382 monitored locations may be impacted during severe weather events.
+Storm Scout is a weather advisory monitoring system that consolidates active NOAA weather alerts and operational signals by location to help operations teams quickly identify which of the 300 monitored locations may be impacted during severe weather events.
+
+> **Canonical office count:** The source of truth for the office count is `backend/src/data/offices.json` (currently 300). All documentation should reference this file when citing the number of monitored locations.
 
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
-- **1452 Monitored Locations**: Monitoring offices across all 50 US states and territories
+- **300 Monitored Locations**: Monitoring offices across all 50 US states and territories
 - **Smart Filtering**: 94 NOAA alert types across 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes; natural-key fallback `(office_id, advisory_type, source, start_time)` guards against malformed payloads where both fields are absent
@@ -39,8 +41,8 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Map Marker Clustering**: `leaflet.markercluster` groups overlapping markers; cluster icons colored by highest child severity
 - **CI Pipeline**: `.github/workflows/ci.yml` runs `npm ci`, `npm audit --audit-level=high`, `npm test` on push/PR
 - **Alert Detail Modal**: View full NOAA narrative descriptions on office-detail page
-- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 1489 monitored locations
-- **Office Import**: One-time CSV import via `import-offices.js` to load 1440 monitored locations from zip-based CSV
+- **UGC Code Matching**: Precise zone/county-level alert geo-targeting for all 300 monitored locations
+- **Office Import**: One-time CSV import via `import-offices.js` to load 300 monitored locations from zip-based CSV
 - **Weather Observations**: Current conditions (temperature, humidity, wind, pressure, visibility, etc.) from nearest NWS observation station, updated every 15 minutes
 - **Global Architecture Planned**: Adapter-based design for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico) — expert-reviewed, ready for implementation
 - **Safe Deployment**: `deploy.sh` calls `POST /api/admin/pause-ingestion` (API-key authenticated) before rsync; waits for active cycle to finish; ERR trap resumes on failure; admin endpoints in `routes/admin.js` also available for manual ops control
@@ -80,7 +82,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 
 ### Data Sources
 - **NOAA Weather API**: Primary source for all weather advisories and current weather observations
-- **NWS Observation Stations**: Current conditions from 1166 ICAO weather stations mapped by office lat/lon
+- **NWS Observation Stations**: Current conditions from ICAO weather stations mapped by office lat/lon
 - **VTEC Codes**: Valid Time Event Code parsing for deduplication
 - **UGC Codes**: County/zone codes for precise geo-matching
 
@@ -157,7 +159,7 @@ strom-scout/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
 │   │       ├── schema.sql            # MySQL schema
-│   │       ├── offices.json            # 1694 monitored locations
+│   │       ├── offices.json            # 300 monitored locations
 │   │       └── migrations/
 │   │           └── rollback-global-alert-sources.sql  # MariaDB-compatible rollback for global tables
 │   └── package.json
@@ -185,7 +187,7 @@ strom-scout/
 ### Database Schema
 
 **6 Main Tables**:
-1. **offices** - 1495 monitored locations (office_code = 5-digit zip, includes observation_station ICAO code)
+1. **offices** - 300 monitored locations (office_code = 5-digit zip, includes observation_station ICAO code)
 2. **advisories** - Weather alerts mapped to offices (dynamic, updated every 15 min)
 3. **office_observations** - Current weather conditions per office (replaced each ingestion cycle, no history)
 4. **office_status** - Operational status tracking (manual overrides + auto-calculation)
@@ -294,7 +296,7 @@ CWA is the 3-letter NWS office code responsible for a geographic area. Used for 
 Each office is mapped to its nearest NWS observation station via `/points/{lat},{lon}` → `observationStations` URL. The mapping stores an ICAO code (e.g., KORD, KJFK) in `offices.observation_station`.
 
 **Key facts**:
-- 1552 offices map to 1209 unique stations (some stations serve multiple nearby offices, e.g., KNYC→3 NYC offices)
+- 300 offices map to observation stations (some stations serve multiple nearby offices, e.g., KNYC→3 NYC offices)
 - Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
 - NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
 - Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
@@ -335,7 +337,7 @@ npm test               # Run unit tests (Jest)
 npm run test:watch     # Run tests in watch mode
 
 # Database
-npm run init-db        # Initialize schema + load 1638 monitored locations
+npm run init-db        # Initialize schema + load 300 monitored locations
 npm run seed-db        # Load seed/sample data
 
 # Data Operations
@@ -430,7 +432,7 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ External ID unique constraint
 - ✅ Automated cleanup system
 - ✅ Production deployment
-- ✅ 1428 monitored locations loaded
+- ✅ 300 monitored locations loaded
 - ✅ 15-minute NOAA ingestion working
 - ✅ Severity validation (defaults Unknown to Minor)
 - ✅ Database CHECK constraint on severity
@@ -440,13 +442,13 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ Storm Scout Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Offices Requiring Attention matches Weather Impact colors)
-- ✅ UGC code matching for all 1635 monitored locations (precise zone/county geo-targeting)
+- ✅ UGC code matching for all 300 monitored locations (precise zone/county geo-targeting)
 - ✅ Fixed state-level fallback to only apply to offices without UGC codes
 - ✅ office import workflow (import-offices.js converts CSV → offices.json)
 - ✅ Dashboard cards show office_code + office_name (index.html, advisories.html, offices.html)
 - ✅ Office detail alert cards show headline, *WHAT description, *WHEN timing, issued, source (expires removed)
 - ✅ Weather observations from nearest NWS station (temperature, humidity, wind, pressure, visibility, clouds, etc.)
-- ✅ Observation station mapping for all 1555 monitored locations (1269 unique stations)
+- ✅ Observation station mapping for all 300 monitored locations
 - ✅ Observation review: data accuracy validated, failed stations remapped, stale detection added
 - ✅ Local development environment with MariaDB, Jest, and smoke test script
 - ✅ Frontend API client auto-detects local vs production (no hardcoded URL)
@@ -582,7 +584,7 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
 ### Database Backup & Disaster Recovery
 
 **Critical Data**: The Storm Scout database (`storm_scout`) contains:
-- **Static**: 1704 monitored locations (offices table) - can be reloaded from `backend/src/data/offices.json`
+- **Static**: 300 monitored locations (offices table) - can be reloaded from `backend/src/data/offices.json`
 - **Dynamic**: Active weather advisories (advisories table) - repopulates automatically within 15 minutes
 - **Transient**: Weather observations (office_observations table) - repopulates automatically within 15 minutes
 - **Historical**: Advisory snapshots (advisory_history table) - **IRREPLACEABLE** if lost
@@ -656,7 +658,7 @@ FROM advisories WHERE office_id = (SELECT id FROM offices WHERE office_code = '8
    
    | Scenario | Impact | Recovery Time | Steps |
    |----------|--------|---------------|-------|
-   | **Offices table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (1565 monitored locations) |
+   | **Offices table lost** | 🔴 Critical - No advisories can be matched | 5 min | Run `npm run seed-db` from backend (300 monitored locations) |
    | **Advisories table lost** | 🟡 Moderate - Data repopulates automatically | 15 min | Next ingestion cycle will rebuild active advisories |
    | **Advisory_history lost** | 🟠 High - Historical trends lost permanently | N/A | Must restore from backup (no auto-recovery) |
    | **Office_status lost** | 🔴 Critical - Manual operations decisions lost | Varies | Restore from backup; Operations must re-enter manual overrides |
@@ -745,7 +747,7 @@ The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy val
 1. Starts the server in the background
 2. Waits for it to be ready
 3. Validates all key API endpoints (health, offices, advisories, status, filters, observations)
-4. Verifies 1670 monitored locations are loaded
+4. Verifies 300 monitored locations are loaded
 5. Confirms frontend is served correctly
 6. **innerHTML XSS safety audit** — scans all frontend `.html` and `.js` files for unsafe `innerHTML` usage without `html` tagged template (reports as warning, does not fail build)
 7. Shuts down the server and reports results
@@ -1084,7 +1086,7 @@ All security documentation is in `docs/security/`:
 
 `docs/ARCHITECTURE.md` documents:
 - System overview and data flow diagram
-- Current tested scale thresholds (1450 locations, 40-connection pool)
+- Current tested scale thresholds (300 locations, 40-connection pool)
 - Scale ceilings per component (UI, backend, database, infrastructure)
 - Five triggers for a scale review (500 locations, 2M advisory rows, etc.)
 - Minimum required changes before operating at >500 locations
