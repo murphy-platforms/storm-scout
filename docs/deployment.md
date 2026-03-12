@@ -542,8 +542,8 @@ Currently, deployment is manual. Future improvements could include:
 ## Documentation References
 
 - [Backend API Documentation](./api.md)
-- [Frontend Architecture](./frontend-architecture.md)
-- [Database Schema](./database-schema.md)
+- [Frontend Guide](./FRONTEND-GUIDE.md)
+- [Data Dictionary](./DATA-DICTIONARY.md)
 - [VTEC Implementation](./vtec-implementation.md)
 
 ---
