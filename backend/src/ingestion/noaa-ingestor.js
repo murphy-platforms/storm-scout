@@ -321,25 +321,32 @@ async function ingestNOAAData() {
     console.log(`Marked ${endTimeExpired.affectedRows} advisories as expired (end_time passed)`);
     
     // Step 6: Mark advisories not in current batch as expired.
-    // Chunked into 500-ID batches to avoid MySQL max_allowed_packet limits
-    // and parser stress when advisory counts are high during major events.
+    // Uses the full processedExternalIds set in a single query to avoid
+    // incorrectly expiring valid advisories that would be missing from
+    // individual chunks.
     console.log('\nMarking missing advisories as expired...');
     let expiredCount = 0;
 
     if (processedExternalIds.length > 0) {
-      const CHUNK_SIZE = 500;
-      for (let i = 0; i < processedExternalIds.length; i += CHUNK_SIZE) {
-        const chunk = processedExternalIds.slice(i, i + CHUNK_SIZE);
+      // Safeguard: if NOAA returned very few alerts compared to active
+      // advisories, log a warning (may indicate partial API response)
+      const [activeCount] = await db.query(
+        `SELECT COUNT(*) as cnt FROM advisories WHERE status = 'active' AND external_id IS NOT NULL`
+      );
+      const activeTotal = activeCount[0].cnt;
+      if (activeTotal > 0 && processedExternalIds.length < activeTotal * 0.1) {
+        console.warn(`⚠️  WARNING: Only ${processedExternalIds.length} IDs processed vs ${activeTotal} active advisories — possible partial NOAA response. Skipping expiry.`);
+      } else {
         const [result] = await db.query(`
           UPDATE advisories
           SET status = 'expired', last_updated = CURRENT_TIMESTAMP
           WHERE status = 'active'
             AND external_id IS NOT NULL
             AND external_id NOT IN (?)
-        `, [chunk]);
-        expiredCount += result.affectedRows;
+        `, [processedExternalIds]);
+        expiredCount = result.affectedRows;
+        console.log(`Marked ${expiredCount} advisories as expired`);
       }
-      console.log(`Marked ${expiredCount} advisories as expired`);
     }
     
     // Step 6: Create historical snapshots for trend analysis
