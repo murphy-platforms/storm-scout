@@ -394,21 +394,21 @@
                 const advisories = await advisoriesResponse.json();
 
                 // Extract offices array from the response
-                const sites = Array.isArray(officesData.data) ? officesData.data : [];
+                const offices = Array.isArray(officesData.data) ? officesData.data : [];
 
                 // Export based on type
                 switch(type) {
                     case 'csv':
-                        StormScoutExport.exportOfficesToCSV(sites);
+                        StormScoutExport.exportOfficesToCSV(offices);
                         break;
                     case 'executive':
-                        StormScoutExport.generateHTMLReport({ sites, advisories, overview }, 'executive');
+                        StormScoutExport.generateHTMLReport({ offices, advisories, overview }, 'executive');
                         break;
                     case 'incident':
-                        StormScoutExport.generateHTMLReport({ sites, advisories }, 'incident');
+                        StormScoutExport.generateHTMLReport({ offices, advisories }, 'incident');
                         break;
                     case 'summary':
-                        StormScoutExport.generateHTMLReport({ sites }, 'summary');
+                        StormScoutExport.generateHTMLReport({ offices }, 'summary');
                         break;
                     default:
                         console.error('Unknown export type:', type);
@@ -422,4 +422,6 @@
         // Event listeners for export buttons (CSP-compliant)
         document.getElementById('exportPrintPDF').addEventListener('click', (e) => { e.preventDefault(); StormScoutExport.printToPDF(); });
         document.getElementById('exportShareLink').addEventListener('click', (e) => { e.preventDefault(); StormScoutExport.copyShareableLink(); });
-        // Advanced export features coming soon
+        document.getElementById('exportExecutive').addEventListener('click', (e) => { e.preventDefault(); exportCurrentData('executive'); });
+        document.getElementById('exportIncident').addEventListener('click', (e) => { e.preventDefault(); exportCurrentData('incident'); });
+        document.getElementById('exportCSV').addEventListener('click', (e) => { e.preventDefault(); exportCurrentData('csv'); });
