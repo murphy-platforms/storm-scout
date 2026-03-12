@@ -144,155 +144,18 @@
             <div class="col-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Platform Updates & Version History</h5>
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Version History</h5>
                     </div>
                     <div class="card-body">
                         <p class="card-text">
-                            Complete development history showing all <strong>123 commits</strong> from February 10-14, 2026.
+                            Storm Scout is actively maintained. View the full commit history and release notes on GitHub.
                         </p>
-                        <button class="btn btn-outline-secondary btn-sm" type="button" 
-                                data-bs-toggle="collapse" data-bs-target="#commitHistory" 
-                                aria-expanded="false" aria-controls="commitHistory">
-                            <i class="bi bi-chevron-down"></i> View Complete History
-                        </button>
-                        
-                        <div class="collapse mt-3" id="commitHistory">
-                            <div class="bg-light p-3 rounded" style="max-height: 500px; overflow-y: auto;">
-                                <small class="text-muted d-block mb-2">Format: [hash] | [timestamp] | [description]</small>
-                                <pre class="mb-0 small" style="font-size: 0.85rem; line-height: 1.6;"><code>5e4a6a1 | 2026-02-14 14:21:09 -0500 | feat: Add Platform Updates & Version History to sources page
-833ecb0 | 2026-02-14 13:54:10 -0500 | docs: Add alert detail modal to AGENTS.md and README.md
-3cee036 | 2026-02-14 13:52:55 -0500 | feat: Add View Full Alert modal with narrative description
-18b9b98 | 2026-02-14 13:39:55 -0500 | docs: Update AGENTS.md and README.md with caching, rate limiting, validation
-f7e5992 | 2026-02-14 13:37:19 -0500 | feat: Add API rate limiting with express-rate-limit
-5c1e6e9 | 2026-02-14 13:31:07 -0500 | feat: Add input validation with express-validator
-7c91445 | 2026-02-14 13:15:39 -0500 | fix: Remove all flashing/pulsing animations for accessibility
-e9002fe | 2026-02-14 13:06:12 -0500 | feat: Add in-memory caching with node-cache (v1.5.0)
-08fe342 | 2026-02-14 11:02:59 -0500 | docs: Update CHANGELOG and ROADMAP for BUG-PROD-009 (self-hosted fonts)
-887e10c | 2026-02-14 11:01:05 -0500 | fix: Self-host Inter font to remove Google Fonts CDN dependency (BUG-PROD-009)
-0aa9487 | 2026-02-14 10:54:15 -0500 | docs: Update AGENTS.md, CHANGELOG.md, ROADMAP.md for v1.4.1
-6d00e97 | 2026-02-14 10:51:55 -0500 | fix: Add severity index and CHECK constraint (BUG-PROD-005, BUG-PROD-008)
-401190c | 2026-02-14 10:46:18 -0500 | fix: QA fixes - severity validation and Beta notices page
-b6702e1 | 2026-02-14 09:03:06 -0500 | feat: Complete P2 improvements - backend filters, severity colors, Beta UI timestamp
-2eb1036 | 2026-02-14 08:53:54 -0500 | feat: Add Beta UI link, enhanced health check, and backup docs
-e1c2837 | 2026-02-14 08:32:40 -0500 | feat: Add comprehensive mobile optimization (LOW-3)
-9c2e861 | 2026-02-14 08:23:28 -0500 | docs: Add deployment verification for v1.4.0
-d90fe45 | 2026-02-14 08:21:59 -0500 | feat: Add historical snapshot system and fix database connection issues
-ccbc09c | 2026-02-14 07:15:07 -0500 | feat: Integrate historical data into frontend (MED-5 Phases 5-6)
-944f14b | 2026-02-14 07:08:51 -0500 | feat: Implement historical data tracking backend (MED-5 Phases 1-4)
-1b705b3 | 2026-02-14 06:56:31 -0500 | feat: Add comprehensive export functionality to both UIs (MED-4)
-37d26d1 | 2026-02-14 06:51:18 -0500 | feat: Enhance NEW badge visibility in Classic UI (MED-3)
-cc6c867 | 2026-02-14 06:48:31 -0500 | feat: Add onboarding tooltips to both Classic and Beta UIs (MED-2)
-67d296e | 2026-02-14 06:43:46 -0500 | feat: add light/dark mode toggle to Beta UI (MED-1)
-2a1eb65 | 2026-02-14 06:36:01 -0500 | fix: improve migration script to handle .env parsing and prompt for credentials
-b2c3248 | 2026-02-14 06:33:03 -0500 | feat: respect prefers-reduced-motion for accessibility (HIGH-5)
-deb78ce | 2026-02-14 06:31:54 -0500 | feat: add UI switcher links (HIGH-4)
-c587af2 | 2026-02-14 06:30:52 -0500 | fix: label Beta sparklines as sample data (HIGH-3)
-d1c5176 | 2026-02-14 06:29:48 -0500 | feat: add filter active indicator to both UIs (HIGH-2)
-59053a4 | 2026-02-14 06:26:44 -0500 | fix: reconcile operational status data model (HIGH-1)
-ed403f0 | 2026-02-14 05:33:38 -0500 | Fix: Add ui-toggle.js to all Beta pages for Classic return button
-76f35f2 | 2026-02-14 05:28:28 -0500 | Fix: Restore Classic CSS to root (was using Beta CSS)
-544bd42 | 2026-02-14 05:22:43 -0500 | Make Classic UI the default, move Beta to /beta/
-0549d56 | 2026-02-14 05:12:14 -0500 | fix: Correct property names to match SiteAggregator output
-ea07cd5 | 2026-02-14 05:09:47 -0500 | fix: Correct JS file reference in sites.html
-bc1d712 | 2026-02-14 05:02:46 -0500 | Complete redesign of all frontend pages with dark theme
-6bae3de | 2026-02-14 04:48:13 -0500 | feat: Add modern dark theme redesign with Beta/Classic toggle
-f4d775c | 2026-02-14 04:28:04 -0500 | chore: remove FTP support, standardize on SSH deployment
-7733357 | 2026-02-14 04:26:19 -0500 | fix: add SSH port REDACTED_PORT to deploy.sh
-cd6c064 | 2026-02-14 04:22:03 -0500 | feat: add Google Analytics (GA4) tracking to all frontend pages
-1d4269c | 2026-02-13 18:37:34 -0500 | docs: Update v1.3.2 changelog with correct NOAA link descriptions
-15a3293 | 2026-02-13 18:35:22 -0500 | Fix NOAA links with reliable working URLs
-869988c | 2026-02-13 18:32:38 -0500 | Fix NOAA links to use human-readable pages
-21295df | 2026-02-13 18:29:48 -0500 | docs: Add v1.3.2 changelog entry for NOAA external links
-a790b86 | 2026-02-13 18:29:13 -0500 | Add NOAA official alert and map links to site-detail.html
-624a2ef | 2026-02-13 18:21:12 -0500 | docs: Add v1.3.1 changelog entry for card consistency fixes
-435e9b1 | 2026-02-13 18:19:46 -0500 | Fix card behavior consistency across all pages
-5872af5 | 2026-02-13 18:08:48 -0500 | Fix Weather Impact to only count sites with filtered advisories
-c6d9552 | 2026-02-13 18:04:33 -0500 | Fix Weather Impact counts to respect user filter settings
-fd8a3f9 | 2026-02-13 17:59:38 -0500 | Make Weather Impact cards clickable with drill-down filtering
-d8bec3d | 2026-02-13 17:53:16 -0500 | Make entire site card clickable for better UX
-6f6cec9 | 2026-02-13 17:45:56 -0500 | Add v1.3.0 changelog for dashboard UX improvements
-343e627 | 2026-02-13 17:45:25 -0500 | Reorganize dashboard layout for improved UX
-119c591 | 2026-02-13 17:33:33 -0500 | Update README documentation
-65515ad | 2026-02-13 17:13:58 -0500 | Enable 5 MODERATE alerts in Site Default preset
-aedc30f | 2026-02-13 15:25:10 -0500 | Fix navigation inconsistencies across frontend pages
-a4b4349 | 2026-02-13 15:15:05 -0500 | Fix: Integrate alert filters into map view
-d547ea9 | 2026-02-13 14:30:12 -0500 | docs: add v1.2.1 expiration fix to documentation
-4d3807b | 2026-02-13 14:26:39 -0500 | fix: mark alerts as expired when end_time passes
-29c24b6 | 2026-02-13 14:16:25 -0500 | feat: v1.2.0 - QA/DBA improvements and unified cleanup module
-08571ae | 2026-02-13 13:05:09 -0500 | Phase 3: Add map visualization, trends, exports, and PWA features
-8b2ba30 | 2026-02-13 12:36:18 -0500 | Add Phase 2 completion documentation
-6dfd4e3 | 2026-02-13 12:34:13 -0500 | Phase 2 (WIP): Add site detail page with decision helper
-609b44f | 2026-02-13 12:29:19 -0500 | Add Phase 1 deployment verification documentation
-7502a46 | 2026-02-13 12:27:06 -0500 | Phase 1 Complete: Site aggregation UI transformation
-db4c2c6 | 2026-02-13 12:24:17 -0500 | Phase 1 (WIP): Add site aggregation, card layout, and multi-zone deduplication
-156b7cb | 2026-02-13 10:55:58 -0500 | Add script to create unique constraint on external_id
-866f7fd | 2026-02-13 10:50:49 -0500 | Add comprehensive next steps and recommendations
-5a7a3f6 | 2026-02-13 10:47:00 -0500 | Add Phase 1 deployment results and verification
-6fa3a59 | 2026-02-13 10:38:46 -0500 | Phase 1: External ID deduplication implementation
-56b1751 | 2026-02-13 09:57:58 -0500 | Add project tracking and management tools
-03bc8bb | 2026-02-13 09:23:59 -0500 | Add comprehensive documentation
-62e6fb3 | 2026-02-12 17:41:19 -0500 | Add update banner to all pages
-51859d8 | 2026-02-12 17:34:23 -0500 | Display VTEC action codes in advisories table
-119a0b0 | 2026-02-12 17:27:05 -0500 | Add VTEC event ID deployment results
-a374499 | 2026-02-12 16:25:47 -0500 | Add deployment plan for VTEC event ID implementation
-73f76f3 | 2026-02-12 16:24:47 -0500 | Implement VTEC event ID deduplication with action tracking
-f75dc8f | 2026-02-12 16:08:03 -0500 | Add comprehensive documentation for automated duplicate prevention
-f3b035d | 2026-02-12 16:06:55 -0500 | Add automated duplicate prevention system
-393299e | 2026-02-12 15:40:57 -0500 | Add VTEC deduplication deployment summary
-cc80cfb | 2026-02-12 15:39:57 -0500 | Add VTEC backfill and duplicate cleanup scripts
-ad69e7c | 2026-02-12 14:45:39 -0500 | Implement VTEC-based deduplication in Advisory Model
-7b8deb1 | 2026-02-12 14:42:36 -0500 | Add VTEC extraction to normalizer
-f7ec662 | 2026-02-12 14:29:40 -0500 | Add VTEC-based deduplication database migration
-636a57c | 2026-02-12 08:34:13 -0500 | Add documentation for navigation links enhancement
-6eee96e | 2026-02-12 08:33:26 -0500 | Add navigation links between dashboard pages
-0523894 | 2026-02-12 06:57:18 -0500 | Add comprehensive documentation for filter system improvements
-349bb37 | 2026-02-12 06:46:57 -0500 | Improve filter toggle UX with dynamic updates and better styling
-285b2e1 | 2026-02-12 06:38:02 -0500 | Fix filter toggle display logic to show correct enabled/disabled state
-639e0b1 | 2026-02-12 06:29:45 -0500 | Add Excessive Heat Warning to default filter exclusions
-3efe265 | 2026-02-11 21:56:48 -0500 | Add deployment completion summary
-33d8502 | 2026-02-11 21:55:56 -0500 | Fix SQL syntax error in siteStatus upsert method
-eb5b1e9 | 2026-02-11 21:46:01 -0500 | Add comprehensive deployment guide for dual status system
-057e774 | 2026-02-11 21:44:49 -0500 | Update dashboard with dual status display
-3ba018c | 2026-02-11 21:43:11 -0500 | Implement dual status system: Weather Impact + Operational Status
-c3082a4 | 2026-02-11 21:26:17 -0500 | Fix: Sites At Risk calculation to match filtered advisory display
-82e231a | 2026-02-11 21:19:24 -0500 | Update CUSTOM filter default settings per user requirements
-3f9d594 | 2026-02-11 21:09:14 -0500 | Add de-duplication for multi-zone advisories (Option 1)
-dfb149d | 2026-02-11 20:59:03 -0500 | CRITICAL FIX: Resolve advisory cleanup and duplication issues
-7b11847 | 2026-02-11 20:51:56 -0500 | Update documentation with all recent features and improvements
-94c975e | 2026-02-11 20:43:28 -0500 | Apply user filter preferences across Overview, Advisories, and Sites pages
-24afb2d | 2026-02-11 20:37:52 -0500 | Add Filter Settings to navigation on all pages
-b90bf0e | 2026-02-11 20:35:03 -0500 | Set custom filter configuration as site default
-ee5d2e9 | 2026-02-11 20:25:47 -0500 | Fix API base URL reference in filters page
-2a06050 | 2026-02-11 20:23:00 -0500 | Create global filter configuration page with individual alert toggles
-26a5608 | 2026-02-11 20:17:56 -0500 | Add alert type filter dropdown to advisories page
-c456b11 | 2026-02-11 20:12:03 -0500 | Add NOAA alert types configuration and filter API endpoints
-bbf6bf2 | 2026-02-11 20:06:26 -0500 | Add last updated timestamp and next update countdown timer
-dc2eec1 | 2026-02-11 20:02:12 -0500 | Automatically clean up expired advisories during ingestion
-1652536 | 2026-02-11 19:58:20 -0500 | Add advisory cleanup utility and prevent duplicates
-164c0da | 2026-02-11 19:52:14 -0500 | Update documentation for production deployment
-57c7f84 | 2026-02-11 18:16:54 -0500 | Remove SQLite backup files and stubs, update .gitignore
-34c081e | 2026-02-11 18:14:16 -0500 | Fix NOAA ingestion for MySQL async/await compatibility
-b70a743 | 2026-02-11 18:10:24 -0500 | Convert siteStatus model to MySQL async/await and fix database initialization
-81030ad | 2026-02-11 18:07:28 -0500 | Add static file serving to Node.js app for frontend routing
-3356cfe | 2026-02-11 17:57:59 -0500 | Update frontend API URL for production deployment
-34193eb | 2026-02-11 17:57:28 -0500 | Complete MySQL model conversions for advisories and notices
-adb292e | 2026-02-11 17:52:57 -0500 | Deploy Storm Scout with MySQL backend - Backend running on production
-fe185c4 | 2026-02-11 17:23:59 -0500 | Fix MySQL database initialization
-376a74c | 2026-02-11 16:46:48 -0500 | Add MySQL deployment checklist
-2a47343 | 2026-02-11 16:45:00 -0500 | Complete MySQL conversion (Part 2)
-c662dff | 2026-02-11 16:40:20 -0500 | Convert Storm Scout to MySQL (Part 1/2)
-54c0c02 | 2026-02-11 16:38:16 -0500 | Add deployment progress documentation
-464c3f9 | 2026-02-11 15:45:36 -0500 | Fix FTP deployment script path and regex issues
-107d43c | 2026-02-11 15:31:14 -0500 | Add FTP deployment script with macOS Keychain integration
-546256b | 2026-02-11 14:56:54 -0500 | Add local deployment script
-6091f89 | 2026-02-11 14:25:41 -0500 | Switch from better-sqlite3 to sql.js for shared hosting compatibility
-6e7b574 | 2026-02-11 13:12:01 -0500 | Add cPanel deployment guide and production config
-6c90ec5 | 2026-02-11 13:06:13 -0500 | Add deployment configuration for your-domain.example.com
-57d8c68 | 2026-02-10 18:34:21 -0500 | Update documentation with Node 20 LTS requirements
-73bef78 | 2026-02-10 18:23:17 -0500 | Fix SQLite syntax in seed.sql and add package-lock.json
-f9d96dd | 2026-02-10 18:09:23 -0500 | Initial commit: Storm Scout weather advisory dashboard</code></pre>
-                            </div>
-                        </div>
+                        <a href="https://github.com/murphy-platforms/storm-scout-poc/commits/main" target="_blank" class="btn btn-outline-primary">
+                            <i class="bi bi-github"></i> View Commit History
+                        </a>
+                        <a href="https://github.com/murphy-platforms/storm-scout-poc/blob/main/CHANGELOG.md" target="_blank" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-journal-text"></i> Changelog
+                        </a>
                     </div>
                 </div>
             </div>
