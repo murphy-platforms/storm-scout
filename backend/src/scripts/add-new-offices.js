@@ -297,7 +297,7 @@ async function main() {
     const region = STATE_REGIONS[stateCode];
     const progress = `[${i + 1}/${NEW_SITES.length}]`;
     
-    console.log(`${progress} ${office.site_code} - ${office.name} (${site.city}, ${stateCode})`);
+    console.log(`${progress} ${office.site_code} - ${office.name} (${office.city}, ${stateCode})`);
     
     // Step 1: Geocode
     let geo = null;
@@ -326,7 +326,7 @@ async function main() {
       
       if (geo) {
         geo.source = 'nominatim_city_fallback';
-        warnings.push(`${office.site_code} (${site.city}, ${stateCode}): Used city-center coordinates - needs manual verification`);
+        warnings.push(`${office.site_code} (${office.city}, ${stateCode}): Used city-center coordinates - needs manual verification`);
       }
     }
     
