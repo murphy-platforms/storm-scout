@@ -5,6 +5,7 @@ Thank you for your interest in contributing to Storm Scout! This guide covers ev
 ## Table of Contents
 - [Local Development Setup](#local-development-setup)
 - [Running Tests](#running-tests)
+  - [Test Coverage Notes](#test-coverage-notes)
 - [Code Style](#code-style)
 - [Commit Conventions](#commit-conventions)
 - [Pull Request Process](#pull-request-process)
@@ -83,6 +84,19 @@ npm run test:watch
 Tests are in `backend/tests/`. Unit tests are in `tests/unit/`, integration tests in `tests/integration/`.
 
 The CI pipeline (`npm audit --audit-level=high` + `npm test`) runs on every push and PR via GitHub Actions.
+
+### Test Coverage Notes
+
+**Backend (129 tests across 9 suites):** Covers API routes, ingestion logic, advisory deduplication, database queries, middleware, and error handling. All new backend code should include corresponding tests.
+
+**Frontend (no automated tests):** The frontend currently has zero automated test coverage. This is a deliberate architectural trade-off — the frontend is vanilla JavaScript with no build step, no bundler, and no module system, which means standard test runners (Jest, Vitest, etc.) don't integrate cleanly without adding a transpilation layer that would undermine the project's "no build step" philosophy.
+
+Frontend reliability is maintained through:
+- Manual testing across the 6 dashboard pages
+- Strict coding conventions (`js/api.js` as the single fetch abstraction, `escapeHtml()` for all dynamic content)
+- ESLint and Prettier enforcement
+
+> **Contribution opportunity:** If you're interested in adding frontend test coverage — whether through a lightweight approach like Playwright for E2E tests or a minimal unit test setup — we'd welcome the contribution. Open an issue to discuss the approach before starting.
 
 ---
 

@@ -48,7 +48,7 @@ Organizations that manage physical locations — retail chains, logistics networ
 ## ✨ Features
 
 ### Core Functionality
-- **300 Locations** - Monitors offices across all 50 states and US territories, identified by 5-digit zip codes
+- **300 Demo Locations** - Ships with a realistic 300-location dataset of US offices spanning all 50 states and territories, identified by 5-digit zip codes. [Swap for your own locations](#adapting-for-your-organization) via CSV import in minutes.
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes
@@ -358,6 +358,18 @@ Storm Scout is designed to be forked and customized. Any set of US locations wit
 
 From CSV to working dashboard in about 15 minutes. See [`DEPLOY.md`](DEPLOY.md) for full setup instructions.
 
+**Multi-tenant potential:** The current architecture is single-tenant by design — one database, one set of offices, one ingestion pipeline. Multi-tenant support (serving multiple organizations from a single deployment) would require tenant-scoped database queries, per-tenant authentication, and isolated ingestion schedules. The Express middleware layer and existing API key model provide a natural starting point for this extension.
+
+## Limitations & Known Gaps
+
+| Area | Status | Details |
+|------|--------|---------|
+| **Geographic coverage** | US only | NOAA Weather API covers the 50 US states and territories. International support (Environment Canada, MeteoAlarm, SMN) is a planned future extension. |
+| **User authentication** | None | The dashboard is accessible to anyone with the URL. Access is controlled at the network level or via reverse proxy. The API uses key-based authentication. |
+| **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#adapting-for-your-organization) above. |
+| **Frontend tests** | None | Backend has 129 automated tests (Jest + supertest). The frontend has zero test coverage — a deliberate trade-off for the no-build-step architecture. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for rationale. |
+| **Infrastructure cost** | Minimal | Runs on a single VPS ($5–10/month). No paid API dependencies — NOAA data is free and public domain. MariaDB is the only infrastructure requirement beyond Node.js. |
+
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for local development setup, code style guide, commit conventions, and pull request process.
@@ -403,6 +415,8 @@ Storm Scout was built by a technical operations leader — not a software engine
 The project has been developed across 180+ GitHub issues and 300+ commits over approximately one month. Every commit carries a `Co-Authored-By: Claude Opus 4.6` trailer — this is intentional transparency about the development methodology, not an afterthought. Features like security hardening, accessibility, circuit breaker patterns, and the VTEC deduplication system were all specified by the human developer and implemented through iterative AI-assisted coding sessions.
 
 This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
+
+See [`docs/DEVELOPMENT-PROCESS.md`](docs/DEVELOPMENT-PROCESS.md) for the full methodology: AI tooling choices, human-AI collaboration workflow, quality assurance approach, and lessons learned.
 
 ## License
 
