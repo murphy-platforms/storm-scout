@@ -1,0 +1,396 @@
+# Storm Scout - Deployment Guide
+
+## Environment Overview
+
+| Component | Technology | Auto-Start |
+|-----------|-----------|------------|
+| Database | MariaDB 11 (Docker) | `docker restart=unless-stopped` |
+| Backend API | Node.js 18+, Express | `systemd` user service |
+| Frontend | Static files served by Express | same process as backend |
+
+### Reverse Proxy Requirement
+
+This application **must** run behind a reverse proxy (Nginx, Apache, or similar). The proxy:
+
+- Terminates TLS (HTTPS)
+- Rewrites the `X-Forwarded-For` header with the real client IP
+- Forwards requests to the Node.js process on `localhost:3000`
+
+Set `TRUST_PROXY=true` in `.env.production` when a reverse proxy is confirmed. This tells Express to trust the `X-Forwarded-For` header for accurate IP-based rate limiting.
+
+**Do not set `TRUST_PROXY=true` if the Node.js process is exposed directly to the internet** — doing so allows clients to spoof their IP address and bypass rate limiting.
+
+---
+
+## First-Time Setup
+
+### 1. Start the Database (Docker)
+
+```bash
+docker run -d --name storm-scout-db \
+  -e MYSQL_DATABASE=storm_scout_dev \
+  -e MYSQL_USER=storm_scout \
+  -e MYSQL_PASSWORD=localdev \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -p 3306:3306 \
+  --restart unless-stopped \
+  mariadb:11
+```
+
+The `--restart unless-stopped` policy means Docker will restart the container automatically on system reboot (as long as the Docker service itself is enabled, which it is).
+
+### 2. Configure the Backend
+
+```bash
+cd backend
+cp .env.example .env
+# Edit .env — set DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, NOAA_API_USER_AGENT
+```
+
+### 3. Initialize the Database
+
+```bash
+cd backend
+npm install
+npm run init-db     # applies schema.sql
+npm run seed-db     # loads offices.json + sample notices
+```
+
+Apply any pending migrations manually:
+
+```bash
+docker exec -i storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev \
+  < backend/src/data/migrations/<migration-file>.sql
+```
+
+### 4. Import Office Data (one-time)
+
+```bash
+node backend/src/scripts/import-offices.js /path/to/locations.csv
+# Output: backend/src/data/offices.json (300 offices)
+npm run seed-db
+```
+
+### 5. Install the systemd Service
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp deployment/storm-scout-dev.service ~/.config/systemd/user/
+
+systemctl --user daemon-reload
+systemctl --user enable --now storm-scout-dev
+
+# Ensure service starts at boot even without an active login session
+loginctl enable-linger $USER
+```
+
+---
+
+## Daily Operations
+
+### Service Management
+
+```bash
+# Status
+systemctl --user status storm-scout-dev
+
+# Restart (e.g. after code changes)
+systemctl --user restart storm-scout-dev
+
+# Stop / Start
+systemctl --user stop storm-scout-dev
+systemctl --user start storm-scout-dev
+```
+
+### Logs
+
+```bash
+# Live log stream (ingestion output, errors)
+journalctl --user -u storm-scout-dev -f
+
+# Last 200 lines
+journalctl --user -u storm-scout-dev -n 200
+
+# Filter for ingestion events only
+journalctl --user -u storm-scout-dev -f | grep -i ingest
+
+# Filter for errors only
+journalctl --user -u storm-scout-dev | grep -i error
+```
+
+### Verify Ingestion Schedule
+
+On server startup the log will show:
+
+```
+✓ Weather data ingestion enabled (every 15 minutes)
+Cron expression: */15 * * * *
+```
+
+NOAA ingestion runs automatically every 15 minutes. To trigger a manual run:
+
+```bash
+cd backend && node src/ingestion/run-ingestion.js
+```
+
+---
+
+## Deploying Code Updates
+
+### From local machine (rsync)
+
+```bash
+# Pre-deploy smoke test
+cd backend && bash scripts/smoke-test.sh
+
+# Deploy backend
+rsync -avz --exclude='node_modules' --exclude='.env' --exclude='tmp/' \
+  backend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/backend/
+
+# Deploy frontend
+rsync -avz frontend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/frontend/
+
+# Install dependencies and restart
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd $APP_ROOT/backend && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "systemctl --user restart storm-scout-dev"
+```
+
+Or use the project deploy script (set `DEPLOY_HOST` and `DEPLOY_USER` first):
+
+```bash
+DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
+```
+
+### After deploying schema changes
+
+```bash
+# Apply migration on server
+docker exec -i storm-scout-db mariadb -u storm_scout -p<password> storm_scout_dev \
+  < backend/src/data/migrations/<migration-file>.sql
+
+systemctl --user restart storm-scout-dev
+```
+
+### Rolling Back a Migration
+
+If a migration causes issues in production:
+
+1. Check current migration state:
+   ```bash
+   cd backend && node src/scripts/run-migrations.js --status
+   ```
+
+2. Identify the migration to revert. Migrations are in `backend/src/data/migrations/` and are applied in filename order.
+
+3. Manually revert the schema change:
+   ```sql
+   -- Example: reverting an ADD COLUMN migration
+   ALTER TABLE advisories DROP COLUMN IF EXISTS new_column;
+   ```
+
+4. Remove the migration record from the tracking table so it will re-apply cleanly on the next deploy:
+   ```sql
+   DELETE FROM schema_migrations WHERE filename = '20260220-migration-name.sql';
+   ```
+
+5. Restart the application and verify with `GET /health`.
+
+> **Note:** Not all migrations are reversible. Always test migrations on a staging database before production deployment. The `backups/` directory (if maintained) may contain a pre-deploy dump.
+
+---
+
+## Post-Deployment Verification
+
+```bash
+# Health check (database, ingestion state, data integrity)
+curl http://localhost:3000/health
+
+# Confirm 300 offices loaded
+curl http://localhost:3000/api/offices | python3 -c \
+  "import json,sys; d=json.load(sys.stdin); print(d['count'], 'offices')"
+
+# Overview stats
+curl http://localhost:3000/api/status/overview
+```
+
+Expected `/health` response:
+```json
+{
+  "status": "ok",
+  "checks": {
+    "database": { "status": "ok" },
+    "ingestion": { "status": "ok" }
+  }
+}
+```
+
+---
+
+## Rollback Procedure
+
+`deploy.sh` creates a timestamped backup of both backend and frontend directories on the server **before** running `rsync --delete`. The backup tag is printed at the end of every successful deployment.
+
+### Rollback steps (deploy.sh / rsync deployments)
+
+```bash
+# 1. SSH into the server
+ssh $SERVER_USER@$SERVER_HOST
+
+# 2. Stop the application
+#    (via hosting control panel or: touch ~/storm-scout/tmp/restart.txt)
+
+# 3. Restore backend and frontend from backup
+#    Replace <TAG> with the backup timestamp shown at deploy time (e.g. 20260309_142531)
+cp -a ~/storm-scout.bak.<TAG> ~/storm-scout
+cp -a ~/public_html.bak.<TAG> ~/public_html
+
+# 4. Restart the application
+#    (via hosting control panel or process manager)
+```
+
+Backups older than **7 days** are pruned automatically on each deploy run.
+
+### Rollback steps (deployment/deploy.sh / git-based deployments)
+
+```bash
+cd /var/www/storm-scout
+
+# View recent commits
+git log --oneline -5
+
+# Reset to the previous commit
+git reset --hard <previous-commit-sha>
+
+# Reinstall dependencies and restart
+cd backend && npm install --production
+pm2 restart storm-scout
+```
+
+---
+
+## Operational Runbooks
+
+### Pausing Ingestion for Maintenance
+
+Before maintenance tasks that require a clean system state, pause the ingestion scheduler:
+
+```bash
+# Pause ingestion (waits for active cycle to finish, up to 60s)
+curl -s -X POST -H "X-Api-Key: $DEPLOY_API_KEY" https://<host>/api/admin/pause-ingestion
+
+# Verify paused
+curl -s -H "X-Api-Key: $DEPLOY_API_KEY" https://<host>/api/admin/status
+
+# Resume when maintenance is complete
+curl -s -X POST -H "X-Api-Key: $DEPLOY_API_KEY" https://<host>/api/admin/resume-ingestion
+```
+
+### Triggering a Manual Ingestion Run
+
+```bash
+# From the backend directory on the server
+node src/ingestion/run-ingestion.js
+```
+
+Ingestion logs are written to stdout/PM2 logs. Check `/health` after completion to verify advisory counts updated.
+
+### Interpreting /health Output
+
+`GET /health` returns:
+- `status`: `ok` (all checks pass) or `degraded` (one or more checks failed)
+- `checks.database.status`: `ok` or `error` — database connectivity
+- `checks.ingestion.status`: `ok` (current), `stale` (last run >30 min ago), `unknown`, or `error`
+- `checks.ingestion.minutesAgo`: minutes since last successful ingestion
+- `ingestion.active`: `true` if an ingestion cycle is currently running
+- `ingestion.startedAt`: ISO timestamp of when the current cycle started, or `null`
+- `uptime`: process uptime in seconds
+- `memory.heapUsed` / `memory.rss`: current Node.js memory in MB
+
+A `degraded` status with `checks.database.status: error` indicates the DB connection pool is exhausted or MariaDB is unreachable. To check consecutive failure counts and scheduler state, use `GET /api/admin/status` (API key required).
+
+### Log Management
+
+If using PM2, install log rotation once on the server:
+```bash
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:max_size 100M
+pm2 set pm2-logrotate:retain 7
+```
+
+Expected log volume: ~50–200 MB/day depending on ingestion frequency and advisory volume. Allocate at least 5 GB disk for 30 days of logs.
+
+---
+
+## Boot Sequence
+
+On system reboot the startup order is:
+
+1. **Docker** starts (system-level, `systemctl enable docker`)
+2. **storm-scout-db** container starts automatically (`restart=unless-stopped`)
+3. **User linger session** starts (`loginctl enable-linger`)
+4. **storm-scout-dev.service** starts, connects to DB, runs initial ingestion
+
+---
+
+## Troubleshooting
+
+### Service won't start
+
+```bash
+journalctl --user -u storm-scout-dev -n 50
+# Look for: DB connection errors, port conflicts, missing .env
+```
+
+### Database container not running
+
+```bash
+docker ps -a | grep storm-scout-db
+docker start storm-scout-db
+docker logs storm-scout-db --tail 30
+```
+
+### Port 3000 already in use
+
+```bash
+fuser -k 3000/tcp
+systemctl --user start storm-scout-dev
+```
+
+### Ingestion not running
+
+```bash
+# Check last ingestion time
+curl http://localhost:3000/health | python3 -c \
+  "import json,sys; d=json.load(sys.stdin); print(d['checks']['ingestion'])"
+
+# Trigger manual ingestion
+cd $APP_ROOT/backend && node src/ingestion/run-ingestion.js
+```
+
+### Rate limit hit during testing
+
+The API general tier allows 30,000 requests/60 min per IP (write endpoints: 20 req/15 min). If the rate limit is hit during smoke testing:
+
+```bash
+systemctl --user restart storm-scout-dev
+```
+
+---
+
+## Environment Variables (`.env`)
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_HOST` | Database host | `localhost` |
+| `DB_PORT` | Database port | `3306` |
+| `DB_USER` | Database user | `storm_scout` |
+| `DB_PASSWORD` | Database password | `localdev` |
+| `DB_NAME` | Database name | `storm_scout_dev` |
+| `PORT` | API server port | `3000` |
+| `NODE_ENV` | Environment | `development` |
+| `INGESTION_ENABLED` | Enable NOAA polling | `true` |
+| `INGESTION_INTERVAL_MINUTES` | Poll interval | `15` |
+| `NOAA_API_USER_AGENT` | NOAA API contact | `(Storm Scout, ops@example.com)` |
+| `CORS_ORIGIN` | Allowed CORS origin (required — no default) | `https://your-domain.example.com` |
+| `TRUST_PROXY` | Set `true` when behind a reverse proxy (Nginx, Apache, etc.) | `false` |
+| `API_KEY` | Shared secret for write endpoints (`/api/operational-status`). Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` | *(required)* |
