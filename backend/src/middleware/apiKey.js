@@ -51,41 +51,41 @@ const crypto = require('crypto');
  * network timing measurements. (closes #95)
  */
 function requireApiKey(req, res, next) {
-  const configuredKey = process.env.API_KEY;
+    const configuredKey = process.env.API_KEY;
 
-  // Fail-closed: if no key is configured the endpoint is inaccessible.
-  // This prevents write operations being accidentally exposed on a server
-  // where the env var was forgotten.
-  if (!configuredKey) {
-    console.error('[AUTH] API_KEY is not set — write endpoint is inaccessible until configured');
-    return res.status(503).json({
-      success: false,
-      error: 'Service unavailable: authentication is not configured'
-    });
-  }
+    // Fail-closed: if no key is configured the endpoint is inaccessible.
+    // This prevents write operations being accidentally exposed on a server
+    // where the env var was forgotten.
+    if (!configuredKey) {
+        console.error('[AUTH] API_KEY is not set — write endpoint is inaccessible until configured');
+        return res.status(503).json({
+            success: false,
+            error: 'Service unavailable: authentication is not configured'
+        });
+    }
 
-  const providedKey = req.headers['x-api-key'];
+    const providedKey = req.headers['x-api-key'];
 
-  if (!providedKey) {
-    return res.status(401).json({
-      success: false,
-      error: 'Unauthorized: valid X-Api-Key header required'
-    });
-  }
+    if (!providedKey) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized: valid X-Api-Key header required'
+        });
+    }
 
-  // Length must match before calling timingSafeEqual (throws on length mismatch).
-  // The length check itself leaks no useful information — it is an integer
-  // compare, not a character-by-character string walk.
-  const a = Buffer.from(providedKey);
-  const b = Buffer.from(configuredKey);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-    return res.status(401).json({
-      success: false,
-      error: 'Unauthorized: valid X-Api-Key header required'
-    });
-  }
+    // Length must match before calling timingSafeEqual (throws on length mismatch).
+    // The length check itself leaks no useful information — it is an integer
+    // compare, not a character-by-character string walk.
+    const a = Buffer.from(providedKey);
+    const b = Buffer.from(configuredKey);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized: valid X-Api-Key header required'
+        });
+    }
 
-  next();
+    next();
 }
 
 module.exports = { requireApiKey };

@@ -8,7 +8,7 @@ const OfficeAggregator = {
      * Get severity rank for sorting (higher = more severe)
      */
     getSeverityRank(severity) {
-        const ranks = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1, 'Unknown': 0 };
+        const ranks = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1, Unknown: 0 };
         return ranks[severity] || 0;
     },
 
@@ -17,27 +17,27 @@ const OfficeAggregator = {
      */
     calculateUrgency(advisory) {
         let score = 0;
-        
+
         // Severity weight (most important factor)
-        const severityPoints = { 'Extreme': 1000, 'Severe': 500, 'Moderate': 100, 'Minor': 20 };
+        const severityPoints = { Extreme: 1000, Severe: 500, Moderate: 100, Minor: 20 };
         score += severityPoints[advisory.severity] || 0;
-        
+
         // Action weight - NEW and UPG alerts are more urgent
         if (advisory.vtec_action === 'NEW') score += 50;
         if (advisory.vtec_action === 'UPG') score += 75;
-        
+
         // Recency - newer alerts are more urgent
         if (advisory.last_updated) {
             const hoursOld = (Date.now() - new Date(advisory.last_updated)) / 3600000;
             score += Math.max(0, 24 - hoursOld) * 2;
         }
-        
+
         // Time to expiration - sooner expiration = higher score
         if (advisory.expires) {
             const hoursToExpire = (new Date(advisory.expires) - Date.now()) / 3600000;
             if (hoursToExpire > 0 && hoursToExpire < 6) score += 30;
         }
-        
+
         return score;
     },
 
@@ -47,13 +47,13 @@ const OfficeAggregator = {
      */
     deduplicateMultiZone(advisories) {
         const dedupMap = new Map();
-        
-        advisories.forEach(adv => {
+
+        advisories.forEach((adv) => {
             // Create deduplication key
             const issuedTime = adv.issued_time || adv.last_updated || '';
             const timeWindow = issuedTime ? new Date(issuedTime).toISOString().slice(0, 13) : 'unknown';
             const key = `${adv.office_id}-${adv.advisory_type}-${adv.severity}-${timeWindow}`;
-            
+
             if (!dedupMap.has(key)) {
                 // First occurrence - create representative alert
                 dedupMap.set(key, {
@@ -72,7 +72,7 @@ const OfficeAggregator = {
                     existing.zones.push(adv.source);
                 }
                 existing.related_ids.push(adv.id);
-                
+
                 // Keep the most urgent version
                 const urgency = this.calculateUrgency(adv);
                 if (urgency > existing.highest_urgency) {
@@ -83,7 +83,7 @@ const OfficeAggregator = {
                 }
             }
         });
-        
+
         return Array.from(dedupMap.values());
     },
 
@@ -94,14 +94,12 @@ const OfficeAggregator = {
         const { deduplicateZones = true } = options;
 
         // First, deduplicate multi-zone alerts if enabled
-        const processedAdvisories = deduplicateZones
-            ? this.deduplicateMultiZone(advisories)
-            : advisories;
+        const processedAdvisories = deduplicateZones ? this.deduplicateMultiZone(advisories) : advisories;
 
         // Group by office
         const officeMap = new Map();
 
-        processedAdvisories.forEach(adv => {
+        processedAdvisories.forEach((adv) => {
             const officeId = adv.office_id;
 
             if (!officeMap.has(officeId)) {
@@ -126,7 +124,7 @@ const OfficeAggregator = {
             const office = officeMap.get(officeId);
             office.advisories.push(adv);
             office.unique_types.add(adv.advisory_type);
-            office.total_zone_count += (adv.zone_count || 1);
+            office.total_zone_count += adv.zone_count || 1;
             office.unique_advisory_count++;
 
             // Count NEW vs CONTINUED
@@ -148,10 +146,10 @@ const OfficeAggregator = {
         });
 
         // Convert to array and enhance
-        const offices = Array.from(officeMap.values()).map(office => {
+        const offices = Array.from(officeMap.values()).map((office) => {
             // Group advisories by type
             const typeGroups = {};
-            office.advisories.forEach(adv => {
+            office.advisories.forEach((adv) => {
                 const type = adv.advisory_type;
                 if (!typeGroups[type]) {
                     typeGroups[type] = {
@@ -165,19 +163,17 @@ const OfficeAggregator = {
                     };
                 }
                 typeGroups[type].count++;
-                typeGroups[type].zone_count += (adv.zone_count || 1);
+                typeGroups[type].zone_count += adv.zone_count || 1;
             });
 
             return {
                 ...office,
                 unique_types: Array.from(office.unique_types),
-                type_groups: Object.values(typeGroups).sort((a, b) =>
-                    this.getSeverityRank(b.severity) - this.getSeverityRank(a.severity)
+                type_groups: Object.values(typeGroups).sort(
+                    (a, b) => this.getSeverityRank(b.severity) - this.getSeverityRank(a.severity)
                 ),
                 // Find the highest severity advisory for display
-                highest_severity_advisory: office.advisories.find(adv =>
-                    adv.severity === office.highest_severity
-                )
+                highest_severity_advisory: office.advisories.find((adv) => adv.severity === office.highest_severity)
             };
         });
 
@@ -191,10 +187,10 @@ const OfficeAggregator = {
      */
     groupBySeverity(offices) {
         return {
-            extreme: offices.filter(s => s.highest_severity === 'Extreme'),    // 🔴 RED
-            severe: offices.filter(s => s.highest_severity === 'Severe'),      // 🟠 ORANGE
-            moderate: offices.filter(s => s.highest_severity === 'Moderate'),  // 🟡 YELLOW
-            minor: offices.filter(s => s.highest_severity === 'Minor')         // 🟢 GREEN
+            extreme: offices.filter((s) => s.highest_severity === 'Extreme'), // 🔴 RED
+            severe: offices.filter((s) => s.highest_severity === 'Severe'), // 🟠 ORANGE
+            moderate: offices.filter((s) => s.highest_severity === 'Moderate'), // 🟡 YELLOW
+            minor: offices.filter((s) => s.highest_severity === 'Minor') // 🟢 GREEN
         };
     },
 
@@ -205,10 +201,11 @@ const OfficeAggregator = {
         return {
             total_advisories: advisories.length,
             unique_offices: offices.length,
-            critical_offices: offices.filter(s => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe').length,
-            elevated_offices: offices.filter(s => s.highest_severity === 'Moderate').length,
-            monitoring_offices: offices.filter(s => s.highest_severity === 'Minor').length,
-            new_alerts: advisories.filter(a => a.vtec_action === 'NEW').length,
+            critical_offices: offices.filter((s) => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe')
+                .length,
+            elevated_offices: offices.filter((s) => s.highest_severity === 'Moderate').length,
+            monitoring_offices: offices.filter((s) => s.highest_severity === 'Minor').length,
+            new_alerts: advisories.filter((a) => a.vtec_action === 'NEW').length,
             avg_alerts_per_office: offices.length > 0 ? (advisories.length / offices.length).toFixed(1) : 0
         };
     },
@@ -218,17 +215,17 @@ const OfficeAggregator = {
      */
     getFilterWarning(allAdvisories, filteredAdvisories) {
         const hiddenCount = allAdvisories.length - filteredAdvisories.length;
-        
+
         if (hiddenCount === 0) {
             return null;
         }
-        
+
         // Check for hidden critical alerts
-        const hiddenAdvisories = allAdvisories.filter(a => !filteredAdvisories.includes(a));
-        const criticalHidden = hiddenAdvisories.filter(a => 
-            a.severity === 'Extreme' || a.severity === 'Severe'
+        const hiddenAdvisories = allAdvisories.filter((a) => !filteredAdvisories.includes(a));
+        const criticalHidden = hiddenAdvisories.filter(
+            (a) => a.severity === 'Extreme' || a.severity === 'Severe'
         ).length;
-        
+
         return {
             hidden_count: hiddenCount,
             critical_hidden: criticalHidden,

@@ -13,12 +13,12 @@
 /**
  * Escape HTML special characters to prevent XSS attacks.
  * Use this when inserting untrusted data into HTML.
- * 
+ *
  * @param {*} unsafe - The value to escape (will be converted to string)
  * @returns {string} HTML-escaped string safe for insertion
- * 
+ *
  * @example
- * escapeHtml('<script>alert("xss")</script>')  
+ * escapeHtml('<script>alert("xss")</script>')
  * // Returns: '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'
  */
 function escapeHtml(unsafe) {
@@ -34,14 +34,14 @@ function escapeHtml(unsafe) {
 /**
  * Mark a string as trusted HTML that should NOT be escaped.
  * ONLY use this for HTML you have constructed yourself, never for user input.
- * 
+ *
  * @param {string} trustedHtml - HTML string that is known to be safe
  * @returns {Object} Object with __raw property containing the HTML
- * 
+ *
  * @example
  * // Safe: Static HTML you control
  * html`<div>${raw('<span class="badge">Status</span>')}</div>`
- * 
+ *
  * // DANGEROUS - Never do this:
  * html`<div>${raw(userInput)}</div>`  // XSS vulnerability!
  */
@@ -52,22 +52,22 @@ function raw(trustedHtml) {
 /**
  * Tagged template literal for safe HTML generation.
  * Automatically escapes all interpolated values unless wrapped in raw().
- * 
+ *
  * @param {TemplateStringsArray} strings - The template literal strings
  * @param {...*} values - The interpolated values
  * @returns {string} Safe HTML string with escaped values
- * 
+ *
  * @example
  * // Basic usage - values are automatically escaped
  * const userInput = '<script>alert("xss")</script>';
  * container.innerHTML = html`<div class="message">${userInput}</div>`;
  * // Result: <div class="message">&lt;script&gt;...&lt;/script&gt;</div>
- * 
+ *
  * @example
  * // With trusted HTML using raw()
  * const badge = '<span class="badge bg-success">Active</span>';
  * container.innerHTML = html`<div>${advisory.name} ${raw(badge)}</div>`;
- * 
+ *
  * @example
  * // Complex template with mixed content
  * container.innerHTML = html`
@@ -104,11 +104,11 @@ function html(strings, ...values) {
  */
 function getSeverityBadge(severity) {
     const badges = {
-        'Extreme':  'severity-extreme',
-        'Severe':   'severity-severe',
-        'Moderate': 'severity-moderate',
-        'Minor':    'severity-minor',
-        'Unknown':  'bg-light text-dark'
+        Extreme: 'severity-extreme',
+        Severe: 'severity-severe',
+        Moderate: 'severity-moderate',
+        Minor: 'severity-minor',
+        Unknown: 'bg-light text-dark'
     };
     return badges[severity] || 'bg-light text-dark';
 }
@@ -118,12 +118,12 @@ function getSeverityBadge(severity) {
  */
 function getStatusBadge(status) {
     const badges = {
-        'Closed': 'bg-danger',
+        Closed: 'bg-danger',
         'At Risk': 'bg-warning text-dark',
-        'Open': 'bg-success',
-        'active': 'bg-success',
-        'expired': 'bg-secondary',
-        'cancelled': 'bg-secondary'
+        Open: 'bg-success',
+        active: 'bg-success',
+        expired: 'bg-secondary',
+        cancelled: 'bg-secondary'
     };
     return badges[status] || 'bg-secondary';
 }
@@ -133,16 +133,61 @@ function getStatusBadge(status) {
  * Uses custom action-badge-* CSS classes where defined; falls back to Bootstrap.
  */
 const VTEC_ACTION_CONFIG = {
-    'NEW': { label: 'NEW',       class: 'action-badge-new',       icon: '<i class="bi bi-bell-fill"></i>',           title: 'New alert issued' },
-    'CON': { label: 'CONTINUED', class: 'action-badge-continued', icon: '<i class="bi bi-arrow-repeat"></i>',        title: 'Alert continuing' },
-    'EXT': { label: 'EXTENDED',  class: 'action-badge-extended',  icon: '<i class="bi bi-clock-history"></i>',      title: 'Alert time extended' },
-    'EXA': { label: 'EXTENDED',  class: 'action-badge-extended',  icon: '<i class="bi bi-clock-history"></i>',      title: 'Alert extended (A)' },
-    'EXB': { label: 'EXTENDED',  class: 'action-badge-extended',  icon: '<i class="bi bi-clock-history"></i>',      title: 'Alert extended (B)' },
-    'UPG': { label: 'UPGRADED',  class: 'bg-warning text-dark',   icon: '<i class="bi bi-arrow-up-circle-fill"></i>', title: 'Alert upgraded' },
-    'EXP': { label: 'EXPIRED',   class: 'bg-secondary',           icon: '<i class="bi bi-hourglass-bottom"></i>',   title: 'Alert expired' },
-    'CAN': { label: 'CANCELLED', class: 'bg-dark',                icon: '<i class="bi bi-x-circle-fill"></i>',      title: 'Alert cancelled' },
-    'COR': { label: 'CORRECTED', class: 'bg-warning text-dark',   icon: '<i class="bi bi-pencil-fill"></i>',        title: 'Correction issued' },
-    'ROU': { label: 'ROUTINE',   class: 'bg-secondary',           icon: '<i class="bi bi-clipboard"></i>',          title: 'Routine update' }
+    NEW: {
+        label: 'NEW',
+        class: 'action-badge-new',
+        icon: '<i class="bi bi-bell-fill"></i>',
+        title: 'New alert issued'
+    },
+    CON: {
+        label: 'CONTINUED',
+        class: 'action-badge-continued',
+        icon: '<i class="bi bi-arrow-repeat"></i>',
+        title: 'Alert continuing'
+    },
+    EXT: {
+        label: 'EXTENDED',
+        class: 'action-badge-extended',
+        icon: '<i class="bi bi-clock-history"></i>',
+        title: 'Alert time extended'
+    },
+    EXA: {
+        label: 'EXTENDED',
+        class: 'action-badge-extended',
+        icon: '<i class="bi bi-clock-history"></i>',
+        title: 'Alert extended (A)'
+    },
+    EXB: {
+        label: 'EXTENDED',
+        class: 'action-badge-extended',
+        icon: '<i class="bi bi-clock-history"></i>',
+        title: 'Alert extended (B)'
+    },
+    UPG: {
+        label: 'UPGRADED',
+        class: 'bg-warning text-dark',
+        icon: '<i class="bi bi-arrow-up-circle-fill"></i>',
+        title: 'Alert upgraded'
+    },
+    EXP: {
+        label: 'EXPIRED',
+        class: 'bg-secondary',
+        icon: '<i class="bi bi-hourglass-bottom"></i>',
+        title: 'Alert expired'
+    },
+    CAN: {
+        label: 'CANCELLED',
+        class: 'bg-dark',
+        icon: '<i class="bi bi-x-circle-fill"></i>',
+        title: 'Alert cancelled'
+    },
+    COR: {
+        label: 'CORRECTED',
+        class: 'bg-warning text-dark',
+        icon: '<i class="bi bi-pencil-fill"></i>',
+        title: 'Correction issued'
+    },
+    ROU: { label: 'ROUTINE', class: 'bg-secondary', icon: '<i class="bi bi-clipboard"></i>', title: 'Routine update' }
 };
 
 /**
@@ -154,7 +199,12 @@ function getActionBadge(action) {
     if (!action) {
         return '<span class="badge bg-secondary" title="No VTEC action code">-</span>';
     }
-    const config = VTEC_ACTION_CONFIG[action] || { label: action, class: 'bg-secondary', icon: '', title: `Action: ${action}` };
+    const config = VTEC_ACTION_CONFIG[action] || {
+        label: action,
+        class: 'bg-secondary',
+        icon: '',
+        title: `Action: ${action}`
+    };
     return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
 }
 
@@ -168,7 +218,14 @@ function getActionBadgeWithTime(advisory) {
     if (!advisory.vtec_action) {
         return '<span class="badge bg-secondary">-</span>';
     }
-    const config = { ...( VTEC_ACTION_CONFIG[advisory.vtec_action] || { label: advisory.vtec_action, class: 'bg-secondary', icon: '', title: `Action: ${advisory.vtec_action}` }) };
+    const config = {
+        ...(VTEC_ACTION_CONFIG[advisory.vtec_action] || {
+            label: advisory.vtec_action,
+            class: 'bg-secondary',
+            icon: '',
+            title: `Action: ${advisory.vtec_action}`
+        })
+    };
     if (advisory.vtec_action === 'NEW') {
         const hoursOld = (Date.now() - new Date(advisory.last_updated)) / 3600000;
         if (hoursOld >= 2) config.class = 'bg-success';
@@ -183,7 +240,7 @@ function formatDate(dateString) {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     if (isNaN(date)) return dateString;
-    
+
     // Format as: Jan 10, 2026 3:45 PM
     return date.toLocaleString('en-US', {
         month: 'short',
@@ -253,7 +310,7 @@ function showError(message, containerId) {
  */
 function cToF(tempC) {
     if (tempC == null) return null;
-    return Math.round((parseFloat(tempC) * 9 / 5) + 32);
+    return Math.round((parseFloat(tempC) * 9) / 5 + 32);
 }
 
 /**
@@ -280,7 +337,7 @@ function timeAgo(dateString) {
  */
 function isStale(observedAt) {
     if (!observedAt) return true;
-    return (Date.now() - new Date(observedAt).getTime()) > 90 * 60 * 1000;
+    return Date.now() - new Date(observedAt).getTime() > 90 * 60 * 1000;
 }
 
 /**
@@ -319,7 +376,7 @@ function truncate(str, max) {
  */
 function debounce(fn, wait) {
     let timer;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(timer);
         timer = setTimeout(() => fn.apply(this, args), wait);
     };

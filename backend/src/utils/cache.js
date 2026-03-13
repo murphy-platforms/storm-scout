@@ -12,30 +12,30 @@ const DEFAULT_TTL_SECONDS = 900;
 
 // Create cache instance
 const cache = new NodeCache({
-  stdTTL: DEFAULT_TTL_SECONDS,   // Default TTL for all entries
-  checkperiod: 120,              // Check for expired keys every 2 minutes
-  useClones: false,              // Return references for better performance
-  deleteOnExpire: true           // Automatically delete expired entries
+    stdTTL: DEFAULT_TTL_SECONDS, // Default TTL for all entries
+    checkperiod: 120, // Check for expired keys every 2 minutes
+    useClones: false, // Return references for better performance
+    deleteOnExpire: true // Automatically delete expired entries
 });
 
 /**
  * Cache keys for different endpoints
  */
 const CACHE_KEYS = {
-  STATUS_OVERVIEW: 'status:overview',
-  ALL_SITES: 'sites:all',
-  ACTIVE_ADVISORIES: 'advisories:active',
-  STATES_LIST: 'sites:states',
-  REGIONS_LIST: 'sites:regions'
+    STATUS_OVERVIEW: 'status:overview',
+    ALL_SITES: 'sites:all',
+    ACTIVE_ADVISORIES: 'advisories:active',
+    STATES_LIST: 'sites:states',
+    REGIONS_LIST: 'sites:regions'
 };
 
 /**
  * TTL values in seconds for different cache types
  */
 const TTL = {
-  SHORT: 900,    // 15 minutes - for dynamic data (advisories, status)
-  LONG: 3600,    // 1 hour - for static data (sites)
-  VERY_LONG: 86400  // 24 hours - for very static data (states, regions)
+    SHORT: 900, // 15 minutes - for dynamic data (advisories, status)
+    LONG: 3600, // 1 hour - for static data (sites)
+    VERY_LONG: 86400 // 24 hours - for very static data (states, regions)
 };
 
 /**
@@ -44,13 +44,13 @@ const TTL = {
  * @returns {*} Cached value or undefined if not found/expired
  */
 function get(key) {
-  const value = cache.get(key);
-  if (value !== undefined) {
-    if (isDevMode) console.log(`[CACHE] HIT: ${key}`);
-    return value;
-  }
-  if (isDevMode) console.log(`[CACHE] MISS: ${key}`);
-  return undefined;
+    const value = cache.get(key);
+    if (value !== undefined) {
+        if (isDevMode) console.log(`[CACHE] HIT: ${key}`);
+        return value;
+    }
+    if (isDevMode) console.log(`[CACHE] MISS: ${key}`);
+    return undefined;
 }
 
 /**
@@ -61,11 +61,11 @@ function get(key) {
  * @returns {boolean} True if successful
  */
 function set(key, value, ttl = DEFAULT_TTL_SECONDS) {
-  const success = cache.set(key, value, ttl);
-  if (success && isDevMode) {
-    console.log(`[CACHE] SET: ${key} (TTL: ${ttl}s)`);
-  }
-  return success;
+    const success = cache.set(key, value, ttl);
+    if (success && isDevMode) {
+        console.log(`[CACHE] SET: ${key} (TTL: ${ttl}s)`);
+    }
+    return success;
 }
 
 /**
@@ -74,11 +74,11 @@ function set(key, value, ttl = DEFAULT_TTL_SECONDS) {
  * @returns {number} Number of deleted entries
  */
 function del(key) {
-  const count = cache.del(key);
-  if (count > 0 && isDevMode) {
-    console.log(`[CACHE] DEL: ${key}`);
-  }
-  return count;
+    const count = cache.del(key);
+    if (count > 0 && isDevMode) {
+        console.log(`[CACHE] DEL: ${key}`);
+    }
+    return count;
 }
 
 /**
@@ -86,9 +86,9 @@ function del(key) {
  * Called after NOAA ingestion to ensure fresh data
  */
 function invalidateAll() {
-  const keys = cache.keys();
-  cache.flushAll();
-  if (isDevMode) console.log(`[CACHE] INVALIDATED: ${keys.length} keys cleared`);
+    const keys = cache.keys();
+    cache.flushAll();
+    if (isDevMode) console.log(`[CACHE] INVALIDATED: ${keys.length} keys cleared`);
 }
 
 /**
@@ -98,18 +98,16 @@ function invalidateAll() {
  * Also clears filtered advisory keys cached under 'advisories:filtered:*'.
  */
 function invalidateDynamic() {
-  const dynamicKeys = [
-    CACHE_KEYS.ACTIVE_ADVISORIES,
-    CACHE_KEYS.STATUS_OVERVIEW
-  ];
-  dynamicKeys.forEach(k => cache.del(k));
+    const dynamicKeys = [CACHE_KEYS.ACTIVE_ADVISORIES, CACHE_KEYS.STATUS_OVERVIEW];
+    dynamicKeys.forEach((k) => cache.del(k));
 
-  // Clear parameterised advisory filter keys (see routes/advisories.js #92)
-  cache.keys()
-    .filter(k => k.startsWith('advisories:filtered:'))
-    .forEach(k => cache.del(k));
+    // Clear parameterised advisory filter keys (see routes/advisories.js #92)
+    cache
+        .keys()
+        .filter((k) => k.startsWith('advisories:filtered:'))
+        .forEach((k) => cache.del(k));
 
-  if (isDevMode) console.log('[CACHE] Dynamic data invalidated (static keys preserved)');
+    if (isDevMode) console.log('[CACHE] Dynamic data invalidated (static keys preserved)');
 }
 
 /**
@@ -117,24 +115,23 @@ function invalidateDynamic() {
  * @returns {Object} Cache stats including hits, misses, keys
  */
 function getStats() {
-  const stats = cache.getStats();
-  return {
-    keys: cache.keys().length,
-    hits: stats.hits,
-    misses: stats.misses,
-    hitRate: stats.hits + stats.misses > 0 
-      ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(1) + '%'
-      : '0%'
-  };
+    const stats = cache.getStats();
+    return {
+        keys: cache.keys().length,
+        hits: stats.hits,
+        misses: stats.misses,
+        hitRate:
+            stats.hits + stats.misses > 0 ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(1) + '%' : '0%'
+    };
 }
 
 module.exports = {
-  get,
-  set,
-  del,
-  invalidateAll,
-  invalidateDynamic,
-  getStats,
-  CACHE_KEYS,
-  TTL
+    get,
+    set,
+    del,
+    invalidateAll,
+    invalidateDynamic,
+    getStats,
+    CACHE_KEYS,
+    TTL
 };

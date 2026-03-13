@@ -13,34 +13,34 @@ const Trends = {
         if (!trend || trend.trend === 'insufficient_data') {
             return '<span class="badge bg-secondary" title="Not enough data"><i class="bi bi-question-circle"></i> No Data</span>';
         }
-        
+
         const icons = {
-            'worsening': '⬆️',
-            'improving': '⬇️',
-            'stable': '➡️'
+            worsening: '⬆️',
+            improving: '⬇️',
+            stable: '➡️'
         };
-        
+
         const classes = {
-            'worsening': 'bg-danger',
-            'improving': 'bg-success',
-            'stable': 'bg-info'
+            worsening: 'bg-danger',
+            improving: 'bg-success',
+            stable: 'bg-info'
         };
-        
+
         const labels = {
-            'worsening': 'Worsening',
-            'improving': 'Improving',
-            'stable': 'Stable'
+            worsening: 'Worsening',
+            improving: 'Improving',
+            stable: 'Stable'
         };
-        
+
         const icon = icons[trend.trend] || '';
         const badgeClass = classes[trend.trend] || 'bg-secondary';
         const label = labels[trend.trend] || trend.trend;
-        
+
         const title = `${trend.first_severity} → ${trend.last_severity} (${trend.duration_hours}h)`;
-        
+
         return `<span class="badge ${badgeClass}" title="${title}">${icon} ${label}</span>`;
     },
-    
+
     /**
      * Render detailed trend card
      * @param {Object} trend - Trend data with site info
@@ -50,14 +50,15 @@ const Trends = {
         if (!trend || trend.trend === 'insufficient_data') {
             return '';
         }
-        
+
         const trendIcon = this.renderTrendBadge(trend);
-        const changeText = trend.advisory_change > 0 ? 
-            `+${trend.advisory_change} alerts` : 
-            trend.advisory_change < 0 ? 
-            `${trend.advisory_change} alerts` : 
-            'No change in alert count';
-        
+        const changeText =
+            trend.advisory_change > 0
+                ? `+${trend.advisory_change} alerts`
+                : trend.advisory_change < 0
+                  ? `${trend.advisory_change} alerts`
+                  : 'No change in alert count';
+
         return `
             <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card">
@@ -79,7 +80,7 @@ const Trends = {
             </div>
         `;
     },
-    
+
     /**
      * Create a simple chart for trend visualization
      * @param {string} containerId - ID of container element
@@ -88,23 +89,23 @@ const Trends = {
     renderTrendChart(containerId, history) {
         const container = document.getElementById(containerId);
         if (!container || !history || history.length === 0) return;
-        
+
         // Create simple ASCII-style chart (can be replaced with Chart.js later)
-        const severityRank = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1 };
+        const severityRank = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1 };
         const maxRank = 4;
-        
+
         let chartHTML = '<div class="trend-chart">';
         chartHTML += '<div class="chart-y-axis">';
         chartHTML += '<div>Extreme</div><div>Severe</div><div>Moderate</div><div>Minor</div>';
         chartHTML += '</div>';
         chartHTML += '<div class="chart-bars">';
-        
+
         history.forEach((snapshot, index) => {
             const rank = severityRank[snapshot.highest_severity] || 0;
             const height = (rank / maxRank) * 100;
             const severityClass = snapshot.highest_severity.toLowerCase();
             const date = new Date(snapshot.snapshot_time).toLocaleDateString();
-            
+
             chartHTML += `
                 <div class="chart-bar-container">
                     <div class="chart-bar severity-${severityClass}" 
@@ -115,12 +116,12 @@ const Trends = {
                 </div>
             `;
         });
-        
+
         chartHTML += '</div></div>';
-        
+
         container.innerHTML = chartHTML;
     },
-    
+
     /**
      * Render trend summary section for office detail page
      * @param {string} containerId - ID of container element
@@ -132,10 +133,11 @@ const Trends = {
         if (!container) return;
 
         try {
-            container.innerHTML = '<div class="text-center"><span class="spinner-border spinner-border-sm"></span> Loading trends...</div>';
+            container.innerHTML =
+                '<div class="text-center"><span class="spinner-border spinner-border-sm"></span> Loading trends...</div>';
 
             const trendData = await API.getOfficeTrend(officeId, days);
-            
+
             if (!trendData || trendData.trend === 'insufficient_data') {
                 container.innerHTML = `
                     <div class="alert alert-info">
@@ -145,9 +147,9 @@ const Trends = {
                 `;
                 return;
             }
-            
+
             const badge = this.renderTrendBadge(trendData);
-            
+
             container.innerHTML = `
                 <div class="card">
                     <div class="card-body">
@@ -176,12 +178,11 @@ const Trends = {
                     </div>
                 </div>
             `;
-            
+
             // Render chart
             if (trendData.history) {
                 this.renderTrendChart('trendChartContainer', trendData.history);
             }
-            
         } catch (error) {
             console.error('Error loading trends:', error);
             container.innerHTML = `

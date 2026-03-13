@@ -7,27 +7,26 @@
 const { initDatabase, getDatabase, seedDatabase, closeDatabase } = require('./database');
 
 async function seed() {
-  try {
-    console.log('Seeding Storm Scout database...\n');
-    
-    // Initialize database connection
-    await initDatabase();
-    
-    // Ensure database exists
-    await getDatabase();
-    
-    // Seed with sample data
-    await seedDatabase();
-    
-    console.log('\n✓ Database seeding complete!');
-    console.log('Start the server: npm start');
-    
-  } catch (error) {
-    console.error('✗ Database seeding failed:', error.message);
-    process.exit(1);
-  } finally {
-    closeDatabase();
-  }
+    try {
+        console.log('Seeding Storm Scout database...\n');
+
+        // Initialize database connection
+        await initDatabase();
+
+        // Ensure database exists
+        await getDatabase();
+
+        // Seed with sample data
+        await seedDatabase();
+
+        console.log('\n✓ Database seeding complete!');
+        console.log('Start the server: npm start');
+    } catch (error) {
+        console.error('✗ Database seeding failed:', error.message);
+        process.exit(1);
+    } finally {
+        closeDatabase();
+    }
 }
 
 seed();

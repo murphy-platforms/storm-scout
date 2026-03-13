@@ -37,16 +37,16 @@ class AdvisoryHistory {
                 new_count, upgrade_count, advisory_snapshot
             ) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        
+
         const advisorySnapshot = JSON.stringify({
-            advisories: aggregatedData.advisories.map(a => ({
+            advisories: aggregatedData.advisories.map((a) => ({
                 id: a.id,
                 type: a.advisory_type,
                 severity: a.severity,
                 action: a.vtec_action
             }))
         });
-        
+
         const params = [
             officeId,
             aggregatedData.advisory_count,
@@ -59,12 +59,12 @@ class AdvisoryHistory {
             aggregatedData.upgrade_count,
             advisorySnapshot
         ];
-        
+
         const connection = getDatabase();
         const [result] = await connection.query(query, params);
         return result.insertId;
     }
-    
+
     /**
      * Create advisory snapshots for all active (advisory-bearing) offices in parallel.
      * Uses Promise.all so the insert fan-out runs concurrently rather than sequentially;
@@ -75,13 +75,11 @@ class AdvisoryHistory {
      * @returns {Promise<number[]>} Array of insert IDs, one per office
      */
     static async createSnapshotsForAllOffices(aggregatedOffices) {
-        const promises = aggregatedOffices.map(office =>
-            this.createSnapshot(office.office_id, office)
-        );
-        
+        const promises = aggregatedOffices.map((office) => this.createSnapshot(office.office_id, office));
+
         return await Promise.all(promises);
     }
-    
+
     /**
      * Retrieve advisory history rows for a single office within a lookback window.
      * Rows are returned in chronological order (oldest first) for timeline rendering
@@ -107,7 +105,7 @@ class AdvisoryHistory {
         const [rows] = await connection.query(query, [officeId, days]);
         return rows;
     }
-    
+
     /**
      * Retrieve the most recent advisory_history row for a single office.
      * Used by the office detail page to show the last known snapshot state.
@@ -128,7 +126,7 @@ class AdvisoryHistory {
         const [rows] = await connection.query(query, [officeId]);
         return rows[0] || null;
     }
-    
+
     /**
      * Compute a trend summary for a single office by comparing the first and last
      * snapshots within the lookback window.
@@ -149,29 +147,29 @@ class AdvisoryHistory {
      */
     static async getTrend(officeId, days = 7) {
         const history = await this.getHistoryForSite(officeId, days);
-        
+
         if (history.length < 2) {
             return { trend: 'insufficient_data', history };
         }
-        
+
         const first = history[0];
         const last = history[history.length - 1];
-        
+
         // Severity ranking
-        const severityRank = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1 };
+        const severityRank = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1 };
         const firstRank = severityRank[first.highest_severity] || 0;
         const lastRank = severityRank[last.highest_severity] || 0;
-        
+
         let trend = 'stable';
         if (lastRank > firstRank) {
             trend = 'worsening';
         } else if (lastRank < firstRank) {
             trend = 'improving';
         }
-        
+
         // Calculate advisory count change
         const advisoryChange = last.advisory_count - first.advisory_count;
-        
+
         return {
             trend,
             severity_change: lastRank - firstRank,
@@ -180,11 +178,13 @@ class AdvisoryHistory {
             last_severity: last.highest_severity,
             first_count: first.advisory_count,
             last_count: last.advisory_count,
-            duration_hours: Math.floor((new Date(last.snapshot_time) - new Date(first.snapshot_time)) / (1000 * 60 * 60)),
+            duration_hours: Math.floor(
+                (new Date(last.snapshot_time) - new Date(first.snapshot_time)) / (1000 * 60 * 60)
+            ),
             history
         };
     }
-    
+
     /**
      * Retrieve trend summaries for all offices in a single optimised pass.
      *
@@ -207,12 +207,15 @@ class AdvisoryHistory {
      */
     static async getAllTrends(days = 7) {
         const connection = getDatabase();
-        const [rows] = await connection.query(`
+        const [rows] = await connection.query(
+            `
             SELECT *
             FROM advisory_history
             WHERE snapshot_time >= DATE_SUB(NOW(), INTERVAL ? DAY)
             ORDER BY office_id, snapshot_time ASC
-        `, [days]);
+        `,
+            [days]
+        );
 
         // Group rows by office_id in one O(n) pass
         const byOffice = new Map();
@@ -228,22 +231,28 @@ class AdvisoryHistory {
             const last = history[history.length - 1];
             trends.push({
                 office_id: officeId,
-                trend: history.length > 1
-                    ? (last.advisory_count > first.advisory_count ? 'increasing'
-                        : last.advisory_count < first.advisory_count ? 'decreasing' : 'stable')
-                    : 'stable',
+                trend:
+                    history.length > 1
+                        ? last.advisory_count > first.advisory_count
+                            ? 'increasing'
+                            : last.advisory_count < first.advisory_count
+                              ? 'decreasing'
+                              : 'stable'
+                        : 'stable',
                 first_severity: first.highest_severity,
                 last_severity: last.highest_severity,
                 first_count: first.advisory_count,
                 last_count: last.advisory_count,
-                duration_hours: Math.floor((new Date(last.snapshot_time) - new Date(first.snapshot_time)) / (1000 * 60 * 60)),
+                duration_hours: Math.floor(
+                    (new Date(last.snapshot_time) - new Date(first.snapshot_time)) / (1000 * 60 * 60)
+                ),
                 history
             });
         }
 
         return trends;
     }
-    
+
     /**
      * Delete advisory_history rows older than the retention window.
      * Called periodically by the ingestion scheduler to prevent unbounded table growth.
@@ -258,7 +267,7 @@ class AdvisoryHistory {
             DELETE FROM advisory_history
             WHERE snapshot_time < DATE_SUB(NOW(), INTERVAL ? DAY)
         `;
-        
+
         const connection = getDatabase();
         const [result] = await connection.query(query, [daysToKeep]);
         return result.affectedRows;

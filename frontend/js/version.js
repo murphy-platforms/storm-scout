@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (info.released) {
             const d = new Date(info.released + 'T00:00:00');
             dateStr = d.toLocaleDateString('en-US', {
-                month: 'short', day: 'numeric', year: 'numeric'
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
             });
         }
 
-        el.textContent = dateStr
-            ? `v${info.version} · ${dateStr}`
-            : `v${info.version}`;
+        el.textContent = dateStr ? `v${info.version} · ${dateStr}` : `v${info.version}`;
     } catch (e) {
         // Silently fail — version display is non-critical
     }

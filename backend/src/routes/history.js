@@ -1,7 +1,7 @@
 /**
  * History API Routes
  * Provides historical trend data for dashboard sparklines and analytics
- * 
+ *
  * Endpoints:
  * - GET /api/history/overview-trends - System-wide metrics over time
  * - GET /api/history/severity-trends - Severity counts over time
@@ -23,18 +23,18 @@ function calculateTrend(dataPoints) {
     if (!dataPoints || dataPoints.length < 2) {
         return { direction: 'stable', change: 0, changePercent: 0 };
     }
-    
+
     // Compare most recent value to 24h ago (4 snapshots ago with 6-hour intervals)
     const current = dataPoints[dataPoints.length - 1] || 0;
-    const previous = dataPoints[Math.max(0, dataPoints.length - 5)] || 0;  // 24h ago
-    
+    const previous = dataPoints[Math.max(0, dataPoints.length - 5)] || 0; // 24h ago
+
     const change = current - previous;
     const changePercent = previous > 0 ? ((change / previous) * 100).toFixed(1) : 0;
-    
+
     let direction = 'stable';
     if (change > 0) direction = 'up';
     else if (change < 0) direction = 'down';
-    
+
     return { direction, change, changePercent: parseFloat(changePercent) };
 }
 
@@ -49,9 +49,10 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
         const days = req.query.days || 3;
         const limit = req.query.limit || 20;
 
-        const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
-        
-        const [snapshots] = await pool.query(`
+        const startTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+        const [snapshots] = await pool.query(
+            `
             SELECT 
                 snapshot_time,
                 extreme_count, severe_count, moderate_count, minor_count,
@@ -63,8 +64,10 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
             WHERE snapshot_time >= ?
             ORDER BY snapshot_time ASC
             LIMIT ?
-        `, [startTime, limit]);
-        
+        `,
+            [startTime, limit]
+        );
+
         if (snapshots.length === 0) {
             return res.json({
                 status: 'no_data',
@@ -77,28 +80,28 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
                 trends: null
             });
         }
-        
+
         // Extract time series data
-        const timestamps = snapshots.map(s => s.snapshot_time);
-        const extremeCounts = snapshots.map(s => s.extreme_count);
-        const severeCounts = snapshots.map(s => s.severe_count);
-        const moderateCounts = snapshots.map(s => s.moderate_count);
-        const minorCounts = snapshots.map(s => s.minor_count);
-        
-        const officesRed = snapshots.map(s => s.offices_red);
-        const officesOrange = snapshots.map(s => s.offices_orange);
-        const officesYellow = snapshots.map(s => s.offices_yellow);
-        const officesGreen = snapshots.map(s => s.offices_green);
-        
-        const totalAdvisories = snapshots.map(s => s.total_advisories);
-        const officesImpacted = snapshots.map(s => s.total_offices_with_advisories);
-        
+        const timestamps = snapshots.map((s) => s.snapshot_time);
+        const extremeCounts = snapshots.map((s) => s.extreme_count);
+        const severeCounts = snapshots.map((s) => s.severe_count);
+        const moderateCounts = snapshots.map((s) => s.moderate_count);
+        const minorCounts = snapshots.map((s) => s.minor_count);
+
+        const officesRed = snapshots.map((s) => s.offices_red);
+        const officesOrange = snapshots.map((s) => s.offices_orange);
+        const officesYellow = snapshots.map((s) => s.offices_yellow);
+        const officesGreen = snapshots.map((s) => s.offices_green);
+
+        const totalAdvisories = snapshots.map((s) => s.total_advisories);
+        const officesImpacted = snapshots.map((s) => s.total_offices_with_advisories);
+
         // Calculate trends
         const extremeTrend = calculateTrend(extremeCounts);
         const severeTrend = calculateTrend(severeCounts);
         const moderateTrend = calculateTrend(moderateCounts);
         const totalTrend = calculateTrend(totalAdvisories);
-        
+
         res.json({
             status: 'success',
             timeRange: {
@@ -133,7 +136,6 @@ router.get('/overview-trends', historyValidators.getOverviewTrends, handleValida
                 total: totalTrend
             }
         });
-        
     } catch (error) {
         console.error('Error fetching overview trends:', error);
         res.status(500).json({ error: 'Failed to fetch historical trends' });
@@ -149,17 +151,20 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
     try {
         const pool = getDatabase();
         const days = req.query.days || 3;
-        const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
-        
-        const [snapshots] = await pool.query(`
+        const startTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+        const [snapshots] = await pool.query(
+            `
             SELECT 
                 snapshot_time,
                 extreme_count, severe_count, moderate_count, minor_count
             FROM system_snapshots
             WHERE snapshot_time >= ?
             ORDER BY snapshot_time ASC
-        `, [startTime]);
-        
+        `,
+            [startTime]
+        );
+
         if (snapshots.length === 0) {
             return res.json({
                 status: 'no_data',
@@ -168,12 +173,12 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
                 trends: null
             });
         }
-        
-        const timestamps = snapshots.map(s => s.snapshot_time);
-        const extremeCounts = snapshots.map(s => s.extreme_count);
-        const severeCounts = snapshots.map(s => s.severe_count);
-        const moderateCounts = snapshots.map(s => s.moderate_count);
-        
+
+        const timestamps = snapshots.map((s) => s.snapshot_time);
+        const extremeCounts = snapshots.map((s) => s.extreme_count);
+        const severeCounts = snapshots.map((s) => s.severe_count);
+        const moderateCounts = snapshots.map((s) => s.moderate_count);
+
         res.json({
             status: 'success',
             timeRange: {
@@ -183,10 +188,10 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
             },
             trends: {
                 timestamps,
-                critical: extremeCounts,   // Map to UI terminology
+                critical: extremeCounts, // Map to UI terminology
                 high: severeCounts,
                 moderate: moderateCounts,
-                low: snapshots.map(s => s.minor_count)
+                low: snapshots.map((s) => s.minor_count)
             },
             direction: {
                 critical: calculateTrend(extremeCounts),
@@ -194,7 +199,6 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
                 moderate: calculateTrend(moderateCounts)
             }
         });
-        
     } catch (error) {
         console.error('Error fetching severity trends:', error);
         res.status(500).json({ error: 'Failed to fetch severity trends' });
@@ -211,24 +215,28 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
         const pool = getDatabase();
         const officeId = req.params.officeId;
         const days = req.query.days || 3;
-        
-        const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
-        
+
+        const startTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
         // Get office info
-        const [sites] = await pool.query(`
+        const [sites] = await pool.query(
+            `
             SELECT id, office_code, name, city, state
             FROM offices
             WHERE id = ?
-        `, [officeId]);
-        
+        `,
+            [officeId]
+        );
+
         if (sites.length === 0) {
             return res.status(404).json({ error: 'Office not found' });
         }
-        
+
         const office = sites[0];
-        
+
         // Get historical data
-        const [history] = await pool.query(`
+        const [history] = await pool.query(
+            `
             SELECT 
                 snapshot_time,
                 advisory_count,
@@ -242,8 +250,10 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
             FROM advisory_history
             WHERE office_id = ? AND snapshot_time >= ?
             ORDER BY snapshot_time ASC
-        `, [officeId, startTime]);
-        
+        `,
+            [officeId, startTime]
+        );
+
         if (history.length === 0) {
             return res.json({
                 status: 'no_data',
@@ -253,13 +263,13 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
                 trends: null
             });
         }
-        
-        const timestamps = history.map(h => h.snapshot_time);
-        const advisoryCounts = history.map(h => h.advisory_count);
-        const hasExtreme = history.map(h => h.has_extreme);
-        const hasSevere = history.map(h => h.has_severe);
-        const hasModerate = history.map(h => h.has_moderate);
-        
+
+        const timestamps = history.map((h) => h.snapshot_time);
+        const advisoryCounts = history.map((h) => h.advisory_count);
+        const hasExtreme = history.map((h) => h.has_extreme);
+        const hasSevere = history.map((h) => h.has_severe);
+        const hasModerate = history.map((h) => h.has_moderate);
+
         res.json({
             status: 'success',
             office,
@@ -282,7 +292,6 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
                 highestSeverityType: history[history.length - 1]?.highest_severity_type || null
             }
         });
-        
     } catch (error) {
         console.error(`Error fetching office trends for office ${req.params.officeId}:`, error);
         res.status(500).json({ error: 'Failed to fetch office trends' });
@@ -303,22 +312,23 @@ router.get('/data-availability', async (req, res) => {
                 MAX(snapshot_time) as latest_snapshot
             FROM system_snapshots
         `);
-        
+
         const [siteCount] = await pool.query(`
             SELECT COUNT(DISTINCT snapshot_time) as snapshot_count
             FROM advisory_history
         `);
-        
+
         const system = systemCount[0];
         const sites = siteCount[0];
-        
+
         // Calculate hours of data available
-        const hoursAvailable = system.earliest_snapshot ? 
-            ((new Date() - new Date(system.earliest_snapshot)) / (1000 * 60 * 60)).toFixed(1) : 0;
-        
+        const hoursAvailable = system.earliest_snapshot
+            ? ((new Date() - new Date(system.earliest_snapshot)) / (1000 * 60 * 60)).toFixed(1)
+            : 0;
+
         // Determine if enough data for meaningful trends (need at least 24 hours)
         const hasEnoughData = hoursAvailable >= 24;
-        
+
         res.json({
             systemSnapshots: {
                 count: system.snapshot_count,
@@ -330,14 +340,13 @@ router.get('/data-availability', async (req, res) => {
                 count: sites.snapshot_count
             },
             status: hasEnoughData ? 'ready' : 'accumulating',
-            message: hasEnoughData ? 
-                'Historical data available for trend analysis' : 
-                `Accumulating data (${hoursAvailable}h of 24h minimum)`,
-            recommendation: hasEnoughData ? 
-                'Trends and sparklines can be displayed' : 
-                'Show "Accumulating data..." message in UI'
+            message: hasEnoughData
+                ? 'Historical data available for trend analysis'
+                : `Accumulating data (${hoursAvailable}h of 24h minimum)`,
+            recommendation: hasEnoughData
+                ? 'Trends and sparklines can be displayed'
+                : 'Show "Accumulating data..." message in UI'
         });
-        
     } catch (error) {
         console.error('Error checking data availability:', error);
         res.status(500).json({ error: 'Failed to check data availability' });

@@ -6,11 +6,11 @@
 const AlertFilters = {
     STORAGE_KEY: 'stormScout_alertFilters',
     DEFAULT_PRESET: 'CUSTOM',
-    
+
     filterConfigs: {},
     alertTypesByLevel: {},
     userFilters: null,
-    
+
     /**
      * Initialize: Load filter configs and user preferences
      */
@@ -37,7 +37,7 @@ const AlertFilters = {
             return false;
         }
     },
-    
+
     /**
      * Load user preferences from localStorage or use defaults.
      * Wrapped in try/catch: localStorage may be unavailable (private browsing,
@@ -60,20 +60,20 @@ const AlertFilters = {
             }
         }
     },
-    
+
     /**
      * Apply a preset filter
      */
     applyPreset(presetName) {
         const preset = this.filterConfigs[presetName];
         if (!preset) return;
-        
+
         this.userFilters = {};
-        
+
         // Enable all alert types in included categories
         for (const [level, types] of Object.entries(this.alertTypesByLevel)) {
             if (preset.includeCategories.includes(level)) {
-                types.forEach(type => {
+                types.forEach((type) => {
                     // Check if explicitly excluded
                     if (!preset.excludeTypes || !preset.excludeTypes.includes(type)) {
                         this.userFilters[type] = true;
@@ -82,7 +82,7 @@ const AlertFilters = {
             }
         }
     },
-    
+
     /**
      * Check if an alert type should be included based on user's filters
      */
@@ -90,20 +90,18 @@ const AlertFilters = {
         if (!this.userFilters) {
             this.loadUserPreferences();
         }
-        
+
         // Only include if explicitly set to true
         return this.userFilters[alertType] === true;
     },
-    
+
     /**
      * Filter an array of advisories based on user preferences
      */
     filterAdvisories(advisories) {
-        return advisories.filter(adv => 
-            this.shouldIncludeAlertType(adv.advisory_type)
-        );
+        return advisories.filter((adv) => this.shouldIncludeAlertType(adv.advisory_type));
     },
-    
+
     /**
      * Get count of enabled alert types
      */
@@ -111,34 +109,38 @@ const AlertFilters = {
         if (!this.userFilters) {
             this.loadUserPreferences();
         }
-        return Object.values(this.userFilters).filter(v => v === true).length;
+        return Object.values(this.userFilters).filter((v) => v === true).length;
     },
-    
+
     /**
      * Check if a preset matches current user filters
      */
     matchesPreset(presetName) {
         const preset = this.filterConfigs[presetName];
         if (!preset) return false;
-        
+
         const expectedFilters = {};
         for (const [level, types] of Object.entries(this.alertTypesByLevel)) {
             if (preset.includeCategories.includes(level)) {
-                types.forEach(type => {
+                types.forEach((type) => {
                     if (!preset.excludeTypes || !preset.excludeTypes.includes(type)) {
                         expectedFilters[type] = true;
                     }
                 });
             }
         }
-        
+
         // Compare with user filters
-        const userEnabled = Object.keys(this.userFilters).filter(k => this.userFilters[k] === true).sort();
-        const expectedEnabled = Object.keys(expectedFilters).filter(k => expectedFilters[k] === true).sort();
-        
+        const userEnabled = Object.keys(this.userFilters)
+            .filter((k) => this.userFilters[k] === true)
+            .sort();
+        const expectedEnabled = Object.keys(expectedFilters)
+            .filter((k) => expectedFilters[k] === true)
+            .sort();
+
         return JSON.stringify(userEnabled) === JSON.stringify(expectedEnabled);
     },
-    
+
     /**
      * Get total number of alert types available
      */
@@ -149,21 +151,21 @@ const AlertFilters = {
         }
         return total;
     },
-    
+
     /**
      * Check if using full view (all alert types enabled)
      */
     isFullView() {
         return this.getEnabledCount() === this.getTotalAlertTypes();
     },
-    
+
     /**
      * Check if filters are customized (not all types enabled)
      */
     hasActiveFilters() {
         return !this.isFullView();
     },
-    
+
     /**
      * Get human-readable filter status
      */

@@ -11,12 +11,18 @@ const StormScoutExport = {
      */
     exportOfficesToCSV(offices, filename = 'storm-scout-offices') {
         const headers = [
-            'Office Code', 'Name', 'City', 'State',
-            'Highest Severity', 'Advisory Count', 'New Alerts',
-            'Operational Status', 'Weather Impact'
+            'Office Code',
+            'Name',
+            'City',
+            'State',
+            'Highest Severity',
+            'Advisory Count',
+            'New Alerts',
+            'Operational Status',
+            'Weather Impact'
         ];
 
-        const rows = offices.map(office => [
+        const rows = offices.map((office) => [
             office.office_code || '',
             office.name || '',
             office.city || '',
@@ -27,7 +33,7 @@ const StormScoutExport = {
             office.operational_status || '',
             office.weather_impact_level || ''
         ]);
-        
+
         this.downloadCSV(headers, rows, filename);
     },
 
@@ -38,12 +44,19 @@ const StormScoutExport = {
      */
     exportAdvisoriesToCSV(advisories, filename = 'storm-scout-advisories') {
         const headers = [
-            'Office Code', 'Office Name', 'City', 'State',
-            'Advisory Type', 'Severity', 'Action',
-            'Start Time', 'End Time', 'Source'
+            'Office Code',
+            'Office Name',
+            'City',
+            'State',
+            'Advisory Type',
+            'Severity',
+            'Action',
+            'Start Time',
+            'End Time',
+            'Source'
         ];
 
-        const rows = advisories.map(adv => [
+        const rows = advisories.map((adv) => [
             adv.office_code || '',
             adv.office_name || '',
             adv.city || '',
@@ -55,10 +68,10 @@ const StormScoutExport = {
             this.formatDateTime(adv.end_time),
             adv.source || ''
         ]);
-        
+
         this.downloadCSV(headers, rows, filename);
     },
-    
+
     /**
      * Download CSV file
      * @param {Array} headers - Column headers
@@ -68,12 +81,12 @@ const StormScoutExport = {
     downloadCSV(headers, rows, filename) {
         const csvContent = [
             headers.join(','),
-            ...rows.map(row => row.map(cell => this.escapeCSV(cell)).join(','))
+            ...rows.map((row) => row.map((cell) => this.escapeCSV(cell)).join(','))
         ].join('\n');
-        
+
         this.downloadFile(csvContent, `${filename}.csv`, 'text/csv;charset=utf-8;');
     },
-    
+
     /**
      * Escape CSV cell content
      * @param {*} cell - Cell value
@@ -87,7 +100,7 @@ const StormScoutExport = {
         }
         return str;
     },
-    
+
     /**
      * Export to HTML report (can be printed to PDF)
      * @param {Object} data - Report data
@@ -96,7 +109,7 @@ const StormScoutExport = {
     generateHTMLReport(data, reportType = 'incident') {
         const timestamp = new Date().toLocaleString();
         let reportHTML = '';
-        
+
         switch (reportType) {
             case 'incident':
                 reportHTML = this.generateIncidentReport(data, timestamp);
@@ -110,7 +123,7 @@ const StormScoutExport = {
             default:
                 reportHTML = this.generateIncidentReport(data, timestamp);
         }
-        
+
         // Open in new window for printing using Blob URL (CSP-safe)
         const blob = new Blob([reportHTML], { type: 'text/html' });
         const blobUrl = URL.createObjectURL(blob);
@@ -125,7 +138,7 @@ const StormScoutExport = {
             this.showNotification('Pop-up blocked — please allow pop-ups for this site', 'error');
         }
     },
-    
+
     /**
      * Generate Incident Report
      */
@@ -175,7 +188,9 @@ const StormScoutExport = {
             </tr>
         </thead>
         <tbody>
-            ${offices.map(office => `
+            ${offices
+                .map(
+                    (office) => `
                 <tr class="severity-${escapeHtml((office.highest_severity || '').toLowerCase())}">
                     <td><strong>${escapeHtml(office.office_code)}</strong></td>
                     <td>${escapeHtml(office.name)}</td>
@@ -184,7 +199,9 @@ const StormScoutExport = {
                     <td>${office.advisory_count || 0}</td>
                     <td>${escapeHtml(office.operational_status || 'Unknown')}</td>
                 </tr>
-            `).join('')}
+            `
+                )
+                .join('')}
         </tbody>
     </table>
 
@@ -200,7 +217,10 @@ const StormScoutExport = {
             </tr>
         </thead>
         <tbody>
-            ${advisories.slice(0, 50).map(adv => `
+            ${advisories
+                .slice(0, 50)
+                .map(
+                    (adv) => `
                 <tr>
                     <td><strong>${escapeHtml(adv.office_code)}</strong> - ${escapeHtml(adv.office_name)}</td>
                     <td>${escapeHtml(adv.advisory_type)}</td>
@@ -208,7 +228,9 @@ const StormScoutExport = {
                     <td>${escapeHtml(this.formatDateTime(adv.start_time))}</td>
                     <td>${escapeHtml(this.formatDateTime(adv.end_time))}</td>
                 </tr>
-            `).join('')}
+            `
+                )
+                .join('')}
         </tbody>
     </table>
 
@@ -229,10 +251,10 @@ const StormScoutExport = {
 
         // Group by severity
         const bySeverity = {
-            Extreme: offices.filter(s => s.highest_severity === 'Extreme'),
-            Severe: offices.filter(s => s.highest_severity === 'Severe'),
-            Moderate: offices.filter(s => s.highest_severity === 'Moderate'),
-            Minor: offices.filter(s => s.highest_severity === 'Minor')
+            Extreme: offices.filter((s) => s.highest_severity === 'Extreme'),
+            Severe: offices.filter((s) => s.highest_severity === 'Severe'),
+            Moderate: offices.filter((s) => s.highest_severity === 'Moderate'),
+            Minor: offices.filter((s) => s.highest_severity === 'Minor')
         };
 
         return `
@@ -281,16 +303,24 @@ const StormScoutExport = {
         </div>
     </div>
 
-    ${Object.entries(bySeverity).map(([severity, officesInCat]) =>
-        officesInCat.length > 0 ? `
+    ${Object.entries(bySeverity)
+        .map(([severity, officesInCat]) =>
+            officesInCat.length > 0
+                ? `
         <h2>${escapeHtml(severity)} Impact Offices (${officesInCat.length})</h2>
         <ul>
-            ${officesInCat.map(office => `
+            ${officesInCat
+                .map(
+                    (office) => `
                 <li><strong>${escapeHtml(office.office_code)}</strong> - ${escapeHtml(office.name)} (${escapeHtml(office.city)}, ${escapeHtml(office.state)}) - ${office.advisory_count} alerts</li>
-            `).join('')}
+            `
+                )
+                .join('')}
         </ul>
-        ` : ''
-    ).join('')}
+        `
+                : ''
+        )
+        .join('')}
 
     <p style="margin-top: 40px; color: #666; font-size: 12px;">
         Weather data sourced from NOAA/NWS (public domain). Report generated by Storm Scout.<br>
@@ -307,8 +337,8 @@ const StormScoutExport = {
     generateExecutiveBriefing(data, timestamp) {
         const { offices, overview } = data;
 
-        const criticalOffices = offices.filter(s =>
-            s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'
+        const criticalOffices = offices.filter(
+            (s) => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'
         );
 
         return `
@@ -341,31 +371,42 @@ const StormScoutExport = {
 
     <h2>Key Points</h2>
     <ul class="key-points">
-        <li><strong>${offices.filter(s => s.highest_severity === 'Extreme').length}</strong> offices under EXTREME weather conditions requiring immediate action</li>
-        <li><strong>${offices.filter(s => s.highest_severity === 'Severe').length}</strong> offices experiencing SEVERE weather impacts</li>
-        <li><strong>${offices.filter(s => s.operational_status === 'Closed').length}</strong> offices currently closed due to weather</li>
-        <li><strong>${offices.filter(s => s.new_count > 0).reduce((sum, s) => sum + s.new_count, 0)}</strong> new weather alerts issued in the last 2 hours</li>
+        <li><strong>${offices.filter((s) => s.highest_severity === 'Extreme').length}</strong> offices under EXTREME weather conditions requiring immediate action</li>
+        <li><strong>${offices.filter((s) => s.highest_severity === 'Severe').length}</strong> offices experiencing SEVERE weather impacts</li>
+        <li><strong>${offices.filter((s) => s.operational_status === 'Closed').length}</strong> offices currently closed due to weather</li>
+        <li><strong>${offices.filter((s) => s.new_count > 0).reduce((sum, s) => sum + s.new_count, 0)}</strong> new weather alerts issued in the last 2 hours</li>
     </ul>
 
-    ${criticalOffices.length > 0 ? `
+    ${
+        criticalOffices.length > 0
+            ? `
     <div class="critical-offices">
         <h2>⚠️ Critical Offices Requiring Immediate Attention</h2>
         <ul>
-            ${criticalOffices.map(office => `
+            ${criticalOffices
+                .map(
+                    (office) => `
                 <li><strong>${escapeHtml(office.office_code)}</strong> - ${escapeHtml(office.name)}, ${escapeHtml(office.state)}
                     <br>Status: <strong>${escapeHtml(office.highest_severity)}</strong> |
                     ${office.advisory_count} active alerts |
                     Ops Status: ${escapeHtml(office.operational_status || 'Pending')}
                 </li>
-            `).join('')}
+            `
+                )
+                .join('')}
         </ul>
     </div>
-    ` : '<p><em>No critical offices at this time.</em></p>'}
+    `
+            : '<p><em>No critical offices at this time.</em></p>'
+    }
 
     <h2>Recommendations</h2>
     <ul>
-        ${criticalOffices.length > 0 ?
-            '<li>Review operational status for offices under extreme/severe weather conditions</li>' : ''}
+        ${
+            criticalOffices.length > 0
+                ? '<li>Review operational status for offices under extreme/severe weather conditions</li>'
+                : ''
+        }
         <li>Monitor offices with multiple active advisories for potential escalation</li>
         <li>Coordinate with local office management for real-time updates</li>
     </ul>
@@ -378,7 +419,7 @@ const StormScoutExport = {
 </html>
         `;
     },
-    
+
     /**
      * Download a file
      * @param {string} content - File content
@@ -395,7 +436,7 @@ const StormScoutExport = {
         document.body.removeChild(link);
         URL.revokeObjectURL(link.href);
     },
-    
+
     /**
      * Format date/time for export
      * @param {string} dateStr - ISO date string
@@ -406,7 +447,7 @@ const StormScoutExport = {
         const date = new Date(dateStr);
         return date.toLocaleString();
     },
-    
+
     /**
      * Add export buttons to a page
      * @param {string} containerId - ID of container element
@@ -416,7 +457,7 @@ const StormScoutExport = {
     addExportButtons(containerId, getDataFunc, dataType = 'offices') {
         const container = document.getElementById(containerId);
         if (!container) return;
-        
+
         const buttonGroup = document.createElement('div');
         buttonGroup.className = 'btn-group';
         buttonGroup.innerHTML = `
@@ -430,9 +471,9 @@ const StormScoutExport = {
                 <li><a class="dropdown-item export-executive" href="#"><i class="bi bi-file-earmark-person"></i> Executive Briefing</a></li>
             </ul>
         `;
-        
+
         container.appendChild(buttonGroup);
-        
+
         // Add event listeners
         buttonGroup.querySelector('.export-csv').addEventListener('click', (e) => {
             e.preventDefault();
@@ -443,26 +484,26 @@ const StormScoutExport = {
                 this.exportAdvisoriesToCSV(data);
             }
         });
-        
+
         buttonGroup.querySelector('.export-incident').addEventListener('click', (e) => {
             e.preventDefault();
             const data = getDataFunc();
             this.generateHTMLReport(data, 'incident');
         });
-        
+
         buttonGroup.querySelector('.export-summary').addEventListener('click', (e) => {
             e.preventDefault();
             const data = getDataFunc();
             this.generateHTMLReport(data, 'summary');
         });
-        
+
         buttonGroup.querySelector('.export-executive').addEventListener('click', (e) => {
             e.preventDefault();
             const data = getDataFunc();
             this.generateHTMLReport(data, 'executive');
         });
     },
-    
+
     /**
      * Generate shareable link with current filter state
      * @returns {string} Full URL with filter parameters
@@ -470,11 +511,11 @@ const StormScoutExport = {
     generateShareableLink() {
         const baseUrl = window.location.origin + window.location.pathname;
         const params = new URLSearchParams();
-        
+
         // Get current filter state from localStorage
         const filterPreset = localStorage.getItem('selectedFilterPreset') || 'CUSTOM';
         const customFilters = localStorage.getItem('customFilters');
-        
+
         if (filterPreset !== 'CUSTOM') {
             params.set('preset', filterPreset);
         } else if (customFilters) {
@@ -485,7 +526,7 @@ const StormScoutExport = {
                 console.error('Error encoding filters:', e);
             }
         }
-        
+
         // Add current page context
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('weather_impact')) {
@@ -494,16 +535,16 @@ const StormScoutExport = {
         if (urlParams.has('status')) {
             params.set('status', urlParams.get('status'));
         }
-        
+
         return baseUrl + (params.toString() ? '?' + params.toString() : '');
     },
-    
+
     /**
      * Copy shareable link to clipboard
      */
     async copyShareableLink() {
         const link = this.generateShareableLink();
-        
+
         try {
             await navigator.clipboard.writeText(link);
             this.showNotification('✓ Link copied to clipboard', 'success');
@@ -516,7 +557,7 @@ const StormScoutExport = {
             textArea.style.left = '-999999px';
             document.body.appendChild(textArea);
             textArea.select();
-            
+
             try {
                 document.execCommand('copy');
                 this.showNotification('✓ Link copied to clipboard', 'success');
@@ -529,25 +570,25 @@ const StormScoutExport = {
             }
         }
     },
-    
+
     /**
      * Open browser print dialog for PDF export
      */
     printToPDF() {
         // Add print-specific class to body
         document.body.classList.add('print-mode');
-        
+
         // Trigger print dialog
         window.print();
-        
+
         // Remove print mode class after print dialog closes
         setTimeout(() => {
             document.body.classList.remove('print-mode');
         }, 1000);
-        
+
         this.showNotification('Print dialog opened', 'success');
     },
-    
+
     /**
      * Show notification toast
      * @param {string} message
@@ -579,19 +620,19 @@ const StormScoutExport = {
             setTimeout(() => notification.remove(), 300);
         }, 3000);
     },
-    
+
     /**
      * Apply URL parameters to filter state (for shareable links)
      */
     applyURLFilters() {
         const params = new URLSearchParams(window.location.search);
-        
+
         // Apply preset filter
         if (params.has('preset')) {
             const preset = params.get('preset');
             localStorage.setItem('selectedFilterPreset', preset);
         }
-        
+
         // Apply custom filters
         if (params.has('filters')) {
             try {

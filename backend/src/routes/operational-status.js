@@ -18,12 +18,13 @@ const OfficeModel = require('../models/office');
  * SECURITY: Endpoint disabled to prevent unauthorized modifications (Issue #1)
  */
 router.post('/offices/:id', (req, res) => {
-  res.status(501).json({
-    success: false,
-    error: 'Manual status updates not yet implemented',
-    message: 'Operational status is currently calculated automatically from weather advisory data. Manual override feature is planned for a future release.',
-    feature_status: 'planned'
-  });
+    res.status(501).json({
+        success: false,
+        error: 'Manual status updates not yet implemented',
+        message:
+            'Operational status is currently calculated automatically from weather advisory data. Manual override feature is planned for a future release.',
+        feature_status: 'planned'
+    });
 });
 
 /**
@@ -35,12 +36,13 @@ router.post('/offices/:id', (req, res) => {
  * SECURITY: Endpoint disabled to prevent unauthorized modifications (Issue #1)
  */
 router.post('/bulk-update', (req, res) => {
-  res.status(501).json({
-    success: false,
-    error: 'Bulk status updates not yet implemented',
-    message: 'Operational status is currently calculated automatically from weather advisory data. Manual bulk override feature is planned for a future release.',
-    feature_status: 'planned'
-  });
+    res.status(501).json({
+        success: false,
+        error: 'Bulk status updates not yet implemented',
+        message:
+            'Operational status is currently calculated automatically from weather advisory data. Manual bulk override feature is planned for a future release.',
+        feature_status: 'planned'
+    });
 });
 
 /**
@@ -48,27 +50,26 @@ router.post('/bulk-update', (req, res) => {
  * Get current operational status for an office including decision history
  */
 router.get('/offices/:id', async (req, res) => {
-  try {
-    const officeId = parseInt(req.params.id, 10);
+    try {
+        const officeId = parseInt(req.params.id, 10);
 
-    const status = await OfficeStatusModel.getByOffice(officeId);
+        const status = await OfficeStatusModel.getByOffice(officeId);
 
-    if (!status) {
-      return res.status(404).json({
-        success: false,
-        error: `Status not found for office ${officeId}`
-      });
+        if (!status) {
+            return res.status(404).json({
+                success: false,
+                error: `Status not found for office ${officeId}`
+            });
+        }
+
+        res.json({
+            success: true,
+            data: status
+        });
+    } catch (error) {
+        console.error('Error fetching operational status:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
-
-    res.json({
-      success: true,
-      data: status
-    });
-
-  } catch (error) {
-    console.error('Error fetching operational status:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
 });
 
 /**
@@ -77,12 +78,12 @@ router.get('/offices/:id', async (req, res) => {
  * Useful for dashboard showing which offices need decisions
  */
 router.get('/summary', async (req, res) => {
-  try {
-    const { getDatabase } = require('../config/database');
-    const db = getDatabase();
+    try {
+        const { getDatabase } = require('../config/database');
+        const db = getDatabase();
 
-    // Get counts by weather impact and operational status
-    const [summary] = await db.query(`
+        // Get counts by weather impact and operational status
+        const [summary] = await db.query(`
       SELECT
         ss.weather_impact_level,
         ss.operational_status,
@@ -104,10 +105,10 @@ router.get('/summary', async (req, res) => {
         END
     `);
 
-    // Get offices that need attention (high impact but not closed/restricted)
-    // NOTE: decision_by should contain role identifiers (e.g., 'ops_team'),
-    // not personal names, to avoid exposing PII via the API.
-    const [needsAttention] = await db.query(`
+        // Get offices that need attention (high impact but not closed/restricted)
+        // NOTE: decision_by should contain role identifiers (e.g., 'ops_team'),
+        // not personal names, to avoid exposing PII via the API.
+        const [needsAttention] = await db.query(`
       SELECT s.id, s.office_code, s.name, s.state,
              ss.weather_impact_level, ss.operational_status,
              ss.decision_by, ss.decision_at,
@@ -124,19 +125,18 @@ router.get('/summary', async (req, res) => {
         s.state, s.name
     `);
 
-    res.json({
-      success: true,
-      data: {
-        summary,
-        needs_attention: needsAttention,
-        needs_attention_count: needsAttention.length
-      }
-    });
-
-  } catch (error) {
-    console.error('Error fetching operational status summary:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+        res.json({
+            success: true,
+            data: {
+                summary,
+                needs_attention: needsAttention,
+                needs_attention_count: needsAttention.length
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching operational status summary:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 module.exports = router;
