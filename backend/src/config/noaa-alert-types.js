@@ -146,10 +146,10 @@ const DEFAULT_FILTERS = {
     ]
   },
 
-  // Operations - Show anything that could impact site operations
+  // Operations - Show anything that could impact office operations
   OPERATIONS: {
     name: 'Operations View',
-    description: 'Critical and high-impact alerts that may affect site operations',
+    description: 'Critical and high-impact alerts that may affect office operations',
     includeCategories: ['CRITICAL', 'HIGH', 'MODERATE'],
     excludeTypes: ['Special Weather Statement', 'Marine Weather Statement']
   },

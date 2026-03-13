@@ -57,7 +57,7 @@ const STATE_REGIONS = {
   'GU': 'Pacific', 'PR': 'Caribbean', 'VI': 'Caribbean'
 };
 
-// ─── The 10 new sites with confirmed/best-available address data ─────────────
+// ─── The 10 new offices with confirmed/best-available address data ────────────
 // Addresses sourced from public location data and
 // Sites marked 'NEEDS VERIFICATION' could not be confirmed from public data.
 // confirmed via public sources and use approximate geocoding.

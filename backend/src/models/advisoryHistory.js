@@ -70,13 +70,13 @@ class AdvisoryHistory {
      * Uses Promise.all so the insert fan-out runs concurrently rather than sequentially;
      * at 300 offices this avoids a sequential 300-insert bottleneck on snapshot cycles.
      *
-     * @param {Array<Object>} aggregatedSites - Array of aggregated office objects;
+     * @param {Array<Object>} aggregatedOffices - Array of aggregated office objects;
      *   each must have office_id and the fields required by createSnapshot
      * @returns {Promise<number[]>} Array of insert IDs, one per office
      */
-    static async createSnapshotsForAllSites(aggregatedSites) {
-        const promises = aggregatedSites.map(site => 
-            this.createSnapshot(site.office_id, site)
+    static async createSnapshotsForAllOffices(aggregatedOffices) {
+        const promises = aggregatedOffices.map(office =>
+            this.createSnapshot(office.office_id, office)
         );
         
         return await Promise.all(promises);

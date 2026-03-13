@@ -121,7 +121,7 @@ async function ingestNOAAData() {
         matchedByUGC.forEach(o => matchedSites.add(o));
       }
       
-      // Level 2: Match by county (if no UGC matches for a site)
+      // Level 2: Match by county (if no UGC matches for an office)
       if (matchedSites.size === 0) {
         for (const county of counties) {
           const matchedByCounty = officesByCounty.get(county) || [];
@@ -130,19 +130,19 @@ async function ingestNOAAData() {
       }
       
       // Level 3: Fallback to state matching (least precise)
-      // Only for sites WITHOUT UGC codes defined - sites with UGC codes
+      // Only for offices WITHOUT UGC codes defined - offices with UGC codes
       // should only match alerts that explicitly include their zone/county
       if (matchedSites.size === 0) {
         for (const state of states) {
           const stateOffices = officesByState.get(state) || [];
-          // Only add sites that don't have UGC codes (legacy fallback)
+          // Only add offices that don't have UGC codes (legacy fallback)
           stateOffices
             .filter(o => !o.ugc_codes)
             .forEach(o => matchedSites.add(o));
         }
       }
       
-      // Add alert to matched sites
+      // Add alert to matched offices
       for (const office of matchedSites) {
         if (!officeAdvisories.has(office.id)) {
           officeAdvisories.set(office.id, []);
@@ -156,8 +156,8 @@ async function ingestNOAAData() {
     
     console.log(`Matched alerts to ${officeAdvisories.size} offices\n`);
     
-    // Step 3.5: De-duplicate advisories - keep only most severe of each type per site
-    console.log('De-duplicating advisories by type per site...');
+    // Step 3.5: De-duplicate advisories - keep only most severe of each type per office
+    console.log('De-duplicating advisories by type per office...');
     const severityOrder = { 'Extreme': 4, 'Severe': 3, 'Moderate': 2, 'Minor': 1, 'Unknown': 0 };
     let beforeDedup = 0;
     let afterDedup = 0;

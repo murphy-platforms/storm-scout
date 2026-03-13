@@ -142,24 +142,48 @@ const API = {
      * Get trends for all offices (Phase 3)
      */
     async getTrends(days = 7) {
-        const response = await fetch(`${API_BASE_URL}/trends?days=${days}`);
-        return await response.json();
+        try {
+            const response = await fetch(`${API_BASE_URL}/trends?days=${days}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const json = await response.json();
+            if (!json.success) throw new Error(json.error || 'Failed to fetch trends');
+            return json;
+        } catch (error) {
+            console.error('Failed to fetch trends:', error);
+            return { status: 'error', message: error.message };
+        }
     },
 
     /**
      * Get trend for a specific office (Phase 3)
      */
     async getOfficeTrend(officeId, days = 7) {
-        const response = await fetch(`${API_BASE_URL}/trends/${officeId}?days=${days}`);
-        return await response.json();
+        try {
+            const response = await fetch(`${API_BASE_URL}/trends/${officeId}?days=${days}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const json = await response.json();
+            if (!json.success) throw new Error(json.error || 'Failed to fetch office trend');
+            return json;
+        } catch (error) {
+            console.error(`Failed to fetch office trend for ${officeId}:`, error);
+            return { status: 'error', message: error.message };
+        }
     },
 
     /**
      * Get full history for an office (Phase 3)
      */
     async getOfficeHistory(officeId, days = 7) {
-        const response = await fetch(`${API_BASE_URL}/trends/${officeId}/history?days=${days}`);
-        return await response.json();
+        try {
+            const response = await fetch(`${API_BASE_URL}/trends/${officeId}/history?days=${days}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const json = await response.json();
+            if (!json.success) throw new Error(json.error || 'Failed to fetch office history');
+            return json;
+        } catch (error) {
+            console.error(`Failed to fetch office history for ${officeId}:`, error);
+            return { status: 'error', message: error.message };
+        }
     },
 
     // ========================================
