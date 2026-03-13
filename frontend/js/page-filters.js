@@ -122,7 +122,6 @@
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 currentFilters = JSON.parse(saved);
-                console.log('Loaded saved preferences');
             } else {
                 // Use default preset
                 applyPreset(DEFAULT_PRESET, false);

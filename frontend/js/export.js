@@ -586,7 +586,6 @@ const StormScoutExport = {
         if (params.has('preset')) {
             const preset = params.get('preset');
             localStorage.setItem('selectedFilterPreset', preset);
-            console.log('Applied filter preset from URL:', preset);
         }
         
         // Apply custom filters
@@ -596,7 +595,6 @@ const StormScoutExport = {
                 const filters = JSON.parse(filtersJSON);
                 localStorage.setItem('customFilters', JSON.stringify(filters));
                 localStorage.setItem('selectedFilterPreset', 'CUSTOM');
-                console.log('Applied custom filters from URL');
             } catch (e) {
                 console.error('Error decoding URL filters:', e);
             }
