@@ -111,13 +111,19 @@ const StormScoutExport = {
                 reportHTML = this.generateIncidentReport(data, timestamp);
         }
         
-        // Open in new window for printing
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(reportHTML);
-        printWindow.document.close();
-        
-        // Trigger print dialog after content loads
-        printWindow.onload = () => printWindow.print();
+        // Open in new window for printing using Blob URL (CSP-safe)
+        const blob = new Blob([reportHTML], { type: 'text/html' });
+        const blobUrl = URL.createObjectURL(blob);
+        const printWindow = window.open(blobUrl, '_blank');
+        if (printWindow) {
+            printWindow.onload = () => {
+                printWindow.print();
+                URL.revokeObjectURL(blobUrl);
+            };
+        } else {
+            URL.revokeObjectURL(blobUrl);
+            this.showNotification('Pop-up blocked — please allow pop-ups for this site', 'error');
+        }
     },
     
     /**
