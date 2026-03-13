@@ -274,8 +274,7 @@
         document.getElementById('toggleSevere').addEventListener('click', () => toggleFilter('Severe'));
         document.getElementById('toggleModerate').addEventListener('click', () => toggleFilter('Moderate'));
 
-        map?.on('moveend', updateVisibleCount);
-
         // Initialize
         initMap();
+        map.on('moveend', updateVisibleCount);
         loadMapData();
