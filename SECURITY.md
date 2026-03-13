@@ -46,6 +46,3 @@ When deploying Storm Scout:
 - Set `NOAA_API_USER_AGENT` to a shared organizational contact email, not a personal email — this value is sent to the NOAA API on every weather data request
 - Request logs capture IP addresses and User-Agent strings for rate limiting and security monitoring; implement an appropriate data retention policy for your deployment context
 
-## Disclaimer
-
-Storm Scout is an independent developer project and is not affiliated with, endorsed by, or connected to the the demo data source organization. The name® is a registered trademark of the United States Postal Service.

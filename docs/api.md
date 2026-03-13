@@ -73,7 +73,7 @@ Dashboard summary statistics.
 {
     "success": true,
     "data": {
-        "total_offices": 1682,
+        "total_offices": 300,
         "offices_with_advisories": 38,
         "total_active_advisories": 48,
         "advisories_by_severity": [
@@ -103,7 +103,7 @@ Get all 300 office locations.
 ```json
 {
     "success": true,
-    "count": 1502,
+    "count": 300,
     "data": [
         {
             "id": 1,
@@ -383,7 +383,7 @@ Active government and emergency notices (state/federal declarations).
 Available filter presets for alert type filtering.
 
 **Available Presets**:
-- `CUSTOM`: Site Default (47/94 types — CRITICAL + HIGH + select MODERATE)
+- `CUSTOM`: Office Default (47/94 types — CRITICAL + HIGH + select MODERATE)
 - `OPERATIONS`: Operations View (CRITICAL + HIGH only)
 - `EXECUTIVE`: Executive Summary (highest impact only)
 - `SAFETY`: Safety Focus (life-safety alerts)
@@ -482,7 +482,7 @@ Returns current scheduler state.
 Current application version from `package.json`.
 
 ```json
-{ "version": "1.10.1", "releasedDate": "2026-03-08" }
+{ "version": "2.0.0", "releasedDate": "2026-03-13" }
 ```
 
 ---
@@ -580,4 +580,4 @@ Error body:
 ---
 
 **Last Updated**: March 10, 2026
-**API Version**: 1.10.1
+**API Version**: 2.0.0

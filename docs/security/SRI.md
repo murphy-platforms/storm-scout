@@ -78,18 +78,13 @@ When upgrading Bootstrap or other CDN resources:
 All frontend HTML files include SRI attributes:
 - `frontend/index.html`
 - `frontend/advisories.html`
-- `frontend/sites.html`
-- `frontend/site-detail.html`
+- `frontend/offices.html`
+- `frontend/office-detail.html`
 - `frontend/notices.html`
 - `frontend/filters.html`
 - `frontend/map.html`
 - `frontend/sources.html`
-- `frontend/beta/index.html`
-- `frontend/beta/advisories.html`
-- `frontend/beta/sites.html`
-- `frontend/beta/site-detail.html`
-- `frontend/beta/notices.html`
-- `frontend/beta/filters.html`
+- `frontend/disclaimer.html`
 
 ## Browser Support
 

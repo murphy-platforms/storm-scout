@@ -25,7 +25,7 @@ router.get('/', officeValidators.getAll, handleValidationErrors, async (req, res
         const hasFilters = state || region;
 
         if (!hasFilters) {
-            const cached = cache.get(cache.CACHE_KEYS.ALL_SITES);
+            const cached = cache.get(cache.CACHE_KEYS.ALL_OFFICES);
             if (cached) {
                 return res.json(cached);
             }
@@ -37,7 +37,7 @@ router.get('/', officeValidators.getAll, handleValidationErrors, async (req, res
 
         // Cache only unfiltered requests (longer TTL for static office data)
         if (!hasFilters) {
-            cache.set(cache.CACHE_KEYS.ALL_SITES, response, cache.TTL.LONG);
+            cache.set(cache.CACHE_KEYS.ALL_OFFICES, response, cache.TTL.LONG);
         }
 
         res.json(response);

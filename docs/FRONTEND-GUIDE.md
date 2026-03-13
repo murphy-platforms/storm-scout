@@ -23,31 +23,39 @@ Storm Scout has 8 HTML pages, each with a corresponding embedded JavaScript modu
 
 ## 2. Page Module Pattern
 
-Each page's JavaScript is embedded directly in a `<script>` tag at the bottom of the HTML file, not in a separate `.js` file loaded via `<script src>`. This keeps the dependency graph simple and avoids a build step.
+Each page's JavaScript lives in a dedicated file under `js/` (e.g., `js/page-advisories.js`) loaded via `<script src>` at the bottom of the HTML file. This keeps the dependency graph simple and avoids a build step.
 
 **Pattern:**
 ```html
 <!-- At the bottom of advisories.html -->
-<script>
-    // Module-level state variables declared at the top
-    let allAdvisories = [];
-    let observationsMap = {};
-    let currentView = 'card';
+<script src="js/utils.js"></script>
+<script src="js/api.js"></script>
+<script src="js/alert-filters.js"></script>
+<script src="js/page-advisories.js"></script>
+```
 
-    // All functions defined within the script block
-    async function loadData() { ... }
-    function renderCards() { ... }
+Each page module follows the same internal structure:
+```javascript
+// js/page-advisories.js
 
-    // Entry point: initialize after filters load
-    AlertFilters.init().then(() => {
-        loadData();
-    });
-</script>
+// Module-level state variables declared at the top
+let allAdvisories = [];
+let observationsMap = {};
+let currentView = 'card';
+
+// All functions defined within the module file
+async function loadData() { ... }
+function renderCards() { ... }
+
+// Entry point: initialize after filters load
+AlertFilters.init().then(() => {
+    loadData();
+});
 ```
 
 **Conventions:**
-- State variables are declared with `let` at the top of the script block — never inside functions
-- The entry point is always at the bottom of the script block
+- State variables are declared with `let` at the top of the module file — never inside functions
+- The entry point is always at the bottom of the module file
 - Functions are named descriptively: `loadData`, `renderCards`, `applyFilters`, `handleSearch`
 - No classes — functions and module-level variables only
 

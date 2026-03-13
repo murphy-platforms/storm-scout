@@ -422,10 +422,6 @@ See [`docs/DEVELOPMENT-PROCESS.md`](docs/DEVELOPMENT-PROCESS.md) for the full me
 
 MIT
 
-## Disclaimer
-
-Storm Scout is an independent developer project and is not affiliated with, endorsed by, or connected to the the demo data source organization. The name® is a registered trademark of the United States Postal Service.
-
 ## Privacy & Analytics
 
 Storm Scout does not include analytics by default. The `frontend/js/analytics.js` file is a placeholder. If you deploy this application and add analytics, you are responsible for implementing an appropriate consent mechanism and privacy policy for your deployment context. Request logs capture IP addresses and User-Agent strings for rate limiting and security monitoring purposes.

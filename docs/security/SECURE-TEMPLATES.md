@@ -54,13 +54,13 @@ container.innerHTML = html`<div>${data.title}</div>`;
 
 ```javascript
 // Badge HTML is constructed by our code, so it's trusted
-function renderSite(site) {
-    const severityBadge = `<span class="badge ${getSeverityBadge(site.severity)}">${escapeHtml(site.severity)}</span>`;
-    
+function renderOffice(office) {
+    const severityBadge = `<span class="badge ${getSeverityBadge(office.severity)}">${escapeHtml(office.severity)}</span>`;
+
     container.innerHTML = html`
         <div class="card">
-            <h3>${site.name}</h3>
-            <p>${site.description}</p>
+            <h3>${office.name}</h3>
+            <p>${office.description}</p>
             ${raw(severityBadge)}
         </div>
     `;
@@ -73,8 +73,8 @@ function renderSite(site) {
 function renderAdvisoryRow(adv) {
     return html`
         <tr>
-            <td><strong>${adv.site_code}</strong></td>
-            <td>${adv.site_name}</td>
+            <td><strong>${adv.office_code}</strong></td>
+            <td>${adv.office_name}</td>
             <td>${adv.city}</td>
             <td>${adv.state}</td>
             <td>${adv.advisory_type}</td>

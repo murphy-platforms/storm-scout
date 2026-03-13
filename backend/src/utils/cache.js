@@ -23,10 +23,10 @@ const cache = new NodeCache({
  */
 const CACHE_KEYS = {
     STATUS_OVERVIEW: 'status:overview',
-    ALL_SITES: 'sites:all',
+    ALL_OFFICES: 'offices:all',
     ACTIVE_ADVISORIES: 'advisories:active',
-    STATES_LIST: 'sites:states',
-    REGIONS_LIST: 'sites:regions'
+    STATES_LIST: 'offices:states',
+    REGIONS_LIST: 'offices:regions'
 };
 
 /**
@@ -34,7 +34,7 @@ const CACHE_KEYS = {
  */
 const TTL = {
     SHORT: 900, // 15 minutes - for dynamic data (advisories, status)
-    LONG: 3600, // 1 hour - for static data (sites)
+    LONG: 3600, // 1 hour - for static data (offices)
     VERY_LONG: 86400 // 24 hours - for very static data (states, regions)
 };
 
@@ -93,7 +93,7 @@ function invalidateAll() {
 
 /**
  * Invalidate only dynamic data changed by ingestion.
- * Preserves static keys (ALL_SITES, STATES_LIST, REGIONS_LIST) which do not
+ * Preserves static keys (ALL_OFFICES, STATES_LIST, REGIONS_LIST) which do not
  * change during ingestion and are expensive to rebuild — avoiding thundering herd.
  * Also clears filtered advisory keys cached under 'advisories:filtered:*'.
  */

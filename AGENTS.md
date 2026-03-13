@@ -307,7 +307,7 @@ Each office is mapped to its nearest NWS observation station via `/points/{lat},
 Offices near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
 ### Filter System
-- **Site Default (CUSTOM)**: 47 of 94 alert types enabled (all CRITICAL + all HIGH + key MODERATE for land ops)
+- **Office Default (CUSTOM)**: 47 of 94 alert types enabled (all CRITICAL + all HIGH + key MODERATE for land ops)
 - **Operations View**: All CRITICAL, HIGH, MODERATE (excluding marine/special weather statements)
 - **Executive Summary**: CRITICAL only
 - **Safety Focus**: CRITICAL through LOW (excluding marine/test)
