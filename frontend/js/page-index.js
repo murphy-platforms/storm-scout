@@ -47,6 +47,11 @@ function updateCountdown() {
 
     if (diff <= 0) {
         document.getElementById('nextUpdate').textContent = 'Updating now...';
+        // Clear interval to prevent duplicate reload calls (race condition)
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
         // Reload data after a short delay
         setTimeout(() => loadOverview(), 2000);
         return;

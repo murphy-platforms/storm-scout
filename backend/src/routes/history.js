@@ -203,7 +203,7 @@ router.get('/severity-trends', historyValidators.getSeverityTrends, handleValida
 
 /**
  * GET /api/history/office-trends/:officeId
- * Returns per-site advisory count history
+ * Returns per-office advisory count history
  * Query params: ?days=3 (default)
  */
 router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handleValidationErrors, async (req, res) => {
@@ -214,7 +214,7 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
         
         const startTime = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
         
-        // Get site info
+        // Get office info
         const [sites] = await pool.query(`
             SELECT id, office_code, name, city, state
             FROM offices
@@ -284,7 +284,7 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
         });
         
     } catch (error) {
-        console.error(`Error fetching site trends for office ${req.params.officeId}:`, error);
+        console.error(`Error fetching office trends for office ${req.params.officeId}:`, error);
         res.status(500).json({ error: 'Failed to fetch office trends' });
     }
 });

@@ -1,6 +1,6 @@
 /**
  * Database Initialization Script
- * Run this to set up the database schema and load initial site data
+ * Run this to set up the database schema and load initial office data
  * Usage: npm run init-db
  */
 

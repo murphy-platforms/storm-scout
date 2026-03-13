@@ -81,9 +81,11 @@
 
         <div class="row mb-3">
             <div class="col-md-3">
+                <label for="searchBox" class="visually-hidden">Search by office code or name</label>
                 <input type="text" class="form-control" id="searchBox" placeholder="Search by office code or name...">
             </div>
             <div class="col-md-2">
+                <label for="alertTypeFilter" class="visually-hidden">Filter by alert type</label>
                 <select class="form-select" id="alertTypeFilter" title="Filter by impact level">
                     <option value="">All Alert Types</option>
                     <option value="CUSTOM" selected>Office Default</option>
@@ -94,11 +96,13 @@
                 </select>
             </div>
             <div class="col-md-2">
+                <label for="stateFilter" class="visually-hidden">Filter by state</label>
                 <select class="form-select" id="stateFilter">
                     <option value="">All States</option>
                 </select>
             </div>
             <div class="col-md-2">
+                <label for="severityFilter" class="visually-hidden">Filter by severity</label>
                 <select class="form-select" id="severityFilter">
                     <option value="">All Severities</option>
                     <option value="Extreme">Extreme</option>
