@@ -331,7 +331,7 @@ async function main() {
     console.log('  (This is normal for offices located across state lines)\n');
     
     for (const office of crossStateSites) {
-      console.log(`  • ${office.site_code} "${office.name}" (${site.listed_state})`);
+      console.log(`  • ${office.site_code} "${office.name}" (${office.listed_state})`);
       console.log(`    UGC: ${office.ugc_codes.join(', ')} → ${office.county}\n`);
     }
   }
