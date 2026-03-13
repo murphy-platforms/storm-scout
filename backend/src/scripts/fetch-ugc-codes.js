@@ -124,7 +124,7 @@ async function main() {
     }
 
     const offices = JSON.parse(fs.readFileSync(sitesFile, 'utf8'));
-    console.log(`Loaded ${offices.length} offices from sites.json`);
+    console.log(`Loaded ${offices.length} offices from offices.json`);
     console.log(`Using User-Agent: ${USER_AGENT}`);
     console.log(`Delay between requests: ${DELAY_MS}ms`);
     console.log(`Estimated time: ~${Math.ceil((offices.length * DELAY_MS) / 1000 / 60)} minutes\n`);

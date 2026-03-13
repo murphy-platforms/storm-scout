@@ -1,8 +1,8 @@
 /**
  * Update Database with UGC Codes
  *
- * This script reads the UGC codes fetched from NOAA and updates the sites table.
- * It also updates the sites.json file for future seeding.
+ * This script reads the UGC codes fetched from NOAA and updates the offices table.
+ * It also updates the offices.json file for future seeding.
  *
  * Usage: node src/scripts/update-ugc-codes.js [--dry-run]
  * Options:
@@ -24,7 +24,7 @@ const DRY_RUN = process.argv.includes('--dry-run');
  * Main function to update database with UGC codes
  */
 async function main() {
-    console.log('═══ Updating Sites with UGC Codes ═══\n');
+    console.log('═══ Updating Offices with UGC Codes ═══\n');
 
     if (DRY_RUN) {
         console.log('🔍 DRY RUN MODE - No changes will be made\n');
@@ -39,14 +39,14 @@ async function main() {
 
     const ugcData = JSON.parse(fs.readFileSync(INPUT_FILE, 'utf8'));
     console.log(`Loaded UGC data from ${ugcData.generated_at}`);
-    console.log(`Total sites: ${ugcData.total_sites}, Successful: ${ugcData.successful}, Errors: ${ugcData.errors}\n`);
+    console.log(`Total offices: ${ugcData.total_sites}, Successful: ${ugcData.successful}, Errors: ${ugcData.errors}\n`);
 
-    // Filter to successful sites only
+    // Filter to successful offices only
     const sitesToUpdate = ugcData.sites.filter((s) => s.success && s.ugc_codes.length > 0);
-    console.log(`Sites with valid UGC codes: ${sitesToUpdate.length}\n`);
+    console.log(`Offices with valid UGC codes: ${sitesToUpdate.length}\n`);
 
     if (sitesToUpdate.length === 0) {
-        console.log('No sites to update. Exiting.');
+        console.log('No offices to update. Exiting.');
         process.exit(0);
     }
 
@@ -57,7 +57,7 @@ async function main() {
     let errorCount = 0;
 
     try {
-        // Update each site in the database
+        // Update each office in the database
         console.log('Updating database...\n');
 
         for (const site of sitesToUpdate) {
@@ -83,7 +83,7 @@ async function main() {
                     updatedCount++;
                     console.log(`  ✓ ${site.site_code} (${site.city}, ${site.state}): ${site.ugc_codes.join(', ')}`);
                 } else {
-                    console.log(`  ⚠ ${site.site_code}: Site not found in database`);
+                    console.log(`  ⚠ ${site.site_code}: Office not found in database`);
                 }
             } catch (error) {
                 errorCount++;
@@ -97,7 +97,7 @@ async function main() {
 
         // Also update sites.json for future seeding
         if (!DRY_RUN) {
-            console.log('\n═══ Updating sites.json ═══');
+            console.log('\n═══ Updating offices.json ═══');
 
             const sitesJson = JSON.parse(fs.readFileSync(SITES_JSON, 'utf8'));
             let jsonUpdated = 0;
@@ -113,11 +113,11 @@ async function main() {
 
             // Write updated sites.json
             fs.writeFileSync(SITES_JSON, JSON.stringify(sitesJson, null, 2));
-            console.log(`Updated ${jsonUpdated} sites in sites.json`);
+            console.log(`Updated ${jsonUpdated} offices in offices.json`);
         }
 
-        // Show the 4 problem sites specifically
-        console.log('\n═══ Verification: Problem Sites ═══');
+        // Show the 4 problem offices specifically
+        console.log('\n═══ Verification: Problem Offices ═══');
         const problemSites = ['0064', '5404', '4400', '4403'];
 
         for (const siteCode of problemSites) {
