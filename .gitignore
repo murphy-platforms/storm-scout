@@ -57,12 +57,12 @@ convert-models.sh
 # Runtime state
 backend/.last-ingestion.json
 
-# USPS internal site data (Issue #150)
+# Legacy site data exports
 storm-scout-sites*.csv
 scout-sites*
 staging/
 
-# USPS-internal migration
+# Superseded migration
 backend/src/data/migrations/20260220-add-site-reference-table.sql
 
 # Build-time data artifacts (Issue #152)
