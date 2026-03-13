@@ -148,24 +148,7 @@
                 const headlineText = advisory ? truncate(advisory.headline || '', 120) : '';
                 const obs = observationsMap[office.office_code];
 
-                // Temperature display
-                let tempHtml = '';
-                if (obs && obs.temperature_c != null) {
-                    const tempF = cToF(obs.temperature_c);
-                    const tempC = Math.round(parseFloat(obs.temperature_c));
-                    const stale = isStale(obs.observed_at);
-                    if (stale) {
-                        tempHtml = `<div class="temp-display">
-                            <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
-                            <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
-                        </div>`;
-                    } else {
-                        tempHtml = `<div class="temp-display">
-                            <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
-                            <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
-                        </div>`;
-                    }
-                }
+                const tempHtml = renderTemperatureHTML(obs);
 
                 return html`
                 <div class="col-md-6 col-lg-4 mb-3">
