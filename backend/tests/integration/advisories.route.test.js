@@ -23,10 +23,10 @@ jest.mock('../../src/utils/cache', () => ({
   invalidateAll: jest.fn(),
   CACHE_KEYS: {
     STATUS_OVERVIEW: 'status:overview',
-    ALL_SITES: 'sites:all',
+    ALL_OFFICES: 'offices:all',
     ACTIVE_ADVISORIES: 'advisories:active',
-    STATES_LIST: 'sites:states',
-    REGIONS_LIST: 'sites:regions'
+    STATES_LIST: 'offices:states',
+    REGIONS_LIST: 'offices:regions'
   },
   TTL: {
     SHORT: 900,

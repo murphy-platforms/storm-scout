@@ -61,7 +61,7 @@ describe('Cache invalidation', () => {
     test('invalidateDynamic should clear advisory and status keys', () => {
         cache.set(cache.CACHE_KEYS.ACTIVE_ADVISORIES, [{ id: 1 }]);
         cache.set(cache.CACHE_KEYS.STATUS_OVERVIEW, { total: 5 });
-        cache.set(cache.CACHE_KEYS.ALL_SITES, [{ id: 1 }]);
+        cache.set(cache.CACHE_KEYS.ALL_OFFICES, [{ id: 1 }]);
         cache.set(cache.CACHE_KEYS.STATES_LIST, ['AK', 'AL']);
 
         cache.invalidateDynamic();
@@ -71,20 +71,20 @@ describe('Cache invalidation', () => {
         expect(cache.get(cache.CACHE_KEYS.STATUS_OVERVIEW)).toBeUndefined();
 
         // Static keys should be preserved
-        expect(cache.get(cache.CACHE_KEYS.ALL_SITES)).toEqual([{ id: 1 }]);
+        expect(cache.get(cache.CACHE_KEYS.ALL_OFFICES)).toEqual([{ id: 1 }]);
         expect(cache.get(cache.CACHE_KEYS.STATES_LIST)).toEqual(['AK', 'AL']);
     });
 
     test('invalidateDynamic should clear filtered advisory keys', () => {
         cache.set('advisories:filtered:CRITICAL', [{ id: 1 }]);
         cache.set('advisories:filtered:HIGH', [{ id: 2 }]);
-        cache.set(cache.CACHE_KEYS.ALL_SITES, [{ id: 1 }]);
+        cache.set(cache.CACHE_KEYS.ALL_OFFICES, [{ id: 1 }]);
 
         cache.invalidateDynamic();
 
         expect(cache.get('advisories:filtered:CRITICAL')).toBeUndefined();
         expect(cache.get('advisories:filtered:HIGH')).toBeUndefined();
-        expect(cache.get(cache.CACHE_KEYS.ALL_SITES)).toEqual([{ id: 1 }]);
+        expect(cache.get(cache.CACHE_KEYS.ALL_OFFICES)).toEqual([{ id: 1 }]);
     });
 });
 
@@ -117,7 +117,7 @@ describe('Cache stats', () => {
 describe('Cache constants', () => {
     test('CACHE_KEYS should have expected keys', () => {
         expect(cache.CACHE_KEYS.STATUS_OVERVIEW).toBe('status:overview');
-        expect(cache.CACHE_KEYS.ALL_SITES).toBe('sites:all');
+        expect(cache.CACHE_KEYS.ALL_OFFICES).toBe('offices:all');
         expect(cache.CACHE_KEYS.ACTIVE_ADVISORIES).toBe('advisories:active');
     });
 

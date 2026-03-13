@@ -63,7 +63,7 @@ describe('getImpactLevel', () => {
   });
 });
 
-describe('CUSTOM (Site Default) Filter', () => {
+describe('CUSTOM (Office Default) Filter', () => {
   const custom = DEFAULT_FILTERS.CUSTOM;
 
   test('should include CRITICAL, HIGH, MODERATE categories', () => {
