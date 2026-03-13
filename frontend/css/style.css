@@ -1,0 +1,967 @@
+/* Storm Scout Custom Styles */
+
+:root {
+    /* Storm Scout Brand Colors */
+    --ss-navy: #1B2845;
+    --ss-green: #7AB648;
+    --ss-green-hover: #6AA23E;
+    --ss-text: #313131;
+
+    /* Semantic Severity Colors */
+    --severity-extreme: #ef4444;  /* Red - Critical */
+    --severity-severe: #f97316;   /* Orange - High Impact */
+    --severity-moderate: #eab308; /* Yellow - Moderate (badge/bg use only) */
+    --severity-minor: #22c55e;    /* Green - Low/Minor */
+    /* Accessible text variant for moderate — #eab308 on white is ~1.9:1 (fails WCAG AA).
+       #92400e (dark amber) on white is 7.1:1 (passes WCAG AAA). */
+    --severity-moderate-text: #92400e;
+
+    /* Background variants */
+    --severity-extreme-bg: rgba(239, 68, 68, 0.1);
+    --severity-severe-bg: rgba(249, 115, 22, 0.1);
+    --severity-moderate-bg: rgba(234, 179, 8, 0.1);
+    --severity-minor-bg: rgba(34, 197, 94, 0.1);
+
+    /* Card header backgrounds */
+    --ss-card-header-bg: #f8f9fa;
+    --ss-card-header-notice-bg: #fff3cd;
+
+    /* Transition durations */
+    --transition-base: 0.2s ease;  /* Standard interactive element hover/state changes */
+    --transition-slow: 0.3s ease;  /* Heavier animations: card lift, accordion toggle */
+
+    /* Z-index scale */
+    --z-sticky-content: 10;    /* Sticky table headers, minor overlays */
+    --z-sticky: 1000;          /* Sticky bars, map marker hover */
+    --z-banner: 1020;          /* Sticky banners (below Bootstrap navbar at 1030) */
+    --z-skip-link: 9999;       /* Accessibility skip-to-main link */
+    --z-tooltip: 10000;        /* Tooltips and print overlays — topmost */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: var(--ss-text);
+}
+
+/* Headings - Storm Scout navy */
+h1, h2, h3, h4 {
+    color: var(--ss-navy);
+}
+
+/* Navbar - Deep navy */
+.navbar-scout {
+    background-color: var(--ss-navy) !important;
+}
+
+/* Update banner - Navy */
+.update-banner {
+    background-color: var(--ss-navy) !important;
+}
+
+/* Buttons - Storm Scout green primary */
+.btn-primary {
+    background-color: var(--ss-green);
+    border-color: var(--ss-green);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--ss-green-hover);
+    border-color: var(--ss-green-hover);
+}
+
+.btn-primary:active {
+    background-color: var(--ss-green-hover);
+    border-color: var(--ss-green-hover);
+}
+
+.btn-outline-primary {
+    color: var(--ss-green);
+    border-color: var(--ss-green);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--ss-green);
+    border-color: var(--ss-green);
+    color: white;
+}
+
+.btn-outline-primary:active {
+    background-color: var(--ss-green-hover);
+    border-color: var(--ss-green-hover);
+    color: white;
+}
+
+/* Footer - Navy */
+.footer-scout {
+    background-color: var(--ss-navy) !important;
+    color: #d1d5db;
+}
+
+.footer-scout p,
+.footer-scout .text-muted {
+    color: #d1d5db !important;
+}
+
+.footer-scout a.text-muted:hover,
+.footer-scout a.text-muted:focus {
+    color: #ffffff !important;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-size: 1.3rem;
+}
+
+/* Cards */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.375rem;
+}
+
+/* Static cards - no hover effects */
+.static-card {
+    cursor: default;
+}
+
+.static-card:hover {
+    transform: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Map stat cards - clickable to toggle filters */
+.map-stat-card {
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.map-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+.map-stat-card.filter-disabled {
+    opacity: 0.5;
+}
+
+.card-header {
+    background-color: var(--ss-card-header-bg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header-brand {
+    background-color: var(--ss-navy);
+    color: white;
+    border-bottom: none;
+}
+
+.card-header-notice {
+    background-color: var(--ss-card-header-notice-bg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Status badges */
+.badge {
+    padding: 0.35em 0.65em;
+}
+
+/* Active filter indicator badge */
+.badge-filter-active {
+    background-color: var(--ss-navy);
+    color: white;
+}
+
+/* Weather Impact Levels */
+.weather-red {
+    background-color: var(--severity-extreme);
+    color: white;
+}
+
+.weather-orange {
+    background-color: var(--severity-severe);
+    color: white;
+}
+
+.weather-yellow {
+    background-color: var(--severity-moderate);
+    color: #000;
+}
+
+.weather-green {
+    background-color: var(--severity-minor);
+    color: white;
+}
+
+.weather-total {
+    background-color: var(--ss-navy);
+    color: white;
+}
+
+/* Severity Badge Classes (use for advisories) */
+.severity-extreme,
+.badge-extreme {
+    background-color: var(--severity-extreme);
+    color: white;
+}
+
+.severity-severe,
+.badge-severe {
+    background-color: var(--severity-severe);
+    color: white;
+}
+
+.severity-moderate,
+.badge-moderate {
+    background-color: var(--severity-moderate);
+    color: var(--severity-moderate-text);
+}
+
+.severity-minor,
+.badge-minor {
+    background-color: var(--severity-minor);
+    color: white;
+}
+
+/* Severity Text Colors */
+.text-severity-extreme {
+    color: var(--severity-extreme) !important;
+}
+
+.text-severity-severe {
+    color: var(--severity-severe) !important;
+}
+
+.text-severity-moderate {
+    color: var(--severity-moderate-text) !important; /* dark amber — passes WCAG AA on white */
+}
+
+.text-severity-minor {
+    color: var(--severity-minor) !important;
+}
+
+/* Severity Background Colors */
+.bg-severity-extreme {
+    background-color: var(--severity-extreme-bg);
+    border-color: var(--severity-extreme);
+}
+
+.bg-severity-severe {
+    background-color: var(--severity-severe-bg);
+    border-color: var(--severity-severe);
+}
+
+.bg-severity-moderate {
+    background-color: var(--severity-moderate-bg);
+    border-color: var(--severity-moderate);
+}
+
+.bg-severity-minor {
+    background-color: var(--severity-minor-bg);
+    border-color: var(--severity-minor);
+}
+
+/* Operational Status */
+.status-closed {
+    background-color: var(--severity-extreme);
+    color: white;
+}
+
+.status-restricted {
+    background-color: var(--severity-severe);
+    color: white;
+}
+
+.status-pending {
+    background-color: var(--severity-moderate);
+    color: var(--severity-moderate-text);
+}
+
+.status-open {
+    background-color: var(--ss-green);
+    color: white;
+}
+
+/* Dual Status Display */
+.office-status-dual {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+/* Weather Impact Cards */
+.weather-card {
+    border-left: 4px solid;
+    transition: transform var(--transition-base);
+}
+
+.weather-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Clickable weather cards */
+/* Unified clickable card utility — replaces weather-card-clickable and office-card-clickable */
+.card-clickable {
+    cursor: pointer;
+}
+
+.card-clickable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2);
+}
+
+.card-clickable:active {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+.weather-card.impact-red {
+    border-left-color: var(--severity-extreme);
+}
+
+.weather-card.impact-orange {
+    border-left-color: var(--severity-severe);
+}
+
+.weather-card.impact-yellow {
+    border-left-color: var(--severity-moderate);
+}
+
+.weather-card.impact-green {
+    border-left-color: var(--severity-minor);
+}
+
+.weather-card.impact-total {
+    border-left-color: var(--ss-navy);
+}
+
+/* Operational Status Management Page */
+.status-mgmt-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.decision-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.decision-info .decision-by {
+    font-weight: 600;
+}
+
+.update-banner {
+    z-index: var(--z-banner);
+}
+
+.bulk-action-bar {
+    position: sticky;
+    top: 56px;
+    background-color: #fff;
+    border-bottom: 2px solid var(--ss-navy);
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: var(--z-sticky);
+}
+
+/* Table */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.025);
+}
+
+/* Table View - Grouped Site Rows */
+.office-group-header {
+    background: #f0f2f5;
+    border-left: 4px solid;
+    cursor: pointer;
+    transition: background var(--transition-base);
+}
+
+.office-group-header:hover {
+    background: #e4e7ec;
+}
+
+.office-group-header td {
+    padding: 0.75rem 1rem !important;
+}
+
+.office-group-extreme { border-left-color: var(--severity-extreme); background: var(--severity-extreme-bg); }
+.office-group-extreme:hover { background: rgba(239, 68, 68, 0.15); }
+.office-group-severe { border-left-color: var(--severity-severe); background: var(--severity-severe-bg); }
+.office-group-severe:hover { background: rgba(249, 115, 22, 0.15); }
+.office-group-moderate { border-left-color: var(--severity-moderate); background: var(--severity-moderate-bg); }
+.office-group-moderate:hover { background: rgba(234, 179, 8, 0.15); }
+.office-group-minor { border-left-color: var(--severity-minor); background: var(--severity-minor-bg); }
+.office-group-minor:hover { background: rgba(34, 197, 94, 0.15); }
+
+.office-group-row td {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+    font-size: 0.9rem;
+    border-top: none !important;
+}
+
+.office-group-header + .office-group-row td {
+    padding-top: 0.5rem !important;
+}
+
+/* Separator between site groups */
+.office-group-header td {
+    border-top: 2px solid #dee2e6 !important;
+}
+
+.office-group-header:first-child td {
+    border-top: none !important;
+}
+
+/* Navigation Links */
+/* Clickable count links */
+.count-link {
+    cursor: pointer;
+    transition: opacity var(--transition-base);
+}
+
+.count-link:hover {
+    opacity: 0.8;
+}
+
+/* Clickable severity badges */
+a.badge:hover {
+    opacity: 0.85;
+    text-decoration: none !important;
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+    .display-6 {
+        font-size: 1.5rem;
+    }
+    
+    .h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* ============================================
+   PHASE 1: SITE AGGREGATION CARD STYLES
+   ============================================ */
+
+/* Site card container */
+.office-card {
+    border-left: 6px solid;
+    transition: all var(--transition-slow);
+    margin-bottom: 1rem;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.office-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Clickable site cards */
+/* .office-card-clickable consolidated into .card-clickable */
+
+/* Severity-based card border colors */
+.office-card-extreme {
+    border-left-color: var(--severity-extreme);
+    border-left-width: 8px;
+}
+
+.office-card-severe {
+    border-left-color: var(--severity-severe);
+    border-left-width: 7px;
+}
+
+.office-card-moderate {
+    border-left-color: var(--severity-moderate);
+    border-left-width: 6px;
+}
+
+.office-card-minor {
+    border-left-color: var(--bs-secondary);
+    border-left-width: 5px;
+}
+
+/* Pulsing animation for critical alerts - DISABLED for accessibility */
+/* Animation removed to reduce visual distraction on mobile */
+
+.office-card-extreme {
+    /* Static styling instead of animation */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(239, 68, 68, 0.3); /* --severity-extreme at 30% */
+}
+
+/* Site card header */
+.office-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Prevent long office names overflowing card boundaries on small screens */
+.office-card .card-body h6,
+.office-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    color: #212529;
+}
+
+.office-card-location {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* Severity badge - standard size for cards and lists */
+.severity-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Severity badge - large, prominent display (office detail hero) */
+.severity-badge-large {
+    font-size: 1rem;
+    padding: 0.5rem 0.85rem;
+    font-weight: 700;
+    border-radius: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Site card body */
+.office-card-body {
+    padding: 1rem 1.25rem;
+}
+
+/* Alert summary section */
+.alert-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.alert-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.alert-stat-icon {
+    font-size: 1.1rem;
+}
+
+.alert-stat-value {
+    font-weight: 700;
+    color: #212529;
+}
+
+/* Advisory type groups */
+.advisory-type-list {
+    margin-top: 0.75rem;
+}
+
+.advisory-type-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: #f8f9fa;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    transition: background var(--transition-base);
+}
+
+.advisory-type-item:hover {
+    background: #e9ecef;
+}
+
+.advisory-type-name {
+    font-weight: 600;
+    color: #212529;
+}
+
+.advisory-type-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Temperature display — shared across office cards, map popups, detail page */
+.temp-display {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+}
+
+.zone-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.zone-badge-multi {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Expandable details */
+.expandable-details {
+    margin-top: 1rem;
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+}
+
+.expand-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ss-green);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color var(--transition-base);
+    padding: 0.5rem 0;
+}
+
+.expand-toggle:hover {
+    color: var(--ss-green-hover);
+    text-decoration: underline;
+}
+
+.expand-toggle-icon {
+    transition: transform var(--transition-slow);
+}
+
+.expand-toggle.expanded .expand-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.expanded-content {
+    margin-top: 0.75rem;
+    display: none;
+}
+
+.expanded-content.show {
+    display: block;
+}
+
+/* Action badges - enhanced for NEW alerts */
+/* Action badges - enhanced for NEW alerts */
+/* Animation removed for accessibility */
+.action-badge-new {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    font-size: 1rem;
+    padding: 0.45rem 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.5);
+    /* Animation disabled - static styling */
+    position: relative;
+}
+
+.action-badge-continued {
+    background-color: var(--ss-navy);
+    color: white;
+}
+
+.action-badge-extended {
+    background-color: #fd7e14;
+    color: white;
+}
+
+/* Filter warning banner */
+.filter-warning-banner {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border-left: 4px solid #ffc107;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-warning-critical {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
+    border-left-color: #dc3545;
+}
+
+.filter-warning-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filter-warning-text {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+}
+
+.filter-warning-icon {
+    font-size: 1.5rem;
+}
+
+.filter-warning-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* View toggle buttons */
+.view-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.view-toggle-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #dee2e6;
+    background: white;
+    color: #6c757d;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.view-toggle-btn:hover {
+    border-color: var(--ss-navy);
+    color: var(--ss-navy);
+}
+
+.view-toggle-btn.active {
+    border-color: var(--ss-navy);
+    background: var(--ss-navy);
+    color: white;
+}
+
+/* Deduplication toggle */
+.dedup-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(27, 40, 69, 0.08);
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.dedup-toggle-container label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ss-navy);
+    cursor: pointer;
+}
+
+/* Summary stats bar */
+.summary-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(27, 40, 69, 0.06) 0%, rgba(27, 40, 69, 0.12) 100%);
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-stat {
+    text-align: center;
+}
+
+.summary-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ss-navy);
+    display: block;
+}
+
+.summary-stat-label {
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Severity group headers */
+.severity-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-left: 5px solid;
+    border-radius: 0.375rem;
+    margin: 1.5rem 0 1rem 0;
+    cursor: pointer;
+    transition: background var(--transition-base);
+}
+
+.severity-group-header:hover {
+    background: #e9ecef;
+}
+
+.severity-group-header.extreme {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+}
+
+.severity-group-header.severe {
+    border-left-color: #fd7e14;
+    background: linear-gradient(135deg, #fff9db 0%, #ffec99 100%);
+}
+
+.severity-group-header.moderate {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fffde7 0%, #fff59d 100%);
+}
+
+.severity-group-header.minor {
+    border-left-color: #28a745;
+    background: linear-gradient(135deg, #f0fff4 0%, #c3fae8 100%);
+}
+
+.severity-group-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.severity-group-count {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.25rem 0.65rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.severity-group-toggle {
+    margin-left: auto;
+    font-size: 1.25rem;
+    transition: transform var(--transition-slow);
+}
+
+.severity-group-header.collapsed .severity-group-toggle {
+    transform: rotate(-90deg);
+}
+
+/* ============================================
+   PHASE 2: TIMELINE AND DECISION HELPER
+   ============================================ */
+
+/* Timeline Component */
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-left: 2px solid #dee2e6;
+    margin-left: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.timeline-item-first {
+    border-left-color: var(--ss-navy);
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -6px;
+    top: 1rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ss-navy);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-item-first .timeline-marker {
+    background: #28a745;
+    box-shadow: 0 0 0 2px var(--ss-navy);
+    /* Animation disabled for accessibility */
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+/* Alert badge sizing */
+.alert .badge {
+    font-size: inherit;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .office-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .severity-badge-large {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.7rem;
+    }
+    
+    .alert-summary {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .filter-warning-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .summary-stats {
+        gap: 1rem;
+    }
+    
+    .summary-stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .timeline-item {
+        padding-left: 1rem;
+        margin-left: 0.25rem;
+    }
+}

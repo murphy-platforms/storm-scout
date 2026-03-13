@@ -1,0 +1,58 @@
+{
+  "name": "storm-scout-backend",
+  "version": "1.10.1",
+  "releasedDate": "2026-03-10",
+  "description": "Storm Scout backend API - Weather advisory dashboard for office locations",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "init-db": "node src/config/init-database.js",
+    "seed-db": "node src/config/seed-database.js",
+    "migrate": "node src/scripts/run-migrations.js",
+    "migrate:status": "node src/scripts/run-migrations.js --status",
+    "migrate:baseline": "node src/scripts/run-migrations.js --baseline",
+    "ingest": "node src/ingestion/run-ingestion.js",
+    "cleanup": "node src/utils/cleanup-advisories.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "format": "prettier --write 'src/**/*.js' '../frontend/js/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' '../frontend/js/**/*.js'"
+  },
+  "keywords": [
+    "weather",
+    "advisory",
+    "dashboard",
+    "operations"
+  ],
+  "author": "Storm Scout Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "mysql2": "^3.6.5",
+    "node-cache": "^5.1.2",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.0.2",
+    "prettier": "^3.2.0",
+    "supertest": "^7.0.0"
+  },
+  "overrides": {
+    "qs": "6.14.2"
+  },
+  "overrideReasons": {
+    "qs": "Pinned to 6.14.2 to patch two transitive-dependency vulnerabilities: CVE-2026-2391 (prototype pollution via qs) and CVE-2026-27903 (minimatch ReDoS via qs transitive chain). Review on each major qs or axios release \u2014 remove override once upstream ships a clean version. See docs/security/README.md \u00a7 Dependency Overrides."
+  }
+}

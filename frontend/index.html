@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <!-- Analytics: add your own tracking implementation with appropriate consent mechanism -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storm Scout - Overview</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css?v=1.10.1">
+    <link rel="stylesheet" href="css/tooltips.css?v=1.10.1">
+    <link rel="stylesheet" href="css/print.css?v=1.10.1">
+    <link rel="stylesheet" href="css/mobile.css?v=1.10.1">
+</head>
+<body>
+    <a class="skip-to-content" href="#main-content">Skip to main content</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-scout">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-cloud-lightning"></i> Storm Scout
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="advisories.html">Active Advisories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
+                    <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sticky Update Banner -->
+    <div class="update-banner bg-dark text-white py-2 sticky-top" style="top: 56px;">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <small>
+                        <i class="bi bi-clock-history"></i>
+                        <strong>Last Updated:</strong> <span id="lastUpdated">Loading...</span>
+                    </small>
+                </div>
+                <div class="col-auto">
+                    <small>
+                        <i class="bi bi-arrow-repeat"></i>
+                        <strong>Next Update:</strong> <span id="nextUpdate">Loading...</span>
+                    </small>
+                </div>
+                <div class="col text-end">
+                    <!-- Filter Indicator -->
+                    <a href="filters.html" id="filterIndicator" class="badge badge-filter-active me-2 text-decoration-none d-none" title="Click to manage filters">
+                        <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
+                    </a>
+                    <span class="badge bg-secondary me-2">
+                        <span id="totalSites">--</span> Total Offices
+                    </span>
+                    <span class="badge bg-warning text-dark">
+                        <span id="sitesWithAdvisories">--</span> With Advisories
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-content" class="container-fluid mt-3">
+        <!-- Page Header -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <h1>Dashboard Overview</h1>
+                <p class="text-muted mb-0">Office-focused weather advisory monitoring for operations teams</p>
+            </div>
+        </div>
+
+        <!-- 1. WEATHER IMPACT ASSESSMENT -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <h3 class="h4">
+                    <i class="bi bi-cloud-lightning"></i> Weather Impact Assessment
+                    <span class="tooltip-wrapper tooltip-light">
+                        <span class="help-icon" tabindex="0" role="button" aria-label="What is Weather Impact?">?</span>
+                        <span class="tooltip-content" role="tooltip">
+                            <strong>Weather Impact</strong> is automatically calculated based on the severity of active weather advisories from NOAA. Offices are color-coded by their highest severity alert.
+                        </span>
+                    </span>
+                </h3>
+                <p class="text-muted small mb-2">Automatic classification based on active advisory severity</p>
+            </div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <a href="offices.html" class="text-decoration-none">
+                    <div class="card text-center weather-card card-clickable impact-total h-100">
+                        <div class="card-body py-3">
+                            <span class="badge weather-total mb-1"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> TOTAL</span>
+                            <p class="display-6 fw-bold mb-0" style="color: var(--ss-navy);" id="weatherTotal">
+                                <span class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></span>
+                            </p>
+                            <small class="text-muted">Total Impact</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="offices.html?weather_impact=red" class="text-decoration-none">
+                    <div class="card text-center weather-card card-clickable impact-red h-100">
+                        <div class="card-body py-3">
+                            <span class="badge weather-red mb-1"><i class="bi bi-circle-fill" aria-hidden="true"></i> RED</span>
+                            <p class="display-6 fw-bold mb-0 text-danger" id="weatherRed">
+                                <span class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></span>
+                            </p>
+                            <small class="text-muted">High Impact</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="offices.html?weather_impact=orange" class="text-decoration-none">
+                    <div class="card text-center weather-card card-clickable impact-orange h-100">
+                        <div class="card-body py-3">
+                            <span class="badge weather-orange mb-1"><i class="bi bi-circle-fill" aria-hidden="true"></i> ORANGE</span>
+                            <p class="display-6 fw-bold mb-0 text-warning" id="weatherOrange">
+                                <span class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></span>
+                            </p>
+                            <small class="text-muted">Severe Impact</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="offices.html?weather_impact=yellow" class="text-decoration-none">
+                    <div class="card text-center weather-card card-clickable impact-yellow h-100">
+                        <div class="card-body py-3">
+                            <span class="badge weather-yellow mb-1"><i class="bi bi-circle-fill" aria-hidden="true"></i> YELLOW</span>
+                            <p class="display-6 fw-bold mb-0" id="weatherYellow">
+                                <span class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></span>
+                            </p>
+                            <small class="text-muted">Moderate Impact</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 2. SITES REQUIRING ATTENTION (Primary Action Area) -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="h4 mb-0"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Offices Requiring Attention</h3>
+                        <p class="text-muted small mb-0">Grouped by highest severity alert</p>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="offices.html" class="btn btn-sm btn-outline-danger me-1">
+                            <i class="bi bi-list-ul"></i> View All Offices
+                        </a>
+                        <a href="map.html" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="bi bi-geo-alt"></i> Map View
+                        </a>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-share"></i> Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" id="exportPrintPDF">
+                                    <i class="bi bi-printer"></i> Print / Save PDF
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" id="exportShareLink">
+                                    <i class="bi bi-link-45deg"></i> Copy Shareable Link
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Advanced Reports</h6></li>
+                                <li><a class="dropdown-item" href="#" id="exportExecutive">
+                                    <i class="bi bi-file-earmark-person"></i> Executive Briefing
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" id="exportIncident">
+                                    <i class="bi bi-file-earmark-text"></i> Incident Report
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" id="exportCSV">
+                                    <i class="bi bi-filetype-csv"></i> Export CSV
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EXTREME SITES (RED) -->
+        <div id="extremeSitesSection"></div>
+        
+        <!-- SEVERE SITES (ORANGE) -->
+        <div id="severeSitesSection"></div>
+        
+        <!-- MODERATE SITES (YELLOW) -->
+        <div id="moderateSitesSection"></div>
+        
+        <!-- MINOR SITES (GREEN) -->
+        <div id="minorSitesSection"></div>
+
+        <!-- No Sites Message (shown when no sites need attention) -->
+        <div id="noSitesMessage" class="row mb-4 d-none">
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <strong>All Clear!</strong> No offices currently require attention based on your filter settings.
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. OPERATIONAL STATUS -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <h3 class="h4">
+                    <i class="bi bi-gear"></i> Operational Status
+                    <span class="tooltip-wrapper tooltip-light">
+                        <span class="help-icon" tabindex="0" role="button" aria-label="What is Operational Status?">?</span>
+                        <span class="tooltip-content" role="tooltip">
+                            <strong>Operational Status</strong> is manually set by operations staff based on business decisions, not just weather. An office may be Open despite weather alerts, or Closed for non-weather reasons.
+                        </span>
+                    </span>
+                </h3>
+                <p class="text-muted small mb-2">Current office status set by operations team</p>
+            </div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-danger h-100 static-card">
+                    <div class="card-body py-3">
+                        <span class="badge status-closed mb-1"><i class="bi bi-x-circle-fill"></i> CLOSED</span>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-warning h-100 static-card">
+                    <div class="card-body py-3">
+                        <span class="badge status-restricted mb-1"><i class="bi bi-exclamation-triangle-fill"></i> RESTRICTED</span>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-info h-100 static-card">
+                    <div class="card-body py-3">
+                        <span class="badge status-pending mb-1"><i class="bi bi-arrow-repeat"></i> PENDING</span>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-success h-100 static-card">
+                    <div class="card-body py-3">
+                        <span class="badge status-open mb-1"><i class="bi bi-check-circle-fill"></i> OPEN</span>
+                        <p class="mb-0 mt-2"><span class="badge bg-secondary">Coming Soon</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. DETAILED STATISTICS (Collapsed) -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detailedStats">
+                    <i class="bi bi-bar-chart"></i> Show Detailed Statistics
+                </button>
+            </div>
+        </div>
+        
+        <div class="collapse" id="detailedStats">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Active Advisories by Severity</h5>
+                        </div>
+                        <div class="card-body" id="severityCounts">
+                            <div class="text-center py-3"><span class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recently Updated Offices</h5>
+                        </div>
+                        <div class="card-body" id="recentlyUpdatedList">
+                            <div class="text-center py-3"><span class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-scout py-3 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | Weather Advisory Dashboard | <span id="appVersion"></span> | <a href="disclaimer.html" class="text-muted">Disclaimer</a></p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="sources.html" class="text-muted text-decoration-none me-3">
+                        <i class="bi bi-info-circle"></i> About &amp; Data Sources
+                    </a>
+                    <a href="filters.html" class="text-muted text-decoration-none">
+                        <i class="bi bi-sliders"></i> Filter Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="js/api.js?v=1.10.1"></script>
+    <script src="js/version.js?v=1.10.1"></script>
+    <script src="js/utils.js?v=1.10.1"></script>
+    <script src="js/alert-filters.js?v=1.10.1"></script>
+    <script src="js/aggregation.js?v=1.10.1"></script>
+    <script src="js/export.js?v=1.10.1"></script>
+    <script src="js/page-index.js?v=1.10.1"></script>
+</body>
+</html>

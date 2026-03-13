@@ -1,0 +1,44 @@
+// PM2 Ecosystem Configuration for Storm Scout
+// Deploy with: pm2 start ecosystem.config.js --env production
+
+module.exports = {
+  apps: [{
+    name: 'storm-scout',
+    script: './src/server.js',
+    cwd: '/path/to/storm-scout/backend',
+
+    // Production environment
+    env_production: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    },
+
+    // Process management
+    instances: 1,
+    exec_mode: 'fork',
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '500M',
+
+    // Logging
+    error_file: '/path/to/storm-scout/logs/pm2-error.log',
+    out_file: '/path/to/storm-scout/logs/pm2-out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+    merge_logs: true,
+
+    // Advanced features
+    min_uptime: '10s',
+    max_restarts: 10,
+    restart_delay: 4000,
+
+    // Environment file
+    env_file: '/path/to/storm-scout/backend/.env.production',
+
+    // Kill timeout
+    kill_timeout: 5000,
+
+    // Graceful shutdown
+    listen_timeout: 3000,
+    shutdown_with_message: true
+  }]
+};

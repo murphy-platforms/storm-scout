@@ -1,0 +1,483 @@
+/**
+ * Mobile Optimization CSS
+ * Enhanced mobile experience for Storm Scout
+ * Touch-friendly, optimized layouts, improved accessibility
+ */
+
+/* ============================================
+   BASE MOBILE IMPROVEMENTS
+   ============================================ */
+
+/* Touch Target Optimization - All Devices */
+@media (pointer: coarse) {
+    /* Minimum 44x44px touch targets (Apple HIG / Material Design) */
+    button,
+    .btn,
+    a,
+    .nav-item,
+    .filter-pill,
+    .office-item,
+    .card-header,
+    .badge,
+    .toggle-switch,
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 12px 16px;
+    }
+    
+    /* Increase spacing between touch targets */
+    .quick-filters,
+    .nav-section,
+    .btn-group {
+        gap: 12px;
+    }
+    
+    /* Larger tap areas for icons */
+    .help-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    /* Better touch feedback */
+    button:active,
+    .btn:active,
+    a:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+}
+
+/* ============================================
+   TABLET (768px - 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+    .container-fluid {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    /* 2-column layouts on tablets */
+    .row.g-3 .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    /* Readable font sizes */
+    body {
+        font-size: 16px; /* Prevent iOS zoom on input focus */
+    }
+}
+
+/* ============================================
+   MOBILE LANDSCAPE (568px - 767px)
+   ============================================ */
+@media (max-width: 767px) and (orientation: landscape) {
+    /* Reduce header height in landscape */
+    .navbar {
+        padding: 8px 16px;
+    }
+
+    /* Compact severity cards */
+    .severity-card,
+    .weather-card {
+        padding: 12px;
+    }
+}
+
+/* ============================================
+   MOBILE PORTRAIT (max-width: 767px)
+   ============================================ */
+@media (max-width: 767px) {
+    /* Typography */
+    body {
+        font-size: 16px; /* Prevent iOS zoom */
+        -webkit-text-size-adjust: 100%;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+    
+    /* Navigation */
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .navbar-toggler {
+        padding: 8px 12px;
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .nav-link {
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+    
+    /* Cards - Single column */
+    .row .col-6,
+    .row .col-md-3,
+    .row .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+    }
+    
+    /* Compact spacing */
+    .card {
+        margin-bottom: 16px;
+    }
+    
+    .card-body {
+        padding: 16px;
+    }
+    
+    /* Tables - Horizontal scroll */
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 600px; /* Force scroll for wide tables */
+    }
+    
+    /* Hide less important table columns */
+    .table .d-none-mobile {
+        display: none;
+    }
+    
+    /* Sticky table headers */
+    thead th {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: var(--z-sticky-content);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Buttons - Full width on mobile */
+    .btn-block-mobile {
+        display: block;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+    
+    .quick-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .quick-actions .btn {
+        width: 100%;
+    }
+    
+    /* Filter pills - Horizontal scroll */
+    .quick-filters {
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .filter-pill {
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        white-space: nowrap;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .quick-filters::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .quick-filters::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+    }
+    
+    /* Search box */
+    .search-box {
+        width: 100%;
+        margin-top: 8px;
+    }
+    
+    .search-input {
+        font-size: 16px; /* Prevent iOS zoom */
+        padding: 12px 16px 12px 40px;
+    }
+    
+    /* Badges - Larger on mobile */
+    .badge {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+    
+    /* Reduce animation on mobile (performance) */
+    * {
+        animation-duration: 0.2s !important;
+        transition-duration: 0.2s !important;
+    }
+    
+    /* Donut chart - Stack legend below */
+    .donut-chart-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .chart-legend {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}
+
+/* ============================================
+   SMALL MOBILE (max-width: 414px)
+   ============================================ */
+@media (max-width: 414px) {
+    /* Even more compact */
+    .container-fluid {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    .card {
+        border-radius: 8px;
+    }
+    
+    .card-body {
+        padding: 12px;
+    }
+    
+    /* Smaller severity cards */
+    .severity-card,
+    .weather-card {
+        padding: 16px 12px;
+    }
+    
+    /* Compact site cards */
+    .office-card {
+        padding: 12px;
+    }
+    
+    .office-card-header {
+        font-size: 1rem;
+    }
+    
+    /* Smaller counts */
+    .display-6 {
+        font-size: 2rem;
+    }
+    
+    /* Stack all grids single column */
+    .row {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Compact advisory items */
+    .advisory-item {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    /* Mobile-optimized update banner */
+    .update-banner {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .update-banner .col-auto {
+        flex: 1 1 auto;
+    }
+    
+    /* Hide non-essential info on tiny screens */
+    .text-muted.small,
+    .badge.bg-secondary.me-2 {
+        font-size: 0.75rem;
+    }
+}
+
+/* ============================================
+   EXTRA SMALL MOBILE (max-width: 375px)
+   iPhone SE, small Android phones
+   ============================================ */
+@media (max-width: 375px) {
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    h3 {
+        font-size: 1.1rem;
+    }
+    
+    /* Very compact cards */
+    .card-body {
+        padding: 10px;
+    }
+    
+    /* Smaller buttons */
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    /* Compact badges */
+    .badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    /* Single column chart legend */
+    .chart-legend {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS FOR MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Disable expensive animations */
+    .stagger-children > * {
+        animation: none;
+    }
+    
+    /* Simplify shadows */
+    .card,
+    .severity-card,
+    .btn {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Disable hover effects on touch devices */
+    @media (hover: none) {
+        *:hover {
+            transform: none;
+        }
+        
+        .card:hover,
+        .severity-card:hover,
+        .office-item:hover {
+            transform: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    }
+    
+    /* Force GPU acceleration for smoother scrolling */
+    .quick-filters {
+        will-change: transform;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS FOR MOBILE
+   ============================================ */
+
+/* Larger focus outlines on touch devices */
+@media (pointer: coarse) {
+    *:focus-visible {
+        outline: 3px solid #1B2845;
+        outline-offset: 3px;
+    }
+}
+
+/* Skip to content link for mobile */
+.skip-to-content {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    background: #1B2845;
+    color: white;
+    padding: 12px 20px;
+    z-index: var(--z-skip-link);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.skip-to-content:focus {
+    top: 0;
+}
+
+/* Ensure touch targets don't overlap */
+@media (pointer: coarse) {
+    button + button,
+    .btn + .btn {
+        margin-left: 8px;
+    }
+    
+    .nav-item + .nav-item {
+        margin-top: 4px;
+    }
+}
+
+/* Pull-to-refresh indicator (native behavior) */
+@supports (overscroll-behavior-y: contain) {
+    body {
+        overscroll-behavior-y: contain;
+    }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+    
+}
+
+/* Prevent text selection on UI controls (improves touch UX) */
+@media (pointer: coarse) {
+    button,
+    .btn,
+    .badge,
+    .filter-pill {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* Loading states - More visible on mobile */
+@media (max-width: 768px) {
+    .loading-spinner {
+        width: 32px;
+        height: 32px;
+        border-width: 3px;
+    }
+    
+    .skeleton {
+        min-height: 60px;
+    }
+}
