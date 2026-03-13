@@ -173,17 +173,7 @@
             let rowsHtml = '';
             sorted.forEach(site => {
                 const obs = observationsMap[site.office_code];
-                const tempF = obs ? cToF(obs.temperature_c) : null;
-                const tempC = obs && obs.temperature_c != null ? Math.round(parseFloat(obs.temperature_c)) : null;
-                let tempSpan = '';
-                if (tempF != null) {
-                    const stale = isStale(obs.observed_at);
-                    if (stale) {
-                        tempSpan = `<span class="text-muted ms-3"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span> <small class="text-danger"><strong>${escapeHtml(obs.station_id)} OFFLINE</strong></small>`;
-                    } else {
-                        tempSpan = `<span class="text-muted ms-3"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>`;
-                    }
-                }
+                const tempSpan = renderTemperatureHTML(obs);
                 const alertCount = site.advisories.length;
                 const sevLower = site.highest_severity.toLowerCase();
 
@@ -402,24 +392,7 @@
             const highestAlert = site.highest_severity_advisory;
             const headlineText = truncate(highestAlert.headline || '', 120);
 
-            // Temperature display
-            let tempHtml = '';
-            if (obs && obs.temperature_c != null) {
-                const tempF = cToF(obs.temperature_c);
-                const tempC = Math.round(parseFloat(obs.temperature_c));
-                const stale = isStale(obs.observed_at);
-                if (stale) {
-                    tempHtml = `<div class="temp-display">
-                        <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
-                        <small class="text-danger ms-2"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small>
-                    </div>`;
-                } else {
-                    tempHtml = `<div class="temp-display">
-                        <span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span>
-                        <small class="text-muted ms-2">${timeAgo(obs.observed_at)}</small>
-                    </div>`;
-                }
-            }
+            const tempHtml = renderTemperatureHTML(obs);
 
             return html`
                 <div class="col-lg-6 col-12">

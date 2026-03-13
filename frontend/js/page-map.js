@@ -126,19 +126,8 @@
                 const marker = L.marker([office.latitude, office.longitude], { icon: customIcon, severity });
 
                 // Create popup content using html tagged template for XSS prevention
-                // Build temperature HTML
                 const obs = observationsMap[office.office_code];
-                let tempHtml = '';
-                if (obs && obs.temperature_c != null) {
-                    const tempF = cToF(obs.temperature_c);
-                    const tempC = Math.round(parseFloat(obs.temperature_c));
-                    const stale = isStale(obs.observed_at);
-                    if (stale) {
-                        tempHtml = `<span><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C <small class="text-danger"><strong>${escapeHtml(obs.station_id)} - OFFLINE</strong></small></span>`;
-                    } else {
-                        tempHtml = `<span><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C <small class="text-muted">${timeAgo(obs.observed_at)}</small></span>`;
-                    }
-                }
+                const tempHtml = renderTemperatureHTML(obs);
 
                 const headlineText = truncate(office.highest_severity_advisory.headline || '', 80);
 

@@ -284,6 +284,23 @@ function isStale(observedAt) {
 }
 
 /**
+ * Render temperature display HTML from an observation object.
+ * Returns empty string if observation is null or has no temperature data.
+ * @param {Object} observation - Observation with temperature_c, observed_at, station_id
+ * @returns {string} HTML string for temperature display
+ */
+function renderTemperatureHTML(observation) {
+    if (!observation || observation.temperature_c == null) return '';
+    const tempF = cToF(observation.temperature_c);
+    const tempC = Math.round(parseFloat(observation.temperature_c));
+    const stale = isStale(observation.observed_at);
+    if (stale) {
+        return `<div class="temp-display"><span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span> <small class="text-danger ms-2"><strong>${escapeHtml(observation.station_id)} - OFFLINE</strong></small></div>`;
+    }
+    return `<div class="temp-display"><span class="text-dark"><span aria-hidden="true">🌡️</span> ${tempF}°F / ${tempC}°C</span> <small class="text-muted ms-2">${timeAgo(observation.observed_at)}</small></div>`;
+}
+
+/**
  * Truncate a string to a maximum length, appending ellipsis if truncated.
  * @param {string} str - String to truncate
  * @param {number} max - Maximum length
