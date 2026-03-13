@@ -67,7 +67,7 @@ ALTER TABLE advisories
 ADD COLUMN vtec_event_unique_key VARCHAR(100) GENERATED ALWAYS AS (
     CASE 
         WHEN vtec_event_id IS NOT NULL 
-        THEN CONCAT(site_id, ':', vtec_event_id)
+        THEN CONCAT(office_id, ':', vtec_event_id)
         ELSE CONCAT('no_vtec:', id)
     END
 ) STORED;
@@ -134,7 +134,7 @@ static async findByVTECEventID(vtecEventId, officeId) {
         WHERE vtec_event_id = ? AND office_id = ?
         LIMIT 1
     `;
-    const [rows] = await db.query(query, [vtecEventId, siteId]);
+    const [rows] = await db.query(query, [vtecEventId, officeId]);
     return rows[0] || null;
 }
 
@@ -149,7 +149,7 @@ static async createOrUpdate(advisoryData) {
     if (advisoryData.vtec_event_id) {
         existingAdvisory = await this.findByVTECEventID(
             advisoryData.vtec_event_id, 
-            advisoryData.site_id
+            advisoryData.office_id
         );
     }
     
@@ -219,7 +219,7 @@ Action codes are displayed as color-coded badges in `frontend/advisories.html`:
    ADD COLUMN vtec_event_unique_key VARCHAR(100) GENERATED ALWAYS AS (
        CASE 
            WHEN vtec_event_id IS NOT NULL 
-           THEN CONCAT(site_id, ':', vtec_event_id)
+           THEN CONCAT(office_id, ':', vtec_event_id)
            ELSE CONCAT('no_vtec:', id)
        END
    ) STORED;
@@ -264,10 +264,10 @@ Action codes are displayed as color-coded badges in `frontend/advisories.html`:
 ssh $DEPLOY_USER@$DEPLOY_HOST
 mysql -u $DB_USER -p $DB_NAME
 
-SELECT vtec_event_id, site_id, COUNT(*) as count
-FROM advisories 
+SELECT vtec_event_id, office_id, COUNT(*) as count
+FROM advisories
 WHERE vtec_event_id IS NOT NULL
-GROUP BY vtec_event_id, site_id
+GROUP BY vtec_event_id, office_id
 HAVING count > 1;
 
 # Should return 0 rows
@@ -354,7 +354,7 @@ When NOAA updates an alert (e.g., NEW → CON):
 - [NOAA VTEC Documentation](https://www.weather.gov/help-vtec)
 - [Deployment Guide](./deployment.md)
 - [API Documentation](./api.md)
-- [Database Schema](./database-schema.md)
+- [Data Dictionary](./DATA-DICTIONARY.md)
 
 ---
 
