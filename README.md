@@ -21,6 +21,16 @@ Organizations that manage physical locations — retail chains, logistics networ
 | ![Office Detail](docs/screenshots/office-detail.jpg) | ![NOAA Alert Detail](docs/screenshots/NOAA-alert-detail.jpg) |
 | *Office Detail* | *NOAA Alert Detail* |
 
+## Use Cases
+
+- **Operations center during hurricane season** — An operations team monitors 200+ locations across the Gulf Coast. Instead of checking weather.gov for each site, Storm Scout surfaces all active hurricane warnings, flood watches, and storm surge alerts in a single view, filtered to only the severity levels that trigger action.
+
+- **Go/no-go closure decisions for multi-location businesses** — A regional manager needs to decide which offices to close ahead of a winter storm. Storm Scout's office status page shows exactly which locations have active blizzard warnings or ice storm advisories, enabling consistent closure decisions across the network.
+
+- **Executive briefing generation** — A director needs to update senior leadership on weather impact across the organization. Storm Scout's export feature generates a formatted briefing summarizing impacted locations, active alert counts by severity, and current conditions — ready to send without manual data gathering.
+
+- **Field service scheduling around severe weather** — A dispatch team coordinates technicians across multiple states. Storm Scout's map view and advisory filters help identify which service areas have active weather threats, allowing dispatchers to reschedule appointments proactively rather than reactively.
+
 ## ✨ Features
 
 ### Core Functionality
