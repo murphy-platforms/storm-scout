@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * Add New Sites to Storm Scout
+ * Add New Offices to Storm Scout
  *
  * Enriches new office data with coordinates (via Census Geocoder / Nominatim)
  * and NOAA weather data (UGC codes, CWA, county), then outputs:
- *   1. JSON entries for sites.json
+ *   1. JSON entries for offices.json
  *   2. SQL INSERT statements for production
  *   3. A verification report
  *
- * Usage: node src/scripts/add-new-sites.js
+ * Usage: node src/scripts/add-new-offices.js
  */
 
 require('dotenv').config();
@@ -19,7 +19,7 @@ const axios = require('axios');
 // ─── Configuration ───────────────────────────────────────────────────────────
 const DELAY_MS = 600; // Delay between API calls to respect rate limits
 const USER_AGENT = process.env.NOAA_API_USER_AGENT || 'StormScout/1.0 (configure-NOAA_API_USER_AGENT-in-.env)';
-const SITES_JSON_PATH = path.join(__dirname, '../data/sites.json');
+const OFFICES_JSON_PATH = path.join(__dirname, '../data/offices.json');
 const OUTPUT_DIR = path.join(__dirname, '../data');
 
 // ─── State name → 2-letter code mapping ──────────────────────────────────────
@@ -76,7 +76,7 @@ const STATE_CODES = {
     WYOMING: 'WY'
 };
 
-// ─── State → Region mapping (based on existing sites.json assignments) ───────
+// ─── State → Region mapping (based on existing offices.json assignments) ─────
 const STATE_REGIONS = {
     TX: 'South Central',
     FL: 'Southeast',
@@ -133,105 +133,38 @@ const STATE_REGIONS = {
     VI: 'Caribbean'
 };
 
-// ─── The 10 new offices with confirmed/best-available address data ────────────
-// Addresses sourced from public location data and
-// ERB/ISEE published PDFs. Offices marked "NEEDS VERIFICATION" could not be
-// confirmed via public sources and use approximate geocoding.
-const NEW_SITES = [
+// ─── Example offices to add ─────────────────────────────────────────────────
+// Replace these with your own locations. Each entry needs at minimum:
+//   - office_code (5-digit zip), name, city, state_full
+//   - address (for geocoding) OR note with "NEEDS VERIFICATION"
+// The script will geocode coordinates and fetch NOAA weather data automatically.
+const NEW_OFFICES = [
     {
-        office_code: 'XXXXX',
+        office_code: '76710',
         name: 'Waco',
         city: 'Waco',
         state_full: 'TEXAS',
         address: '5020 W Waco Dr',
         zip: '76710',
-        source: 'Public listing (Waze, ChamberOfCommerce, MichiganAssessment)'
+        source: 'Public address directory'
     },
     {
-        office_code: 'XXXXX',
-        name: 'Irving',
-        city: 'Irving',
-        state_full: 'TEXAS',
-        address: null, // New site - no confirmed address
-        zip: null,
-        note: 'NEEDS VERIFICATION - New site in Irving/Dallas metro. Coordinates geocoded from city center.',
-        source: 'CSV delta import - city-level geocode'
-    },
-    {
-        office_code: 'XXXXX',
-        name: 'Miami',
-        city: 'Miami',
-        state_full: 'FLORIDA',
-        address: null, // "***REDACTED***ive" - no house number found
-        zip: null,
-        street_hint: '***REDACTED***',
-        note: 'NEEDS VERIFICATION - Site name references ***REDACTED***ive. Coordinates geocoded from street hint.',
-        source: 'CSV delta import - street-level geocode'
-    },
-    {
-        office_code: 'XXXXX',
-        name: 'Santa Fe',
-        city: 'Santa Fe',
-        state_full: 'NEW MEXICO',
-        address: '720 St Michaels Dr Suite G',
-        zip: '87505',
-        source: 'public location data'
-    },
-    {
-        office_code: 'XXXXX',
-        name: 'Albuquerque',
-        city: 'Albuquerque',
-        state_full: 'NEW MEXICO',
-        address: '9500 Montgomery Blvd NE Suite 121',
-        zip: '87111',
-        source: 'public location data'
-    },
-    {
-        office_code: 'XXXXX',
+        office_code: '59102',
         name: 'Billings',
         city: 'Billings',
         state_full: 'MONTANA',
         address: '2103 Central Ave',
         zip: '59102',
-        source: 'public location data'
+        source: 'Public address directory'
     },
     {
-        office_code: 'XXXXX',
-        name: 'Helena',
-        city: 'Helena',
-        state_full: 'MONTANA',
-        address: '1075 N Rodney St Suite 110',
-        zip: '59601',
-        source: 'public location data'
-    },
-    {
-        office_code: 'XXXXX',
-        name: 'Wichita Falls',
-        city: 'Wichita Falls',
-        state_full: 'TEXAS',
-        address: '3410 Taft Blvd',
-        zip: '76308',
-        source: 'ISEE Locations PDF / CatPrep GRE Texas listing'
-    },
-    {
-        office_code: 'XXXXX',
-        name: 'NYC Downtown',
-        city: 'New York',
-        state_full: 'NEW YORK',
-        address: null,
-        zip: null,
-        note: 'NEEDS VERIFICATION - One of two NYC Downtown locations. Coordinates geocoded from city area.',
-        source: 'CSV delta import - needs manual address lookup'
-    },
-    {
-        office_code: 'XXXXX',
-        name: 'NYC Downtown 2',
-        city: 'New York',
-        state_full: 'NEW YORK',
-        address: null,
-        zip: null,
-        note: 'NEEDS VERIFICATION - Second NYC Downtown location. Coordinates geocoded from city area.',
-        source: 'CSV delta import - needs manual address lookup'
+        office_code: '87505',
+        name: 'Santa Fe',
+        city: 'Santa Fe',
+        state_full: 'NEW MEXICO',
+        address: '720 St Michaels Dr Suite G',
+        zip: '87505',
+        source: 'Public address directory'
     }
 ];
 
@@ -360,20 +293,20 @@ async function fetchNOAAData(lat, lon) {
 
 async function main() {
     console.log('═══════════════════════════════════════════════════');
-    console.log('  Storm Scout - Add New Sites');
+    console.log('  Storm Scout - Add New Offices');
     console.log('═══════════════════════════════════════════════════\n');
-    console.log(`Processing ${NEW_SITES.length} new offices...\n`);
+    console.log(`Processing ${NEW_OFFICES.length} new offices...\n`);
 
     const results = [];
     const warnings = [];
 
-    for (let i = 0; i < NEW_SITES.length; i++) {
-        const office = NEW_SITES[i];
+    for (let i = 0; i < NEW_OFFICES.length; i++) {
+        const office = NEW_OFFICES[i];
         const stateCode = STATE_CODES[office.state_full];
         const region = STATE_REGIONS[stateCode];
-        const progress = `[${i + 1}/${NEW_SITES.length}]`;
+        const progress = `[${i + 1}/${NEW_OFFICES.length}]`;
 
-        console.log(`${progress} ${office.site_code} - ${office.name} (${office.city}, ${stateCode})`);
+        console.log(`${progress} ${office.office_code} - ${office.name} (${office.city}, ${stateCode})`);
 
         // Step 1: Geocode
         let geo = null;
@@ -403,14 +336,14 @@ async function main() {
             if (geo) {
                 geo.source = 'nominatim_city_fallback';
                 warnings.push(
-                    `${office.site_code} (${office.city}, ${stateCode}): Used city-center coordinates - needs manual verification`
+                    `${office.office_code} (${office.city}, ${stateCode}): Used city-center coordinates - needs manual verification`
                 );
             }
         }
 
         if (!geo) {
             console.log(`  ✗ FAILED to geocode - skipping NOAA lookup`);
-            warnings.push(`${office.site_code}: GEOCODING FAILED completely`);
+            warnings.push(`${office.office_code}: GEOCODING FAILED completely`);
             results.push({
                 ...office,
                 stateCode,
@@ -436,11 +369,11 @@ async function main() {
             console.log(`  ✓ UGC: ${noaa.ugc_codes.join(', ')} | CWA: ${noaa.cwa} | County: ${noaa.county}`);
         } else {
             console.log(`  ✗ NOAA lookup failed: ${noaa.error}`);
-            warnings.push(`${office.site_code}: NOAA lookup failed - ${noaa.error}`);
+            warnings.push(`${office.office_code}: NOAA lookup failed - ${noaa.error}`);
         }
 
         results.push({
-            site_code: office.site_code,
+            office_code: office.office_code,
             name: office.name,
             city: office.city,
             stateCode,
@@ -463,12 +396,12 @@ async function main() {
 
     // ─── Generate outputs ──────────────────────────────────────────────────────
 
-    // 1. JSON entries for sites.json
+    // 1. JSON entries for offices.json
     const jsonEntries = results
         .filter((r) => r.latitude != null)
         .map((r) => {
             const entry = {
-                site_code: r.site_code,
+                office_code: r.office_code,
                 name: r.name,
                 city: r.city,
                 state: r.stateCode,
@@ -483,16 +416,16 @@ async function main() {
             return entry;
         });
 
-    const jsonOutputPath = path.join(OUTPUT_DIR, 'new-sites-output.json');
+    const jsonOutputPath = path.join(OUTPUT_DIR, 'new-offices-output.json');
     fs.writeFileSync(jsonOutputPath, JSON.stringify(jsonEntries, null, 2));
     console.log(`\n✓ JSON entries saved to: ${jsonOutputPath}`);
 
     // 2. SQL INSERT statements
-    const sqlLines = ['-- Storm Scout: INSERT new sites', `-- Generated: ${new Date().toISOString()}`, ''];
+    const sqlLines = ['-- Storm Scout: INSERT new offices', `-- Generated: ${new Date().toISOString()}`, ''];
 
     for (const r of results) {
         if (r.latitude == null) {
-            sqlLines.push(`-- SKIPPED ${r.site_code} (${r.city}) - geocoding failed`);
+            sqlLines.push(`-- SKIPPED ${r.office_code} (${r.city}) - geocoding failed`);
             continue;
         }
 
@@ -503,13 +436,13 @@ async function main() {
         const city = r.city.replace(/'/g, "''");
 
         sqlLines.push(
-            `INSERT IGNORE INTO sites (site_code, name, city, state, county, ugc_codes, cwa, latitude, longitude, region)`,
-            `VALUES ('${r.site_code}', '${name}', '${city}', '${r.stateCode}', ${county}, ${ugcJson}, ${cwa}, ${r.latitude.toFixed(7)}, ${r.longitude.toFixed(7)}, '${r.region}');`,
+            `INSERT IGNORE INTO offices (office_code, name, city, state, county, ugc_codes, cwa, latitude, longitude, region)`,
+            `VALUES ('${r.office_code}', '${name}', '${city}', '${r.stateCode}', ${county}, ${ugcJson}, ${cwa}, ${r.latitude.toFixed(7)}, ${r.longitude.toFixed(7)}, '${r.region}');`,
             ''
         );
     }
 
-    const sqlOutputPath = path.join(OUTPUT_DIR, 'new-sites-insert.sql');
+    const sqlOutputPath = path.join(OUTPUT_DIR, 'new-offices-insert.sql');
     fs.writeFileSync(sqlOutputPath, sqlLines.join('\n'));
     console.log(`✓ SQL INSERT statements saved to: ${sqlOutputPath}`);
 
@@ -529,10 +462,10 @@ async function main() {
         console.log('');
     }
 
-    console.log('─── Site Details ───────────────────────────────────\n');
+    console.log('─── Office Details ─────────────────────────────────\n');
 
     for (const r of results) {
-        console.log(`  ${r.site_code} | ${r.name}`);
+        console.log(`  ${r.office_code} | ${r.name}`);
         console.log(`    City: ${r.city}, ${r.stateCode} | Region: ${r.region}`);
         if (r.address) console.log(`    Address: ${r.address}`);
         if (r.latitude != null) {
@@ -554,7 +487,7 @@ async function main() {
     console.log('2. Manually verify any offices marked with ⚠️  warnings');
     console.log(`3. Review/edit: ${jsonOutputPath}`);
     console.log(`4. Review/edit: ${sqlOutputPath}`);
-    console.log('5. Merge new entries into sites.json');
+    console.log('5. Merge new entries into offices.json');
     console.log('6. Run SQL on production: ssh → mysql or phpMyAdmin');
     console.log('7. Verify on Storm Scout dashboard\n');
 }
