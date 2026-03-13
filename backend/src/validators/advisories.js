@@ -27,85 +27,74 @@ const VALID_STATUSES = ['active', 'expired'];
  * Supports comma-separated values
  */
 const validateSeverity = query('severity')
-  .optional()
-  .trim()
-  .custom((value) => {
-    if (!value) return true;
-    const severities = value.split(',').map(s => s.trim());
-    for (const sev of severities) {
-      if (!VALID_SEVERITIES.includes(sev)) {
-        throw new Error(`Invalid severity: ${sev}. Must be one of: ${VALID_SEVERITIES.join(', ')}`);
-      }
-    }
-    return true;
-  });
+    .optional()
+    .trim()
+    .custom((value) => {
+        if (!value) return true;
+        const severities = value.split(',').map((s) => s.trim());
+        for (const sev of severities) {
+            if (!VALID_SEVERITIES.includes(sev)) {
+                throw new Error(`Invalid severity: ${sev}. Must be one of: ${VALID_SEVERITIES.join(', ')}`);
+            }
+        }
+        return true;
+    });
 
 /**
  * Validate status query parameter
  */
 const validateStatus = query('status')
-  .optional()
-  .trim()
-  .isIn(VALID_STATUSES)
-  .withMessage(`Status must be one of: ${VALID_STATUSES.join(', ')}`);
+    .optional()
+    .trim()
+    .isIn(VALID_STATUSES)
+    .withMessage(`Status must be one of: ${VALID_STATUSES.join(', ')}`);
 
 /**
  * Validate advisory_type query parameter
  * Supports comma-separated values; each value must be a known NOAA alert type.
  */
 const validateAdvisoryType = query('advisory_type')
-  .optional()
-  .trim()
-  .custom((value) => {
-    if (!value) return true;
-    const types = value.split(',').map(t => t.trim()).filter(Boolean);
-    for (const t of types) {
-      if (!VALID_ADVISORY_TYPES.has(t)) {
-        throw new Error(`Invalid advisory_type: "${t}". Must be a known NOAA alert type.`);
-      }
-    }
-    return true;
-  });
+    .optional()
+    .trim()
+    .custom((value) => {
+        if (!value) return true;
+        const types = value
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean);
+        for (const t of types) {
+            if (!VALID_ADVISORY_TYPES.has(t)) {
+                throw new Error(`Invalid advisory_type: "${t}". Must be a known NOAA alert type.`);
+            }
+        }
+        return true;
+    });
 
 /**
  * Validators for GET /api/advisories
  */
-const getAll = [
-  validateStatus,
-  validateSeverity,
-  validateState,
-  validateOfficeId,
-  validateAdvisoryType
-];
+const getAll = [validateStatus, validateSeverity, validateState, validateOfficeId, validateAdvisoryType];
 
 /**
  * Validators for GET /api/advisories/active
  */
-const getActive = [
-  validateSeverity,
-  validateState,
-  validateAdvisoryType
-];
+const getActive = [validateSeverity, validateState, validateAdvisoryType];
 
 /**
  * Validators for GET /api/advisories/recent
  */
-const getRecent = [
-  validateLimit
-];
+const getRecent = [validateLimit];
 
 /**
  * Validators for GET /api/advisories/:id
  */
-const getById = [
-  validateId
-];
+const getById = [validateId];
 
 module.exports = {
-  getAll,
-  getActive,
-  getRecent,
-  getById,
-  VALID_SEVERITIES,
-  VALID_STATUSES
+    getAll,
+    getActive,
+    getRecent,
+    getById,
+    VALID_SEVERITIES,
+    VALID_STATUSES
 };

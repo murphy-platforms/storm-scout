@@ -15,48 +15,38 @@ const VALID_JURISDICTIONS = ['Federal', 'State', 'County', 'City'];
  * Validate jurisdiction_type query parameter
  */
 const validateJurisdiction = query('jurisdiction_type')
-  .optional()
-  .trim()
-  .isIn(VALID_JURISDICTIONS)
-  .withMessage(`jurisdiction_type must be one of: ${VALID_JURISDICTIONS.join(', ')}`);
+    .optional()
+    .trim()
+    .isIn(VALID_JURISDICTIONS)
+    .withMessage(`jurisdiction_type must be one of: ${VALID_JURISDICTIONS.join(', ')}`);
 
 /**
  * Validate notice_type query parameter
  */
 const validateNoticeType = query('notice_type')
-  .optional()
-  .trim()
-  .isLength({ max: 100 })
-  .withMessage('notice_type must be at most 100 characters');
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('notice_type must be at most 100 characters');
 
 /**
  * Validators for GET /api/notices
  */
-const getAll = [
-  validateJurisdiction,
-  validateNoticeType,
-  validateState,
-  validateBooleanQuery('active_only')
-];
+const getAll = [validateJurisdiction, validateNoticeType, validateState, validateBooleanQuery('active_only')];
 
 /**
  * Validators for GET /api/notices/active
  */
-const getActive = [
-  validateJurisdiction,
-  validateState
-];
+const getActive = [validateJurisdiction, validateState];
 
 /**
  * Validators for GET /api/notices/:id
  */
-const getById = [
-  validateId
-];
+const getById = [validateId];
 
 module.exports = {
-  getAll,
-  getActive,
-  getById,
-  VALID_JURISDICTIONS
+    getAll,
+    getActive,
+    getById,
+    VALID_JURISDICTIONS
 };

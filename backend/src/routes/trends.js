@@ -47,11 +47,11 @@ router.get('/', async (req, res) => {
         // Office enrichment: resolve all referenced office IDs in one batch query
         // rather than N individual lookups. The resulting Map provides O(1) access
         // when merging office metadata into each trend object.
-        const officeIds = [...new Set(trends.map(t => t.office_id))];
+        const officeIds = [...new Set(trends.map((t) => t.office_id))];
         const offices = await Office.getByIds(officeIds);
-        const officeMap = new Map(offices.map(o => [o.id, o]));
+        const officeMap = new Map(offices.map((o) => [o.id, o]));
 
-        const enrichedTrends = trends.map(trend => ({
+        const enrichedTrends = trends.map((trend) => ({
             ...trend,
             office: officeMap.get(trend.office_id)
         }));

@@ -7,28 +7,20 @@ const { validateId, validateState, validateRegion, validateBooleanQuery } = requ
 /**
  * Validators for GET /api/offices
  */
-const getAll = [
-  validateState,
-  validateRegion
-];
+const getAll = [validateState, validateRegion];
 
 /**
  * Validators for GET /api/offices/:id
  */
-const getById = [
-  validateId
-];
+const getById = [validateId];
 
 /**
  * Validators for GET /api/offices/:id/advisories
  */
-const getOfficeAdvisories = [
-  validateId,
-  validateBooleanQuery('active_only')
-];
+const getOfficeAdvisories = [validateId, validateBooleanQuery('active_only')];
 
 module.exports = {
-  getAll,
-  getById,
-  getOfficeAdvisories
+    getAll,
+    getById,
+    getOfficeAdvisories
 };

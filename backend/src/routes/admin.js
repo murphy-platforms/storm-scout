@@ -18,37 +18,37 @@ router.use(requireApiKey);
  * Used by deploy.sh before deploying new code/migrations. (closes #112)
  */
 router.post('/pause-ingestion', async (req, res) => {
-  try {
-    const status = getSchedulerStatus();
+    try {
+        const status = getSchedulerStatus();
 
-    if (!status.ingestion.running) {
-      return res.json({
-        success: true,
-        message: 'Ingestion scheduler was not running — nothing to pause',
-        status: getSchedulerStatus()
-      });
+        if (!status.ingestion.running) {
+            return res.json({
+                success: true,
+                message: 'Ingestion scheduler was not running — nothing to pause',
+                status: getSchedulerStatus()
+            });
+        }
+
+        // Stop the scheduler from queuing new runs
+        stopScheduler();
+        console.log('[Admin] Ingestion scheduler paused via API');
+
+        // If a cycle is actively in progress, wait for it to finish (up to 5 min)
+        if (status.ingestion.inProgress) {
+            console.log('[Admin] Waiting for active ingestion cycle to complete...');
+            await waitForIngestionIdle(5 * 60 * 1000);
+            console.log('[Admin] Active ingestion cycle finished');
+        }
+
+        res.json({
+            success: true,
+            message: 'Ingestion paused. Active cycle (if any) has completed.',
+            status: getSchedulerStatus()
+        });
+    } catch (error) {
+        console.error('[Admin] Failed to pause ingestion:', error.message);
+        res.status(500).json({ success: false, error: error.message });
     }
-
-    // Stop the scheduler from queuing new runs
-    stopScheduler();
-    console.log('[Admin] Ingestion scheduler paused via API');
-
-    // If a cycle is actively in progress, wait for it to finish (up to 5 min)
-    if (status.ingestion.inProgress) {
-      console.log('[Admin] Waiting for active ingestion cycle to complete...');
-      await waitForIngestionIdle(5 * 60 * 1000);
-      console.log('[Admin] Active ingestion cycle finished');
-    }
-
-    res.json({
-      success: true,
-      message: 'Ingestion paused. Active cycle (if any) has completed.',
-      status: getSchedulerStatus()
-    });
-  } catch (error) {
-    console.error('[Admin] Failed to pause ingestion:', error.message);
-    res.status(500).json({ success: false, error: error.message });
-  }
 });
 
 /**
@@ -56,29 +56,29 @@ router.post('/pause-ingestion', async (req, res) => {
  * Restarts the ingestion scheduler after a deploy pause.
  */
 router.post('/resume-ingestion', (req, res) => {
-  try {
-    const status = getSchedulerStatus();
+    try {
+        const status = getSchedulerStatus();
 
-    if (status.ingestion.running) {
-      return res.json({
-        success: true,
-        message: 'Ingestion scheduler is already running — nothing to resume',
-        status
-      });
+        if (status.ingestion.running) {
+            return res.json({
+                success: true,
+                message: 'Ingestion scheduler is already running — nothing to resume',
+                status
+            });
+        }
+
+        startScheduler();
+        console.log('[Admin] Ingestion scheduler resumed via API');
+
+        res.json({
+            success: true,
+            message: 'Ingestion scheduler resumed',
+            status: getSchedulerStatus()
+        });
+    } catch (error) {
+        console.error('[Admin] Failed to resume ingestion:', error.message);
+        res.status(500).json({ success: false, error: error.message });
     }
-
-    startScheduler();
-    console.log('[Admin] Ingestion scheduler resumed via API');
-
-    res.json({
-      success: true,
-      message: 'Ingestion scheduler resumed',
-      status: getSchedulerStatus()
-    });
-  } catch (error) {
-    console.error('[Admin] Failed to resume ingestion:', error.message);
-    res.status(500).json({ success: false, error: error.message });
-  }
 });
 
 /**
@@ -86,7 +86,7 @@ router.post('/resume-ingestion', (req, res) => {
  * Returns current scheduler and ingestion status.
  */
 router.get('/status', (req, res) => {
-  res.json({ success: true, status: getSchedulerStatus() });
+    res.json({ success: true, status: getSchedulerStatus() });
 });
 
 /**
@@ -96,135 +96,136 @@ router.get('/status', (req, res) => {
  * The public /health endpoint returns only status (ok/degraded) for load balancers.
  */
 router.get('/health', async (req, res) => {
-  const fs = require('fs');
-  const path = require('path');
-  const { getDatabase } = require('../config/database');
-  const config = require('../config/config');
-  const { getIngestionStatus } = require('../ingestion/noaa-ingestor');
-  const { getCircuitBreakerState } = require('../ingestion/utils/api-client');
+    const fs = require('fs');
+    const path = require('path');
+    const { getDatabase } = require('../config/database');
+    const config = require('../config/config');
+    const { getIngestionStatus } = require('../ingestion/noaa-ingestor');
+    const { getCircuitBreakerState } = require('../ingestion/utils/api-client');
 
-  const mem = process.memoryUsage();
+    const mem = process.memoryUsage();
 
-  const health = {
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: config.env,
-    uptime: {
-      seconds: Math.floor(process.uptime()),
-      human: (() => {
-        const s = Math.floor(process.uptime());
-        const h = Math.floor(s / 3600);
-        const m = Math.floor((s % 3600) / 60);
-        return `${h}h ${m}m ${s % 60}s`;
-      })()
-    },
-    memory: {
-      heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
-      heapTotalMb: Math.round(mem.heapTotal / 1024 / 1024),
-      rssMb: Math.round(mem.rss / 1024 / 1024),
-      externalMb: Math.round(mem.external / 1024 / 1024)
-    },
-    noaaCircuitBreaker: getCircuitBreakerState(),
-    checks: {
-      database: { status: 'unknown' },
-      ingestion: { status: 'unknown' },
-      data_integrity: { status: 'unknown' }
-    },
-    ingestion: getIngestionStatus()
-  };
-
-  try {
-    const db = getDatabase();
-    await db.query('SELECT 1');
-    health.checks.database = {
-      status: 'ok',
-      message: 'Database connection successful'
+    const health = {
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        environment: config.env,
+        uptime: {
+            seconds: Math.floor(process.uptime()),
+            human: (() => {
+                const s = Math.floor(process.uptime());
+                const h = Math.floor(s / 3600);
+                const m = Math.floor((s % 3600) / 60);
+                return `${h}h ${m}m ${s % 60}s`;
+            })()
+        },
+        memory: {
+            heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
+            heapTotalMb: Math.round(mem.heapTotal / 1024 / 1024),
+            rssMb: Math.round(mem.rss / 1024 / 1024),
+            externalMb: Math.round(mem.external / 1024 / 1024)
+        },
+        noaaCircuitBreaker: getCircuitBreakerState(),
+        checks: {
+            database: { status: 'unknown' },
+            ingestion: { status: 'unknown' },
+            data_integrity: { status: 'unknown' }
+        },
+        ingestion: getIngestionStatus()
     };
-  } catch (error) {
-    health.status = 'degraded';
-    health.checks.database = {
-      status: 'error',
-      message: error.message
-    };
-  }
 
-  try {
-    const ingestionFile = path.join(__dirname, '../../.last-ingestion.json');
-    if (fs.existsSync(ingestionFile)) {
-      const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
-      const lastUpdate = new Date(data.lastUpdated);
-      const minutesAgo = (Date.now() - lastUpdate.getTime()) / (1000 * 60);
-
-      health.checks.ingestion = {
-        status: minutesAgo <= 30 ? 'ok' : 'stale',
-        lastUpdated: data.lastUpdated,
-        minutesAgo: Math.round(minutesAgo),
-        message: minutesAgo <= 30
-          ? 'Ingestion is current'
-          : `Last ingestion was ${Math.round(minutesAgo)} minutes ago (expected: <= 30 min)`
-      };
-
-      if (minutesAgo > 30) {
+    try {
+        const db = getDatabase();
+        await db.query('SELECT 1');
+        health.checks.database = {
+            status: 'ok',
+            message: 'Database connection successful'
+        };
+    } catch (error) {
         health.status = 'degraded';
-      }
-    } else {
-      health.checks.ingestion = {
-        status: 'unknown',
-        message: 'No ingestion history found (ingestion may not have run yet)'
-      };
+        health.checks.database = {
+            status: 'error',
+            message: error.message
+        };
     }
-  } catch (error) {
-    health.checks.ingestion = {
-      status: 'error',
-      message: `Error checking ingestion status: ${error.message}`
-    };
-  }
 
-  try {
-    const db = getDatabase();
+    try {
+        const ingestionFile = path.join(__dirname, '../../.last-ingestion.json');
+        if (fs.existsSync(ingestionFile)) {
+            const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
+            const lastUpdate = new Date(data.lastUpdated);
+            const minutesAgo = (Date.now() - lastUpdate.getTime()) / (1000 * 60);
 
-    const [missingUgc] = await db.query(
-      "SELECT COUNT(*) as count FROM offices WHERE ugc_codes IS NULL OR ugc_codes = '[]'"
-    );
-    const [missingCounty] = await db.query(
-      "SELECT COUNT(*) as count FROM offices WHERE county IS NULL OR county = ''"
-    );
-    const [invalidFormat] = await db.query(
-      `SELECT COUNT(*) as count FROM offices
+            health.checks.ingestion = {
+                status: minutesAgo <= 30 ? 'ok' : 'stale',
+                lastUpdated: data.lastUpdated,
+                minutesAgo: Math.round(minutesAgo),
+                message:
+                    minutesAgo <= 30
+                        ? 'Ingestion is current'
+                        : `Last ingestion was ${Math.round(minutesAgo)} minutes ago (expected: <= 30 min)`
+            };
+
+            if (minutesAgo > 30) {
+                health.status = 'degraded';
+            }
+        } else {
+            health.checks.ingestion = {
+                status: 'unknown',
+                message: 'No ingestion history found (ingestion may not have run yet)'
+            };
+        }
+    } catch (error) {
+        health.checks.ingestion = {
+            status: 'error',
+            message: `Error checking ingestion status: ${error.message}`
+        };
+    }
+
+    try {
+        const db = getDatabase();
+
+        const [missingUgc] = await db.query(
+            "SELECT COUNT(*) as count FROM offices WHERE ugc_codes IS NULL OR ugc_codes = '[]'"
+        );
+        const [missingCounty] = await db.query(
+            "SELECT COUNT(*) as count FROM offices WHERE county IS NULL OR county = ''"
+        );
+        const [invalidFormat] = await db.query(
+            `SELECT COUNT(*) as count FROM offices
        WHERE ugc_codes IS NOT NULL
        AND ugc_codes NOT REGEXP '"[A-Z]{2}[ZC][0-9]{3}"'`
-    );
+        );
 
-    const ugcMissing = missingUgc[0]?.count || 0;
-    const countyMissing = missingCounty[0]?.count || 0;
-    const formatInvalid = invalidFormat[0]?.count || 0;
+        const ugcMissing = missingUgc[0]?.count || 0;
+        const countyMissing = missingCounty[0]?.count || 0;
+        const formatInvalid = invalidFormat[0]?.count || 0;
 
-    if (ugcMissing === 0 && countyMissing === 0 && formatInvalid === 0) {
-      health.checks.data_integrity = {
-        status: 'ok',
-        message: 'All offices have valid UGC codes and county data'
-      };
-    } else {
-      health.status = 'degraded';
-      health.checks.data_integrity = {
-        status: 'warning',
-        message: 'Data integrity issues detected',
-        details: {
-          sites_missing_ugc: ugcMissing,
-          sites_missing_county: countyMissing,
-          sites_invalid_ugc_format: formatInvalid
+        if (ugcMissing === 0 && countyMissing === 0 && formatInvalid === 0) {
+            health.checks.data_integrity = {
+                status: 'ok',
+                message: 'All offices have valid UGC codes and county data'
+            };
+        } else {
+            health.status = 'degraded';
+            health.checks.data_integrity = {
+                status: 'warning',
+                message: 'Data integrity issues detected',
+                details: {
+                    sites_missing_ugc: ugcMissing,
+                    sites_missing_county: countyMissing,
+                    sites_invalid_ugc_format: formatInvalid
+                }
+            };
         }
-      };
+    } catch (error) {
+        health.checks.data_integrity = {
+            status: 'error',
+            message: `Error checking data integrity: ${error.message}`
+        };
     }
-  } catch (error) {
-    health.checks.data_integrity = {
-      status: 'error',
-      message: `Error checking data integrity: ${error.message}`
-    };
-  }
 
-  const httpStatus = health.status === 'ok' ? 200 : 503;
-  res.status(httpStatus).json(health);
+    const httpStatus = health.status === 'ok' ? 200 : 503;
+    res.status(httpStatus).json(health);
 });
 
 module.exports = router;

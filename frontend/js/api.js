@@ -3,9 +3,10 @@
  * Handles all backend API requests
  */
 
-const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? `${window.location.protocol}//${window.location.host}/api`
-  : '/api';
+const API_BASE_URL =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? `${window.location.protocol}//${window.location.host}/api`
+        : '/api';
 
 let _versionCache = null;
 
@@ -40,7 +41,9 @@ const API = {
                 const { data, ts } = JSON.parse(raw);
                 if (Date.now() - ts < CACHE_TTL) return data;
             }
-        } catch (e) { /* localStorage unavailable — proceed to fetch */ }
+        } catch (e) {
+            /* localStorage unavailable — proceed to fetch */
+        }
 
         const response = await fetch(`${API_BASE_URL}/status/overview`);
         const json = await response.json();
@@ -48,7 +51,9 @@ const API = {
 
         try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ data: json.data, ts: Date.now() }));
-        } catch (e) { /* quota exceeded or private browsing — skip caching */ }
+        } catch (e) {
+            /* quota exceeded or private browsing — skip caching */
+        }
 
         return json.data;
     },
@@ -68,7 +73,9 @@ const API = {
                 const { data, ts } = JSON.parse(raw);
                 if (Date.now() - ts < CACHE_TTL) return data;
             }
-        } catch (e) { /* localStorage unavailable — proceed to fetch */ }
+        } catch (e) {
+            /* localStorage unavailable — proceed to fetch */
+        }
 
         const response = await fetch(`${API_BASE_URL}/advisories/active`);
         const json = await response.json();
@@ -76,7 +83,9 @@ const API = {
 
         try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ data: json.data, ts: Date.now() }));
-        } catch (e) { /* quota exceeded or private browsing — skip caching */ }
+        } catch (e) {
+            /* quota exceeded or private browsing — skip caching */
+        }
 
         return json.data;
     },
@@ -115,7 +124,9 @@ const API = {
                 const { data, ts } = JSON.parse(raw);
                 if (Date.now() - ts < CACHE_TTL) return data;
             }
-        } catch (e) { /* localStorage unavailable — proceed to fetch */ }
+        } catch (e) {
+            /* localStorage unavailable — proceed to fetch */
+        }
 
         const response = await fetch(`${API_BASE_URL}/observations`);
         const json = await response.json();
@@ -123,7 +134,9 @@ const API = {
 
         try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ data: json.data, ts: Date.now() }));
-        } catch (e) { /* quota exceeded or private browsing — skip caching */ }
+        } catch (e) {
+            /* quota exceeded or private browsing — skip caching */
+        }
 
         return json.data;
     },
@@ -246,8 +259,8 @@ const API = {
             return await response.json();
         } catch (error) {
             console.error('Failed to check historical data availability:', error);
-            return { 
-                status: 'error', 
+            return {
+                status: 'error',
                 message: 'Unable to check data availability',
                 recommendation: 'Show "Accumulating data..." message'
             };

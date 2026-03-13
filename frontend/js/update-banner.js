@@ -7,7 +7,7 @@
 const UpdateBanner = {
     nextUpdateTime: null,
     countdownInterval: null,
-    
+
     /**
      * Format timestamp in user's local timezone
      */
@@ -24,7 +24,7 @@ const UpdateBanner = {
             hour12: true
         });
     },
-    
+
     isPollingIngestion: false,
     pollingInterval: null,
 
@@ -38,7 +38,9 @@ const UpdateBanner = {
         this.isPollingIngestion = true;
         this.pollingInterval = setInterval(async () => {
             try {
-                const resp = await fetch(`${typeof API !== 'undefined' && API.baseUrl ? API.baseUrl.replace('/api', '') : ''}/health`);
+                const resp = await fetch(
+                    `${typeof API !== 'undefined' && API.baseUrl ? API.baseUrl.replace('/api', '') : ''}/health`
+                );
                 const health = await resp.json();
                 if (health.ingestion && !health.ingestion.active) {
                     // Ingestion finished — stop polling and re-init
@@ -46,7 +48,9 @@ const UpdateBanner = {
                     this.isPollingIngestion = false;
                     this.init();
                 }
-            } catch (_) { /* network hiccup — keep polling */ }
+            } catch (_) {
+                /* network hiccup — keep polling */
+            }
         }, 10000);
     },
 
@@ -56,22 +60,23 @@ const UpdateBanner = {
      */
     updateCountdown() {
         if (!this.nextUpdateTime) return;
-        
+
         const now = new Date();
         const diff = this.nextUpdateTime - now;
-        
+
         const nextUpdateEl = document.getElementById('nextUpdate');
         if (!nextUpdateEl) return;
-        
+
         if (diff <= 0) {
-            nextUpdateEl.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Refreshing data\u2026';
+            nextUpdateEl.innerHTML =
+                '<span class="spinner-border spinner-border-sm" role="status"></span> Refreshing data\u2026';
             // Start polling /health to detect when ingestion finishes
             if (!this.isPollingIngestion) {
                 this.startIngestionPolling();
             }
             return;
         }
-        
+
         const minutes = Math.floor(diff / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
         nextUpdateEl.textContent = `${minutes}m ${seconds}s`;
@@ -83,23 +88,23 @@ const UpdateBanner = {
     async init() {
         try {
             const overview = await API.getOverview();
-            
+
             // Update last updated time
             const lastUpdatedEl = document.getElementById('lastUpdated');
             if (lastUpdatedEl) {
                 lastUpdatedEl.textContent = this.formatLocalTime(overview.last_updated);
             }
-            
+
             // Set up countdown
             if (overview.last_updated && overview.update_interval_minutes) {
                 const lastUpdate = new Date(overview.last_updated);
                 this.nextUpdateTime = new Date(lastUpdate.getTime() + overview.update_interval_minutes * 60000);
-                
+
                 // Clear existing countdown interval
                 if (this.countdownInterval) {
                     clearInterval(this.countdownInterval);
                 }
-                
+
                 // Update countdown immediately and then every second
                 this.updateCountdown();
                 this.countdownInterval = setInterval(() => this.updateCountdown(), 1000);
@@ -112,7 +117,7 @@ const UpdateBanner = {
             if (nextUpdateEl) nextUpdateEl.textContent = 'Unknown';
         }
     },
-    
+
     /**
      * Clear all active intervals and reset polling state.
      * Called on page unload and when the tab is hidden to prevent zombie timers
