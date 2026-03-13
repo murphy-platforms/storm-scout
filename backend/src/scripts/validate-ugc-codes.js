@@ -132,7 +132,7 @@ function compareUGCCodes(stored, expected) {
         });
     }
 
-    // Check for state mismatch (cross-border sites)
+    // Check for state mismatch (cross-border offices)
     const storedStates = storedCodes.map((c) => c.substring(0, 2));
     const uniqueStates = [...new Set(storedStates)];
 
@@ -140,7 +140,7 @@ function compareUGCCodes(stored, expected) {
         issues.push({
             type: 'CROSS_STATE',
             severity: 'info',
-            message: `UGC codes (${uniqueStates.join(', ')}) differ from site state (${stored.state}) - likely cross-border location`
+            message: `UGC codes (${uniqueStates.join(', ')}) differ from office state (${stored.state}) - likely cross-border location`
         });
     }
 
@@ -219,7 +219,7 @@ async function main() {
     console.log('          UGC Code Validation Report - Storm Scout');
     console.log('═══════════════════════════════════════════════════════════════\n');
 
-    // Load sites from the ugc-codes-output.json (has both stored codes and site info)
+    // Load offices from the ugc-codes-output.json (has both stored codes and office info)
     const dataFile = path.join(__dirname, '../data/ugc-codes-output.json');
 
     if (!fs.existsSync(dataFile)) {
@@ -301,7 +301,7 @@ async function main() {
     }
 
     // Phase 3: Cross-state detection
-    console.log('─── Phase 3: Cross-State Site Detection ───\n');
+    console.log('─── Phase 3: Cross-State Office Detection ───\n');
 
     const crossStateSites = [];
     for (const office of offices) {
@@ -404,7 +404,7 @@ async function main() {
     console.log('                      Validation Summary');
     console.log('═══════════════════════════════════════════════════════════════\n');
 
-    console.log(`  Total Offices:     ${report.total_sites}`);
+    console.log(`  Total Offices:     ${report.total_offices}`);
     console.log(`  Valid:           ${report.summary.valid}`);
     console.log(`  Warnings:        ${report.summary.warnings}`);
     console.log(`  Errors:          ${report.summary.errors}`);

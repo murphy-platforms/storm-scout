@@ -21,6 +21,20 @@ Organizations that manage physical locations — retail chains, logistics networ
 | ![Office Detail](docs/screenshots/office-detail.jpg) | ![NOAA Alert Detail](docs/screenshots/NOAA-alert-detail.jpg) |
 | *Office Detail* | *NOAA Alert Detail* |
 
+## What It Looks Like in Action
+
+**Scenario:** A hurricane watch is issued for the Gulf Coast. Your organization has 40 offices in the affected region.
+
+1. **Dashboard alerts you immediately** — The overview page shows the spike in active advisories, with impacted office counts updated in real time after each 15-minute ingestion cycle.
+
+2. **Drill into impacted offices** — The Offices page filters to show only locations with active hurricane, flood, or storm surge advisories. Each office shows its current operational status (Open, At Risk, or Closed).
+
+3. **Map view for geographic context** — The interactive map clusters affected offices by severity, letting you see at a glance which regions are most impacted and plan response accordingly.
+
+4. **Office detail for local conditions** — Click any office to see its full advisory list, current weather observations from the nearest NWS station, and the complete NOAA alert narrative.
+
+5. **Export for leadership briefing** — Generate a CSV or formatted summary of all impacted offices and their advisory status to share with senior leadership or emergency response teams.
+
 ## Use Cases
 
 - **Operations center during hurricane season** — An operations team monitors 200+ locations across the Gulf Coast. Instead of checking weather.gov for each site, Storm Scout surfaces all active hurricane warnings, flood watches, and storm surge alerts in a single view, filtered to only the severity levels that trigger action.
@@ -157,17 +171,34 @@ cp .env.example .env
 
 # Initialize database with schema
 npm run init-db
+```
 
-# Load office data (run import script first, then seed)
-node src/scripts/import-offices.js /path/to/locations.csv
+#### Option A: Quick Start with Demo Data (recommended)
+
+Storm Scout ships with 300 pre-populated US office locations in `backend/src/data/offices.json`. To get running immediately:
+
+```bash
 npm run seed-db
+npm start
+```
+
+That's it — the dashboard is live at **http://localhost:3000** and will begin ingesting NOAA weather data every 15 minutes.
+
+#### Option B: Import Your Own Locations
+
+To use your own office locations, prepare a CSV file and import it:
+
+```bash
+node src/scripts/import-offices.js /path/to/your-locations.csv
+npm run seed-db
+npm start
 ```
 
 **CSV format requirements:**
 
 | Column | Required | Description |
 |--------|----------|-------------|
-| `zip` | Yes | 5-digit zip code (becomes `site_code`) |
+| `zip` | Yes | 5-digit zip code (used as `office_code`) |
 | `name` | Yes | Office name |
 | `city` | Yes | City name |
 | `state` | Yes | 2-letter state code |
@@ -181,12 +212,6 @@ npm run seed-db
 Example header: `zip,name,city,state,latitude,longitude,region,county`
 
 The import **overwrites** `backend/src/data/offices.json` on each run. Rows missing required fields are skipped with a warning. Run summary prints total rows processed, rows skipped, and output path.
-
-```bash
-
-# Start the API server
-npm start
-```
 
 Backend runs at: **http://localhost:3000**
 

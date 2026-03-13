@@ -2,7 +2,7 @@
 /**
  * verify-offices.js
  * Geocodes imprecise addresses and verifies all 9 remaining offices against NOAA /points API.
- * Outputs a comparison report and writes verified data to verified-sites.json.
+ * Outputs a comparison report and writes verified data to verified-offices.json.
  */
 
 const fs = require('fs');
@@ -44,7 +44,7 @@ async function geocodeCensus(address) {
 async function geocodeNominatim(address) {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=us`;
     const resp = await fetch(url, {
-        headers: { 'User-Agent': 'StormScout/1.0 (site-verification)' }
+        headers: { 'User-Agent': 'StormScout/1.0 (office-verification)' }
     });
     const data = await resp.json();
     if (data && data.length > 0) {
@@ -61,7 +61,7 @@ async function geocodeNominatim(address) {
 async function fetchNOAA(lat, lon) {
     const url = `https://api.weather.gov/points/${lat},${lon}`;
     const resp = await fetch(url, {
-        headers: { 'User-Agent': 'StormScout/1.0 (site-verification)', Accept: 'application/geo+json' }
+        headers: { 'User-Agent': 'StormScout/1.0 (office-verification)', Accept: 'application/geo+json' }
     });
     if (!resp.ok) {
         console.error(`  NOAA /points failed for ${lat},${lon}: ${resp.status}`);
@@ -89,7 +89,7 @@ async function fetchNOAA(lat, lon) {
         await sleep(300);
         try {
             const countyResp = await fetch(countyUrl, {
-                headers: { 'User-Agent': 'StormScout/1.0 (site-verification)', Accept: 'application/geo+json' }
+                headers: { 'User-Agent': 'StormScout/1.0 (office-verification)', Accept: 'application/geo+json' }
             });
             if (countyResp.ok) {
                 const countyData = await countyResp.json();
@@ -120,7 +120,7 @@ function determineRegion(state) {
         Pacific: ['CA', 'OR', 'WA'],
         'Non-Contiguous': ['AK', 'HI', 'PR', 'GU', 'VI', 'AS', 'MP']
     };
-    // NY is tricky - NYC sites use Mid-Atlantic in our data
+    // NY is tricky - NYC offices use Mid-Atlantic in our data
     if (state === 'NY') return 'Mid-Atlantic';
     for (const [region, states] of Object.entries(regions)) {
         if (states.includes(state)) return region;
@@ -129,11 +129,11 @@ function determineRegion(state) {
 }
 
 async function main() {
-    console.log('=== Storm Scout Site Verification ===\n');
+    console.log('=== Storm Scout Office Verification ===\n');
 
     const results = [];
 
-    // Step 1: Geocode the 4 imprecise sites
+    // Step 1: Geocode the 4 imprecise offices
     console.log('--- Geocoding 4 imprecise addresses ---\n');
     for (const office of SITES_TO_GEOCODE) {
         const current = currentSites.find((s) => s.site_code === office.site_code);
@@ -172,7 +172,7 @@ async function main() {
         console.log();
     }
 
-    // Step 2: Add the 5 verify-only sites with their current coords
+    // Step 2: Add the 5 verify-only offices with their current coords
     for (const code of SITES_TO_VERIFY_ONLY) {
         const current = currentSites.find((s) => s.site_code === code);
         results.push({
@@ -184,7 +184,7 @@ async function main() {
         });
     }
 
-    // Step 3: Verify all 9 sites against NOAA /points
+    // Step 3: Verify all 9 offices against NOAA /points
     console.log('--- Verifying all 9 offices against NOAA /points ---\n');
     const verified = [];
 
@@ -257,9 +257,9 @@ async function main() {
 
     const unchanged = verified.filter((v) => !changed.find((c) => c.site_code === v.site_code));
 
-    console.log(`Sites verified: ${verified.length}`);
-    console.log(`Sites with changes: ${changed.length}`);
-    console.log(`Sites unchanged: ${unchanged.length}`);
+    console.log(`Offices verified: ${verified.length}`);
+    console.log(`Offices with changes: ${changed.length}`);
+    console.log(`Offices unchanged: ${unchanged.length}`);
 
     if (changed.length > 0) {
         console.log('\nChanged offices:');
