@@ -337,6 +337,14 @@ Storm Scout implements multiple security controls:
 
 **Quick reference:** See [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) for a developer cheat sheet of CLI commands, environment variables, and curl examples.
 
+## Development Story
+
+Storm Scout was built by a technical operations leader — not a software engineer — using AI-assisted development with [Claude Code](https://claude.ai). The entire project, from first commit to production deployment, was developed through human-AI collaboration: the human directed architecture decisions, defined requirements, and managed the project backlog while AI generated the code, tests, and documentation.
+
+The project has been developed across 180+ GitHub issues and 300+ commits over approximately one month. Every commit carries a `Co-Authored-By: Claude Opus 4.6` trailer — this is intentional transparency about the development methodology, not an afterthought. Features like security hardening, accessibility, circuit breaker patterns, and the VTEC deduplication system were all specified by the human developer and implemented through iterative AI-assisted coding sessions.
+
+This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
+
 ## License
 
 MIT
