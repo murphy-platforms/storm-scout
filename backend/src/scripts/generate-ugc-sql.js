@@ -16,14 +16,18 @@ console.log(`-- Total sites: ${ugcData.total_sites}`);
 console.log('');
 
 for (const site of ugcData.sites) {
-  if (!site.success || site.ugc_codes.length === 0) continue;
-  
-  const ugcCodesJson = JSON.stringify(site.ugc_codes).replace(/'/g, "''");
-  const countyName = site.county_name ? `'${site.county_name.replace(/'/g, "''")}'` : 'NULL';
-  
-  console.log(`UPDATE sites SET ugc_codes = '${ugcCodesJson}', county = ${countyName} WHERE site_code = '${site.site_code}';`);
+    if (!site.success || site.ugc_codes.length === 0) continue;
+
+    const ugcCodesJson = JSON.stringify(site.ugc_codes).replace(/'/g, "''");
+    const countyName = site.county_name ? `'${site.county_name.replace(/'/g, "''")}'` : 'NULL';
+
+    console.log(
+        `UPDATE sites SET ugc_codes = '${ugcCodesJson}', county = ${countyName} WHERE site_code = '${site.site_code}';`
+    );
 }
 
 console.log('');
 console.log('-- Verify update');
-console.log("SELECT site_code, name, state, ugc_codes, county FROM sites WHERE site_code IN ('0064', '5404', '4400', '4403');");
+console.log(
+    "SELECT site_code, name, state, ugc_codes, county FROM sites WHERE site_code IN ('0064', '5404', '4400', '4403');"
+);

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Clean up duplicate alerts based on VTEC codes
- * 
+ *
  * DEPRECATED: This script is now a wrapper around the unified cleanup module.
  * Use `node src/utils/cleanup-advisories.js vtec` instead.
  */

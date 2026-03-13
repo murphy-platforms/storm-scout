@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Clean up duplicates based on VTEC Event IDs
- * 
+ *
  * DEPRECATED: This script is now a wrapper around the unified cleanup module.
  * Use `node src/utils/cleanup-advisories.js event_id` instead.
  */

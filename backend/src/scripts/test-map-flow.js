@@ -8,9 +8,9 @@ const http = require('http');
 
 function get(url) {
     return new Promise((resolve, reject) => {
-        http.get(url, res => {
+        http.get(url, (res) => {
             let body = '';
-            res.on('data', c => body += c);
+            res.on('data', (c) => (body += c));
             res.on('end', () => resolve(JSON.parse(body)));
             res.on('error', reject);
         }).on('error', reject);
@@ -21,11 +21,13 @@ const BASE = 'http://localhost:3000/api';
 
 const RANKS = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1 };
 
-function getSeverityRank(s) { return RANKS[s] || 0; }
+function getSeverityRank(s) {
+    return RANKS[s] || 0;
+}
 
 function aggregateByOffice(advisories) {
     const map = new Map();
-    advisories.forEach(adv => {
+    advisories.forEach((adv) => {
         if (!map.has(adv.office_id)) {
             map.set(adv.office_id, {
                 office_id: adv.office_id,
@@ -42,9 +44,9 @@ function aggregateByOffice(advisories) {
             o.highest_severity_rank = rank;
         }
     });
-    return Array.from(map.values()).map(o => ({
+    return Array.from(map.values()).map((o) => ({
         ...o,
-        highest_severity_advisory: o.advisories.find(a => a.severity === o.highest_severity)
+        highest_severity_advisory: o.advisories.find((a) => a.severity === o.highest_severity)
     }));
 }
 
@@ -65,7 +67,7 @@ function aggregateByOffice(advisories) {
         const userFilters = {};
         for (const [level, types] of Object.entries(alertTypesByLevel)) {
             if (preset.includeCategories.includes(level)) {
-                types.forEach(t => {
+                types.forEach((t) => {
                     if (!preset.excludeTypes || !preset.excludeTypes.includes(t)) {
                         userFilters[t] = true;
                     }
@@ -92,12 +94,12 @@ function aggregateByOffice(advisories) {
         console.log('allOffices:', allOffices.length);
 
         // Step 3: filterAdvisories
-        const filteredAdvisories = allAdvisories.filter(a => userFilters[a.advisory_type] === true);
+        const filteredAdvisories = allAdvisories.filter((a) => userFilters[a.advisory_type] === true);
         console.log('filteredAdvisories:', filteredAdvisories.length);
 
-        const filtered_out = allAdvisories.filter(a => !userFilters[a.advisory_type]);
+        const filtered_out = allAdvisories.filter((a) => !userFilters[a.advisory_type]);
         if (filtered_out.length) {
-            const types = [...new Set(filtered_out.map(a => a.advisory_type))];
+            const types = [...new Set(filtered_out.map((a) => a.advisory_type))];
             console.log('Filtered OUT types:', types);
         }
 
@@ -106,10 +108,10 @@ function aggregateByOffice(advisories) {
         console.log('aggregated offices:', aggregated.length);
 
         // Step 5: build officesWithAdvisories
-        const aggMap = new Map(aggregated.map(o => [o.office_id, o]));
+        const aggMap = new Map(aggregated.map((o) => [o.office_id, o]));
         const officesWithAdvisories = allOffices
-            .filter(o => aggMap.has(o.id))
-            .map(o => ({ ...o, ...aggMap.get(o.id) }));
+            .filter((o) => aggMap.has(o.id))
+            .map((o) => ({ ...o, ...aggMap.get(o.id) }));
         console.log('officesWithAdvisories:', officesWithAdvisories.length);
 
         // Step 6: simulate renderMarkers — spot every potential throw
@@ -120,7 +122,9 @@ function aggregateByOffice(advisories) {
 
             const hsa = office.highest_severity_advisory;
             if (!hsa) {
-                console.error(`[${i}] MISSING highest_severity_advisory — office_code: ${office.office_code}, highest_severity: ${office.highest_severity}`);
+                console.error(
+                    `[${i}] MISSING highest_severity_advisory — office_code: ${office.office_code}, highest_severity: ${office.highest_severity}`
+                );
                 errors++;
                 return;
             }
@@ -129,7 +133,9 @@ function aggregateByOffice(advisories) {
             // line 117 equivalent
             const advType = hsa.advisory_type;
             if (!advType) {
-                console.error(`[${i}] advisory_type is null on highest_severity_advisory — office_code: ${office.office_code}`);
+                console.error(
+                    `[${i}] advisory_type is null on highest_severity_advisory — office_code: ${office.office_code}`
+                );
                 errors++;
             }
         });
@@ -139,7 +145,6 @@ function aggregateByOffice(advisories) {
         } else {
             console.log(`\nSimulation FAILED — ${errors} error(s) found`);
         }
-
     } catch (e) {
         console.error('\nSIMULATION THREW:', e.message);
     }

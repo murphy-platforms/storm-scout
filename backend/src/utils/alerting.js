@@ -9,16 +9,16 @@ const config = require('../config/config');
 
 // Alert configuration from environment
 const ALERT_CONFIG = {
-  webhookUrl: process.env.ALERT_WEBHOOK_URL || null,
-  email: process.env.ALERT_EMAIL || null,
-  // 5-minute throttle window: prevents notification spam during rapid NOAA API
-  // instability while still surfacing repeated failures to operators.
-  // Each alert type has its own independent throttle bucket (keyed by type in
-  // lastAlertTime) so a failure alert and its subsequent recovery alert do not
-  // share a window and suppress each other.
-  // Configurable via ALERT_THROTTLE_MS env var if the default is too aggressive.
-  throttleMs: parseInt(process.env.ALERT_THROTTLE_MS) || 5 * 60 * 1000,  // 5 minutes
-  lastAlertTime: {}
+    webhookUrl: process.env.ALERT_WEBHOOK_URL || null,
+    email: process.env.ALERT_EMAIL || null,
+    // 5-minute throttle window: prevents notification spam during rapid NOAA API
+    // instability while still surfacing repeated failures to operators.
+    // Each alert type has its own independent throttle bucket (keyed by type in
+    // lastAlertTime) so a failure alert and its subsequent recovery alert do not
+    // share a window and suppress each other.
+    // Configurable via ALERT_THROTTLE_MS env var if the default is too aggressive.
+    throttleMs: parseInt(process.env.ALERT_THROTTLE_MS) || 5 * 60 * 1000, // 5 minutes
+    lastAlertTime: {}
 };
 
 /**
@@ -33,15 +33,15 @@ const ALERT_CONFIG = {
  * @returns {boolean} True if the alert should be suppressed; false if it should fire
  */
 function shouldThrottle(alertType) {
-  const now = Date.now();
-  const lastTime = ALERT_CONFIG.lastAlertTime[alertType] || 0;
-  
-  if (now - lastTime < ALERT_CONFIG.throttleMs) {
-    return true;
-  }
-  
-  ALERT_CONFIG.lastAlertTime[alertType] = now;
-  return false;
+    const now = Date.now();
+    const lastTime = ALERT_CONFIG.lastAlertTime[alertType] || 0;
+
+    if (now - lastTime < ALERT_CONFIG.throttleMs) {
+        return true;
+    }
+
+    ALERT_CONFIG.lastAlertTime[alertType] = now;
+    return false;
 }
 
 /**
@@ -72,52 +72,52 @@ function shouldThrottle(alertType) {
  * @returns {Promise<boolean>} True if the webhook returned 2xx; false otherwise
  */
 async function sendWebhookAlert(payload) {
-  if (!ALERT_CONFIG.webhookUrl) {
-    return false;
-  }
-  
-  return new Promise((resolve) => {
-    try {
-      const url = new URL(ALERT_CONFIG.webhookUrl);
-      const isHttps = url.protocol === 'https:';
-      const httpModule = isHttps ? https : http;
-      
-      const postData = JSON.stringify(payload);
-      
-      const options = {
-        hostname: url.hostname,
-        port: url.port || (isHttps ? 443 : 80),
-        path: url.pathname + url.search,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        },
-        timeout: 10000
-      };
-      
-      const req = httpModule.request(options, (res) => {
-        resolve(res.statusCode >= 200 && res.statusCode < 300);
-      });
-      
-      req.on('error', (error) => {
-        console.error('Webhook alert failed:', error.message);
-        resolve(false);
-      });
-      
-      req.on('timeout', () => {
-        req.destroy();
-        console.error('Webhook alert timed out');
-        resolve(false);
-      });
-      
-      req.write(postData);
-      req.end();
-    } catch (error) {
-      console.error('Webhook alert error:', error.message);
-      resolve(false);
+    if (!ALERT_CONFIG.webhookUrl) {
+        return false;
     }
-  });
+
+    return new Promise((resolve) => {
+        try {
+            const url = new URL(ALERT_CONFIG.webhookUrl);
+            const isHttps = url.protocol === 'https:';
+            const httpModule = isHttps ? https : http;
+
+            const postData = JSON.stringify(payload);
+
+            const options = {
+                hostname: url.hostname,
+                port: url.port || (isHttps ? 443 : 80),
+                path: url.pathname + url.search,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(postData)
+                },
+                timeout: 10000
+            };
+
+            const req = httpModule.request(options, (res) => {
+                resolve(res.statusCode >= 200 && res.statusCode < 300);
+            });
+
+            req.on('error', (error) => {
+                console.error('Webhook alert failed:', error.message);
+                resolve(false);
+            });
+
+            req.on('timeout', () => {
+                req.destroy();
+                console.error('Webhook alert timed out');
+                resolve(false);
+            });
+
+            req.write(postData);
+            req.end();
+        } catch (error) {
+            console.error('Webhook alert error:', error.message);
+            resolve(false);
+        }
+    });
 }
 
 /**
@@ -126,37 +126,39 @@ async function sendWebhookAlert(payload) {
  * @returns {Object} Slack-formatted payload
  */
 function formatSlackAlert(alert) {
-  const emoji = alert.severity === 'critical' ? ':rotating_light:' : ':warning:';
-  const color = alert.severity === 'critical' ? '#dc3545' : '#ffc107';
-  
-  return {
-    text: `${emoji} Storm Scout Alert: ${alert.title}`,
-    attachments: [{
-      color: color,
-      fields: [
-        {
-          title: 'Type',
-          value: alert.type,
-          short: true
-        },
-        {
-          title: 'Severity',
-          value: alert.severity.toUpperCase(),
-          short: true
-        },
-        {
-          title: 'Details',
-          value: alert.message,
-          short: false
-        },
-        {
-          title: 'Timestamp',
-          value: new Date().toISOString(),
-          short: true
-        }
-      ]
-    }]
-  };
+    const emoji = alert.severity === 'critical' ? ':rotating_light:' : ':warning:';
+    const color = alert.severity === 'critical' ? '#dc3545' : '#ffc107';
+
+    return {
+        text: `${emoji} Storm Scout Alert: ${alert.title}`,
+        attachments: [
+            {
+                color: color,
+                fields: [
+                    {
+                        title: 'Type',
+                        value: alert.type,
+                        short: true
+                    },
+                    {
+                        title: 'Severity',
+                        value: alert.severity.toUpperCase(),
+                        short: true
+                    },
+                    {
+                        title: 'Details',
+                        value: alert.message,
+                        short: false
+                    },
+                    {
+                        title: 'Timestamp',
+                        value: new Date().toISOString(),
+                        short: true
+                    }
+                ]
+            }
+        ]
+    };
 }
 
 /**
@@ -170,37 +172,37 @@ function formatSlackAlert(alert) {
  * @returns {Promise<boolean>} Whether alert was sent
  */
 async function sendAlert({ type, severity = 'warning', title, message, metadata = {} }) {
-  // Always log the alert
-  const logMethod = severity === 'critical' ? console.error : console.warn;
-  logMethod(`[ALERT] ${severity.toUpperCase()}: ${title} - ${message}`);
-  
-  // Check throttling
-  if (shouldThrottle(type)) {
-    console.log(`Alert throttled (type: ${type})`);
-    return false;
-  }
-  
-  const alert = {
-    type,
-    severity,
-    title,
-    message,
-    metadata,
-    timestamp: new Date().toISOString()
-  };
-  
-  // Send to webhook if configured
-  if (ALERT_CONFIG.webhookUrl) {
-    const payload = formatSlackAlert(alert);
-    await sendWebhookAlert(payload);
-  }
-  
-  // Future: Add email alerting here
-  // if (ALERT_CONFIG.email) {
-  //   await sendEmailAlert(alert);
-  // }
-  
-  return true;
+    // Always log the alert
+    const logMethod = severity === 'critical' ? console.error : console.warn;
+    logMethod(`[ALERT] ${severity.toUpperCase()}: ${title} - ${message}`);
+
+    // Check throttling
+    if (shouldThrottle(type)) {
+        console.log(`Alert throttled (type: ${type})`);
+        return false;
+    }
+
+    const alert = {
+        type,
+        severity,
+        title,
+        message,
+        metadata,
+        timestamp: new Date().toISOString()
+    };
+
+    // Send to webhook if configured
+    if (ALERT_CONFIG.webhookUrl) {
+        const payload = formatSlackAlert(alert);
+        await sendWebhookAlert(payload);
+    }
+
+    // Future: Add email alerting here
+    // if (ALERT_CONFIG.email) {
+    //   await sendEmailAlert(alert);
+    // }
+
+    return true;
 }
 
 /**
@@ -211,13 +213,13 @@ async function sendAlert({ type, severity = 'warning', title, message, metadata 
  * not share a throttle bucket.
  */
 const AlertTypes = {
-  INGESTION_FAILURE: 'ingestion_failure',
-  INGESTION_RECOVERY: 'ingestion_recovery',
-  INGESTION_PARTIAL: 'ingestion_partial',
-  CLEANUP_FAILURE: 'cleanup_failure',
-  DATABASE_ERROR: 'database_error',
-  API_ERROR: 'api_error',
-  ANOMALY_DETECTED: 'anomaly_detected'
+    INGESTION_FAILURE: 'ingestion_failure',
+    INGESTION_RECOVERY: 'ingestion_recovery',
+    INGESTION_PARTIAL: 'ingestion_partial',
+    CLEANUP_FAILURE: 'cleanup_failure',
+    DATABASE_ERROR: 'database_error',
+    API_ERROR: 'api_error',
+    ANOMALY_DETECTED: 'anomaly_detected'
 };
 
 /**
@@ -234,16 +236,16 @@ const AlertTypes = {
  *   or no webhook is configured
  */
 async function alertIngestionFailure(error, context = {}) {
-  return sendAlert({
-    type: AlertTypes.INGESTION_FAILURE,
-    severity: 'critical',
-    title: 'NOAA Ingestion Failed',
-    message: error.message,
-    metadata: {
-      errorStack: error.stack,
-      ...context
-    }
-  });
+    return sendAlert({
+        type: AlertTypes.INGESTION_FAILURE,
+        severity: 'critical',
+        title: 'NOAA Ingestion Failed',
+        message: error.message,
+        metadata: {
+            errorStack: error.stack,
+            ...context
+        }
+    });
 }
 
 /**
@@ -257,13 +259,13 @@ async function alertIngestionFailure(error, context = {}) {
  *   or no webhook is configured
  */
 async function alertAnomaly(message, data = {}) {
-  return sendAlert({
-    type: AlertTypes.ANOMALY_DETECTED,
-    severity: 'warning',
-    title: 'Anomaly Detected',
-    message,
-    metadata: data
-  });
+    return sendAlert({
+        type: AlertTypes.ANOMALY_DETECTED,
+        severity: 'warning',
+        title: 'Anomaly Detected',
+        message,
+        metadata: data
+    });
 }
 
 /**
@@ -277,15 +279,15 @@ async function alertAnomaly(message, data = {}) {
  *   or no webhook is configured
  */
 async function alertCleanupFailure(error) {
-  return sendAlert({
-    type: AlertTypes.CLEANUP_FAILURE,
-    severity: 'warning',
-    title: 'Cleanup Process Failed',
-    message: error.message,
-    metadata: {
-      errorStack: error.stack
-    }
-  });
+    return sendAlert({
+        type: AlertTypes.CLEANUP_FAILURE,
+        severity: 'warning',
+        title: 'Cleanup Process Failed',
+        message: error.message,
+        metadata: {
+            errorStack: error.stack
+        }
+    });
 }
 
 /**
@@ -299,20 +301,20 @@ async function alertCleanupFailure(error) {
  *   or no webhook is configured
  */
 async function alertIngestionRecovery(context = {}) {
-  return sendAlert({
-    type: AlertTypes.INGESTION_RECOVERY,
-    severity: 'warning',
-    title: 'NOAA Ingestion Recovered',
-    message: `Ingestion succeeded after ${context.previousConsecutiveFailures || 'unknown'} consecutive failure(s).`,
-    metadata: context
-  });
+    return sendAlert({
+        type: AlertTypes.INGESTION_RECOVERY,
+        severity: 'warning',
+        title: 'NOAA Ingestion Recovered',
+        message: `Ingestion succeeded after ${context.previousConsecutiveFailures || 'unknown'} consecutive failure(s).`,
+        metadata: context
+    });
 }
 
 module.exports = {
-  sendAlert,
-  alertIngestionFailure,
-  alertIngestionRecovery,
-  alertAnomaly,
-  alertCleanupFailure,
-  AlertTypes
+    sendAlert,
+    alertIngestionFailure,
+    alertIngestionRecovery,
+    alertAnomaly,
+    alertCleanupFailure,
+    AlertTypes
 };
