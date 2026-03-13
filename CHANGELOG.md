@@ -198,7 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Dashboard "Recently Updated Offices" always empty** - `recently_updated` items from the overview API have an `id` field (office_status row ID) and a separate `office_id` field (actual office ID); the filter was incorrectly comparing `adv.office_id === site.id` instead of `site.office_id`, so the panel always showed "No offices with advisories" even when active advisories existed
-- **Export button 404** - Export function fetched the non-existent `/api/sites/requiring-attention` endpoint; updated to use `/api/status/offices-impacted`
+- **Export button 404** - Export function fetched the non-existent `/api/offices/requiring-attention` endpoint; updated to use `/api/status/offices-impacted`
 - **CUSTOM filter preset name/description** - `noaa-alert-types.js` CUSTOM preset had stale name "Site Default" and description "office operations"; updated to "Office Default" and "operations"
 - **Stale "Site" terminology in frontend** - Remaining `site`/`Site` copy in `advisories.html` (page heading, search placeholder, filter dropdown) and `filters.html` (preset button, reset confirm dialog) updated to `office`/`Office`
 
@@ -270,26 +270,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.7.4] - 2026-02-22
 
 ### Changed
-- **Dashboard Card Sort** - Site cards within each severity group on the dashboard now sort by site code ascending (lowest to highest) instead of urgency score (closes #58)
+- **Dashboard Card Sort** - Office cards within each severity group on the dashboard now sort by office code ascending (lowest to highest) instead of urgency score (closes #58)
 
 ## [1.7.3] - 2026-02-22
 
 ### Fixed
-- **Sites Missing NOAA Alerts** - Fixed critical bug where sites were silently missing alerts due to table-wide UNIQUE constraint on `external_id` (closes #57)
-  - Root cause: When one NOAA alert matched multiple sites via UGC zones, only the first site processed got the advisory row
-  - Changed `UNIQUE(external_id)` to composite `UNIQUE(external_id, site_id)` so the same alert can exist once per site
-  - Updated `findByExternalID()` to filter by site_id (was returning rows for wrong sites)
-  - Updated cleanup module to account for valid multi-site external_ids
+- **Offices Missing NOAA Alerts** - Fixed critical bug where offices were silently missing alerts due to table-wide UNIQUE constraint on `external_id` (closes #57)
+  - Root cause: When one NOAA alert matched multiple offices via UGC zones, only the first office processed got the advisory row
+  - Changed `UNIQUE(external_id)` to composite `UNIQUE(external_id, office_id)` so the same alert can exist once per office
+  - Updated `findByExternalID()` to filter by office_id (was returning rows for wrong offices)
+  - Updated cleanup module to account for valid multi-office external_ids
   - Dropped redundant duplicate index `idx_external_id_unique`
 
 ## [1.7.2] - 2026-02-22
 
 ### Changed
-- **Card View Default Sort** - Card view on advisories page now defaults to site code ascending, matching table view (closes #56)
-- **Grouped Table View** - Table view on advisories page now groups alerts by site instead of showing flat duplicate-looking rows (closes #55)
-  - Site header rows show site code, name, city/state, temperature, alert count, and highest severity badge
+- **Card View Default Sort** - Card view on advisories page now defaults to office code ascending, matching table view (closes #56)
+- **Grouped Table View** - Table view on advisories page now groups alerts by office instead of showing flat duplicate-looking rows (closes #55)
+  - Office header rows show office code, name, city/state, temperature, alert count, and highest severity badge
   - Alert sub-rows beneath each header show headline, advisory type, severity, action, source, and last updated
-  - Header rows are clickable and navigate to site detail page
+  - Header rows are clickable and navigate to office detail page
   - Severity-colored left border on header rows matches card view styling (red/orange/yellow/green)
   - Dedup toggle and all filters continue to work with grouped view
   - Summary stats now update correctly when filters change in table view
@@ -298,9 +298,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Total Impact Card** - Replaced "Low/No Impact" (green) card with "Total Impact" aggregate card in Weather Impact Assessment (closes #53)
-  - Displays sum of High Impact + Severe Impact + Moderate Impact site counts
+  - Displays sum of High Impact + Severe Impact + Moderate Impact office counts
   - Navy-styled card using brand color (`--pm-navy`)
-  - Links to `sites.html` showing all impacted sites
+  - Links to `offices.html` showing all impacted offices
 - **Weather Impact Card Order** - Reordered cards: Total Impact → High Impact → Severe Impact → Moderate Impact (closes #54)
 
 ## [1.7.0] - 2026-02-21
@@ -324,17 +324,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Dynamic Critical/Severe Count Color** - Summary stats bar on advisories page now shows count in red when Extreme alerts are present, orange when only Severe (closes #14)
-- **Alert Headline on Site Cards** - NOAA alert headline displayed on each site card below advisory type, truncated to 120 chars (closes #15)
-- **Temperature + Station Status on Site Cards** - Current temperature (°F/°C) from nearest NWS station shown on cards with relative timestamp; stations older than 90 minutes display "OFFLINE" in red (closes #16)
-- **Temperature Column in Table View** - New Temp column between Site Code and Site Name in advisories table view (closes #17)
-- **Headline Column in Table View** - New Headline column between Site Name and City in advisories table view, truncated to 80 chars (closes #18)
+- **Alert Headline on Office Cards** - NOAA alert headline displayed on each office card below advisory type, truncated to 120 chars (closes #15)
+- **Temperature + Station Status on Office Cards** - Current temperature (°F/°C) from nearest NWS station shown on cards with relative timestamp; stations older than 90 minutes display "OFFLINE" in red (closes #16)
+- **Temperature Column in Table View** - New Temp column between Office Code and Office Name in advisories table view (closes #17)
+- **Headline Column in Table View** - New Headline column between Office Name and City in advisories table view, truncated to 80 chars (closes #18)
 - **Celsius Added to Temperature** - All temperature displays now show °F / °C (closes #20, closes #21)
-- **Temperature on Dashboard Cards** - index.html site cards now show temperature in header below severity badge (closes #22)
-- **Headline on Dashboard Cards** - index.html site cards now show NOAA alert headline below advisory type (closes #23)
-- **Temperature on Sites Cards** - sites.html cards restructured with city/state in header + temperature below severity badge (closes #24)
-- **Headline on Sites Cards** - sites.html cards now show NOAA alert headline below advisory type (closes #25)
+- **Temperature on Dashboard Cards** - index.html office cards now show temperature in header below severity badge (closes #22)
+- **Headline on Dashboard Cards** - index.html office cards now show NOAA alert headline below advisory type (closes #23)
+- **Temperature on Offices Cards** - offices.html cards restructured with city/state in header + temperature below severity badge (closes #24)
+- **Headline on Offices Cards** - offices.html cards now show NOAA alert headline below advisory type (closes #25)
 - **Observations API Client** - Added `getObservations()` to frontend `api.js` for fetching current weather data
-- **Temperature on Site Detail** - site-detail.html header card now shows temperature (°F/°C) below severity badge with staleness detection (closes #29)
+- **Temperature on Office Detail** - office-detail.html header card now shows temperature (°F/°C) below severity badge with staleness detection (closes #29)
 - **Temperature on Map Popup** - map.html popup card now shows temperature (°F/°C) right-justified on city/state line with staleness detection (closes #30)
 - **Headline on Map Popup** - map.html popup card now shows NOAA alert headline below severity badge, truncated to 80 chars (closes #31)
 
@@ -345,14 +345,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Temperature Moved to Card Header** - Temperature display relocated from card body to header right side, below severity badge (closes #19)
 - **API Rate Limit Increased** - General API rate limit raised from 500 to 5000 requests per 15 minutes to support additional observations API calls across all pages (closes #28)
 - **Map Popup Layout Reorganized** - Removed "Highest Alert:" label (closes #33); moved NOAA alert type to display directly below severity/status badges (closes #34); alert type now bold (closes #35); headline grouped below alert type (closes #36)
-- **Summary Panel Label** - Renamed "Sites Impacted" to "Locations Impacted" on advisories page (closes #37)
+- **Summary Panel Label** - Renamed "Offices Impacted" to "Locations Impacted" on advisories page (closes #37)
 - **Critical/Severe Count Split** - Summary panel now shows separate color-coded counts for Critical (red) and Severe (orange) separated by "/" instead of a single combined number (closes #38)
-- **Table View Default Sort** - Table view on advisories page now sorted by site code ascending (lowest to highest) as default; filters still apply before sort (closes #39)
-- **Dashboard Layout Reorder** - Moved Weather Impact Assessment to top of dashboard, directly below heading and above Sites Requiring Attention (closes #40)
+- **Table View Default Sort** - Table view on advisories page now sorted by office code ascending (lowest to highest) as default; filters still apply before sort (closes #39)
+- **Dashboard Layout Reorder** - Moved Weather Impact Assessment to top of dashboard, directly below heading and above Offices Requiring Attention (closes #40)
 
 ### Removed
-- **City/State from Sites Card Body** - Moved to card header for consistency with advisories.html (closes #26)
-- **Ops Status Badge from Sites Cards** - Removed unimplemented "Ops: Unknown" badge (closes #27)
+- **City/State from Offices Card Body** - Moved to card header for consistency with advisories.html (closes #26)
+- **Ops Status Badge from Offices Cards** - Removed unimplemented "Ops: Unknown" badge (closes #27)
 
 ## [1.6.1] - 2026-02-19
 
@@ -361,10 +361,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Location: Concord, NH
   - UGC Codes: NHZ008, NHC013 (Merrimack County)
   - Region: Northeast
-- **CWA Field** - Added NWS County Warning Area office code to all sites
-  - New `cwa` column in sites table (e.g., "IND", "GYX", "MFL")
+- **CWA Field** - Added NWS County Warning Area office code to all offices
+  - New `cwa` column in offices table (e.g., "IND", "GYX", "MFL")
   - Populated for all offices from NOAA /points API data
-  - Stored in sites.json for future seeding
+  - Stored in offices.json for future seeding
 
 ### Changed
 - **NWS Forecast Links** - Updated from lat/lon MapClick to CWA office URLs
@@ -384,30 +384,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Beta files archived locally to `frontend/archive/beta-2026-02-15/`
 
 ### Fixed
-- **Weather Impact Drill-Down** - Dashboard Weather Impact cards now correctly filter Sites page
+- **Weather Impact Drill-Down** - Dashboard Weather Impact cards now correctly filter Offices page
   - Added `weather_impact_level` calculation from `highest_severity` (Extreme→red, Severe→orange, Moderate→yellow, Minor→green)
   - Fixed race condition: URL parameters now applied after data loads (was using 100ms timeout)
-  - Fixed data source: Changed from `API.getImpactedSites()` (3 closed sites) to `API.getSites()` (all 219 sites)
-  - Fixed key mismatch: Sites API uses `id`, advisories use `site_id`
+  - Fixed data source: Changed from `API.getImpactedSites()` (3 closed offices) to `API.getSites()` (all monitored offices)
+  - Fixed key mismatch: Offices API uses `id`, advisories use `office_id`
 - **Export Dropdown** - Disabled broken Advanced Reports buttons
   - Executive Briefing, Incident Report, Export CSV marked as "Coming Soon"
   - Print/Save PDF and Copy Shareable Link still functional
   - Removed dead reference to archived `ui-toggle.js`
 - **Dead Script References** - Removed obsolete `ui-toggle.js` script tags from 5 HTML files
-  - Affected: map.html, site-detail.html, sources.html, filters.html, advisories.html
+  - Affected: map.html, office-detail.html, sources.html, filters.html, advisories.html
   - Script was archived with Beta UI but references remained
-- **Severity Group Color Alignment** - Sites Requiring Attention now matches Weather Impact colors
+- **Severity Group Color Alignment** - Offices Requiring Attention now matches Weather Impact colors
   - Changed from 3-tier to 4-tier grouping (one per severity level)
   - 🔴 EXTREME - High Impact (previously combined with Severe as "critical")
   - 🟠 SEVERE - Severe Impact (previously combined with Extreme as "critical")
   - 🟡 MODERATE - Moderate Impact (was "elevated" displayed with orange)
   - 🟢 MINOR - Low Impact (was "monitoring" displayed with yellow)
-  - Fixes visual inconsistency where Moderate alerts appeared orange in site groups but yellow in Weather Impact
+  - Fixes visual inconsistency where Moderate alerts appeared orange in office groups but yellow in Weather Impact
 
 ### Verified
 - **Frontend/API Mismatch Audit** - Comprehensive analysis of all frontend files
   - All 7 active HTML pages verified against backend API endpoints
-  - ID matching logic confirmed correct (`id` vs `site_id` handling)
+  - ID matching logic confirmed correct (`id` vs `office_id` handling)
   - No broken API calls or missing endpoints found
   - All XSS-protected `html` tagged templates in place
   - All CDN resources have SRI hashes
@@ -427,10 +427,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Example: Winter Storm Watch now shows as Moderate/Yellow (was Severe/Orange from NOAA)
   - Ran one-time database migration to update 126 existing alerts to new severity values
   - Aligns with operational practices
-- **Default Alert Filters** - Reduced Site Default from 19 to 11 enabled alert types
+- **Default Alert Filters** - Reduced Office Default from 19 to 11 enabled alert types
   - Added to disabled list: Lake Effect Snow Warning, Lake Effect Snow Watch, High Wind Watch,
     Coastal Flood Watch, Lakeshore Flood Watch, Excessive Heat Watch, Hard Freeze Warning, Freeze Watch
-  - Site Default now focuses on most operationally relevant alerts
+  - Office Default now focuses on most operationally relevant alerts
 
 ## [1.5.0] - 2026-02-14
 
@@ -456,9 +456,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New `cache.js` utility module using node-cache
   - Cached endpoints with TTL:
     - `/api/status/overview` - 15 min (matches ingestion interval)
-    - `/api/sites` - 1 hour (static site data)
-    - `/api/sites/states` - 24 hours (rarely changes)
-    - `/api/sites/regions` - 24 hours (rarely changes)
+    - `/api/offices` - 1 hour (static office data)
+    - `/api/offices/states` - 24 hours (rarely changes)
+    - `/api/offices/regions` - 24 hours (rarely changes)
     - `/api/advisories/active` - 15 min
   - Cache automatically invalidated after NOAA ingestion
   - Only caches unfiltered requests (filtered requests bypass cache)
@@ -472,7 +472,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical
 - Added `node-cache` dependency
 - New file: `backend/src/utils/cache.js`
-- Modified: `status.js`, `sites.js`, `advisories.js`, `noaa-ingestor.js`
+- Modified: `status.js`, `offices.js`, `advisories.js`, `noaa-ingestor.js`
 
 ## [1.4.1] - 2026-02-14
 
@@ -487,7 +487,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Eliminates external CDN dependency that could break typography
 - **Analytics**: Added `frontend/js/analytics.js` placeholder (tracking implementation left to deployer)
   - Enables visitor analytics and usage monitoring
-  - Added to all 8 HTML pages: index, advisories, sites, site-detail, map, notices, filters, sources
+  - Added to all 8 HTML pages: index, advisories, offices, office-detail, map, notices, filters, sources
 
 ### Fixed
 - **Severity Validation** (BUG-PROD-002) - `normalizer.js` now defaults invalid/Unknown severity to "Minor"
@@ -510,9 +510,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.0] - 2026-02-14
 
 ### Added
-- **Historical Snapshot System** - Automatic capture of system-wide and per-site metrics
-  - `system_snapshots` table for system-wide aggregates (severity counts, site statuses, advisory actions)
-  - `advisory_history` table for per-site historical snapshots
+- **Historical Snapshot System** - Automatic capture of system-wide and per-office metrics
+  - `system_snapshots` table for system-wide aggregates (severity counts, office statuses, advisory actions)
+  - `advisory_history` table for per-office historical snapshots
   - Snapshots captured every 6 hours, retained for 3 days (12 snapshots)
   - Automatic cleanup of data older than 3 days
   - Transaction-safe capture with rollback on failure
@@ -525,26 +525,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Database Connection Pattern** - Standardized across all models
   - Fixed `db.query is not a function` errors in all model files
-  - Removed incorrect `await getDatabase()` calls (10+ instances in advisory.js, 8+ in site.js, 5+ in notice.js)
+  - Removed incorrect `await getDatabase()` calls (10+ instances in advisory.js, 8+ in office.js, 5+ in notice.js)
   - Fixed `advisoryHistory.js` to use `getDatabase()` correctly (5 query methods)
   - Fixed `capture-historical-snapshot.js` pool.getConnection() usage
-- **Site Status Column Mismatch** - Fixed INSERT/UPDATE logic in siteStatus.js
+- **Office Status Column Mismatch** - Fixed INSERT/UPDATE logic in officeStatus.js
   - Resolved "Column count doesn't match value count" errors during weather ingestion
   - Fixed `decision_at` handling to use NULL default in INSERT, NOW() in UPDATE
-  - All 219 sites now update correctly during ingestion cycles
+  - All offices now update correctly during ingestion cycles
 - **Module Caching** - Resolved Passenger cache issues
   - Implemented proper stop.txt → restart.txt cycle for complete module reload
   - Zero errors in production after complete restart
 
 ### Changed
 - **Operational Status Migration** - Completed conversion to 4-category system
-  - Migrated all sites from legacy (Open, At Risk, Closed) to new system (open_normal, open_restricted, pending, closed)
+  - Migrated all offices from legacy (Open, At Risk, Closed) to new system (open_normal, open_restricted, pending, closed)
   - Set decision tracking metadata for all migrated records
-  - Result: 202 open_normal, 17 open_restricted sites
+  - Result: 202 open_normal, 17 open_restricted offices
 
 ### Technical
-- Added database indexes for snapshot tables (site_id, snapshot_time)
-- Snapshot capture performance: ~2-3 seconds for all 219 sites
+- Added database indexes for snapshot tables (office_id, snapshot_time)
+- Snapshot capture performance: ~2-3 seconds for all offices
 - All models now use consistent database connection pattern: `const db = getDatabase()`
 - Improved error logging and troubleshooting capabilities
 
@@ -561,8 +561,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.2] - 2026-02-13
 
 ### Added
-- **NOAA External Links** - Direct links to official NWS resources on site-detail.html
-  - "NWS Forecast" button links to forecast.weather.gov with site's exact lat/lon coordinates
+- **NOAA External Links** - Direct links to official NWS resources on office-detail.html
+  - "NWS Forecast" button links to forecast.weather.gov with office's exact lat/lon coordinates
     - Shows local forecast with any active alerts/warnings for that location
   - "Radar Map" button links to radar.weather.gov national radar
   - Links appear on highest severity alert and all advisory cards
@@ -571,29 +571,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.1] - 2026-02-13
 
 ### Fixed
-- **Card Behavior Consistency** - All cards across the site now behave predictably
+- **Card Behavior Consistency** - All cards across the app now behave predictably
   - Operational Status cards (index.html) are now static with no hover effects
-  - Site cards on advisories.html and sites.html are fully clickable (entire card, not just title)
-  - Impact Summary cards on site-detail.html are now static with no hover effects
+  - Office cards on advisories.html and offices.html are fully clickable (entire card, not just title)
+  - Impact Summary cards on office-detail.html are now static with no hover effects
   - Map summary stat cards now toggle severity filters when clicked
-- **Weather Impact Count Fix** - GREEN count now correctly shows only sites with Minor advisories
-  - Previously counted sites with no advisories as GREEN incorrectly
+- **Weather Impact Count Fix** - GREEN count now correctly shows only offices with Minor advisories
+  - Previously counted offices with no advisories as GREEN incorrectly
 
 ## [1.3.0] - 2026-02-13
 
 ### Added
 - **Dashboard UX Overhaul** - Reorganized index.html following action-first dashboard pattern
-  - Sites Requiring Attention moved to top (most actionable content first)
-  - Sticky update banner with timestamps and site counts (visible while scrolling)
-  - Quick action buttons: "View All Sites" and "Map View" for faster navigation
-  - "All Clear" success message when no sites need attention
+  - Offices Requiring Attention moved to top (most actionable content first)
+  - Sticky update banner with timestamps and office counts (visible while scrolling)
+  - Quick action buttons: "View All Offices" and "Map View" for faster navigation
+  - "All Clear" success message when no offices need attention
   - Enhanced footer with links to About/Sources and Filter Settings
 - **Clickable Dashboard Cards** - All cards now link to filtered views
-  - Site attention cards link to site detail page (entire card clickable)
-  - Weather Impact cards (RED/ORANGE/YELLOW/GREEN) link to filtered sites list
-  - New `weather_impact` URL parameter on sites.html for drill-down filtering
+  - Office attention cards link to office detail page (entire card clickable)
+  - Weather Impact cards (RED/ORANGE/YELLOW/GREEN) link to filtered offices list
+  - New `weather_impact` URL parameter on offices.html for drill-down filtering
   - Filter banner shows active weather impact filter with clear button
-- **5 New MODERATE Alerts Enabled by Default** - Site Default preset now shows 18/68 alert types
+- **5 New MODERATE Alerts Enabled by Default** - Office Default preset now shows 18/68 alert types
   - Winter Storm Watch
   - Winter Weather Advisory
   - Lake Effect Snow Warning
@@ -602,7 +602,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Page Layout Order** - Follows industry best practices for operational dashboards
-  1. Sites Requiring Attention (action items)
+  1. Offices Requiring Attention (action items)
   2. Weather Impact Assessment (situational awareness)
   3. Operational Status (secondary metrics)
   4. Detailed Statistics (collapsed for power users)
@@ -620,8 +620,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Map View Filter Integration** - Map now respects user filter preferences from Filter Settings
   - Added `alert-filters.js` to map.html
-  - Map markers now only display for sites with advisories matching active filters
-  - Consistent filtering behavior across all pages (Overview, Advisories, Sites, Map)
+  - Map markers now only display for offices with advisories matching active filters
+  - Consistent filtering behavior across all pages (Overview, Advisories, Offices, Map)
 
 ## [1.2.1] - 2026-02-13
 
@@ -639,7 +639,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Slack-formatted alerts with severity levels
   - Alert throttling to prevent spam (5 min minimum)
   - Support for ingestion failures, cleanup failures, and anomaly detection
-- **Hierarchical Geo-Matching** - Improved site-to-alert matching precision
+- **Hierarchical Geo-Matching** - Improved office-to-alert matching precision
   - UGC code matching (most precise)
   - County-level matching (fallback)
   - State-level matching (least precise fallback)
@@ -647,7 +647,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **API Rate Limiting** - 500ms minimum between NOAA API requests
 - **API Retry with Backoff** - Exponential backoff for 429/5xx responses
 - Advisory history table for trend analysis (`advisory_history`)
-- New site fields: `county`, `ugc_codes` for precise geo-matching
+- New office fields: `county`, `ugc_codes` for precise geo-matching
 - Scheduler status endpoint via `getSchedulerStatus()`
 
 ### Changed
@@ -658,7 +658,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Keepalive delay increased to 30s
 - **Ingestion Process**
   - Advisory creation and status updates now wrapped in transactions
-  - Anomaly detection with automatic alerting for sites with >15 advisories
+  - Anomaly detection with automatic alerting for offices with >15 advisories
   - Improved logging and error handling
 - **Unified Cleanup Module** - Consolidated 4 cleanup scripts into 1
   - Multiple modes: `full`, `vtec`, `event_id`, `expired`, `duplicates`
@@ -667,7 +667,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic alerting on cleanup failures
 - **Schema Updated** - `schema.sql` now includes all production columns
   - VTEC fields: `vtec_code`, `vtec_event_id`, `vtec_action`, `vtec_event_unique_key`
-  - Site status fields: `weather_impact_level`, `decision_by`, `decision_at`, `decision_reason`
+  - Office status fields: `weather_impact_level`, `decision_by`, `decision_at`, `decision_reason`
   - New indexes for common query patterns
 
 ### Deprecated
@@ -691,7 +691,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Update banner component showing last updated time and countdown to next update
-- Update banner deployed to all pages (index, advisories, sites, notices, filters, sources)
+- Update banner deployed to all pages (index, advisories, offices, notices, filters, sources)
 - Comprehensive documentation in `docs/` directory
   - `docs/deployment.md` - Production deployment procedures with SSH best practices
   - `docs/api.md` - Complete API documentation emphasizing API layer usage
@@ -731,7 +731,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Eliminated ~40 duplicate weather alerts across system
-- Site 219 (Anchorage) reduced from ~30 to 25 unique alerts
+- Office 219 (Anchorage) reduced from ~30 to 25 unique alerts
 - All VTEC events now properly deduplicated while preserving action history
 
 ### Technical
@@ -747,14 +747,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Alert filtering system with 68 NOAA alert types categorized by impact level
 - 5 impact levels: CRITICAL, HIGH, MODERATE, LOW, INFO
 - Custom filter configuration UI at `/filters.html`
-- 5 filter presets: Site Default, Operations View, Executive Summary, Safety Focus, Full View
+- 5 filter presets: Office Default, Operations View, Executive Summary, Safety Focus, Full View
 - Persistent filter preferences using localStorage
 - Real-time advisory count recalculation based on active filters
 - Filter-aware display across all dashboard pages
 
 ### Changed
 - Overview counts now respect user filter preferences (client-side calculation)
-- Sites impacted page filters advisories based on user preferences
+- Offices impacted page filters advisories based on user preferences
 - Improved filter UI with visual feedback (green borders for enabled, gray for disabled)
 
 ### Technical
@@ -766,22 +766,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.0] - 2026-02-10
 
 ### Added
-- 219 US office locations across all 50 states and territories
+- US office locations across all 50 states and territories
 - Real-time NOAA weather data ingestion every 15 minutes
 - Automated advisory cleanup removing expired alerts
 - Operational status calculation (Open/Closed/At Risk) based on severity
-- Sites impacted page showing facilities affected by weather
+- Offices impacted page showing facilities affected by weather
 - Government/local notices page (placeholder for future state/local data)
 
 ### Changed
-- Improved site matching algorithm for weather alerts
+- Improved office matching algorithm for weather alerts
 - Enhanced severity-based status determination
 
 ## [0.7.0] - 2026-02-09
 
 ### Added
 - Bootstrap 5.3 responsive dashboard UI
-- Six dashboard pages: Overview, Active Advisories, Sites Impacted, Notices, Filters, Sources
+- Six dashboard pages: Overview, Active Advisories, Offices Impacted, Notices, Filters, Sources
 - Navigation bar with active page highlighting
 - Consistent page layout and styling
 - Loading indicators for async data fetching
@@ -797,8 +797,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REST API with Express.js
 - `/api/status/overview` endpoint for dashboard statistics
 - `/api/advisories/active` endpoint for current advisories
-- `/api/sites` endpoint for office locations
-- `/api/status/sites-impacted` endpoint for affected facilities
+- `/api/offices` endpoint for office locations
+- `/api/status/offices-impacted` endpoint for affected facilities
 - `/api/notices/active` endpoint for government notices
 - CORS configuration for cross-origin requests
 
@@ -811,15 +811,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - MySQL/MariaDB database schema
-- Three main tables: sites, advisories, notices
+- Three main tables: offices, advisories, notices
 - Database initialization scripts
-- Seed data for 219 US offices
+- Seed data for US offices
 - Unique indexes on external IDs to prevent duplicates
 
 ### Technical
 - Database migrations via SQL scripts
 - UPSERT operations for advisory ingestion
-- Foreign key relationships between sites and advisories
+- Foreign key relationships between offices and advisories
 
 ## [0.4.0] - 2026-02-06
 
@@ -881,6 +881,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Links
 
-- [Production Site](https://your-deployment.example.com)
+- [Production](https://your-deployment.example.com)
 - [GitHub Repository](https://github.com/murphy-platforms/storm-scout-poc)
 - [Issue Tracker](https://github.com/murphy-platforms/storm-scout-poc/issues)
