@@ -363,6 +363,14 @@ Storm Scout implements multiple security controls:
 
 **Quick reference:** See [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) for a developer cheat sheet of CLI commands, environment variables, and curl examples.
 
+## Data Sources
+
+Storm Scout uses exclusively public domain data from the US federal government:
+
+- **NOAA/NWS Weather API** ([api.weather.gov](https://api.weather.gov)) — All weather alerts, warnings, advisories, and observation data. NOAA data is US government work and in the public domain. No API key is required — the only requirement is a `User-Agent` header with a contact email, per NOAA's [API documentation](https://www.weather.gov/documentation/services-web-api). There are no usage fees or rate limits beyond reasonable use.
+
+- **Office locations** — The monitored locations in `backend/src/data/offices.json` are user-provided via CSV import. See [Adapting for Your Organization](#adapting-for-your-organization) for how to load your own locations.
+
 ## Development Story
 
 Storm Scout was built by a technical operations leader — not a software engineer — using AI-assisted development with [Claude Code](https://claude.ai). The entire project, from first commit to production deployment, was developed through human-AI collaboration: the human directed architecture decisions, defined requirements, and managed the project backlog while AI generated the code, tests, and documentation.
