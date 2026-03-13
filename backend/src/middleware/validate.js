@@ -19,8 +19,6 @@ function handleValidationErrors(req, res, next) {
       value: err.value
     }));
     
-    console.log('[VALIDATION] Invalid request:', formattedErrors);
-    
     return res.status(400).json({
       success: false,
       error: 'Validation failed',

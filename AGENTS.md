@@ -98,7 +98,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 
 ### Project Structure
 ```
-strom-scout/
+storm-scout/
 ├── backend/              # Node.js + Express API
 │   ├── src/
 │   │   ├── app.js              # Express app configuration
