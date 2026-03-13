@@ -15,7 +15,11 @@
     "ingest": "node src/ingestion/run-ingestion.js",
     "cleanup": "node src/utils/cleanup-advisories.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "format": "prettier --write 'src/**/*.js' '../frontend/js/**/*.js'",
+    "format:check": "prettier --check 'src/**/*.js' '../frontend/js/**/*.js'"
   },
   "keywords": [
     "weather",
@@ -39,8 +43,10 @@
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
+    "eslint": "^8.57.0",
     "jest": "^30.2.0",
     "nodemon": "^3.0.2",
+    "prettier": "^3.2.0",
     "supertest": "^7.0.0"
   },
   "overrides": {
