@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [2.0.0] - 2026-03-13
+
+### Changed
+
+- **Open-source release** — Repository prepared for public access: proprietary data removed, terminology standardized (site→office throughout), README restructured with quick-start paths and operational walkthrough, GitHub metadata (description, topics) updated
+- **Version bump to 2.0.0** — Marks the first public release; all prior versions were internal development milestones
+
+### Fixed
+
+- **#238–#243** — Cleaned up demo data in utility scripts, deleted generated SQL artifacts, scrubbed stale "site" terminology from CHANGELOG and utility scripts
+- **#251** — Scrubbed remaining "site" references in 6 backend utility scripts (user-facing strings only; database column names preserved)
+
+### Documentation
+
+- **#249** — README quick-start restructured with two clear paths: demo data (300 pre-populated offices) and custom CSV import
+- **#248** — Added "What It Looks Like in Action" operational scenario walkthrough to README
+- **#244** — GitHub repo description and topics updated for discoverability
+
 ## [1.10.1] - 2026-03-10
 
 ### Security

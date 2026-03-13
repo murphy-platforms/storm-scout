@@ -1,6 +1,6 @@
 /**
  * Analyze Advisory Duplicates
- * Find sites with multiple alerts of the same advisory type
+ * Find offices with multiple alerts of the same advisory type
  */
 
 const { getDatabase } = require('../src/config/database');
@@ -10,7 +10,7 @@ async function analyzeDuplicates() {
     
     console.log('\n═══ Advisory Duplicate Analysis ═══\n');
     
-    // Find site/advisory_type combinations with multiple alerts
+    // Find office/advisory_type combinations with multiple alerts
     const [duplicates] = await db.query(`
         SELECT 
             site_code,
@@ -26,10 +26,10 @@ async function analyzeDuplicates() {
         LIMIT 30
     `);
     
-    console.log(`Found ${duplicates.length} site/advisory-type combinations with duplicates:\n`);
+    console.log(`Found ${duplicates.length} office/advisory-type combinations with duplicates:\n`);
     
     for (const dup of duplicates) {
-        console.log(`📍 Site ${dup.site_code} - ${dup.advisory_type}`);
+        console.log(`📍 Office ${dup.site_code} - ${dup.advisory_type}`);
         console.log(`   Count: ${dup.alert_count} alerts`);
         console.log(`   Event IDs: ${dup.event_ids || 'NULL'}`);
         console.log(`   Actions: ${dup.actions || 'NULL'}`);
@@ -42,7 +42,7 @@ async function analyzeDuplicates() {
     
     for (let i = 0; i < Math.min(5, duplicates.length); i++) {
         const dup = duplicates[i];
-        console.log(`\n🔍 Site ${dup.site_code} - ${dup.advisory_type} (${dup.alert_count} alerts)`);
+        console.log(`\n🔍 Office ${dup.site_code} - ${dup.advisory_type} (${dup.alert_count} alerts)`);
         
         const [alerts] = await db.query(`
             SELECT 
@@ -86,8 +86,8 @@ async function analyzeDuplicates() {
     `);
     
     console.log(`Total Advisories: ${stats[0].total_advisories}`);
-    console.log(`Sites with Alerts: ${stats[0].sites_with_alerts}`);
-    console.log(`Unique Site/Type Combinations: ${stats[0].unique_combinations}`);
+    console.log(`Offices with Alerts: ${stats[0].sites_with_alerts}`);
+    console.log(`Unique Office/Type Combinations: ${stats[0].unique_combinations}`);
     console.log(`Unique VTEC Events: ${stats[0].unique_events}`);
     console.log(`Alerts without VTEC: ${stats[0].no_vtec_count}`);
     

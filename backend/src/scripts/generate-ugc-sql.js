@@ -12,7 +12,7 @@ const ugcData = JSON.parse(fs.readFileSync(INPUT_FILE, 'utf8'));
 
 console.log('-- UGC Code Update Script');
 console.log(`-- Generated: ${new Date().toISOString()}`);
-console.log(`-- Total sites: ${ugcData.total_sites}`);
+console.log(`-- Total offices: ${ugcData.total_sites}`);
 console.log('');
 
 for (const site of ugcData.sites) {
