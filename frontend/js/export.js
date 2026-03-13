@@ -116,10 +116,8 @@ const StormScoutExport = {
         printWindow.document.write(reportHTML);
         printWindow.document.close();
         
-        // Trigger print dialog after load
-        setTimeout(() => {
-            printWindow.print();
-        }, 500);
+        // Trigger print dialog after content loads
+        printWindow.onload = () => printWindow.print();
     },
     
     /**
