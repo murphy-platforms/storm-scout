@@ -114,7 +114,7 @@ curl http://localhost:3000/api/status/overview | python3 -m json.tool
 ### Offices and advisories
 
 ```bash
-# All 1287 offices
+# All 300 offices
 curl http://localhost:3000/api/offices | python3 -c \
   "import json,sys; d=json.load(sys.stdin); print(d['count'], 'offices')"
 

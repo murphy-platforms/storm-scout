@@ -20,7 +20,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 
 ## offices
 
-**Purpose:** Static reference list of all 1684 office locations. Loaded from `backend/src/data/offices.json` at database initialization and rarely modified thereafter.
+**Purpose:** Static reference list of all 300 office locations. Loaded from `backend/src/data/offices.json` at database initialization and rarely modified thereafter.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|

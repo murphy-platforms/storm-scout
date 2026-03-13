@@ -97,7 +97,7 @@ Dashboard summary statistics.
 
 #### GET `/api/offices`
 
-Get all 1560 office locations.
+Get all 300 office locations.
 
 **Response**:
 ```json

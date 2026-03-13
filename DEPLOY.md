@@ -67,7 +67,7 @@ docker exec -i storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev 
 
 ```bash
 node backend/src/scripts/import-offices.js /path/to/locations.csv
-# Output: backend/src/data/offices.json (1351 offices)
+# Output: backend/src/data/offices.json (300 offices)
 npm run seed-db
 ```
 
@@ -205,7 +205,7 @@ If a migration causes issues in production:
 # Health check (database, ingestion state, data integrity)
 curl http://localhost:3000/health
 
-# Confirm 1703 offices loaded
+# Confirm 300 offices loaded
 curl http://localhost:3000/api/offices | python3 -c \
   "import json,sys; d=json.load(sys.stdin); print(d['count'], 'offices')"
 
