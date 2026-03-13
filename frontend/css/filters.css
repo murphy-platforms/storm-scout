@@ -1,0 +1,50 @@
+/* Filters page styles — extracted from filters.html inline <style> block
+ * to eliminate CSP unsafe-inline requirement.
+ */
+
+.alert-type-card {
+    transition: all var(--transition-slow);
+    border: 2px solid transparent;
+    border-left-width: 4px;
+}
+
+.alert-type-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* Enabled state - white background with green border */
+.alert-type-card:not(.disabled) {
+    background-color: #ffffff;
+    border-left-color: var(--ss-green);
+}
+
+/* Disabled state - gray background */
+.alert-type-card.disabled {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Keep text visually dimmed without using opacity (which reduces contrast below WCAG AA) */
+.alert-type-card.disabled .card-body {
+    color: #6c757d; /* ~4.5:1 on #f8f9fa — meets WCAG AA */
+}
+.alert-type-card.disabled .form-check-label,
+.alert-type-card.disabled p.text-muted {
+    color: #6c757d !important;
+}
+
+.alert-type-card.disabled .form-check-input {
+    opacity: 1 !important;
+}
+
+/* Green toggle when checked */
+.form-check-input:checked {
+    background-color: var(--ss-green);
+    border-color: var(--ss-green);
+}
+
+.impact-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
