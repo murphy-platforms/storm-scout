@@ -287,6 +287,8 @@ function renderAlertTypes() {
             </div>
         `;
 
+        htmlContent += '<div class="row">';
+
         types.forEach((type) => {
             const isEnabled = currentFilters[type] === true;
             const description = ALERT_DESCRIPTIONS[type] || 'Official NOAA weather alert type.';
