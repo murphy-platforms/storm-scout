@@ -758,5 +758,7 @@ async function getLastIngestionTime() {
 module.exports = {
     ingestNOAAData,
     getLastIngestionTime,
-    getIngestionStatus
+    getIngestionStatus,
+    // Exposed for unit testing only
+    _testing: { extractGeoFromAlert, stateNameToCode }
 };

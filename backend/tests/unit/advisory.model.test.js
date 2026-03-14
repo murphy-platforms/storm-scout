@@ -161,3 +161,400 @@ describe('AdvisoryModel.findByNaturalKey()', () => {
     expect(result).toBeNull();
   });
 });
+
+// ── getAll ─────────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.getAll()', () => {
+  test('returns all advisories without filters', async () => {
+    const rows = [{ id: 1 }, { id: 2 }];
+    const db = makeDb([[rows, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.getAll();
+
+    expect(result).toEqual(rows);
+  });
+
+  test('filters by status', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getAll({ status: 'active' });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.status = ?'),
+      ['active']
+    );
+  });
+
+  test('filters by severity (comma-separated string)', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getAll({ severity: 'Extreme,Severe' });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.severity IN'),
+      ['Extreme', 'Severe']
+    );
+  });
+
+  test('filters by severity (array)', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getAll({ severity: ['Extreme'] });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.severity IN'),
+      ['Extreme']
+    );
+  });
+
+  test('filters by advisory_type', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getAll({ advisory_type: 'Tornado Warning' });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.advisory_type IN'),
+      ['Tornado Warning']
+    );
+  });
+
+  test('filters by state', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getAll({ state: 'IN' });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('s.state = ?'),
+      ['IN']
+    );
+  });
+
+  test('filters by office_id', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getAll({ office_id: 42 });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.office_id = ?'),
+      [42]
+    );
+  });
+
+  test('returns empty array on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB error')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.getAll();
+
+    expect(result).toEqual([]);
+  });
+});
+
+// ── getActive ──────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.getActive()', () => {
+  test('delegates to getAll with status=active', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getActive({ severity: 'Extreme' });
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('a.status = ?'),
+      expect.arrayContaining(['active'])
+    );
+  });
+});
+
+// ── getById ────────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.getById()', () => {
+  test('returns advisory when found', async () => {
+    const row = { id: 1, advisory_type: 'Tornado Warning' };
+    const db = makeDb([[[row], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.getById(1)).toEqual(row);
+  });
+
+  test('returns null when not found', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.getById(999)).toBeNull();
+  });
+
+  test('returns null on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.getById(1)).toBeNull();
+  });
+});
+
+// ── getByOffice ────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.getByOffice()', () => {
+  test('returns all advisories for office', async () => {
+    const rows = [{ id: 1 }];
+    const db = makeDb([[rows, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.getByOffice(1);
+
+    expect(result).toEqual(rows);
+  });
+
+  test('filters by active when activeOnly=true', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getByOffice(1, true);
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('status = ?'),
+      [1, 'active']
+    );
+  });
+
+  test('returns empty array on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.getByOffice(1)).toEqual([]);
+  });
+});
+
+// ── findByExternalID ───────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.findByExternalID()', () => {
+  test('returns null for null externalId', async () => {
+    expect(await AdvisoryModel.findByExternalID(null)).toBeNull();
+  });
+
+  test('queries with officeId when provided', async () => {
+    const row = { id: 1, external_id: 'urn:123' };
+    const db = makeDb([[[row], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.findByExternalID('urn:123', 5);
+
+    expect(result).toEqual(row);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('external_id = ? AND office_id = ?'),
+      ['urn:123', 5]
+    );
+  });
+
+  test('queries without officeId for legacy callers', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.findByExternalID('urn:123');
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('external_id = ?'),
+      ['urn:123']
+    );
+  });
+
+  test('returns null on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.findByExternalID('urn:123', 1)).toBeNull();
+  });
+});
+
+// ── findByVTECEventID ──────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.findByVTECEventID()', () => {
+  test('returns null for null vtecEventId', async () => {
+    expect(await AdvisoryModel.findByVTECEventID(null)).toBeNull();
+  });
+
+  test('queries with advisory type when provided', async () => {
+    const row = { id: 1, vtec_event_id: 'KIWX.TO.W.0001' };
+    const db = makeDb([[[row], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.findByVTECEventID('KIWX.TO.W.0001', 1, 'Tornado Warning');
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('advisory_type = ?'),
+      expect.arrayContaining(['KIWX.TO.W.0001', 1, 'active', 'Tornado Warning'])
+    );
+  });
+
+  test('returns null on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.findByVTECEventID('KIWX.TO.W.0001', 1)).toBeNull();
+  });
+});
+
+// ── findByVTEC (legacy) ────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.findByVTEC()', () => {
+  test('returns null for null vtecCode', async () => {
+    expect(await AdvisoryModel.findByVTEC(null)).toBeNull();
+  });
+
+  test('queries with advisory type when provided', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.findByVTEC('/O.NEW.KIWX.TO.W.0001/', 1, 'Tornado Warning');
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('advisory_type = ?'),
+      ['/O.NEW.KIWX.TO.W.0001/', 1, 'Tornado Warning']
+    );
+  });
+});
+
+// ── update ─────────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.update()', () => {
+  test('updates fields and returns updated advisory', async () => {
+    const updated = { id: 1, severity: 'Extreme' };
+    const db = makeDb([
+      [{}, {}],            // UPDATE
+      [[[updated]], {}]    // getById
+    ]);
+    getDatabase.mockReturnValue(db);
+
+    const getByIdSpy = jest.spyOn(AdvisoryModel, 'getById').mockResolvedValue(updated);
+    const result = await AdvisoryModel.update(1, { severity: 'Extreme', headline: 'Updated' });
+
+    expect(result).toEqual(updated);
+    getByIdSpy.mockRestore();
+  });
+
+  test('returns current advisory when no fields to update', async () => {
+    const existing = { id: 1 };
+    const getByIdSpy = jest.spyOn(AdvisoryModel, 'getById').mockResolvedValue(existing);
+
+    const result = await AdvisoryModel.update(1, { id: 1, office_id: 5 });
+
+    expect(result).toEqual(existing);
+    getByIdSpy.mockRestore();
+  });
+
+  test('serializes raw_payload objects to JSON', async () => {
+    const db = makeDb([{}, {}]);
+    getDatabase.mockReturnValue(db);
+    jest.spyOn(AdvisoryModel, 'getById').mockResolvedValue({ id: 1 });
+
+    await AdvisoryModel.update(1, { raw_payload: { test: true } });
+
+    const params = db.query.mock.calls[0][1];
+    expect(params[0]).toBe('{"test":true}');
+    AdvisoryModel.getById.mockRestore();
+  });
+
+  test('returns null on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.update(1, { severity: 'Minor' })).toBeNull();
+  });
+});
+
+// ── delete ─────────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.delete()', () => {
+  test('returns true when row deleted', async () => {
+    const db = makeDb([[{ affectedRows: 1 }, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.delete(1)).toBe(true);
+  });
+
+  test('returns false when row not found', async () => {
+    const db = makeDb([[{ affectedRows: 0 }, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.delete(999)).toBe(false);
+  });
+
+  test('returns false on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.delete(1)).toBe(false);
+  });
+});
+
+// ── getCountBySeverity ─────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.getCountBySeverity()', () => {
+  test('returns counts for active advisories by default', async () => {
+    const rows = [{ severity: 'Extreme', count: 3 }];
+    const db = makeDb([[rows, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.getCountBySeverity();
+
+    expect(result).toEqual(rows);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining("status = 'active'"));
+  });
+
+  test('counts all when activeOnly=false', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getCountBySeverity(false);
+
+    const sql = db.query.mock.calls[0][0];
+    expect(sql).not.toContain('WHERE');
+  });
+});
+
+// ── getRecentlyUpdated ─────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.getRecentlyUpdated()', () => {
+  test('returns rows with default limit', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getRecentlyUpdated();
+
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('LIMIT ?'), [10]);
+  });
+
+  test('uses custom limit', async () => {
+    const db = makeDb([[[], {}]]);
+    getDatabase.mockReturnValue(db);
+
+    await AdvisoryModel.getRecentlyUpdated(5);
+
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('LIMIT ?'), [5]);
+  });
+});
+
+// ── markExpired ────────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.markExpired()', () => {
+  test('returns count of expired advisories', async () => {
+    const db = makeDb([[{ affectedRows: 12 }, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.markExpired()).toBe(12);
+  });
+
+  test('returns 0 on error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('fail')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.markExpired()).toBe(0);
+  });
+});
