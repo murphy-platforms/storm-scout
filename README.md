@@ -23,37 +23,7 @@ Organizations that manage physical locations — retail chains, logistics networ
 
 ## How It Works
 
-```
- NOAA Weather API          NWS Observation API
-       │                          │
-       ▼                          ▼
-┌──────────────────────────────────────────┐
-│         Node.js / Express Backend        │
-│                                          │
-│  noaa-ingestor.js    observation-        │
-│  (15-min cron,       ingestor.js         │
-│   UGC matching,      (station data)      │
-│   VTEC dedup)                            │
-│                                          │
-│  REST API (cached, rate-limited, gzip)   │
-└──────────────┬───────────────────────────┘
-               │
-               ▼
-        ┌─────────────┐
-        │  MariaDB /   │
-        │  MySQL       │
-        └─────────────┘
-               │
-               ▼
-┌──────────────────────────────────────────┐
-│     Bootstrap 5.3 Frontend (MPA)         │
-│                                          │
-│  Overview │ Advisories │ Offices │ Map   │
-│  Notices  │ Filters    │ Sources         │
-│                                          │
-│  Leaflet maps · CSV/PDF export           │
-└──────────────────────────────────────────┘
-```
+![Storm Scout system architecture](docs/storm-scout-architecture.svg)
 
 Data flows from NOAA every 15 minutes through the ingestor, which matches alerts to offices via UGC zone/county codes, deduplicates using VTEC event tracking, and stores normalized advisories in MySQL/MariaDB. The Express API serves cached, compressed JSON to a multi-page Bootstrap frontend.
 
