@@ -23,7 +23,8 @@ const axios = require('axios');
 
 const OVERPASS_ENDPOINT = 'https://overpass-api.de/api/interpreter';
 const NOMINATIM_ENDPOINT = 'https://nominatim.openstreetmap.org/reverse';
-const NOMINATIM_DELAY_MS = 1100; // 1 req/sec + safety margin
+const NOMINATIM_DELAY_MS = 1500; // 1 req/sec + generous safety margin
+const NOMINATIM_MAX_RETRIES = 3; // retries on 429 rate limit
 const OVERPASS_DELAY_MS = 5000; // between Overpass queries
 const OUTPUT_DIR = path.join(__dirname, '..', 'data', 'csv');
 const CACHE_PATH = path.join(OUTPUT_DIR, '.geocode-cache.json');
@@ -191,34 +192,13 @@ function extractLocations(elements, dataset) {
 
 // ─── Nominatim enrichment ───────────────────────────────────────────────────
 
-async function enrichWithNominatim(locations) {
-    const cache = loadGeocodeCache();
-    let apiCalls = 0;
-    let cacheHits = 0;
-    const total = locations.filter((l) => !l.zip || !l.city || !l.state).length;
-
-    console.log(`  Enriching ${total} locations via Nominatim (${Object.keys(cache).length} cached)...`);
-
-    for (let i = 0; i < locations.length; i++) {
-        const loc = locations[i];
-        const needsGeocode = !loc.zip || !loc.city || !loc.state;
-        if (!needsGeocode) continue;
-
-        const cacheKey = `${loc.latitude.toFixed(6)},${loc.longitude.toFixed(6)}`;
-
-        if (cache[cacheKey]) {
-            applyGeocodeResult(loc, cache[cacheKey]);
-            cacheHits++;
-            continue;
-        }
-
-        await sleep(NOMINATIM_DELAY_MS);
-
+async function nominatimRequest(lat, lon) {
+    for (let attempt = 1; attempt <= NOMINATIM_MAX_RETRIES; attempt++) {
         try {
             const response = await axios.get(NOMINATIM_ENDPOINT, {
                 params: {
-                    lat: loc.latitude,
-                    lon: loc.longitude,
+                    lat,
+                    lon,
                     format: 'json',
                     zoom: 18,
                     addressdetails: 1,
@@ -226,8 +206,94 @@ async function enrichWithNominatim(locations) {
                 headers: { 'User-Agent': USER_AGENT },
                 timeout: 10000,
             });
+            return response.data;
+        } catch (err) {
+            const is429 = err.response && err.response.status === 429;
+            if (is429 && attempt < NOMINATIM_MAX_RETRIES) {
+                const backoff = attempt * 30000; // 30s, 60s, 90s
+                console.warn(`  Rate limited (429), backing off ${backoff / 1000}s (attempt ${attempt}/${NOMINATIM_MAX_RETRIES})...`);
+                await sleep(backoff);
+                continue;
+            }
+            throw err;
+        }
+    }
+}
 
-            const addr = response.data.address || {};
+function countValidLocations(locations) {
+    return locations.filter((l) => {
+        if (!l.zip || !l.city || !l.state) return false;
+        const zip = l.zip.trim().substring(0, 5);
+        if (!/^\d{5}$/.test(zip)) return false;
+        const st = (l.state || '').trim().toUpperCase();
+        if (!/^[A-Z]{2}$/.test(st)) return false;
+        if (l.countryCode && l.countryCode !== 'us') return false;
+        return true;
+    }).length;
+}
+
+async function enrichWithNominatim(locations, limit) {
+    const cache = loadGeocodeCache();
+    let apiCalls = 0;
+    let cacheHits = 0;
+    let errors = 0;
+    let consecutive429s = 0;
+
+    // Phase 1: Apply ALL cache hits first (free, no API calls)
+    for (const loc of locations) {
+        if (loc.zip && loc.city && loc.state) continue;
+        const cacheKey = `${loc.latitude.toFixed(6)},${loc.longitude.toFixed(6)}`;
+        if (cache[cacheKey]) {
+            applyGeocodeResult(loc, cache[cacheKey]);
+            cacheHits++;
+        }
+    }
+
+    // Check if cache was sufficient
+    const validAfterCache = countValidLocations(locations);
+    console.log(`  Cache phase: ${cacheHits} cache hits, ${validAfterCache} valid locations after cache`);
+
+    if (validAfterCache >= limit * 2) {
+        console.log(`  Cache sufficient — skipping Nominatim API calls (${validAfterCache} valid >= ${limit * 2} needed)`);
+        return locations;
+    }
+
+    // Phase 2: API calls for remaining uncached locations
+    const uncached = locations.filter((l) => {
+        if (l.zip && l.city && l.state) return false;
+        const ck = `${l.latitude.toFixed(6)},${l.longitude.toFixed(6)}`;
+        return !cache[ck];
+    });
+
+    console.log(`  API phase: ${uncached.length} locations need Nominatim calls...`);
+
+    for (let i = 0; i < uncached.length; i++) {
+        const loc = uncached[i];
+        const cacheKey = `${loc.latitude.toFixed(6)},${loc.longitude.toFixed(6)}`;
+
+        // Bail out after 3 consecutive 429s — Nominatim is blocking us
+        if (consecutive429s >= 3) {
+            console.warn(`  Stopping Nominatim: ${consecutive429s} consecutive rate limit errors. Try again later.`);
+            break;
+        }
+
+        // Early stop check every 50 API calls
+        if (apiCalls > 0 && apiCalls % 50 === 0) {
+            saveGeocodeCache(cache);
+            const validNow = countValidLocations(locations);
+            console.log(`  Progress: ${apiCalls} API calls, ${validNow} valid locations`);
+            if (validNow >= limit * 2) {
+                console.log(`  Early stop: ${validNow} valid locations exceeds 2x limit of ${limit}`);
+                break;
+            }
+        }
+
+        await sleep(NOMINATIM_DELAY_MS);
+
+        try {
+            const data = await nominatimRequest(loc.latitude, loc.longitude);
+
+            const addr = data.address || {};
             const iso = addr['ISO3166-2-lvl4'] || '';
             const result = {
                 postcode: addr.postcode || null,
@@ -240,18 +306,21 @@ async function enrichWithNominatim(locations) {
             cache[cacheKey] = result;
             applyGeocodeResult(loc, result);
             apiCalls++;
-
-            if (apiCalls % 50 === 0) {
-                saveGeocodeCache(cache);
-                console.log(`  Nominatim progress: ${apiCalls}/${total} API calls (${cacheHits} cache hits)`);
-            }
+            consecutive429s = 0; // reset on success
         } catch (err) {
-            console.warn(`  Nominatim error for ${cacheKey}: ${err.message}`);
+            errors++;
+            const is429 = err.response && err.response.status === 429;
+            if (is429) consecutive429s++;
+            if (errors <= 5) {
+                console.warn(`  Nominatim error for ${cacheKey}: ${err.message}`);
+            } else if (errors === 6) {
+                console.warn(`  Suppressing further Nominatim error messages...`);
+            }
         }
     }
 
     saveGeocodeCache(cache);
-    console.log(`  Nominatim complete: ${apiCalls} API calls, ${cacheHits} cache hits`);
+    console.log(`  Nominatim complete: ${apiCalls} API calls, ${cacheHits} cache hits, ${errors} errors`);
     return locations;
 }
 
@@ -386,7 +455,7 @@ async function processDataset(dataset) {
     console.log(`  Extracted: ${locations.length} locations with coordinates`);
 
     // Step 4: Enrich with Nominatim
-    await enrichWithNominatim(locations);
+    await enrichWithNominatim(locations, dataset.limit);
 
     // Step 5: Validate
     const valid = validateLocations(locations);
