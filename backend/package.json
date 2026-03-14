@@ -15,6 +15,7 @@
     "ingest": "node src/ingestion/run-ingestion.js",
     "cleanup": "node src/utils/cleanup-advisories.js",
     "generate-locations": "node src/scripts/generate-osm-locations.js",
+    "map-stations": "node scripts/map-observation-stations.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src/ --ext .js",
