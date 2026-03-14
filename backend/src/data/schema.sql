@@ -286,6 +286,22 @@ CREATE TABLE IF NOT EXISTS system_snapshots (
 
 CREATE INDEX idx_system_snapshots_time ON system_snapshots(snapshot_time);
 
+-- Ingestion event log — replaces file-based .last-ingestion.json tracking.
+-- Records every ingestion cycle (success or failure) for monitoring,
+-- X-Data-Age calculation, and the /api/admin/health endpoint.
+CREATE TABLE IF NOT EXISTS ingestion_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    started_at DATETIME NOT NULL,
+    completed_at DATETIME,
+    status ENUM('running', 'success', 'failure') NOT NULL DEFAULT 'running',
+    advisories_created INT DEFAULT 0,
+    advisories_expired INT DEFAULT 0,
+    error_message TEXT,
+    duration_ms INT,
+    INDEX idx_ingestion_status (status),
+    INDEX idx_ingestion_completed (completed_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Migration version tracking table
 -- Records every forward migration that has been applied to this database.
 -- Managed by: node src/scripts/run-migrations.js

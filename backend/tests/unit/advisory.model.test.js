@@ -68,24 +68,22 @@ describe('AdvisoryModel.create() — deduplication', () => {
     updateSpy.mockRestore();
   });
 
-  test('updates existing advisory when VTEC event ID matches (no external_id)', async () => {
+  test('VTEC dedup handled atomically by INSERT ON DUPLICATE KEY UPDATE (no explicit SELECT)', async () => {
+    // When external_id is null but vtec_event_id is present, the explicit VTEC
+    // SELECT-then-UPDATE path is no longer used. Instead, the INSERT ON DUPLICATE
+    // KEY UPDATE fires on the vtec_event_unique_key constraint. (closes #265)
     const advisory = { ...BASE_ADVISORY, external_id: null };
-    const existing = { id: 55, ...advisory };
+    const newRow = { id: 55, ...advisory };
 
     const db = makeDb([
-      [[existing], {}],  // findByVTECEventID SELECT
-      [{}, {}],          // UPDATE
-      [[existing], {}]   // getById
+      [{ insertId: 55 }, {}],  // INSERT ON DUPLICATE KEY UPDATE (upsert)
+      [[newRow], {}]           // getById
     ]);
     getDatabase.mockReturnValue(db);
 
-    const updateSpy = jest.spyOn(AdvisoryModel, 'update').mockResolvedValue(existing);
-
     const result = await AdvisoryModel.create(advisory);
 
-    expect(updateSpy).toHaveBeenCalledWith(55, expect.any(Object));
-
-    updateSpy.mockRestore();
+    expect(result).toEqual(newRow);
   });
 
   test('uses natural-key dedup and updates when both external_id and VTEC are null (closes #114)', async () => {
@@ -114,8 +112,7 @@ describe('AdvisoryModel.create() — deduplication', () => {
 
     const db = makeDb([
       [[], {}],                      // findByExternalID → not found
-      [[], {}],                      // findByVTECEventID → not found
-      [{ insertId: 99 }, {}],        // INSERT
+      [{ insertId: 99 }, {}],        // INSERT ON DUPLICATE KEY UPDATE
       [[newRow], {}]                 // getById
     ]);
     getDatabase.mockReturnValue(db);

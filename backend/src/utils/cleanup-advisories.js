@@ -236,6 +236,37 @@ async function markExpiredByEndTime() {
 }
 
 /**
+ * NULL out raw_payload for advisories older than the retention period.
+ * Advisories that still lack an external_id are skipped (payload is needed
+ * for backfill). Default retention: 90 days. (closes #268)
+ *
+ * @param {number} retentionDays - Days to keep raw payloads (default 90)
+ * @returns {Promise<number>} Number of payloads nullified
+ */
+async function nullifyStaleRawPayloads(retentionDays = 90) {
+    const db = getDatabase();
+
+    console.log(`\n=== Nullifying Raw Payloads Older Than ${retentionDays} Days ===`);
+
+    const [result] = await db.query(
+        `UPDATE advisories
+         SET raw_payload = NULL
+         WHERE raw_payload IS NOT NULL
+           AND external_id IS NOT NULL
+           AND last_updated < DATE_SUB(NOW(), INTERVAL ? DAY)`,
+        [retentionDays]
+    );
+
+    const count = result.affectedRows || 0;
+    if (count > 0) {
+        console.log(`✓ Nullified ${count} stale raw payloads (>${retentionDays} days old)`);
+    } else {
+        console.log('✓ No stale raw payloads to clean up');
+    }
+    return count;
+}
+
+/**
  * Remove expired advisories (batched)
  */
 async function removeExpiredAdvisories() {
@@ -400,6 +431,7 @@ async function runCleanup(mode = 'full', options = {}) {
         typeDuplicates: 0,
         expiredRemoved: 0,
         externalIdsPopulated: 0,
+        rawPayloadsNullified: 0,
         totalRemoved: 0,
         success: true,
         error: null
@@ -426,6 +458,11 @@ async function runCleanup(mode = 'full', options = {}) {
                 results.vtecCodeDuplicates = await removeDuplicatesByVTECCode();
                 results.typeDuplicates = await removeDuplicateTypes();
                 results.expiredRemoved = await removeExpiredAdvisories();
+                results.rawPayloadsNullified = await nullifyStaleRawPayloads();
+                break;
+
+            case 'payloads':
+                results.rawPayloadsNullified = await nullifyStaleRawPayloads(options.retentionDays || 90);
                 break;
 
             case 'vtec':
@@ -483,6 +520,9 @@ async function runCleanup(mode = 'full', options = {}) {
         if (results.expiredRemoved > 0) {
             log(`║  Expired removed:        ${results.expiredRemoved.toString().padStart(23)} ║`);
         }
+        if (results.rawPayloadsNullified > 0) {
+            log(`║  Payloads nullified:     ${results.rawPayloadsNullified.toString().padStart(23)} ║`);
+        }
         log(`║  Total removed:          ${results.totalRemoved.toString().padStart(23)} ║`);
         log('╚══════════════════════════════════════════════════════╝\n');
     } catch (error) {
@@ -511,6 +551,7 @@ if (require.main === module) {
 module.exports = {
     runCleanup,
     removeExpiredAdvisories,
+    nullifyStaleRawPayloads,
     markExpiredByEndTime,
     removeDuplicatesByExternalId,
     removeDuplicatesByVTECEventId,

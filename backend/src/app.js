@@ -7,10 +7,10 @@ const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
-const fs = require('fs');
 const path = require('path');
 const config = require('./config/config');
 const { getDatabase } = require('./config/database');
+const IngestionEvent = require('./models/ingestionEvent');
 const { apiLimiter, writeLimiter, authLimiter } = require('./middleware/rateLimiter');
 const { requireApiKey } = require('./middleware/apiKey');
 const { metricsMiddleware, mountMetricsEndpoint } = require('./middleware/metrics');
@@ -194,16 +194,16 @@ app.get('/health', async (req, res) => {
 });
 
 // X-Data-Age header — tells the frontend how old the data is (seconds since last ingestion)
-app.use('/api', (req, res, next) => {
+// Reads from the ingestion_events DB table instead of .last-ingestion.json. (closes #264)
+app.use('/api', async (req, res, next) => {
     try {
-        const ingestionFile = path.join(__dirname, '../.last-ingestion.json');
-        if (fs.existsSync(ingestionFile)) {
-            const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
-            const ageSec = Math.round((Date.now() - new Date(data.lastUpdated).getTime()) / 1000);
+        const last = await IngestionEvent.getLastSuccessful();
+        if (last) {
+            const ageSec = last.minutesAgo * 60;
             res.setHeader('X-Data-Age', String(ageSec));
         }
     } catch (_) {
-        /* non-critical */
+        /* non-critical — table may not exist yet */
     }
     next();
 });

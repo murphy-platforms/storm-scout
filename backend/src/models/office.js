@@ -92,7 +92,12 @@ const OfficeModel = {
      */
     async findNearby(lat, lon, radiusMiles = 50) {
         const db = getDatabase();
-        // Using Haversine formula approximation
+        // Bounding box pre-filter uses the idx_offices_coords index to eliminate
+        // most rows before the expensive Haversine trig runs. 1 degree of latitude
+        // ≈ 69 miles; longitude varies by cos(lat). (closes #266)
+        const latDelta = radiusMiles / 69.0;
+        const lonDelta = radiusMiles / (69.0 * Math.cos((lat * Math.PI) / 180));
+
         const query = `
       SELECT *,
         (3959 * acos(
@@ -101,14 +106,28 @@ const OfficeModel = {
           sin(radians(?)) * sin(radians(latitude))
         )) AS distance
       FROM offices
-      WHERE (3959 * acos(
-        cos(radians(?)) * cos(radians(latitude)) *
-        cos(radians(longitude) - radians(?)) +
-        sin(radians(?)) * sin(radians(latitude))
-      )) <= ?
+      WHERE latitude BETWEEN ? AND ?
+        AND longitude BETWEEN ? AND ?
+        AND (3959 * acos(
+          cos(radians(?)) * cos(radians(latitude)) *
+          cos(radians(longitude) - radians(?)) +
+          sin(radians(?)) * sin(radians(latitude))
+        )) <= ?
       ORDER BY distance
     `;
-        const [rows] = await db.query(query, [lat, lon, lat, lat, lon, lat, radiusMiles]);
+        const [rows] = await db.query(query, [
+            lat,
+            lon,
+            lat,
+            lat - latDelta,
+            lat + latDelta,
+            lon - lonDelta,
+            lon + lonDelta,
+            lat,
+            lon,
+            lat,
+            radiusMiles
+        ]);
         return rows;
     },
 

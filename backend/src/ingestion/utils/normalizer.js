@@ -175,7 +175,13 @@ function normalizeNOAAAlert(noaaAlert) {
     const vtecCode = extractVTEC(noaaAlert);
     const alertType = properties.event || 'Weather Advisory';
 
+    // Extract external_id upfront so it's always populated. NOAA GeoJSON features
+    // always include an `id` field (or `properties.id`). Extracting here instead of
+    // deferring to advisory.create() simplifies the dedup strategy. (closes #265)
+    const externalId = noaaAlert.id || properties.id || null;
+
     return {
+        external_id: externalId,
         advisory_type: alertType,
         // Use internal category-based severity (operational alignment)
         // instead of NOAA's raw severity field
