@@ -377,6 +377,42 @@ systemctl --user restart storm-scout-dev
 
 ---
 
+## Database Backups
+
+### Setup
+
+1. Configure backup environment variables in your `.env` or cron environment:
+   ```bash
+   export DB_HOST=localhost
+   export DB_PORT=3306
+   export DB_USER=storm_scout
+   export DB_PASSWORD=your_password
+   export DB_NAME=storm_scout
+   export BACKUP_DIR=/var/backups/storm-scout
+   export RETENTION_DAYS=30
+   ```
+
+2. Schedule daily backups and weekly verification:
+   ```bash
+   # Daily backup at 2 AM
+   0 2 * * * /path/to/deployment/backup.sh >> /var/log/storm-scout-backup.log 2>&1
+
+   # Weekly verification (Sunday at 4 AM)
+   0 4 * * 0 /path/to/deployment/verify-backup.sh >> /var/log/storm-scout-verify.log 2>&1
+   ```
+
+3. Test manually:
+   ```bash
+   ./deployment/backup.sh
+   ./deployment/verify-backup.sh
+   ```
+
+### Recovery
+
+See [docs/ARCHITECTURE.md — Backup & Recovery](docs/ARCHITECTURE.md#backup--recovery) for RTO/RPO targets and restore procedure.
+
+---
+
 ## Environment Variables (`.env`)
 
 | Variable | Description | Example |

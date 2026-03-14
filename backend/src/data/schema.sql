@@ -302,6 +302,19 @@ CREATE TABLE IF NOT EXISTS ingestion_events (
     INDEX idx_ingestion_completed (completed_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Audit log — records administrative actions for governance and debugging.
+-- Tracks who (actor) did what (action) and when, with optional detail payload.
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action VARCHAR(100) NOT NULL,          -- e.g., 'pause_ingestion', 'resume_ingestion', 'cleanup'
+    actor VARCHAR(100) NOT NULL DEFAULT 'api_key', -- Role/system identifier (not PII)
+    detail TEXT,                            -- JSON string with action-specific context
+    ip_address VARCHAR(45),                -- Client IP (supports IPv6)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_audit_action (action),
+    INDEX idx_audit_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Migration version tracking table
 -- Records every forward migration that has been applied to this database.
 -- Managed by: node src/scripts/run-migrations.js

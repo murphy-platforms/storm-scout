@@ -137,6 +137,39 @@ These items are tracked in the `[Unreleased]` section of `CHANGELOG.md` and are 
 
 ---
 
+## Backup & Recovery
+
+### Strategy
+
+Daily automated MariaDB/MySQL dumps via `deployment/backup.sh`, compressed with gzip, rotated after 30 days. Verification via `deployment/verify-backup.sh` restores to a temporary database and runs smoke tests against core tables.
+
+### RTO / RPO Targets
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| **RPO** (Recovery Point Objective) | 24 hours | Daily backups; acceptable data loss is one day of ingestion (re-ingestible from NOAA) |
+| **RTO** (Recovery Time Objective) | 1 hour | Restore from latest dump + re-run ingestion to fill the gap |
+
+### Backup Scheduling
+
+```
+# Example cron entry (daily at 2 AM)
+0 2 * * * /path/to/deployment/backup.sh >> /var/log/storm-scout-backup.log 2>&1
+
+# Weekly verification (Sunday at 4 AM)
+0 4 * * 0 /path/to/deployment/verify-backup.sh >> /var/log/storm-scout-verify.log 2>&1
+```
+
+### Recovery Procedure
+
+1. Stop the application: `pm2 stop storm-scout`
+2. Restore: `gunzip -c backup.sql.gz | mariadb storm_scout`
+3. Run migrations: `npm run migrate`
+4. Start the application: `pm2 start storm-scout`
+5. Trigger immediate ingestion: `npm run ingest`
+
+---
+
 ## Key File Index
 
 | File | Purpose |
