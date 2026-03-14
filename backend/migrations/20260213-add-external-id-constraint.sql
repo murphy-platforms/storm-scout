@@ -3,7 +3,7 @@
 -- Purpose: Prevent duplicate advisories with same external_id
 --
 -- Prerequisites: 
---   - Run fix-external-id-duplicates.js first to clean existing duplicates
+--   - Resolve duplicate external_ids before applying this migration
 --
 -- Rollback: DROP INDEX idx_external_id_unique ON advisories;
 

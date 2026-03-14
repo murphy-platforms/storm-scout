@@ -8,7 +8,7 @@ NOAA weather alerts were appearing as duplicates in the system when they were up
 
 ### Example of the Problem
 
-For office 219 (Anchorage, AK - office code 99501):
+For the Anchorage, AK office (office code 99501):
 - Same blizzard warning appeared 3 times with different VTEC codes:
   - `/O.NEW.PAJK.BZ.W.0006.260213T1000Z-260214T0200Z/` (initial alert)
   - `/O.CON.PAJK.BZ.W.0006.260213T1000Z-260214T0200Z/` (continued alert)
@@ -238,12 +238,12 @@ Action codes are displayed as color-coded badges in `frontend/advisories.html`:
 **Production Deployment**: February 12, 2026 (21:27-22:10 UTC)
 
 **Before**:
-- Office 219 (Anchorage): ~30 alerts displayed
+- Anchorage office: ~30 alerts displayed
 - ~19 unique VTEC events among them
 - ~11 duplicates just for this office
 
 **After**:
-- Office 219: 25 unique alerts
+- Anchorage office: 25 unique alerts
 - Zero event ID duplicates across entire system
 - 74 alerts have VTEC action codes captured
 - ~40 duplicates eliminated system-wide
