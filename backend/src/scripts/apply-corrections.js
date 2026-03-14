@@ -13,7 +13,7 @@ const sitesPath = path.join(dataDir, 'sites.json');
 
 // Corrections from verification
 const corrections = {
-    /* redacted */,
+    /* redacted */
     /* redacted latitude 25.7832367, longitude: -80.3003754, ugc_codes: ['FLZ074', 'FLC086'] },
     5298: { latitude: 33.8579818, longitude: -98.563651 },
     /* redacted */
@@ -63,13 +63,13 @@ for (const [code, updates] of Object.entries(corrections)) {
 }
 
 // Remove child office
-const removeIdx = offices.findIndex((s) => s.site_code === REMOVE_SITE);
+const removeIdx = offices.findIndex((s) => s.site_code === REMOVE_CODE);
 if (removeIdx >= 0) {
-    console.log(`\nRemoving office ${REMOVE_SITE}: ${offices[removeIdx].name}`);
+    console.log(`\nRemoving office ${REMOVE_CODE}: ${offices[removeIdx].name}`);
     offices.splice(removeIdx, 1);
-    sqlStatements.push(`DELETE FROM sites WHERE site_code = '${REMOVE_SITE}';`);
+    sqlStatements.push(`DELETE FROM sites WHERE site_code = '${REMOVE_CODE}';`);
 } else {
-    console.error(`Site ${REMOVE_SITE} not found for removal!`);
+    console.error(`Site ${REMOVE_CODE} not found for removal!`);
 }
 
 // Re-sort by latitude (ascending, matching existing sort order)
@@ -93,7 +93,7 @@ console.log(`Wrote SQL to site-corrections.sql`);
 
 // Regenerate output (offices)
 const newOfficeCodes = [/* redacted */];
-const newSites = newSiteCodes.map((code) => {
+const newSites = newOfficeCodes.map((code) => {
     const s = offices.find((x) => x.site_code === code);
     return {
         site_code: s.site_code,
@@ -131,7 +131,7 @@ console.log('Regenerated new-sites-insert.sql (9 sites)');
 console.log('\n=== SUMMARY ===');
 console.log(`Total offices: ${offices.length}`);
 console.log(`Sites updated: ${Object.keys(corrections).length}`);
-console.log(`Sites removed: 1 (${REMOVE_SITE})`);
+console.log(`Sites removed: 1 (${REMOVE_CODE})`);
 console.log(`SQL statements: ${sqlStatements.length}`);
 console.log('\nSQL to deploy:');
 sqlStatements.forEach((s) => console.log(`  ${s}`));

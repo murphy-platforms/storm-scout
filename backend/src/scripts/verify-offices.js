@@ -17,7 +17,7 @@ const SITES_TO_GEOCODE = [
 
 const OFFICES_TO_VERIFY_ONLY = [/* redacted */];
 
-const ALL_SITE_CODES = [...SITES_TO_GEOCODE.map((s) => s.site_code), ...SITES_TO_VERIFY_ONLY];
+const ALL_SITE_CODES = [...SITES_TO_GEOCODE.map((s) => s.site_code), ...OFFICES_TO_VERIFY_ONLY];
 
 // Load current sites.json
 const sitesPath = path.join(__dirname, '..', 'data', 'sites.json');
@@ -177,7 +177,7 @@ async function main() {
     }
 
     // Step 2: Add the 5 verify-only offices with their current coords
-    for (const code of SITES_TO_VERIFY_ONLY) {
+    for (const code of OFFICES_TO_VERIFY_ONLY) {
         const current = currentSites.find((s) => s.site_code === code);
         results.push({
             site_code: code,
