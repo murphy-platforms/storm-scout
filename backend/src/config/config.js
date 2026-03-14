@@ -1,6 +1,8 @@
 /**
  * Configuration Module
  * Loads and exports application configuration
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

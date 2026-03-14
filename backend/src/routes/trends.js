@@ -1,3 +1,10 @@
+/**
+ * Trends API Routes
+ * Advisory trend data and history endpoints
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
+ */
+
 const express = require('express');
 const router = express.Router();
 const AdvisoryHistory = require('../models/advisoryHistory');

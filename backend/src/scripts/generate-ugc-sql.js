@@ -1,6 +1,8 @@
 /**
  * Generate SQL statements for UGC code updates
  * Usage: node src/scripts/generate-ugc-sql.js > ugc-update.sql
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const fs = require('fs');

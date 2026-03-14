@@ -1,6 +1,8 @@
 /**
  * Common Validation Rules
  * Reusable validation chains for common parameters
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { param, query } = require('express-validator');

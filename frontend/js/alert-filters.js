@@ -1,6 +1,8 @@
 /**
  * Alert Filter Utilities
  * Shared logic for applying user's filter preferences across pages
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const AlertFilters = {

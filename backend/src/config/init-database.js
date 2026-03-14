@@ -2,6 +2,8 @@
  * Database Initialization Script
  * Run this to set up the database schema and load initial office data
  * Usage: npm run init-db
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { initDatabase: initSqlJs, initializeSchema, loadOffices, closeDatabase } = require('./database');

@@ -1,6 +1,8 @@
 /**
  * Advisory Model - MySQL/MariaDB
  * Data access layer for advisories table
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');

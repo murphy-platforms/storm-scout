@@ -1,5 +1,7 @@
 /**
  * Status Route Validators
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { query } = require('express-validator');

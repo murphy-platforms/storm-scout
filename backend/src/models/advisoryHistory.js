@@ -12,6 +12,8 @@
  * count grows beyond 500.
  *
  * @module AdvisoryHistory
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');

@@ -10,6 +10,8 @@
  *   --fix    Automatically update mismatched UGC codes (not implemented yet)
  *
  * Output: Validation report to console and optional JSON file
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

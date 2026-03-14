@@ -3,6 +3,8 @@
  * apply-corrections.js
  * Applies verified coordinate corrections, updates Miami UGC zone,
  * removes child site 6753, and generates deployment SQL.
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const fs = require('fs');

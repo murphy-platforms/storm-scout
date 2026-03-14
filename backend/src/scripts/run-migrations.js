@@ -17,6 +17,8 @@
  *   - Rollback files are excluded:  *.rollback.sql  or  rollback-*.sql
  *   - Files are applied in ascending alphabetical order (dated filenames
  *     like 20260309-*.sql sort correctly by date automatically)
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 'use strict';

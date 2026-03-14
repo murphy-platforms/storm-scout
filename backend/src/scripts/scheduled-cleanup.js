@@ -6,6 +6,8 @@
  *
  * Usage: node scheduled-cleanup.js [mode]
  * Modes: full (default), vtec, event_id, expired, duplicates
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

@@ -1,3 +1,10 @@
+/**
+ * Map Page
+ * Interactive Leaflet map with office markers and clustering
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
+ */
+
 let map;
 let markers = [];
 let markerLayer;

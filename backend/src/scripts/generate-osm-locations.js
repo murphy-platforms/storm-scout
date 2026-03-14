@@ -11,6 +11,8 @@
  *   node src/scripts/generate-osm-locations.js airports      # single dataset
  *
  * Output: backend/src/data/csv/{airports,train-stations,ranger-stations,drive-in-theaters}.csv
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 'use strict';

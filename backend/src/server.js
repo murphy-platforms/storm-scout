@@ -1,6 +1,8 @@
 /**
  * Server Entry Point
  * Starts the Express server and ingestion scheduler
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const app = require('./app');

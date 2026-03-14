@@ -1,6 +1,8 @@
 /**
  * Ingestion Scheduler
  * Schedules periodic weather data ingestion using node-cron
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const cron = require('node-cron');

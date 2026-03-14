@@ -24,6 +24,8 @@
  *   API, AlertFilters, OfficeAggregator, StormScoutExport, debounce, html, raw,
  *   escapeHtml, truncate, cToF, isStale, timeAgo, formatDate, formatLocalTime,
  *   getSeverityBadge, renderEmptyHtml, renderErrorHtml, showError — from utils.js
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 let nextUpdateTime = null;

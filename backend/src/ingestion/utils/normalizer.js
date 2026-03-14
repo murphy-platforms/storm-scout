@@ -1,6 +1,8 @@
 /**
  * Data Normalizer
  * Normalizes weather data from various sources into our schema
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { NOAA_ALERT_TYPES } = require('../../config/noaa-alert-types');

@@ -2,6 +2,8 @@
  * NOAA Weather Alert Types Configuration
  * Based on National Weather Service alert taxonomy
  * https://www.weather.gov/help-map
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 /**

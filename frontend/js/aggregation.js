@@ -1,6 +1,8 @@
 /**
  * Storm Scout Aggregation Logic - Phase 1
  * Groups advisories by office, deduplicates multi-zone alerts, calculates urgency
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const OfficeAggregator = {

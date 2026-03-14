@@ -9,6 +9,8 @@
  * Usage:
  *   node src/scripts/fetch-observation-stations.js              # Apply changes
  *   node src/scripts/fetch-observation-stations.js --dry-run    # Preview only
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

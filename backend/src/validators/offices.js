@@ -1,5 +1,7 @@
 /**
  * Office Route Validators
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { validateId, validateState, validateRegion, validateBooleanQuery } = require('./common');

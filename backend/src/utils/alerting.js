@@ -1,6 +1,8 @@
 /**
  * Alerting Module
  * Handles notifications for system events like ingestion failures
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const https = require('https');

@@ -6,6 +6,8 @@
  *
  * Usage: node src/scripts/fetch-ugc-codes.js
  * Output: Creates ugc-codes-output.json in the data directory
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

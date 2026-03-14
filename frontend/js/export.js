@@ -1,6 +1,8 @@
 /**
  * Export and Reporting System - Phase 3
  * Handles CSV, PDF, and Excel exports
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const StormScoutExport = {
