@@ -11,7 +11,7 @@ Node.js + Express API server for the Storm Scout weather advisory dashboard.
 - **HTTP Client**: axios with rate limiting (500ms) and retry logic
 - **Caching**: node-cache (in-memory, ~100x faster on cache hits)
 - **Validation**: express-validator on all endpoints
-- **Rate Limiting**: express-rate-limit (500 req/15 min general, 20/15 min writes)
+- **Rate Limiting**: express-rate-limit (30,000 req/60 min general, 20/15 min writes)
 
 ---
 
@@ -220,7 +220,6 @@ backend/
 │   │   └── alerting.js              # Webhook failure notifications
 │   ├── scripts/
 │   │   ├── import-offices.js    # Convert CSV → offices.json
-│   │   ├── fetch-observation-stations.js  # Map offices to nearest NWS stations
 │   │   ├── capture-historical-snapshot.js # System-wide + per-office snapshot
 │   │   └── scheduled-cleanup.js     # Cron-friendly cleanup entry point
 │   └── data/
@@ -272,7 +271,7 @@ ssh user@server "journalctl --user -u storm-scout-dev -f"
 - Run `npm run cleanup` to remove stale duplicates
 
 ### Rate limit hit during testing
-- Limit is 500 req/15 min; restart the server to reset: `systemctl --user restart storm-scout-dev`
+- Limit is 30,000 req/60 min; restart the server to reset: `systemctl --user restart storm-scout-dev`
 
 ---
 

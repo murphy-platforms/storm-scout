@@ -26,7 +26,7 @@ async function addConstraint() {
         
         if (duplicates[0].count > 0) {
             console.log(`❌ ERROR: Found ${duplicates[0].count} duplicate external_ids`);
-            console.log('Run fix-external-id-duplicates.js first to clean up duplicates.');
+            console.log('Resolve duplicate external_ids manually before adding this constraint.');
             process.exit(1);
         }
         
@@ -85,7 +85,7 @@ async function addConstraint() {
             console.log('⚠️  Constraint with this name already exists.');
         } else if (error.code === 'ER_DUP_ENTRY') {
             console.log('⚠️  Cannot add constraint: duplicate external_ids exist in database.');
-            console.log('Run fix-external-id-duplicates.js first.');
+            console.log('Resolve duplicate external_ids manually before adding this constraint.');
         } else {
             console.error('Full error:', error);
         }

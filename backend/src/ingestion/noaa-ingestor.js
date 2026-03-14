@@ -403,9 +403,9 @@ async function ingestNOAAData() {
         console.log('\nCleaning up old expired advisories...');
         const expiredRemoved = await removeExpiredAdvisories();
 
-        // Step 8: Check for sites with unusually high advisory counts (monitoring)
+        // Step 8: Check for offices with unusually high advisory counts (monitoring)
         console.log('\nChecking for anomalies...');
-        const [highCountSites] = await db.query(`
+        const [highCountOffices] = await db.query(`
       SELECT s.office_code, s.name, s.state, COUNT(*) as advisory_count
       FROM advisories a
       JOIN offices s ON a.office_id = s.id
@@ -416,15 +416,15 @@ async function ingestNOAAData() {
       LIMIT 5
     `);
 
-        if (highCountSites.length > 0) {
-            console.warn('⚠️  WARNING: Sites with unusually high advisory counts detected:');
+        if (highCountOffices.length > 0) {
+            console.warn('⚠️  WARNING: Offices with unusually high advisory counts detected:');
             const anomalyDetails = [];
-            highCountSites.forEach((office) => {
+            highCountOffices.forEach((office) => {
                 console.warn(
                     `   ${office.office_code} (${office.name}, ${office.state}): ${office.advisory_count} active advisories`
                 );
                 anomalyDetails.push({
-                    site_code: office.office_code,
+                    office_code: office.office_code,
                     name: office.name,
                     state: office.state,
                     advisory_count: office.advisory_count
@@ -433,7 +433,7 @@ async function ingestNOAAData() {
             console.warn('   This may indicate duplicate accumulation. Consider running cleanup.');
 
             // Send alert for anomaly
-            await alertAnomaly(`${highCountSites.length} office(s) have unusually high advisory counts (>15)`, {
+            await alertAnomaly(`${highCountOffices.length} office(s) have unusually high advisory counts (>15)`, {
                 offices: anomalyDetails
             });
         } else {
@@ -533,7 +533,7 @@ async function ingestObservations(offices) {
     const mappedSites = offices.filter((s) => s.observation_station);
 
     if (mappedSites.length === 0) {
-        console.log('No offices have observation stations mapped. Run fetch-observation-stations.js first.');
+        console.log('No offices have observation stations mapped. See backend README for station setup.');
         return { total: 0, updated: 0, failed: 0, uniqueStations: 0 };
     }
 

@@ -372,53 +372,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **City/State from Offices Card Body** - Moved to card header for consistency with advisories.html (closes #26)
 - **Ops Status Badge from Offices Cards** - Removed unimplemented "Ops: Unknown" badge (closes #27)
 
-## [1.6.3] - 2026-02-20
-
-### Fixed
-- **Office Data Verification** - Verified all 9 new offices against physical addresses
-  - Office in Irving, TX: Corrected coordinates ( ***REDACTED*** (was city-center fallback)
-  - Office in Miami, FL: Corrected coordinates ( ***REDACTED*** (was city-center); UGC zone updated FLZ173 → FLZ074
-  - Office in Wichita Falls, TX: Corrected coordinates ( ***REDACTED*** (was geocoded to wrong address)
-  - Office in NYC Downtown, NY: Corrected coordinates ( ***REDACTED*** (was city-center fallback)
-  - 5 remaining offices verified with no changes needed
-
-### Removed
-- **Office (NYC Downtown 2)** - Removed as child office
-  - Both offices share same physical address (***REDACTED***)
-  - Storm Scout tracks parent office codes only; total offices: *** → 1259
-
-### Data Sources
-- Coordinates verified via US Census Geocoder against operations-provided physical addresses
-- NOAA /points API used to re-verify UGC codes, CWA, and county for all corrected offices
-- Miami alternate address (6505 Blue Lagoon Dr) used when ***REDACTED*** not in Census database
-
-## [1.6.2] - 2026-02-20
-
-### Added
-- **49 New Offices** - Total offices increased from 1197 to 1217
-  - 0313 Waco, TX (McLennan County, FWD)
-  - 0383 Irving, TX (Dallas County, FWD)
-  - 0624 Miami, FL (Miami-Dade County, MFL)
-  - 1908 Santa Fe, NM (Santa Fe County, ABQ)
-  - 1910 Albuquerque, NM (Bernalillo County, ABQ)
-  - 3700 Billings, MT (Yellowstone County, BYZ)
-  - 3702 Helena, MT (Lewis and Clark County, TFX)
-  - 5298 Wichita Falls, TX (Wichita County, OUN)
-  - Office (NYC Downtown)
-  - Office (NYC Downtown 2)
-  - Montana added as new state (2 offices, Mountain region)
-  - All offices include UGC codes, CWA, and county data
-- **Add New Offices Script** (`backend/src/scripts/add-new-offices.js`)
-  - Geocodes addresses via US Census Geocoder / Nominatim
-  - Fetches UGC codes, CWA, and county from NOAA /points API
-  - Generates offices.json entries and production SQL INSERT statements
-  - Includes verification report with warnings for unconfirmed addresses
-
-### Data Sources
-- Addresses sourced from public geographic data sources
-- Coordinates from US Census Geocoder and Nominatim/OSM
-- Weather data from NOAA Weather API /points endpoint
-
 ## [1.6.1] - 2026-02-19
 
 ### Added
@@ -796,7 +749,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Eliminated ~40 duplicate weather alerts across system
-- Office 219 (Anchorage) reduced from ~30 to 25 unique alerts
+- Anchorage office reduced from ~30 to 25 unique alerts
 - All VTEC events now properly deduplicated while preserving action history
 
 ### Technical

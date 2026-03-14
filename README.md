@@ -4,22 +4,15 @@
 
 Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which offices may be impacted during severe weather events.
 
-> **Note:** Storm Scout is an independent open-source project. It is not affiliated with, endorsed by, or connected to any government agency or postal service. See the full [Disclaimer](#disclaimer) below.
+> **Note:** Storm Scout is an independent open-source project. It is not affiliated with, endorsed by, or connected to any government agency or postal service. See the full [Disclaimer](frontend/disclaimer.html) below.
 
 ## Why Storm Scout?
 
 Organizations that manage physical locations — retail chains, logistics networks, field service teams, government offices — face a common problem: there is no simple way to monitor weather threats across all of their sites at once. When severe weather hits, operations teams resort to checking weather.gov manually for each location, one zip code at a time. This leads to delayed decisions, inconsistent response across regions, and hours of effort that could be automated. Storm Scout solves this by consolidating real-time NOAA weather alerts for hundreds of locations into a single dashboard, giving operations leaders the situational awareness they need to act quickly and consistently.
 
-## 📸 Screenshots
+## Screenshots
 
-| | |
-|---|---|
-| ![Dashboard Overview](docs/screenshots/overview.jpg) | ![Active Advisories](docs/screenshots/active-advisories.jpg) |
-| *Dashboard Overview* | *Active Advisories* |
-| ![Map View](docs/screenshots/map-overview.jpg) | ![Map Detail](docs/screenshots/map-detail.jpg) |
-| *Map View — National* | *Map View — Office Detail* |
-| ![Office Detail](docs/screenshots/office-detail.jpg) | ![NOAA Alert Detail](docs/screenshots/NOAA-alert-detail.jpg) |
-| *Office Detail* | *NOAA Alert Detail* |
+*Screenshots are being updated. Run the application locally to preview the dashboard UI.*
 
 ## How It Works
 
@@ -158,6 +151,10 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 ### Global Architecture (Planned)
 - **Multi-Country Design** - Adapter pattern for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico)
 - **Expert Reviewed** - 5-expert panel review with 16 findings, all critical items remediated
+
+---
+
+> **For Developers:** Everything below covers setup, configuration, and deployment. If you're evaluating Storm Scout from a business or operations perspective, the sections above tell the full story.
 
 ## Quick Start
 
@@ -401,15 +398,17 @@ From CSV to working dashboard in about 15 minutes. See [`DEPLOY.md`](DEPLOY.md) 
 
 **Multi-tenant potential:** The current architecture is single-tenant by design — one database, one set of offices, one ingestion pipeline. Multi-tenant support (serving multiple organizations from a single deployment) would require tenant-scoped database queries, per-tenant authentication, and isolated ingestion schedules. The Express middleware layer and existing API key model provide a natural starting point for this extension.
 
-## Limitations & Known Gaps
+## POC Scope
 
-| Area | Status | Details |
-|------|--------|---------|
-| **Geographic coverage** | US only | NOAA Weather API covers the 50 US states and territories. International support (Environment Canada, MeteoAlarm, SMN) is a planned future extension. |
-| **User authentication** | None | The dashboard is accessible to anyone with the URL. Access is controlled at the network level or via reverse proxy. The API uses key-based authentication. |
+The following are intentional scope boundaries for this proof-of-concept, not missing features. Each reflects a deliberate trade-off to keep the project focused and deployable.
+
+| Area | Scope Decision | Rationale |
+|------|---------------|-----------|
+| **Geographic coverage** | US only | NOAA Weather API covers the 50 US states and territories. International adapters (Environment Canada, MeteoAlarm, SMN) are designed for but not yet implemented. |
+| **User authentication** | Network-level | The dashboard is open to anyone with the URL. Access is controlled via reverse proxy or VPN. The API uses key-based authentication for write operations. |
 | **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#adapting-for-your-organization) above. |
-| **Frontend tests** | None | Backend has 129 automated tests (Jest + supertest). The frontend has zero test coverage — a deliberate trade-off for the no-build-step architecture. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for rationale. |
-| **Infrastructure cost** | Minimal | Runs on a single VPS ($5–10/month). No paid API dependencies — NOAA data is free and public domain. MariaDB is the only infrastructure requirement beyond Node.js. |
+| **Frontend tests** | Backend only | Backend has 162 automated tests (Jest + supertest). The frontend has zero test coverage — a deliberate trade-off for the no-build-step architecture. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for rationale. |
+| **Infrastructure cost** | Minimal | Runs on a single VPS ($5-10/month). No paid API dependencies — NOAA data is free and public domain. |
 
 ## Contributing
 
