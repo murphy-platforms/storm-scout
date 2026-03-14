@@ -8,6 +8,7 @@ const express = require('express');
 const router = express.Router();
 const { requireApiKey } = require('../middleware/apiKey');
 const { startScheduler, stopScheduler, getSchedulerStatus, waitForIngestionIdle } = require('../ingestion/scheduler');
+const AuditLog = require('../models/auditLog');
 
 // All admin routes require API key authentication
 router.use(requireApiKey);
@@ -40,6 +41,12 @@ router.post('/pause-ingestion', async (req, res) => {
             console.log('[Admin] Active ingestion cycle finished');
         }
 
+        await AuditLog.record({
+            action: 'pause_ingestion',
+            detail: { wasInProgress: status.ingestion.inProgress },
+            ipAddress: req.ip
+        });
+
         res.json({
             success: true,
             message: 'Ingestion paused. Active cycle (if any) has completed.',
@@ -55,7 +62,7 @@ router.post('/pause-ingestion', async (req, res) => {
  * POST /api/admin/resume-ingestion
  * Restarts the ingestion scheduler after a deploy pause.
  */
-router.post('/resume-ingestion', (req, res) => {
+router.post('/resume-ingestion', async (req, res) => {
     try {
         const status = getSchedulerStatus();
 
@@ -69,6 +76,11 @@ router.post('/resume-ingestion', (req, res) => {
 
         startScheduler();
         console.log('[Admin] Ingestion scheduler resumed via API');
+
+        await AuditLog.record({
+            action: 'resume_ingestion',
+            ipAddress: req.ip
+        });
 
         res.json({
             success: true,
@@ -221,6 +233,21 @@ router.get('/health', async (req, res) => {
 
     const httpStatus = health.status === 'ok' ? 200 : 503;
     res.status(httpStatus).json(health);
+});
+
+/**
+ * GET /api/admin/audit-log
+ * Returns recent audit log entries. Accepts optional ?limit= query parameter.
+ */
+router.get('/audit-log', async (req, res) => {
+    try {
+        const limit = Math.min(parseInt(req.query.limit, 10) || 50, 200);
+        const entries = await AuditLog.getRecent(limit);
+        res.json({ success: true, data: entries });
+    } catch (error) {
+        console.error('[Admin] Failed to fetch audit log:', error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 module.exports = router;

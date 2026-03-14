@@ -49,6 +49,8 @@ temp/
 
 # Backup files
 *backup*
+!deployment/backup.sh
+!deployment/verify-backup.sh
 *-stub.js
 *.bak
 *-sqljs*

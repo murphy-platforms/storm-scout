@@ -1,0 +1,12 @@
+{
+    "name": "storm-scout-e2e",
+    "private": true,
+    "scripts": {
+        "test": "npx playwright test --config=playwright.config.js",
+        "test:headed": "npx playwright test --config=playwright.config.js --headed",
+        "test:report": "npx playwright show-report"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.52.0"
+    }
+}
