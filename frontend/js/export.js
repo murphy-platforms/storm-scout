@@ -339,7 +339,7 @@ const StormScoutExport = {
     generateExecutiveBriefing(data, timestamp) {
         const { offices, overview } = data;
 
-        const criticalOffices = offices.filter(
+        const extremeSevereOffices = offices.filter(
             (s) => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'
         );
 
@@ -354,7 +354,7 @@ const StormScoutExport = {
         .executive-summary { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #1B2845; }
         .key-points { margin: 20px 0; }
         .key-points li { margin: 10px 0; }
-        .critical-offices { background: #fdd; padding: 15px; margin: 20px 0; border-left: 4px solid #dc3545; }
+        .extreme-severe-offices { background: #fdd; padding: 15px; margin: 20px 0; border-left: 4px solid #dc3545; }
         @media print {
             body { margin: 20px; }
         }
@@ -368,7 +368,7 @@ const StormScoutExport = {
         <h2>Executive Summary</h2>
         <p><strong>Total Offices Monitored:</strong> ${overview?.total_offices || 300}</p>
         <p><strong>Offices with Active Weather Advisories:</strong> ${offices.length}</p>
-        <p><strong>Critical Attention Required:</strong> ${criticalOffices.length} offices</p>
+        <p><strong>Extreme/Severe Attention Required:</strong> ${extremeSevereOffices.length} offices</p>
     </div>
 
     <h2>Key Points</h2>
@@ -380,12 +380,12 @@ const StormScoutExport = {
     </ul>
 
     ${
-        criticalOffices.length > 0
+        extremeSevereOffices.length > 0
             ? `
-    <div class="critical-offices">
-        <h2>⚠️ Critical Offices Requiring Immediate Attention</h2>
+    <div class="extreme-severe-offices">
+        <h2>⚠️ Extreme/Severe Offices Requiring Immediate Attention</h2>
         <ul>
-            ${criticalOffices
+            ${extremeSevereOffices
                 .map(
                     (office) => `
                 <li><strong>${escapeHtml(office.office_code)}</strong> - ${escapeHtml(office.name)}, ${escapeHtml(office.state)}
@@ -399,13 +399,13 @@ const StormScoutExport = {
         </ul>
     </div>
     `
-            : '<p><em>No critical offices at this time.</em></p>'
+            : '<p><em>No extreme or severe offices at this time.</em></p>'
     }
 
     <h2>Recommendations</h2>
     <ul>
         ${
-            criticalOffices.length > 0
+            extremeSevereOffices.length > 0
                 ? '<li>Review operational status for offices under extreme/severe weather conditions</li>'
                 : ''
         }

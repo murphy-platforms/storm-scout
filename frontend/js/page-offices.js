@@ -318,10 +318,10 @@ function applyURLParameters() {
 
         // Show active filter banner
         const labels = {
-            red: 'Extreme (High Impact)',
-            orange: 'Severe (Severe Impact)',
-            yellow: 'Moderate (Moderate Impact)',
-            green: 'Minor (Low/No Impact)'
+            red: 'Extreme',
+            orange: 'Severe',
+            yellow: 'Moderate',
+            green: 'Minor'
         };
         document.getElementById('activeFilterLabel').textContent =
             labels[weatherImpactParam] || weatherImpactParam.toUpperCase();

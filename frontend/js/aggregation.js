@@ -203,10 +203,11 @@ const OfficeAggregator = {
         return {
             total_advisories: advisories.length,
             unique_offices: offices.length,
-            critical_offices: offices.filter((s) => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe')
-                .length,
-            elevated_offices: offices.filter((s) => s.highest_severity === 'Moderate').length,
-            monitoring_offices: offices.filter((s) => s.highest_severity === 'Minor').length,
+            extreme_severe_offices: offices.filter(
+                (s) => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'
+            ).length,
+            moderate_offices: offices.filter((s) => s.highest_severity === 'Moderate').length,
+            minor_offices: offices.filter((s) => s.highest_severity === 'Minor').length,
             new_alerts: advisories.filter((a) => a.vtec_action === 'NEW').length,
             avg_alerts_per_office: offices.length > 0 ? (advisories.length / offices.length).toFixed(1) : 0
         };
