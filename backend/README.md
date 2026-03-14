@@ -122,6 +122,15 @@ Server starts at **http://localhost:3000** and runs initial NOAA ingestion immed
 - `GET /api/observations` — Current weather observations for all offices
 - `GET /api/observations/:officeCode` — Observation for a specific office (by zip code)
 
+**Station setup:** Observations require each office to be mapped to its nearest NWS observation station. Run the mapping script once after seeding offices:
+
+```bash
+npm run map-stations   # calls NOAA /points API for each office (~5 min for 300 offices)
+npm run ingest         # fetches observations for mapped stations
+```
+
+The script is idempotent — rerun it to fill in any offices that failed on previous runs.
+
 ### Notices
 
 - `GET /api/notices` — All government/emergency notices
