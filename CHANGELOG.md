@@ -749,7 +749,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Eliminated ~40 duplicate weather alerts across system
-- Office 219 (Anchorage) reduced from ~30 to 25 unique alerts
+- Anchorage office reduced from ~30 to 25 unique alerts
 - All VTEC events now properly deduplicated while preserving action history
 
 ### Technical

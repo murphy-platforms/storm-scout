@@ -74,7 +74,7 @@ app.use(
                     "'self'",
                     'data:', // For inline images and icons
                     'www.googletagmanager.com',
-                    '*.tile.openstreetmap.org' // Map tiles for Leaflet
+                    'tile.openstreetmap.org' // Map tiles for Leaflet
                 ],
                 connectSrc: [
                     "'self'",
@@ -86,6 +86,9 @@ app.use(
                 upgradeInsecureRequests: config.env === 'production' ? [] : null
             }
         },
+        // Referrer-Policy: send referrer for same-protocol requests (needed for OSM tile servers).
+        // Matches deployment/nginx.conf.example so behavior is consistent with or without the proxy.
+        referrerPolicy: { policy: 'no-referrer-when-downgrade' },
         // HSTS: enforce HTTPS in production
         strictTransportSecurity:
             config.env === 'production'
