@@ -342,15 +342,21 @@ const AdvisoryModel = {
                     : JSON.stringify(advisory.raw_payload)
                 : null;
 
-            // Insert new alert (or update by external_id if duplicate external_id)
+            // Upsert: INSERT with ON DUPLICATE KEY UPDATE eliminates the TOCTOU
+            // race window between the SELECT checks above and this write.
+            // Both unique constraints (external_id+office_id and vtec_event_unique_key)
+            // are covered — if a concurrent insert wins, the upsert merges cleanly.
+            // `id = LAST_INSERT_ID(id)` ensures result.insertId returns the correct
+            // row ID regardless of whether an INSERT or UPDATE occurred. (closes #260)
             const [result] = await db.query(
                 `
         INSERT INTO advisories (
           external_id, office_id, advisory_type, severity, status, source,
-          headline, description, start_time, end_time, issued_time, 
+          headline, description, start_time, end_time, issued_time,
           vtec_code, vtec_event_id, vtec_action, raw_payload
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
+          id = LAST_INSERT_ID(id),
           office_id = VALUES(office_id),
           advisory_type = VALUES(advisory_type),
           severity = VALUES(severity),
@@ -386,25 +392,8 @@ const AdvisoryModel = {
                 ]
             );
 
-            return this.getById(result.insertId || result.lastInsertId || advisory.id);
+            return this.getById(result.insertId);
         } catch (error) {
-            // Handle unique constraint violation (ER_DUP_ENTRY)
-            // This can happen if a duplicate event is inserted between the findByVTECEventID check and insert
-            if (error.code === 'ER_DUP_ENTRY' && advisory.vtec_event_id) {
-                console.log(
-                    `Duplicate event detected via constraint: ${advisory.vtec_event_id} [${advisory.vtec_action}] - fetching existing alert`
-                );
-                // Find and return the existing alert
-                const existing = await this.findByVTECEventID(
-                    advisory.vtec_event_id,
-                    advisory.office_id,
-                    advisory.advisory_type
-                );
-                if (existing) {
-                    // Update it with the new data
-                    return this.update(existing.id, advisory);
-                }
-            }
             console.error('Error creating advisory:', error);
             throw error;
         }

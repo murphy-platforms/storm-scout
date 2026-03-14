@@ -71,9 +71,10 @@
     border-top-color: #1a1a1a;
 }
 
-/* Show tooltip on hover/focus */
+/* Show tooltip on hover/focus/active (keyboard toggle) */
 .help-icon:hover + .tooltip-content,
 .help-icon:focus + .tooltip-content,
+.help-icon[aria-expanded="true"] + .tooltip-content,
 .tooltip-content:hover {
     opacity: 1;
     visibility: visible;
@@ -97,7 +98,8 @@
 }
 
 .help-icon:hover + .tooltip-content.tooltip-right,
-.help-icon:focus + .tooltip-content.tooltip-right {
+.help-icon:focus + .tooltip-content.tooltip-right,
+.help-icon[aria-expanded="true"] + .tooltip-content.tooltip-right {
     transform: translateX(12px) translateY(-50%);
 }
 

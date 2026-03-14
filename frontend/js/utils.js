@@ -443,6 +443,34 @@ function renderFilterWarning(allAdv, filteredAdv, options = {}) {
 }
 
 /**
+ * Initialise keyboard support for help-icon tooltip toggles. (closes #263)
+ * WCAG 2.1.1 requires all interactive elements to be keyboard-operable.
+ * Help icons have role="button", so Enter and Space must activate them.
+ * Pressing Enter/Space toggles aria-expanded and a persistent visible state;
+ * pressing Escape or blurring the icon dismisses the tooltip.
+ */
+function initHelpIconKeyboard() {
+    document.querySelectorAll('.help-icon[role="button"]').forEach((icon) => {
+        icon.setAttribute('aria-expanded', 'false');
+
+        icon.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const expanded = icon.getAttribute('aria-expanded') === 'true';
+                icon.setAttribute('aria-expanded', String(!expanded));
+            } else if (e.key === 'Escape') {
+                icon.setAttribute('aria-expanded', 'false');
+                icon.blur();
+            }
+        });
+
+        icon.addEventListener('blur', () => {
+            icon.setAttribute('aria-expanded', 'false');
+        });
+    });
+}
+
+/**
  * Show a non-intrusive Bootstrap Toast notification. (closes #118)
  * Creates and appends a toast container if one is not already present.
  * @param {string} message - Text to display in the toast
