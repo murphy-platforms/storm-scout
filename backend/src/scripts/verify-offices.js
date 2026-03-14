@@ -15,7 +15,9 @@ const SITES_TO_GEOCODE = [
     { office_code: 'XXXXX', address: '***REDACTED***' }
 ];
 
-const OFFICES_TO_VERIFY_ONLY = [/* redacted */];
+const OFFICES_TO_VERIFY_ONLY = [
+    /* redacted */
+];
 
 const ALL_SITE_CODES = [...SITES_TO_GEOCODE.map((s) => s.site_code), ...OFFICES_TO_VERIFY_ONLY];
 

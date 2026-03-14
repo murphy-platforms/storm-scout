@@ -33,26 +33,65 @@ const USER_AGENT = 'StormScout/1.0 (osm-location-generator)';
 const BOUNDING_BOXES = [
     { name: 'CONUS', bbox: '24.5,-125.0,49.5,-66.0' },
     { name: 'Alaska', bbox: '51.0,-180.0,72.0,-129.0' },
-    { name: 'Hawaii', bbox: '18.5,-161.0,22.5,-154.0' },
+    { name: 'Hawaii', bbox: '18.5,-161.0,22.5,-154.0' }
 ];
 
 // ─── State → Region mapping (from add-new-offices.js) ──────────────────────
 
 const STATE_REGIONS = {
-    TX: 'South Central', FL: 'Southeast', NM: 'Southwest', MT: 'Mountain',
-    NH: 'Northeast', GA: 'Southeast', NY: 'Mid-Atlantic', LA: 'South Central',
-    AL: 'Southeast', AR: 'South Central', AZ: 'Southwest', CA: 'West',
-    CO: 'Mountain', CT: 'Northeast', DE: 'Mid-Atlantic', HI: 'Pacific',
-    ID: 'Mountain', IL: 'Midwest', IN: 'Midwest', IA: 'Midwest',
-    KS: 'Midwest', KY: 'Southeast', ME: 'Northeast', MD: 'Mid-Atlantic',
-    MA: 'Northeast', MI: 'Midwest', MN: 'Midwest', MS: 'Southeast',
-    MO: 'Midwest', NE: 'Midwest', NV: 'West', NJ: 'Mid-Atlantic',
-    NC: 'Southeast', ND: 'Midwest', OH: 'Midwest', OK: 'South Central',
-    OR: 'West', PA: 'Mid-Atlantic', RI: 'Northeast', SC: 'Southeast',
-    SD: 'Midwest', TN: 'Southeast', UT: 'Mountain', VT: 'Northeast',
-    VA: 'Mid-Atlantic', WA: 'West', WV: 'Mid-Atlantic', WI: 'Midwest',
-    WY: 'Mountain', AK: 'Alaska', GU: 'Pacific', PR: 'Caribbean',
-    VI: 'Caribbean',
+    TX: 'South Central',
+    FL: 'Southeast',
+    NM: 'Southwest',
+    MT: 'Mountain',
+    NH: 'Northeast',
+    GA: 'Southeast',
+    NY: 'Mid-Atlantic',
+    LA: 'South Central',
+    AL: 'Southeast',
+    AR: 'South Central',
+    AZ: 'Southwest',
+    CA: 'West',
+    CO: 'Mountain',
+    CT: 'Northeast',
+    DE: 'Mid-Atlantic',
+    HI: 'Pacific',
+    ID: 'Mountain',
+    IL: 'Midwest',
+    IN: 'Midwest',
+    IA: 'Midwest',
+    KS: 'Midwest',
+    KY: 'Southeast',
+    ME: 'Northeast',
+    MD: 'Mid-Atlantic',
+    MA: 'Northeast',
+    MI: 'Midwest',
+    MN: 'Midwest',
+    MS: 'Southeast',
+    MO: 'Midwest',
+    NE: 'Midwest',
+    NV: 'West',
+    NJ: 'Mid-Atlantic',
+    NC: 'Southeast',
+    ND: 'Midwest',
+    OH: 'Midwest',
+    OK: 'South Central',
+    OR: 'West',
+    PA: 'Mid-Atlantic',
+    RI: 'Northeast',
+    SC: 'Southeast',
+    SD: 'Midwest',
+    TN: 'Southeast',
+    UT: 'Mountain',
+    VT: 'Northeast',
+    VA: 'Mid-Atlantic',
+    WA: 'West',
+    WV: 'Mid-Atlantic',
+    WI: 'Midwest',
+    WY: 'Mountain',
+    AK: 'Alaska',
+    GU: 'Pacific',
+    PR: 'Caribbean',
+    VI: 'Caribbean'
 };
 
 // ─── Dataset definitions ────────────────────────────────────────────────────
@@ -63,29 +102,29 @@ const DATASETS = [
         filename: 'airports.csv',
         overpassFilter: '["aeroway"="aerodrome"]["iata"]',
         limit: 300,
-        defaultName: (tags) => `${tags.iata || 'Unknown'} Airport`,
+        defaultName: (tags) => `${tags.iata || 'Unknown'} Airport`
     },
     {
         id: 'train-stations',
         filename: 'train-stations.csv',
         overpassFilter: '["railway"="station"]',
         limit: 300,
-        defaultName: () => 'Train Station',
+        defaultName: () => 'Train Station'
     },
     {
         id: 'ranger-stations',
         filename: 'ranger-stations.csv',
         overpassFilter: '["amenity"="ranger_station"]',
         limit: 300,
-        defaultName: () => 'Ranger Station',
+        defaultName: () => 'Ranger Station'
     },
     {
         id: 'drive-in-theaters',
         filename: 'drive-in-theaters.csv',
         overpassFilter: '["amenity"="cinema"]["drive_in"="yes"]',
         limit: 300,
-        defaultName: () => 'Drive-In Theater',
-    },
+        defaultName: () => 'Drive-In Theater'
+    }
 ];
 
 // ─── Utilities ──────────────────────────────────────────────────────────────
@@ -125,14 +164,10 @@ async function fetchFromOverpass(dataset) {
         let response;
         for (let attempt = 1; attempt <= 3; attempt++) {
             try {
-                response = await axios.post(
-                    OVERPASS_ENDPOINT,
-                    `data=${encodeURIComponent(query)}`,
-                    {
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        timeout: 320000,
-                    }
-                );
+                response = await axios.post(OVERPASS_ENDPOINT, `data=${encodeURIComponent(query)}`, {
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    timeout: 320000
+                });
                 break;
             } catch (err) {
                 const wait = attempt * 30000;
@@ -184,7 +219,7 @@ function extractLocations(elements, dataset) {
                 state: tags['addr:state'] || null,
                 county: null,
                 countryCode: null,
-                tags,
+                tags
             };
         })
         .filter(Boolean);
@@ -201,17 +236,19 @@ async function nominatimRequest(lat, lon) {
                     lon,
                     format: 'json',
                     zoom: 18,
-                    addressdetails: 1,
+                    addressdetails: 1
                 },
                 headers: { 'User-Agent': USER_AGENT },
-                timeout: 10000,
+                timeout: 10000
             });
             return response.data;
         } catch (err) {
             const is429 = err.response && err.response.status === 429;
             if (is429 && attempt < NOMINATIM_MAX_RETRIES) {
                 const backoff = attempt * 30000; // 30s, 60s, 90s
-                console.warn(`  Rate limited (429), backing off ${backoff / 1000}s (attempt ${attempt}/${NOMINATIM_MAX_RETRIES})...`);
+                console.warn(
+                    `  Rate limited (429), backing off ${backoff / 1000}s (attempt ${attempt}/${NOMINATIM_MAX_RETRIES})...`
+                );
                 await sleep(backoff);
                 continue;
             }
@@ -254,7 +291,9 @@ async function enrichWithNominatim(locations, limit) {
     console.log(`  Cache phase: ${cacheHits} cache hits, ${validAfterCache} valid locations after cache`);
 
     if (validAfterCache >= limit * 2) {
-        console.log(`  Cache sufficient — skipping Nominatim API calls (${validAfterCache} valid >= ${limit * 2} needed)`);
+        console.log(
+            `  Cache sufficient — skipping Nominatim API calls (${validAfterCache} valid >= ${limit * 2} needed)`
+        );
         return locations;
     }
 
@@ -300,7 +339,7 @@ async function enrichWithNominatim(locations, limit) {
                 city: addr.city || addr.town || addr.village || addr.hamlet || addr.municipality || null,
                 state: iso.startsWith('US-') ? iso.split('-')[1] : null,
                 county: addr.county || null,
-                countryCode: addr.country_code || null,
+                countryCode: addr.country_code || null
             };
 
             cache[cacheKey] = result;
@@ -480,9 +519,7 @@ async function processDataset(dataset) {
 
 async function main() {
     const targetId = process.argv[2];
-    const datasetsToRun = targetId
-        ? DATASETS.filter((d) => d.id === targetId)
-        : DATASETS;
+    const datasetsToRun = targetId ? DATASETS.filter((d) => d.id === targetId) : DATASETS;
 
     if (targetId && datasetsToRun.length === 0) {
         console.error(`Unknown dataset: ${targetId}`);

@@ -39,7 +39,9 @@ async function main() {
 
     const ugcData = JSON.parse(fs.readFileSync(INPUT_FILE, 'utf8'));
     console.log(`Loaded UGC data from ${ugcData.generated_at}`);
-    console.log(`Total offices: ${ugcData.total_sites}, Successful: ${ugcData.successful}, Errors: ${ugcData.errors}\n`);
+    console.log(
+        `Total offices: ${ugcData.total_sites}, Successful: ${ugcData.successful}, Errors: ${ugcData.errors}\n`
+    );
 
     // Filter to successful offices only
     const sitesToUpdate = ugcData.sites.filter((s) => s.success && s.ugc_codes.length > 0);

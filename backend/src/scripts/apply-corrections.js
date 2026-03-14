@@ -92,7 +92,9 @@ fs.writeFileSync(sqlPath, sqlContent);
 console.log(`Wrote SQL to site-corrections.sql`);
 
 // Regenerate output (offices)
-const newOfficeCodes = [/* redacted */];
+const newOfficeCodes = [
+    /* redacted */
+];
 const newSites = newOfficeCodes.map((code) => {
     const s = offices.find((x) => x.site_code === code);
     return {
