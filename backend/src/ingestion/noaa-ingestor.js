@@ -4,8 +4,6 @@
  * Features: transactions, UGC-level geo-matching, deduplication
  */
 
-const fs = require('fs');
-const path = require('path');
 const { getNOAAAlerts, getLatestObservation } = require('./utils/api-client');
 const {
     normalizeNOAAAlert,
@@ -21,8 +19,7 @@ const { removeExpiredAdvisories } = require('../utils/cleanup-advisories');
 const { alertAnomaly } = require('../utils/alerting');
 const ObservationModel = require('../models/observation');
 const cache = require('../utils/cache');
-
-const LAST_INGESTION_FILE = path.join(__dirname, '../../.last-ingestion.json');
+const IngestionEvent = require('../models/ingestionEvent');
 
 // Ingestion status tracking — exposed via getIngestionStatus()
 let isIngesting = false;
@@ -48,6 +45,15 @@ async function ingestNOAAData() {
 
     isIngesting = true;
     ingestionStartedAt = new Date().toISOString();
+    const ingestionStart = Date.now();
+
+    // Record ingestion start in the DB event log (replaces .last-ingestion.json)
+    let ingestionEventId = null;
+    try {
+        ingestionEventId = await IngestionEvent.recordStart();
+    } catch (_) {
+        /* table may not exist yet on first run */
+    }
 
     try {
         // Step 1: Fetch all active NOAA alerts
@@ -218,33 +224,28 @@ async function ingestNOAAData() {
         try {
             await connection.beginTransaction();
 
-            // Bulk pre-fetch all existing active advisories for the affected offices.
+            // Bulk pre-fetch existing active advisories by external_id for the affected offices.
             // Runs inside the transaction on the same connection for read consistency.
-            // Eliminates per-row SELECT queries in the insert loop (2 SELECTs × N → 1 query).
+            // VTEC-based dedup is handled atomically by INSERT ON DUPLICATE KEY UPDATE,
+            // so only the external_id lookup map is needed here. (closes #265)
             const existingByExternalId = new Map();
-            const existingByVtec = new Map();
             const affectedOfficeIds = Array.from(officeAdvisories.keys());
 
             if (affectedOfficeIds.length > 0) {
                 const [existingRows] = await connection.query(
-                    `SELECT id, external_id, vtec_event_id, advisory_type, office_id
+                    `SELECT id, external_id, office_id
            FROM advisories
-           WHERE office_id IN (?) AND status = 'active'`,
+           WHERE office_id IN (?) AND status = 'active' AND external_id IS NOT NULL`,
                     [affectedOfficeIds]
                 );
                 for (const row of existingRows) {
-                    if (row.external_id) {
-                        existingByExternalId.set(`${row.external_id}|${row.office_id}`, row);
-                    }
-                    if (row.vtec_event_id) {
-                        existingByVtec.set(`${row.vtec_event_id}|${row.office_id}|${row.advisory_type}`, row);
-                    }
+                    existingByExternalId.set(`${row.external_id}|${row.office_id}`, row);
                 }
                 console.log(
                     `Pre-fetched ${existingRows.length} existing advisories for ${affectedOfficeIds.length} offices`
                 );
             }
-            const existingLookup = { byExternalId: existingByExternalId, byVtec: existingByVtec };
+            const existingLookup = { byExternalId: existingByExternalId };
 
             // Create/update advisories and track processed external IDs
             for (const [officeId, advisories] of officeAdvisories.entries()) {
@@ -458,9 +459,18 @@ async function ingestNOAAData() {
             console.warn('[CACHE] Pre-warm failed (non-fatal):', warmErr.message);
         }
 
-        // Save timestamp of successful ingestion
-        const timestamp = new Date().toISOString();
-        fs.writeFileSync(LAST_INGESTION_FILE, JSON.stringify({ lastUpdated: timestamp }));
+        // Record successful ingestion in the DB event log
+        if (ingestionEventId) {
+            try {
+                await IngestionEvent.recordSuccess(ingestionEventId, {
+                    advisoriesCreated,
+                    advisoriesExpired: expiredCount,
+                    durationMs: Date.now() - ingestionStart
+                });
+            } catch (_) {
+                /* non-critical */
+            }
+        }
 
         const totalFailed = advisoriesFailed + statusesFailed;
         const logSummary = totalFailed > 0 ? console.warn : console.log;
@@ -494,6 +504,13 @@ async function ingestNOAAData() {
         };
     } catch (error) {
         console.error('\n✗ NOAA ingestion failed:', error.message);
+        if (ingestionEventId) {
+            try {
+                await IngestionEvent.recordFailure(ingestionEventId, error.message, Date.now() - ingestionStart);
+            } catch (_) {
+                /* non-critical */
+            }
+        }
         throw error;
     } finally {
         isIngesting = false;
@@ -723,19 +740,17 @@ function stateNameToCode(name) {
 }
 
 /**
- * Get last ingestion timestamp
- * @returns {Object|null} {lastUpdated: ISO string} or null if never run
+ * Get last successful ingestion timestamp from the DB event log.
+ * @returns {Promise<Object|null>} {lastUpdated: ISO string} or null if never run
  */
-function getLastIngestionTime() {
+async function getLastIngestionTime() {
     try {
-        if (fs.existsSync(LAST_INGESTION_FILE)) {
-            const data = fs.readFileSync(LAST_INGESTION_FILE, 'utf8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        console.error('Error reading last ingestion time:', error);
+        const result = await IngestionEvent.getLastSuccessful();
+        return result ? { lastUpdated: result.lastUpdated } : null;
+    } catch (_) {
+        /* table may not exist yet */
+        return null;
     }
-    return null;
 }
 
 module.exports = {

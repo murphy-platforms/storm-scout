@@ -279,7 +279,8 @@ const AdvisoryModel = {
     async create(advisory, existingLookup = null) {
         const db = getDatabase();
         try {
-            // Extract external_id early for deduplication check
+            // Extract external_id — normalizer now populates this upfront, but
+            // fall back to raw_payload extraction for direct callers. (closes #265)
             let externalId = advisory.external_id;
             if (!externalId && advisory.raw_payload) {
                 const payload =
@@ -287,7 +288,11 @@ const AdvisoryModel = {
                 externalId = payload.id || payload.properties?.id;
             }
 
-            // Primary deduplication: Check by external_id + office_id (composite unique)
+            // Primary deduplication: Check by external_id + office_id (composite unique).
+            // This is the single authoritative dedup path. VTEC-based dedup is handled
+            // atomically by the INSERT ON DUPLICATE KEY UPDATE below (via the
+            // idx_vtec_event_unique_active constraint), eliminating the need for an
+            // explicit SELECT-then-UPDATE for VTEC matches.
             if (externalId) {
                 const existing = existingLookup
                     ? existingLookup.byExternalId.get(`${externalId}|${advisory.office_id}`) || null
@@ -301,7 +306,7 @@ const AdvisoryModel = {
                 }
             }
 
-            // Secondary deduplication: natural key when both external_id and VTEC are absent.
+            // Safety-net deduplication: natural key when both external_id and VTEC are absent.
             // Malformed/legacy NOAA payloads may omit both fields; without this guard a
             // retry of the same payload produces a duplicate row. (closes #114)
             if (!externalId && !advisory.vtec_event_id) {
@@ -314,22 +319,6 @@ const AdvisoryModel = {
                 if (existing) {
                     console.warn(
                         `[Advisory] Fallback natural-key dedup matched existing #${existing.id} (no external_id/VTEC). Updating instead of inserting.`
-                    );
-                    return this.update(existing.id, advisory);
-                }
-            }
-
-            // Tertiary deduplication: VTEC Event ID (persistent across NEW→CON→EXT updates)
-            if (advisory.vtec_event_id) {
-                const vtecKey = `${advisory.vtec_event_id}|${advisory.office_id}|${advisory.advisory_type}`;
-                const existing = existingLookup
-                    ? existingLookup.byVtec.get(vtecKey) || null
-                    : await this.findByVTECEventID(advisory.vtec_event_id, advisory.office_id, advisory.advisory_type);
-
-                if (existing) {
-                    const action = advisory.vtec_action || 'UNK';
-                    console.log(
-                        `Updating existing event via VTEC [${action}]: ${advisory.vtec_event_id} for office ${advisory.office_id}`
                     );
                     return this.update(existing.id, advisory);
                 }

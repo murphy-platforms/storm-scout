@@ -96,12 +96,11 @@ router.get('/status', (req, res) => {
  * The public /health endpoint returns only status (ok/degraded) for load balancers.
  */
 router.get('/health', async (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
     const { getDatabase } = require('../config/database');
     const config = require('../config/config');
     const { getIngestionStatus } = require('../ingestion/noaa-ingestor');
     const { getCircuitBreakerState } = require('../ingestion/utils/api-client');
+    const IngestionEvent = require('../models/ingestionEvent');
 
     const mem = process.memoryUsage();
 
@@ -149,23 +148,19 @@ router.get('/health', async (req, res) => {
     }
 
     try {
-        const ingestionFile = path.join(__dirname, '../../.last-ingestion.json');
-        if (fs.existsSync(ingestionFile)) {
-            const data = JSON.parse(fs.readFileSync(ingestionFile, 'utf8'));
-            const lastUpdate = new Date(data.lastUpdated);
-            const minutesAgo = (Date.now() - lastUpdate.getTime()) / (1000 * 60);
-
+        const last = await IngestionEvent.getLastSuccessful();
+        if (last) {
             health.checks.ingestion = {
-                status: minutesAgo <= 30 ? 'ok' : 'stale',
-                lastUpdated: data.lastUpdated,
-                minutesAgo: Math.round(minutesAgo),
+                status: last.minutesAgo <= 30 ? 'ok' : 'stale',
+                lastUpdated: last.lastUpdated,
+                minutesAgo: last.minutesAgo,
                 message:
-                    minutesAgo <= 30
+                    last.minutesAgo <= 30
                         ? 'Ingestion is current'
-                        : `Last ingestion was ${Math.round(minutesAgo)} minutes ago (expected: <= 30 min)`
+                        : `Last ingestion was ${last.minutesAgo} minutes ago (expected: <= 30 min)`
             };
 
-            if (minutesAgo > 30) {
+            if (last.minutesAgo > 30) {
                 health.status = 'degraded';
             }
         } else {
