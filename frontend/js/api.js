@@ -8,6 +8,27 @@ const API_BASE_URL =
         ? `${window.location.protocol}//${window.location.host}/api`
         : '/api';
 
+const DEFAULT_TIMEOUT_MS = 30000;
+
+/**
+ * Fetch with an AbortController timeout.
+ * Prevents the page from hanging indefinitely if the backend is unresponsive.
+ * @param {string} url - URL to fetch
+ * @param {RequestInit} [options={}] - Fetch options
+ * @param {number} [timeoutMs=30000] - Timeout in milliseconds
+ * @returns {Promise<Response>}
+ */
+async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const response = await fetchWithTimeout(url, { ...options, signal: controller.signal });
+        return response;
+    } finally {
+        clearTimeout(id);
+    }
+}
+
 let _versionCache = null;
 
 const API = {
@@ -18,7 +39,7 @@ const API = {
     async getVersion() {
         if (_versionCache) return _versionCache;
         try {
-            const response = await fetch(`${API_BASE_URL}/version`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/version`);
             _versionCache = await response.json();
             return _versionCache;
         } catch (error) {
@@ -45,7 +66,7 @@ const API = {
             /* localStorage unavailable — proceed to fetch */
         }
 
-        const response = await fetch(`${API_BASE_URL}/status/overview`);
+        const response = await fetchWithTimeout(`${API_BASE_URL}/status/overview`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch overview');
 
@@ -77,7 +98,7 @@ const API = {
             /* localStorage unavailable — proceed to fetch */
         }
 
-        const response = await fetch(`${API_BASE_URL}/advisories/active`);
+        const response = await fetchWithTimeout(`${API_BASE_URL}/advisories/active`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch advisories');
 
@@ -94,7 +115,7 @@ const API = {
      * Get impacted offices (Closed or At Risk)
      */
     async getImpactedOffices() {
-        const response = await fetch(`${API_BASE_URL}/status/offices-impacted`);
+        const response = await fetchWithTimeout(`${API_BASE_URL}/status/offices-impacted`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch impacted offices');
         return json.data;
@@ -104,7 +125,7 @@ const API = {
      * Get all active government/local notices
      */
     async getActiveNotices() {
-        const response = await fetch(`${API_BASE_URL}/notices/active`);
+        const response = await fetchWithTimeout(`${API_BASE_URL}/notices/active`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch notices');
         return json.data;
@@ -128,7 +149,7 @@ const API = {
             /* localStorage unavailable — proceed to fetch */
         }
 
-        const response = await fetch(`${API_BASE_URL}/observations`);
+        const response = await fetchWithTimeout(`${API_BASE_URL}/observations`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch observations');
 
@@ -145,7 +166,7 @@ const API = {
      * Get all offices
      */
     async getOffices() {
-        const response = await fetch(`${API_BASE_URL}/offices`);
+        const response = await fetchWithTimeout(`${API_BASE_URL}/offices`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch offices');
         return json.data;
@@ -156,7 +177,7 @@ const API = {
      */
     async getTrends(days = 7) {
         try {
-            const response = await fetch(`${API_BASE_URL}/trends?days=${days}`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/trends?days=${days}`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const json = await response.json();
             if (!json.success) throw new Error(json.error || 'Failed to fetch trends');
@@ -172,7 +193,7 @@ const API = {
      */
     async getOfficeTrend(officeId, days = 7) {
         try {
-            const response = await fetch(`${API_BASE_URL}/trends/${officeId}?days=${days}`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/trends/${officeId}?days=${days}`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const json = await response.json();
             if (!json.success) throw new Error(json.error || 'Failed to fetch office trend');
@@ -188,7 +209,7 @@ const API = {
      */
     async getOfficeHistory(officeId, days = 7) {
         try {
-            const response = await fetch(`${API_BASE_URL}/trends/${officeId}/history?days=${days}`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/trends/${officeId}/history?days=${days}`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const json = await response.json();
             if (!json.success) throw new Error(json.error || 'Failed to fetch office history');
@@ -210,7 +231,7 @@ const API = {
      */
     async getOverviewTrends(days = 3) {
         try {
-            const response = await fetch(`${API_BASE_URL}/history/overview-trends?days=${days}`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/history/overview-trends?days=${days}`);
             return await response.json();
         } catch (error) {
             console.error('Failed to fetch overview trends:', error);
@@ -225,7 +246,7 @@ const API = {
      */
     async getSeverityTrends(days = 3) {
         try {
-            const response = await fetch(`${API_BASE_URL}/history/severity-trends?days=${days}`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/history/severity-trends?days=${days}`);
             return await response.json();
         } catch (error) {
             console.error('Failed to fetch severity trends:', error);
@@ -241,7 +262,7 @@ const API = {
      */
     async getOfficeTrends(officeId, days = 3) {
         try {
-            const response = await fetch(`${API_BASE_URL}/history/office-trends/${officeId}?days=${days}`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/history/office-trends/${officeId}?days=${days}`);
             return await response.json();
         } catch (error) {
             console.error(`Failed to fetch office trends for office ${officeId}:`, error);
@@ -255,7 +276,7 @@ const API = {
      */
     async getHistoricalDataAvailability() {
         try {
-            const response = await fetch(`${API_BASE_URL}/history/data-availability`);
+            const response = await fetchWithTimeout(`${API_BASE_URL}/history/data-availability`);
             return await response.json();
         } catch (error) {
             console.error('Failed to check historical data availability:', error);

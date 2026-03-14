@@ -383,6 +383,66 @@ function debounce(fn, wait) {
 }
 
 /**
+ * Render the filter-warning banner into #filterWarningContainer.
+ * Shows when active filters hide at least one advisory; escalates to critical
+ * style when hidden advisories include Extreme/Severe severity.
+ * When ALL alerts are hidden, shows a distinct "All Alerts Hidden" message.
+ *
+ * @param {Array<Object>} allAdv      - Unfiltered advisory list
+ * @param {Array<Object>} filteredAdv - Currently visible advisory list after filters
+ * @param {Object}        [options]   - Optional configuration
+ * @param {Function}      [options.onShowAll] - Callback for a "Show All Alerts" button;
+ *                                              if omitted, a "Manage Filters" link is shown instead
+ * @returns {void}
+ */
+function renderFilterWarning(allAdv, filteredAdv, options = {}) {
+    const warning = OfficeAggregator.getFilterWarning(allAdv, filteredAdv);
+    const container = document.getElementById('filterWarningContainer');
+    if (!container) return;
+
+    if (!warning) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const criticalClass = warning.has_critical || warning.all_hidden ? 'filter-warning-critical' : '';
+    let messageText;
+    if (warning.all_hidden) {
+        messageText = '<strong>All Alerts Hidden</strong> — no alert types selected';
+    } else {
+        const criticalText = warning.has_critical ? ` (${warning.critical_hidden} CRITICAL)` : '';
+        messageText = `<strong>Filters Active:</strong> ${warning.hidden_count} alerts hidden${criticalText}`;
+    }
+
+    const actionBtn = options.onShowAll
+        ? `<button class="btn btn-sm btn-outline-primary" id="showAllAlertsBtn">
+               <i class="bi bi-eye"></i> Show All Alerts
+           </button>`
+        : `<a class="btn btn-sm btn-outline-primary" href="filters.html">
+               <i class="bi bi-sliders"></i> Manage Filters
+           </a>`;
+
+    container.innerHTML = `
+        <div class="col-12">
+            <div class="filter-warning-banner ${criticalClass}">
+                <div class="filter-warning-content">
+                    <div class="filter-warning-text">
+                        <span class="filter-warning-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                        <span>${messageText}</span>
+                    </div>
+                    <div class="filter-warning-actions">
+                        ${actionBtn}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    if (options.onShowAll) {
+        document.getElementById('showAllAlertsBtn').addEventListener('click', options.onShowAll);
+    }
+}
+
+/**
  * Show a non-intrusive Bootstrap Toast notification. (closes #118)
  * Creates and appends a toast container if one is not already present.
  * @param {string} message - Text to display in the toast

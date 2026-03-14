@@ -220,6 +220,9 @@ const OfficeAggregator = {
             return null;
         }
 
+        // Detect whether ALL alerts are hidden (no types selected)
+        const allHidden = allAdvisories.length > 0 && filteredAdvisories.length === 0;
+
         // Check for hidden critical alerts
         const hiddenAdvisories = allAdvisories.filter((a) => !filteredAdvisories.includes(a));
         const criticalHidden = hiddenAdvisories.filter(
@@ -229,7 +232,8 @@ const OfficeAggregator = {
         return {
             hidden_count: hiddenCount,
             critical_hidden: criticalHidden,
-            has_critical: criticalHidden > 0
+            has_critical: criticalHidden > 0,
+            all_hidden: allHidden
         };
     }
 };

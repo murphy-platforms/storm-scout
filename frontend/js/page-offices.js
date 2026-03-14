@@ -56,6 +56,11 @@ async function loadOffices() {
         // Apply filters and recalculate advisory counts
         // This will filter to only show offices WITH advisories
         const filteredData = applyFiltersToOffices(offices, advisories);
+
+        // Show filter warning if alerts are hidden
+        const filteredAdvisories = AlertFilters.filterAdvisories(advisories);
+        renderFilterWarning(advisories, filteredAdvisories);
+
         renderOffices(filteredData);
 
         // Populate state filter
