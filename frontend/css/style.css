@@ -8,8 +8,8 @@
     --ss-text: #313131;
 
     /* Semantic Severity Colors */
-    --severity-extreme: #ef4444;  /* Red - Critical */
-    --severity-severe: #f97316;   /* Orange - High Impact */
+    --severity-extreme: #ef4444;  /* Red - Extreme */
+    --severity-severe: #f97316;   /* Orange - Severe */
     --severity-moderate: #eab308; /* Yellow - Moderate (badge/bg use only) */
     --severity-minor: #22c55e;    /* Green - Low/Minor */
     /* Accessible text variant for moderate — #eab308 on white is ~1.9:1 (fails WCAG AA).
