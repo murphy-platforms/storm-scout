@@ -451,6 +451,9 @@ AlertFilters.init().then(() => {
     loadOverview();
 });
 
+// Enable keyboard activation for help-icon tooltips (WCAG 2.1.1)
+initHelpIconKeyboard();
+
 // Helper function to export current dashboard data
 window.exportCurrentData = async function (type) {
     try {
