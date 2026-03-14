@@ -1,6 +1,8 @@
 /**
  * Database Connection Module using MySQL/MariaDB
  * Manages MySQL connection pool with retry logic and proper configuration
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const mysql = require('mysql2/promise');

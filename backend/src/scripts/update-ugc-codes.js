@@ -7,6 +7,8 @@
  * Usage: node src/scripts/update-ugc-codes.js [--dry-run]
  * Options:
  *   --dry-run  Show what would be updated without making changes
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

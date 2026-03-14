@@ -1,6 +1,8 @@
 /**
  * Filter API Routes
  * Endpoints for alert type filtering and configuration
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

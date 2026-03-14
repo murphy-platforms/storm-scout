@@ -1,6 +1,8 @@
 /**
  * Offices API Routes
  * Endpoints for office data
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

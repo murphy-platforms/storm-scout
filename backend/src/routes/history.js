@@ -6,6 +6,8 @@
  * - GET /api/history/overview-trends - System-wide metrics over time
  * - GET /api/history/severity-trends - Severity counts over time
  * - GET /api/history/office-trends/:officeId - Per-office advisory counts over time
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

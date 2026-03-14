@@ -37,6 +37,8 @@
  * Usage (client):
  *   Add the header to every write request:
  *     X-Api-Key: <value of API_KEY>
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const crypto = require('crypto');

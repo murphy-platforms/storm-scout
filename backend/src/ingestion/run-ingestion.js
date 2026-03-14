@@ -2,6 +2,8 @@
  * Manual Ingestion Runner
  * Run this script to manually trigger weather data ingestion
  * Usage: npm run ingest
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { initDatabase, closeDatabase } = require('../config/database');

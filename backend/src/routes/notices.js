@@ -1,6 +1,8 @@
 /**
  * Notices API Routes
  * Endpoints for government/emergency notices
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

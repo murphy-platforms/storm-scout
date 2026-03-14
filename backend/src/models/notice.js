@@ -11,6 +11,8 @@
  * automatically — they are created and managed by administrators via the API.
  *
  * @module NoticeModel
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');

@@ -1,6 +1,8 @@
 /**
  * Storm Scout API Client
  * Handles all backend API requests
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const API_BASE_URL =

@@ -22,6 +22,8 @@
  *
  * External dependencies (globals):
  *   API_BASE_URL, html, raw, escapeHtml, renderEmptyHtml, renderErrorHtml
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const STORAGE_KEY = 'stormScout_alertFilters';

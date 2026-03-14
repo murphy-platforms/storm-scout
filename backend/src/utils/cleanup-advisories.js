@@ -8,6 +8,8 @@
  *   - event_id: Clean event ID-based duplicates only
  *   - expired: Remove expired advisories only
  *   - duplicates: Remove all types of duplicates
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { initDatabase, getDatabase, closeDatabase } = require('../config/database');

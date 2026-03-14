@@ -2,6 +2,8 @@
  * Storm Scout Version Display
  * Populates the #appVersion footer element on all pages.
  * Requires api.js to be loaded first (uses API.getVersion()).
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 document.addEventListener('DOMContentLoaded', async () => {
     const el = document.getElementById('appVersion');

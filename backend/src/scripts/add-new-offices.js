@@ -9,6 +9,8 @@
  *   3. A verification report
  *
  * Usage: node src/scripts/add-new-offices.js
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

@@ -2,6 +2,8 @@
  * Observation Model
  * Data access layer for office_observations table
  * Stores current weather conditions per office (replaced each ingestion cycle)
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');

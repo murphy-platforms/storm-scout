@@ -2,6 +2,8 @@
 /**
  * Simulates the full page-map.js data flow to surface any JS errors
  * before they reach the browser.
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 require('dotenv').config();
 const http = require('http');
