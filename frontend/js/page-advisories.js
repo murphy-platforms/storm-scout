@@ -151,10 +151,10 @@ function renderGroupedTable(sites, filteredAdvisories) {
                         </div>
                         <div class="summary-stat">
                             <span class="summary-stat-value"><span class="text-severity-extreme">${extremeCount}</span> / <span class="text-severity-severe">${severeCount}</span></span>
-                            <span class="summary-stat-label">Critical/Severe</span>
+                            <span class="summary-stat-label">Extreme/Severe</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value text-severity-moderate">${stats.elevated_offices}</span>
+                            <span class="summary-stat-value text-severity-moderate">${stats.moderate_offices}</span>
                             <span class="summary-stat-label">Moderate</span>
                         </div>
                         <div class="summary-stat">
@@ -318,10 +318,10 @@ function renderCardView(sites, originalAdvisories) {
                         </div>
                         <div class="summary-stat">
                             <span class="summary-stat-value"><span class="text-severity-extreme">${extremeCount}</span> / <span class="text-severity-severe">${severeCount}</span></span>
-                            <span class="summary-stat-label">Critical/Severe</span>
+                            <span class="summary-stat-label">Extreme/Severe</span>
                         </div>
                         <div class="summary-stat">
-                            <span class="summary-stat-value text-severity-moderate">${stats.elevated_offices}</span>
+                            <span class="summary-stat-value text-severity-moderate">${stats.moderate_offices}</span>
                             <span class="summary-stat-label">Moderate</span>
                         </div>
                         <div class="summary-stat">

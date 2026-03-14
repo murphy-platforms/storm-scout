@@ -247,28 +247,28 @@ function renderSiteGroups(groupedSites) {
     renderSiteGroup(
         'extremeSitesSection',
         'extreme',
-        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> EXTREME - High Impact',
+        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> EXTREME',
         groupedSites.extreme,
         false
     );
     renderSiteGroup(
         'severeSitesSection',
         'severe',
-        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> SEVERE - Severe Impact',
+        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> SEVERE',
         groupedSites.severe,
         false
     );
     renderSiteGroup(
         'moderateSitesSection',
         'moderate',
-        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> MODERATE - Moderate Impact',
+        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> MODERATE',
         groupedSites.moderate,
         true
     );
     renderSiteGroup(
         'minorSitesSection',
         'minor',
-        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> MINOR - Low Impact',
+        '<i class="bi bi-circle-fill me-1" aria-hidden="true"></i> MINOR',
         groupedSites.minor,
         true
     );
