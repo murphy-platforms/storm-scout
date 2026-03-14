@@ -1,194 +1,217 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <!-- Analytics: add your own tracking implementation with appropriate consent mechanism -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse all active NOAA weather advisories affecting monitored offices. Filter by impact level, advisory type, region, and state.">
-    <title>Storm Scout - Active Advisories</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css?v=1.10.1">
-    <link rel="stylesheet" href="css/tooltips.css?v=1.10.1">
-    <link rel="stylesheet" href="css/mobile.css?v=1.10.1">
-</head>
-<body>
-    <a class="skip-to-content" href="#main-content">Skip to main content</a>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-scout">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="index.html">
-                <i class="bi bi-cloud-lightning"></i> Storm Scout
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="advisories.html">Active Advisories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
-                    <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
-                    <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
-                </ul>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+        <!-- Analytics: add your own tracking implementation with appropriate consent mechanism -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Browse all active NOAA weather advisories affecting monitored offices. Filter by impact level, advisory type, region, and state."
+        />
+        <title>Storm Scout - Active Advisories</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+            integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="css/style.css?v=1.10.1" />
+        <link rel="stylesheet" href="css/tooltips.css?v=1.10.1" />
+        <link rel="stylesheet" href="css/mobile.css?v=1.10.1" />
+    </head>
+    <body>
+        <a class="skip-to-content" href="#main-content">Skip to main content</a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-scout">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" href="index.html">
+                    <i class="bi bi-cloud-lightning"></i> Storm Scout
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Overview</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="advisories.html">Active Advisories</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
+                        <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
+                        <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
+                        <li class="nav-item"><a class="nav-link" href="filters.html">Filter Settings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <div id="main-content" class="container-fluid mt-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1>Active Advisories by Office</h1>
-                <p class="text-muted">Current weather advisories affecting monitored locations</p>
+        <div id="main-content" class="container-fluid mt-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1>Active Advisories by Office</h1>
+                    <p class="text-muted">Current weather advisories affecting monitored locations</p>
+                </div>
             </div>
-        </div>
 
-        <!-- Update Banner -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <div id="update-banner-container"></div>
+            <!-- Update Banner -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div id="update-banner-container"></div>
+                </div>
             </div>
-        </div>
 
-        <!-- Filter Warning Banner -->
-        <div class="row" id="filterWarningContainer"></div>
+            <!-- Filter Warning Banner -->
+            <div class="row" id="filterWarningContainer"></div>
 
-        <!-- View and Filter Controls -->
-        <div class="row mb-3">
-            <div class="col-md-12">
-                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-                    <!-- View Toggle -->
-                    <div class="view-toggle">
-                        <button class="view-toggle-btn active" id="cardViewBtn">
-                            <i class="bi bi-grid-3x2"></i> Card View
-                        </button>
-                        <button class="view-toggle-btn" id="tableViewBtn">
-                            <i class="bi bi-table"></i> Table View
-                        </button>
-                    </div>
-                    
-                    <!-- Deduplication Toggle -->
-                    <div class="dedup-toggle-container">
-                        <input type="checkbox" class="form-check-input" id="dedupToggle" checked>
-                        <label for="dedupToggle">
-                            <i class="bi bi-layers"></i> Simplify Multi-Zone Alerts
-                        </label>
+            <!-- View and Filter Controls -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                        <!-- View Toggle -->
+                        <div class="view-toggle">
+                            <button class="view-toggle-btn active" id="cardViewBtn">
+                                <i class="bi bi-grid-3x2"></i> Card View
+                            </button>
+                            <button class="view-toggle-btn" id="tableViewBtn">
+                                <i class="bi bi-table"></i> Table View
+                            </button>
+                        </div>
+
+                        <!-- Deduplication Toggle -->
+                        <div class="dedup-toggle-container">
+                            <input type="checkbox" class="form-check-input" id="dedupToggle" checked />
+                            <label for="dedupToggle"> <i class="bi bi-layers"></i> Simplify Multi-Zone Alerts </label>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <label for="searchBox" class="visually-hidden">Search by office code or name</label>
-                <input type="text" class="form-control" id="searchBox" placeholder="Search by office code or name...">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="searchBox" class="visually-hidden">Search by office code or name</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="searchBox"
+                        placeholder="Search by office code or name..."
+                    />
+                </div>
+                <div class="col-md-3">
+                    <label for="viewFilter" class="visually-hidden">Filter view</label>
+                    <select class="form-select" id="viewFilter" title="Filter advisories">
+                        <option value="all">All Alerts</option>
+                        <option value="CUSTOM" selected>Office Default</option>
+                        <option value="OPERATIONS">Operations View</option>
+                        <option value="EXECUTIVE">Executive Summary</option>
+                        <option value="SAFETY">Safety Focus</option>
+                        <option value="FULL">Full View</option>
+                        <optgroup label="By Severity">
+                            <option value="severity:Extreme">Extreme Only</option>
+                            <option value="severity:Severe">Severe Only</option>
+                            <option value="severity:Moderate">Moderate Only</option>
+                            <option value="severity:Minor">Minor Only</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="stateFilter" class="visually-hidden">Filter by state</label>
+                    <select class="form-select" id="stateFilter">
+                        <option value="">All States</option>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-2">
-                <label for="alertTypeFilter" class="visually-hidden">Filter by alert type</label>
-                <select class="form-select" id="alertTypeFilter" title="Filter by impact level">
-                    <option value="">All Alert Types</option>
-                    <option value="CUSTOM" selected>Office Default</option>
-                    <option value="OPERATIONS">Operations View</option>
-                    <option value="EXECUTIVE">Executive Summary</option>
-                    <option value="SAFETY">Safety Focus</option>
-                    <option value="FULL">Full View</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="stateFilter" class="visually-hidden">Filter by state</label>
-                <select class="form-select" id="stateFilter">
-                    <option value="">All States</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="severityFilter" class="visually-hidden">Filter by severity</label>
-                <select class="form-select" id="severityFilter">
-                    <option value="">All Severities</option>
-                    <option value="Extreme">Extreme</option>
-                    <option value="Severe">Severe</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="Minor">Minor</option>
-                </select>
-            </div>
-        </div>
 
-        <!-- Summary Stats -->
-        <div class="row" id="summaryStatsContainer"></div>
+            <!-- Summary Stats -->
+            <div class="row" id="summaryStatsContainer"></div>
 
-        <!-- Card View -->
-        <div class="row" id="cardViewContainer">
-            <div class="col-12 text-center py-4">
-                <span class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </span>
-                <p class="mt-2 text-muted">Loading advisories...</p>
+            <!-- Card View -->
+            <div class="row" id="cardViewContainer">
+                <div class="col-12 text-center py-4">
+                    <span class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <p class="mt-2 text-muted">Loading advisories...</p>
+                </div>
             </div>
-        </div>
 
-        <!-- Table View (hidden by default) -->
-        <div class="row d-none" id="tableViewContainer">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Office Code</th>
-                                        <th>Temp</th>
-                                        <th>Office Name</th>
-                                        <th>Headline</th>
-                                        <th>City</th>
-                                        <th>State</th>
-                                        <th>Advisory Type</th>
-                                        <th>Severity</th>
-                                        <th>Action</th>
-                                        <th>Source</th>
-                                        <th>Last Updated</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="advisoriesTable">
-                                    <tr>
-                                        <td colspan="11" class="text-center">
-                                            <span class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <!-- Table View (hidden by default) -->
+            <div class="row d-none" id="tableViewContainer">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Office Code</th>
+                                            <th>Temp</th>
+                                            <th>Office Name</th>
+                                            <th>Headline</th>
+                                            <th>City</th>
+                                            <th>State</th>
+                                            <th>Advisory Type</th>
+                                            <th>Severity</th>
+                                            <th>Action</th>
+                                            <th>Source</th>
+                                            <th>Last Updated</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="advisoriesTable">
+                                        <tr>
+                                            <td colspan="11" class="text-center">
+                                                <span class="spinner-border" role="status"
+                                                    ><span class="visually-hidden">Loading...</span></span
+                                                >
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <footer class="footer-scout py-3 mt-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="text-muted mb-0">Storm Scout &copy; 2026 | Weather Advisory Dashboard | <span id="appVersion"></span> | <a href="disclaimer.html" class="text-muted">Disclaimer</a></p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="sources.html" class="text-muted text-decoration-none me-3">
-                        <i class="bi bi-info-circle"></i> About &amp; Data Sources
-                    </a>
-                    <a href="filters.html" class="text-muted text-decoration-none">
-                        <i class="bi bi-sliders"></i> Filter Settings
-                    </a>
+        <footer class="footer-scout py-3 mt-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p class="text-muted mb-0">
+                            Storm Scout &copy; 2026 | Weather Advisory Dashboard | <span id="appVersion"></span> |
+                            <a href="disclaimer.html" class="text-muted">Disclaimer</a>
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <a href="sources.html" class="text-muted text-decoration-none me-3">
+                            <i class="bi bi-info-circle"></i> About &amp; Data Sources
+                        </a>
+                        <a href="filters.html" class="text-muted text-decoration-none">
+                            <i class="bi bi-sliders"></i> Filter Settings
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="js/api.js?v=1.10.1"></script>
-    <script src="js/version.js?v=1.10.1"></script>
-    <script src="js/utils.js?v=1.10.1"></script>
-    <script src="js/alert-filters.js?v=1.10.1"></script>
-    <script src="js/update-banner.js?v=1.10.1"></script>
-    <script src="js/aggregation.js?v=1.10.1"></script>
-    <script src="js/page-advisories.js?v=1.10.1"></script>
-</body>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+        <script src="js/api.js?v=1.10.1"></script>
+        <script src="js/version.js?v=1.10.1"></script>
+        <script src="js/utils.js?v=1.10.1"></script>
+        <script src="js/alert-filters.js?v=1.10.1"></script>
+        <script src="js/update-banner.js?v=1.10.1"></script>
+        <script src="js/aggregation.js?v=1.10.1"></script>
+        <script src="js/page-advisories.js?v=1.10.1"></script>
+    </body>
 </html>
