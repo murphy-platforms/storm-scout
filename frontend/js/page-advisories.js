@@ -5,11 +5,11 @@
  *
  * Key responsibilities:
  *   - Loads all active NOAA advisories and weather observations in parallel
- *   - Applies user-configured alert-type filters (AlertFilters), state, severity,
- *     and free-text search
+ *   - Applies a single unified view filter (alert-type preset OR severity),
+ *     state filter, and free-text search
  *   - Supports two views: card view (office cards) and grouped table view
  *   - Shows a filter-warning banner when hidden alerts include critical types
- *   - Handles ?severity= URL parameter to pre-select a severity filter on load
+ *   - Handles ?severity= URL parameter to pre-select a severity option on load
  *
  * State variables:
  *   allAdvisories          - Current working set of advisories (may be pre-filtered
@@ -249,10 +249,20 @@ function renderAll() {
  */
 function filterAndRender() {
     const search = document.getElementById('searchBox').value.toLowerCase();
-    const alertTypeFilter = document.getElementById('alertTypeFilter').value;
+    const viewFilter = document.getElementById('viewFilter').value;
     const state = document.getElementById('stateFilter').value;
-    const severity = document.getElementById('severityFilter').value;
     const dedupEnabled = document.getElementById('dedupToggle').checked;
+
+    // Parse the unified viewFilter: preset names apply alert-type filtering,
+    // "severity:X" values apply severity filtering, "all" disables both.
+    let alertTypeFilter = '';
+    let severity = '';
+
+    if (viewFilter.startsWith('severity:')) {
+        severity = viewFilter.split(':')[1];
+    } else if (viewFilter !== 'all') {
+        alertTypeFilter = viewFilter;
+    }
 
     // Filter advisories
     let filtered = allAdvisories.filter((adv) => {
@@ -508,9 +518,8 @@ function switchView(view) {
  */
 function showAllAlerts() {
     document.getElementById('searchBox').value = '';
-    document.getElementById('alertTypeFilter').value = 'FULL';
+    document.getElementById('viewFilter').value = 'all';
     document.getElementById('stateFilter').value = '';
-    document.getElementById('severityFilter').value = '';
     renderAll();
 }
 
@@ -518,9 +527,8 @@ function showAllAlerts() {
 // 300ms debounce on the search box: balances immediate-feeling response
 // against avoiding a render on every keystroke during fast typing.
 document.getElementById('searchBox').addEventListener('input', debounce(renderAll, 300));
-document.getElementById('alertTypeFilter').addEventListener('change', renderAll);
+document.getElementById('viewFilter').addEventListener('change', renderAll);
 document.getElementById('stateFilter').addEventListener('change', renderAll);
-document.getElementById('severityFilter').addEventListener('change', renderAll);
 document.getElementById('dedupToggle').addEventListener('change', renderAll);
 document.getElementById('cardViewBtn').addEventListener('click', () => switchView('card'));
 document.getElementById('tableViewBtn').addEventListener('click', () => switchView('table'));
@@ -538,10 +546,8 @@ function applyURLParameters() {
     const severityParam = urlParams.get('severity');
 
     if (severityParam) {
-        // Auto-select severity dropdown with value from URL
-        const severityFilter = document.getElementById('severityFilter');
-        severityFilter.value = severityParam;
-        // Trigger filtering
+        // Auto-select severity option in the unified view filter
+        document.getElementById('viewFilter').value = `severity:${severityParam}`;
         renderAll();
     }
 }
