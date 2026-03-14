@@ -20,6 +20,8 @@
  * External dependencies (globals):
  *   API, AlertFilters, OfficeAggregator, debounce, html, raw, escapeHtml,
  *   truncate, cToF, isStale, timeAgo, formatDate, renderEmptyHtml, renderErrorHtml
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 let allOffices = [];

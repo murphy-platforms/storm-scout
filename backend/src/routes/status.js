@@ -1,6 +1,8 @@
 /**
  * Status API Routes
  * Endpoints for office status and overview dashboard
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

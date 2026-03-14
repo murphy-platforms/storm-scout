@@ -3,6 +3,8 @@
  * verify-offices.js
  * Geocodes imprecise addresses and verifies all 9 remaining offices against NOAA /points API.
  * Outputs a comparison report and writes verified data to verified-offices.json.
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const fs = require('fs');

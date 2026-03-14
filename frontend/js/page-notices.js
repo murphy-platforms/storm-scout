@@ -13,6 +13,8 @@
  *
  * External dependencies (globals):
  *   API, html, raw, escapeHtml, formatDate, renderEmptyHtml, renderErrorHtml
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 let allNotices = [];

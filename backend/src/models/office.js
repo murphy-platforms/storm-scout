@@ -1,6 +1,8 @@
 /**
  * Office Model
  * Data access layer for offices table
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');

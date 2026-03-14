@@ -48,6 +48,10 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Safe Deployment**: `deploy.sh` calls `POST /api/admin/pause-ingestion` (API-key authenticated) before rsync; waits for active cycle to finish; ERR trap resumes on failure; admin endpoints in `routes/admin.js` also available for manual ops control
 - **DB Statement Timeout**: `pool.on('acquire')` sets `SET SESSION max_statement_time` per connection (default 30s, configurable via `DB_STATEMENT_TIMEOUT_SECONDS`); prevents pool exhaustion from long-running queries
 - **Search Debounce**: `debounce(fn, 300)` applied to all free-text search inputs in `page-offices.js` and `page-advisories.js`; `debounce()` utility in `utils.js`
+
+### Why Vanilla JavaScript (No TypeScript)
+
+This project has zero human-written code — all source is AI-authored (Claude, Warp Oz). TypeScript is intentionally omitted because its primary benefits (type safety for human developers, IDE navigation, team consistency) don't apply in an AI-authored codebase. AI agents don't need type annotations to understand or produce correct code. Vanilla ES2020+ JavaScript keeps the stack simple: no build step, no transpilation, static-file frontend serving.
 - **LocalStorage Resilience**: `alert-filters.js` `loadUserPreferences()` catches `SecurityError`/`SyntaxError`; falls back to default preset and surfaces a Bootstrap Toast notification via `showToast()` in `utils.js`
 - **UpdateBanner Cleanup**: `destroy()` method clears `countdownInterval` and `pollingInterval`; wired to `beforeunload` and `visibilitychange` to stop background tab polling
 - **Empty-State Consistency**: All list pages use shared `renderEmptyHtml()` utility for zero-result states (advisories table, offices page, advisories card view)

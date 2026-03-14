@@ -1,6 +1,8 @@
 /**
  * Advisories API Routes
  * Endpoints for weather advisories
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

@@ -2,6 +2,8 @@
  * Database Seeding Script
  * Run this to populate the database with sample data for testing
  * Usage: npm run seed-db
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { initDatabase, getDatabase, seedDatabase, closeDatabase } = require('./database');

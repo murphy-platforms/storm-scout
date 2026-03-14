@@ -1,6 +1,8 @@
 /**
  * Validation Middleware
  * Handles express-validator errors and returns consistent error responses
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { validationResult } = require('express-validator');

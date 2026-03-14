@@ -1,6 +1,8 @@
 /**
  * Storm Scout Utility Functions
  * Common helper functions for the frontend
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 // =============================================================================

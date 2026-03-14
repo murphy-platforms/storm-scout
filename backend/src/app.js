@@ -1,6 +1,8 @@
 /**
  * Express Application Configuration
  * Sets up middleware, routes, and error handling
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

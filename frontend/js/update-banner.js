@@ -2,6 +2,8 @@
  * Update Banner Component
  * Displays last updated time and countdown to next update
  * Can be included on any page
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const UpdateBanner = {

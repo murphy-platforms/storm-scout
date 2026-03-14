@@ -1,6 +1,8 @@
 /**
  * In-Memory Cache Service
  * Uses node-cache for efficient caching with automatic TTL expiration
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const NodeCache = require('node-cache');

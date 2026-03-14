@@ -25,6 +25,8 @@
  *   debounce, html, raw, escapeHtml, truncate, cToF, isStale, timeAgo,
  *   formatDate, getSeverityBadge, getActionBadge, renderEmptyHtml,
  *   renderErrorHtml, renderFilterWarning  — from utils.js / shared helpers
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 let allAdvisories = [];

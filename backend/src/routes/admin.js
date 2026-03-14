@@ -2,6 +2,8 @@
  * Admin API Routes
  * Protected endpoints for operational control (pause/resume ingestion).
  * All routes require a valid API key via requireApiKey middleware.
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

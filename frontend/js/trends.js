@@ -1,6 +1,8 @@
 /**
  * Trends Component for Phase 3
  * Displays historical trends and analysis
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const Trends = {

@@ -1,6 +1,8 @@
 /**
  * Observations API Routes
  * Endpoints for current weather observation data
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

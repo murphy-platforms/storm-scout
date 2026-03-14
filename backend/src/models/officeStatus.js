@@ -1,6 +1,8 @@
 /**
  * Office Status Model
  * Data access layer for office_status table
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');

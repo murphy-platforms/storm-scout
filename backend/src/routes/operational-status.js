@@ -1,6 +1,8 @@
 /**
  * Operational Status API Routes
  * Endpoints to manually manage office operational status
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const express = require('express');

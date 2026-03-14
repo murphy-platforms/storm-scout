@@ -1,6 +1,8 @@
 /**
  * Rate Limiting Middleware
  * Protects API from abuse and ensures fair usage
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const rateLimit = require('express-rate-limit');

@@ -4,6 +4,8 @@
  *
  * DEPRECATED: This script is now a wrapper around the unified cleanup module.
  * Use `node src/utils/cleanup-advisories.js vtec` instead.
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

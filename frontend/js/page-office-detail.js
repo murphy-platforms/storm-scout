@@ -20,6 +20,8 @@
  *   timeAgo, formatDate, getSeverityBadge, getActionBadge, getActionBadgeWithTime,
  *   renderEmptyHtml, renderErrorHtml — from utils.js / shared helpers
  *   bootstrap (for modal instantiation)
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 let officeData = null;

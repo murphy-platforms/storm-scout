@@ -2,6 +2,8 @@
  * NOAA Weather Data Ingestor
  * Fetches weather alerts from NOAA and updates database
  * Features: transactions, UGC-level geo-matching, deduplication
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const fs = require('fs');

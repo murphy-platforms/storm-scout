@@ -2,6 +2,8 @@
 /**
  * Backfill VTEC codes for existing alerts
  * Extracts VTEC from raw_payload and updates the vtec_code column
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

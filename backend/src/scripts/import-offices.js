@@ -11,6 +11,8 @@
  *
  * Output: backend/src/data/offices.json
  * Format consumed by database.js -> loadOffices()
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 'use strict';

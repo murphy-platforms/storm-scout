@@ -1,6 +1,8 @@
 /**
  * API Client for external weather/emergency data sources
  * Handles HTTP requests with rate limiting, retry logic, and proper error handling
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const axios = require('axios');

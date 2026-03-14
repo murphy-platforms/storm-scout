@@ -2,6 +2,8 @@
 /**
  * Backfill VTEC Event IDs and Actions
  * Extracts event IDs and action codes from existing vtec_code values
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 require('dotenv').config();

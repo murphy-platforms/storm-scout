@@ -3,6 +3,8 @@
  * Captures system-wide and per-site advisory data for trend analysis
  * Runs every 6 hours via cron scheduler
  * Retains 3 days of data (12 snapshots)
+ *
+ * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
 const { getDatabase } = require('../config/database');
