@@ -51,7 +51,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 
 ### Why Vanilla JavaScript (No TypeScript)
 
-This project has zero human-written code — all source is AI-authored (Claude, Warp Oz). TypeScript is intentionally omitted because its primary benefits (type safety for human developers, IDE navigation, team consistency) don't apply in an AI-authored codebase. AI agents don't need type annotations to understand or produce correct code. Vanilla ES2020+ JavaScript keeps the stack simple: no build step, no transpilation, static-file frontend serving.
+All source code in this project is AI-generated (Claude, Warp) under human direction. TypeScript is intentionally omitted because its primary benefits (type safety for human developers, IDE navigation, team consistency) don't apply in an AI-authored codebase. AI agents don't need type annotations to understand or produce correct code. Vanilla ES2020+ JavaScript keeps the stack simple: no build step, no transpilation, static-file frontend serving.
 - **LocalStorage Resilience**: `alert-filters.js` `loadUserPreferences()` catches `SecurityError`/`SyntaxError`; falls back to default preset and surfaces a Bootstrap Toast notification via `showToast()` in `utils.js`
 - **UpdateBanner Cleanup**: `destroy()` method clears `countdownInterval` and `pollingInterval`; wired to `beforeunload` and `visibilitychange` to stop background tab polling
 - **Empty-State Consistency**: All list pages use shared `renderEmptyHtml()` utility for zero-result states (advisories table, offices page, advisories card view)
@@ -153,10 +153,7 @@ storm-scout/
 │   │   │   ├── cleanup-duplicates.js
 │   │   │   ├── backfill-vtec-event-id.js
 │   │   │   ├── fetch-ugc-codes.js        # Fetch UGC codes from NOAA for all offices
-│   │   │   ├── update-ugc-codes.js       # Update database with fetched UGC codes
-│   │   │   ├── generate-ugc-sql.js       # Generate SQL for UGC updates
 │   │   │   ├── import-offices.js      # Convert CSV to offices.json (run once before init-db)
-│   │   │   ├── fetch-observation-stations.js  # Map offices to nearest NWS observation stations
 │   │   │   └── smoke-test.sh             # Pre-deploy validation (11 checks incl. XSS audit)
 │   │   ├── tests/
 │   │   │   └── fixtures/
@@ -304,7 +301,7 @@ Each office is mapped to its nearest NWS observation station via `/points/{lat},
 - Some stations are non-ICAO mesonet/cooperative stations (e.g., E3225, WTHC1) — these report fewer fields (often missing wind, text_description)
 - NWS does NOT include `precipitationLast6Hours` in latest observation responses — this field was removed from the schema
 - Staleness detection logs a warning when `observed_at` > 2 hours old (some stations report infrequently)
-- If a station returns 404, remap to the next-nearest station via `fetch-observation-stations.js --force` or manual DB update
+- If a station returns 404, remap to the next-nearest station via manual DB update
 - Station remapping history: KSVR→KSLC (Salt Lake City), KDKB→KARR (Naperville IL) — originals decommissioned
 
 ### Multi-Zone Alert Coverage
@@ -357,10 +354,6 @@ node src/utils/cleanup-advisories.js expired    # Remove expired only
 # Office Import (one-time, run before init-db)
 node src/scripts/import-offices.js /path/to/locations.csv   # Convert CSV to offices.json
 
-# Weather Observation Stations (one-time setup, or re-run with --force)
-node src/scripts/fetch-observation-stations.js --dry-run        # Preview station mappings
-node src/scripts/fetch-observation-stations.js                  # Apply: maps offices to nearest NWS stations
-node src/scripts/fetch-observation-stations.js --force          # Re-map all (overwrite existing)
 ```
 
 ### Office Import Workflow
@@ -442,7 +435,7 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - ✅ Database CHECK constraint on severity
 - ✅ Composite index for status+severity queries
 - ✅ In-memory caching with node-cache (status/overview, offices, advisories/active)
-- ✅ API rate limiting with express-rate-limit (500 req/15 min, 20 writes/15 min)
+- ✅ API rate limiting with express-rate-limit (30,000 req/60 min, 20 writes/15 min)
 - ✅ Input validation with express-validator (all endpoints)
 - ✅ Storm Scout Severity Alignment (uses internal categories instead of NOAA raw severity)
 - ✅ 4-tier severity grouping (Offices Requiring Attention matches Weather Impact colors)
