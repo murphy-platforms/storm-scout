@@ -70,6 +70,11 @@ async function loadOfficeDetail() {
             return;
         }
 
+        // Show filter warning if user preferences hide some of this office's advisories
+        await AlertFilters.init();
+        const filteredOfficeAdvisories = AlertFilters.filterAdvisories(officeAdvisories);
+        renderFilterWarning(officeAdvisories, filteredOfficeAdvisories);
+
         // Aggregate with deduplication
         const aggregated = OfficeAggregator.aggregateByOffice(officeAdvisories, { deduplicateZones: true });
         const officeAggData = aggregated[0]; // Should only be one office

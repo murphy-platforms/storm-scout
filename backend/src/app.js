@@ -13,6 +13,7 @@ const config = require('./config/config');
 const { getDatabase } = require('./config/database');
 const { apiLimiter, writeLimiter, authLimiter } = require('./middleware/rateLimiter');
 const { requireApiKey } = require('./middleware/apiKey');
+const { metricsMiddleware, mountMetricsEndpoint } = require('./middleware/metrics');
 
 // Import routes
 const sitesRouter = require('./routes/offices');
@@ -107,6 +108,9 @@ app.use(compression()); // Gzip API responses and static files (~85% size reduct
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
+// Prometheus metrics — request counting and duration histogram
+app.use(metricsMiddleware);
+
 // Rate limiting - apply to all /api routes
 app.use('/api', apiLimiter);
 
@@ -170,6 +174,9 @@ if (config.env === 'development' || jsonLogging) {
 
 // Liveness probe — always returns 200 with no I/O, for supervisor keep-alive checks. (closes #104)
 app.get('/ping', (req, res) => res.json({ status: 'ok' }));
+
+// Prometheus metrics endpoint — unauthenticated, for Prometheus scraping
+mountMetricsEndpoint(app);
 
 // Public health check — returns only status for load balancers and supervisors.
 // Detailed diagnostics (memory, circuit breaker, ingestion) are at /api/admin/health behind API key auth.

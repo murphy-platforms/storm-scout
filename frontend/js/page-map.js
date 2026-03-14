@@ -83,6 +83,9 @@ async function loadMapData() {
         const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
         debugStep('filteredAdvisories: ' + filteredAdvisories.length);
 
+        // Show filter warning if alerts are hidden
+        renderFilterWarning(allAdvisories, filteredAdvisories);
+
         debugStep('Aggregating by office...');
         const aggregated = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
         debugStep('aggregated offices: ' + aggregated.length);

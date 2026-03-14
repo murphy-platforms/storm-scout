@@ -8,6 +8,7 @@ const config = require('../config/config');
 const { ingestNOAAData } = require('./noaa-ingestor');
 const { alertIngestionFailure, alertIngestionRecovery } = require('../utils/alerting');
 const { captureSnapshot } = require('../scripts/capture-historical-snapshot');
+const { ingestionCycleDuration, ingestionAdvisoriesTotal } = require('../middleware/metrics');
 
 let scheduledTask = null;
 let snapshotTask = null;
@@ -96,12 +97,17 @@ function startScheduler() {
             return;
         }
         isIngesting = true;
+        const stopTimer = ingestionCycleDuration.startTimer();
         try {
-            await ingestNOAAData();
+            const result = await ingestNOAAData();
+            if (result && result.advisoriesCreated) {
+                ingestionAdvisoriesTotal.inc(result.advisoriesCreated);
+            }
             await handleIngestionResult(null);
         } catch (error) {
             await handleIngestionResult(error);
         } finally {
+            stopTimer();
             isIngesting = false;
         }
     });
@@ -150,36 +156,31 @@ function startScheduler() {
         }
     });
 
-    // Run initial ingestion immediately
+    // Run initial ingestion immediately, then trigger the initial snapshot
+    // once ingestion completes. Chaining via .finally() guarantees the snapshot
+    // never fires mid-ingestion (closes the race condition from the old
+    // setTimeout(5000) approach).
     console.log('Running initial ingestion...');
     isIngesting = true;
     ingestNOAAData()
         .then(() => handleIngestionResult(null))
         .catch((error) => handleIngestionResult(error))
-        .finally(() => {
+        .finally(async () => {
             isIngesting = false;
-        });
 
-    // Run initial snapshot once ingestion settles (waits for idle rather than
-    // relying on a fixed 5-second delay, which could still race on slow systems)
-    console.log('Scheduling initial historical snapshot after ingestion completes...');
-    setTimeout(async () => {
-        if (isSnapshoting) return;
-        isSnapshoting = true;
-        try {
-            if (isIngesting) {
-                console.log('[Scheduler] Initial snapshot waiting for ingestion to complete...');
-                await waitForIngestionIdle();
+            // Capture initial historical snapshot now that ingestion is done
+            if (isSnapshoting) return;
+            isSnapshoting = true;
+            try {
+                console.log('[Scheduler] Running initial historical snapshot...');
+                const result = await captureSnapshot();
+                console.log(`[Scheduler] Initial snapshot completed: ${result.sites_captured} sites captured`);
+            } catch (error) {
+                console.error('[Scheduler] Initial snapshot failed:', error.message);
+            } finally {
+                isSnapshoting = false;
             }
-            console.log('[Scheduler] Running initial historical snapshot...');
-            const result = await captureSnapshot();
-            console.log(`[Scheduler] Initial snapshot completed: ${result.sites_captured} sites captured`);
-        } catch (error) {
-            console.error('[Scheduler] Initial snapshot failed:', error.message);
-        } finally {
-            isSnapshoting = false;
-        }
-    }, 5000);
+        });
 }
 
 /**

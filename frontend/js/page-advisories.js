@@ -265,8 +265,8 @@ function filterAndRender() {
         return true;
     });
 
-    // Show filter warning
-    renderFilterWarning(allAdvisoriesUnfiltered, filtered);
+    // Show filter warning (shared renderFilterWarning from utils.js)
+    renderFilterWarning(allAdvisoriesUnfiltered, filtered, { onShowAll: showAllAlerts });
 
     // Aggregate by office
     const aggregatedSites = OfficeAggregator.aggregateByOffice(filtered, { deduplicateZones: dedupEnabled });
@@ -277,53 +277,6 @@ function filterAndRender() {
     } else {
         renderGroupedTable(aggregatedSites, filtered);
     }
-}
-
-/**
- * Show or clear the filter-warning banner.
- * The banner is shown when the user's active filter settings hide at least
- * one advisory; it escalates to a critical style when any hidden advisory
- * has Extreme or Severe severity so operators cannot inadvertently miss
- * high-impact events.
- *
- * @param {Array<Object>} allAdv      - Unfiltered advisory list
- * @param {Array<Object>} filteredAdv - Currently visible advisory list after filters
- * @returns {void}
- */
-function renderFilterWarning(allAdv, filteredAdv) {
-    const warning = OfficeAggregator.getFilterWarning(allAdv, filteredAdv);
-    const container = document.getElementById('filterWarningContainer');
-
-    if (!warning) {
-        container.innerHTML = '';
-        return;
-    }
-
-    const criticalClass = warning.has_critical ? 'filter-warning-critical' : '';
-    const criticalText = warning.has_critical ? ` (${warning.critical_hidden} CRITICAL)` : '';
-
-    container.innerHTML = `
-                <div class="col-12">
-                    <div class="filter-warning-banner ${criticalClass}">
-                        <div class="filter-warning-content">
-                            <div class="filter-warning-text">
-                                <span class="filter-warning-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
-                                <span>
-                                    <strong>Filters Active:</strong> ${warning.hidden_count} alerts hidden${criticalText}
-                                </span>
-                            </div>
-                            <div class="filter-warning-actions">
-                                <button class="btn btn-sm btn-outline-primary" id="showAllAlertsBtn">
-                                    <i class="bi bi-eye"></i> Show All Alerts
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-    // Attach event listener after inserting HTML
-    document.getElementById('showAllAlertsBtn').addEventListener('click', showAllAlerts);
 }
 
 /**

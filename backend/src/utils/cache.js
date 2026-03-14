@@ -4,6 +4,7 @@
  */
 
 const NodeCache = require('node-cache');
+const { cacheHitsTotal, cacheMissesTotal } = require('../middleware/metrics');
 
 const isDevMode = process.env.NODE_ENV !== 'production';
 
@@ -46,9 +47,11 @@ const TTL = {
 function get(key) {
     const value = cache.get(key);
     if (value !== undefined) {
+        cacheHitsTotal.inc();
         if (isDevMode) console.log(`[CACHE] HIT: ${key}`);
         return value;
     }
+    cacheMissesTotal.inc();
     if (isDevMode) console.log(`[CACHE] MISS: ${key}`);
     return undefined;
 }
