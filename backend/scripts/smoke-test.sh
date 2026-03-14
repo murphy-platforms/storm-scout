@@ -103,7 +103,7 @@ echo ""
 # Validate data
 echo "Validating data..."
 OFFICES_RESPONSE=$(curl -s "$BASE_URL/api/offices")
-OFFICE_COUNT=$(echo "$OFFICES_RESPONSE" | grep -o '"site_code"' | wc -l | xargs)
+OFFICE_COUNT=$(echo "$OFFICES_RESPONSE" | grep -o '"office_code"' | wc -l | xargs)
 
 if [ "$OFFICE_COUNT" -ge 300 ]; then
   pass "Offices loaded: $OFFICE_COUNT (expected ≥300)"
