@@ -21,6 +21,42 @@ Organizations that manage physical locations — retail chains, logistics networ
 | ![Office Detail](docs/screenshots/office-detail.jpg) | ![NOAA Alert Detail](docs/screenshots/NOAA-alert-detail.jpg) |
 | *Office Detail* | *NOAA Alert Detail* |
 
+## How It Works
+
+```
+ NOAA Weather API          NWS Observation API
+       │                          │
+       ▼                          ▼
+┌──────────────────────────────────────────┐
+│         Node.js / Express Backend        │
+│                                          │
+│  noaa-ingestor.js    observation-        │
+│  (15-min cron,       ingestor.js         │
+│   UGC matching,      (station data)      │
+│   VTEC dedup)                            │
+│                                          │
+│  REST API (cached, rate-limited, gzip)   │
+└──────────────┬───────────────────────────┘
+               │
+               ▼
+        ┌─────────────┐
+        │  MariaDB /   │
+        │  MySQL       │
+        └─────────────┘
+               │
+               ▼
+┌──────────────────────────────────────────┐
+│     Bootstrap 5.3 Frontend (MPA)         │
+│                                          │
+│  Overview │ Advisories │ Offices │ Map   │
+│  Notices  │ Filters    │ Sources         │
+│                                          │
+│  Leaflet maps · CSV/PDF export           │
+└──────────────────────────────────────────┘
+```
+
+Data flows from NOAA every 15 minutes through the ingestor, which matches alerts to offices via UGC zone/county codes, deduplicates using VTEC event tracking, and stores normalized advisories in MySQL/MariaDB. The Express API serves cached, compressed JSON to a multi-page Bootstrap frontend.
+
 ## What It Looks Like in Action
 
 **Scenario:** A hurricane watch is issued for the Gulf Coast. Your organization has 40 offices in the affected region.

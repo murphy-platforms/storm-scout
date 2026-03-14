@@ -25,6 +25,7 @@ Thumbs.db
 
 # IDE
 .vscode/
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo

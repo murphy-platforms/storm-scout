@@ -170,6 +170,27 @@ Daily automated MariaDB/MySQL dumps via `deployment/backup.sh`, compressed with 
 
 ---
 
+## Production Readiness Checklist
+
+What enterprise deployment would require beyond the current POC:
+
+- [x] Automated database backups with restore testing (`deployment/backup.sh`, `verify-backup.sh`)
+- [x] E2E test coverage for critical user flows (`e2e/` Playwright suite)
+- [x] Audit logging for administrative actions (`audit_log` table)
+- [x] Rate limiting tuned for production traffic (`express-rate-limit`)
+- [x] Prometheus metrics endpoint (`/metrics`)
+- [x] API key authentication for write endpoints
+- [ ] External monitoring and alerting (Prometheus + Alertmanager, PagerDuty, or Uptime Robot)
+- [ ] User authentication and authorization (SSO integration, RBAC for admin vs. read-only)
+- [ ] Multi-tenant support for multiple organizations
+- [ ] Incident response runbooks (escalation paths, rollback procedures)
+- [ ] CDN for static asset delivery (CloudFront, Cloudflare)
+- [ ] Horizontal scaling plan (PM2 cluster mode or container orchestration)
+- [ ] Secrets management (Vault, AWS Secrets Manager — replace `.env` files)
+- [ ] Log aggregation (ELK, Loki, or CloudWatch for centralized log search)
+
+---
+
 ## Key File Index
 
 | File | Purpose |
