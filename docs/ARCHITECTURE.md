@@ -9,21 +9,7 @@
 
 Storm Scout is a Node.js + Express API backend paired with a Bootstrap 5.3 static frontend. It ingests NOAA weather advisories every 15 minutes, matches them to office locations by UGC zone/county codes, and surfaces operational impact through a browser-based dashboard.
 
-```
-NOAA Weather API
-      │
-      ▼
- noaa-ingestor.js  (15-min cron, UGC matching, dedup, VTEC parsing)
-      │
-      ▼
-MySQL/MariaDB  ◄──── advisory_history snapshots (6-hr cron)
-      │
-      ▼
-Express REST API  (cached, rate-limited, gzip-compressed)
-      │
-      ▼
-Bootstrap 5.3 Frontend  (client-side filter/sort/aggregate over full dataset)
-```
+![Storm Scout system architecture](storm-scout-architecture.svg)
 
 ---
 
