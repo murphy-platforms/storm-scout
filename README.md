@@ -420,7 +420,7 @@ See [`docs/DEVELOPMENT-PROCESS.md`](docs/DEVELOPMENT-PROCESS.md) for the full me
 
 ## License
 
-MIT
+MIT &mdash; see [LICENSE](LICENSE) for the full text and [NOTICE.md](NOTICE.md) for third-party attributions.
 
 ## Privacy & Analytics
 

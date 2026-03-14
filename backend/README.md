@@ -278,4 +278,4 @@ ssh user@server "journalctl --user -u storm-scout-dev -f"
 
 ## License
 
-MIT
+MIT &mdash; see [LICENSE](../LICENSE) for the full text and [NOTICE.md](../NOTICE.md) for third-party attributions.
