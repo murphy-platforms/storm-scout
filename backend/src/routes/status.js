@@ -52,7 +52,7 @@ router.get('/overview', async (req, res) => {
         const recentlyUpdated = await OfficeStatusModel.getRecentlyUpdated(10);
 
         // Get last ingestion time
-        const lastIngestion = getLastIngestionTime();
+        const lastIngestion = await getLastIngestionTime();
         const updateIntervalMinutes = config.ingestion.intervalMinutes || 15;
 
         const response = {
