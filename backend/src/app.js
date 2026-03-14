@@ -74,7 +74,7 @@ app.use(
                     "'self'",
                     'data:', // For inline images and icons
                     'www.googletagmanager.com',
-                    'tile.openstreetmap.org' // Map tiles for Leaflet
+                    '*.tile.openstreetmap.org' // Map tiles for Leaflet (wildcard covers CDN subdomains)
                 ],
                 connectSrc: [
                     "'self'",
