@@ -79,9 +79,18 @@ npm test -- --coverage
 
 # Watch mode during development
 npm run test:watch
+
+# Pre-deploy smoke test (starts its own server, 11 checks)
+bash scripts/smoke-test.sh
+
+# UI verification (requires running server, 22 checks)
+npm start &
+bash scripts/ui-verify.sh
 ```
 
 Tests are in `backend/tests/`. Unit tests are in `tests/unit/`, integration tests in `tests/integration/`.
+
+The **UI verification script** (`scripts/ui-verify.sh`) validates all 9 frontend pages are served correctly, all 8 API dependencies return valid responses, and key data integrity constraints hold (300 offices loaded, active advisories present, severity values, filter impact levels, specific office lookup). Run it against a live server — it does not start its own.
 
 The CI pipeline (`npm audit --audit-level=high` + `npm test`) runs on every push and PR via GitHub Actions.
 

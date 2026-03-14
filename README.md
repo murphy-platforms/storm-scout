@@ -111,11 +111,13 @@ Organizations that manage physical locations — retail chains, logistics networ
 - **Safe Deploys** - `deploy.sh` calls `POST /api/admin/pause-ingestion` (API key authenticated) before rsync and waits for any active cycle to finish; ERR trap calls resume on deploy failure; ingestion auto-resumes on app restart
 - **Admin API** - `POST /api/admin/pause-ingestion`, `POST /api/admin/resume-ingestion`, `GET /api/admin/status` endpoints (all behind API key); used by deploy script and available for manual operational control
 - **Pre-Deploy Smoke Test** - 11 automated checks including API validation and XSS audit; aborts deploy on any failure
+- **UI Verification Test** - 22 automated checks validating all 9 frontend pages are served with correct DOM elements, all 8 API dependencies return valid data, and data integrity constraints hold (300 offices, active advisories, severity values, filter levels)
 - **Deterministic Builds** - `npm ci` (not `npm install`) in all deploy paths ensures package-lock.json is honored
 - **Automated Migrations** - `npm run migrate` runs idempotent migrations before app restart on every deploy; `APPLY_MIGRATIONS=false` escape hatch available
 - **CI Pipeline** - GitHub Actions runs `npm ci`, `npm audit --audit-level=high`, and `npm test` on every push and pull request
 - **Liveness vs Readiness** - `/ping` (no I/O, always 200) for supervisor keep-alive; `/health` (may 503) for readiness monitoring
 - **Test Suite** - Jest unit and integration tests for advisory model dedup paths, API key middleware, and advisories route; `supertest` for HTTP-level assertions
+- **UI Verification** - curl-based page and API dependency validation across all 9 frontend pages (22 checks)
 
 ### Global Architecture (Planned)
 - **Multi-Country Design** - Adapter pattern for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico)
@@ -335,6 +337,9 @@ Users can customize their filter preferences at **/filters.html**, and changes a
 ```bash
 # Pre-deploy smoke test (11 checks incl. XSS audit)
 cd backend && bash scripts/smoke-test.sh
+
+# UI verification (22 checks — pages, API deps, data integrity; requires running server)
+cd backend && bash scripts/ui-verify.sh
 
 # Deploy via rsync to target server
 DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
