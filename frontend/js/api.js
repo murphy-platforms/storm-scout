@@ -5,10 +5,10 @@
  * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
-const API_BASE_URL =
-    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? `${window.location.protocol}//${window.location.host}/api`
-        : '/api';
+// Use a relative path so API calls work at any deployment subpath
+// (e.g. /stormscout/api/... or /api/... — the browser resolves relative
+// to the current page URL automatically).
+const API_BASE_URL = 'api';
 
 const DEFAULT_TIMEOUT_MS = 30000;
 
