@@ -1,25 +1,26 @@
 [Unit]
 Description=Storm Scout DEV/QC Server
 Documentation=https://github.com/murphy-platforms/storm-scout-poc
-After=network.target docker.service
-Requires=docker.service
+After=network.target
 
 [Service]
 Type=simple
-User=your-ssh-user
-WorkingDirectory=/path/to/storm-scout/backend
+WorkingDirectory=/srv/projects/storm-scout-poc/backend
+EnvironmentFile=/srv/projects/storm-scout-poc/backend/.env
 ExecStart=/usr/bin/node src/server.js
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=storm-scout-dev
-
-# Environment
 Environment=NODE_ENV=development
-
-# Limits
 LimitNOFILE=65536
 
+# Install as a user service:
+#   cp storm-scout-dev.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now storm-scout-dev
+#   loginctl enable-linger $USER   # persist across logouts
+
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
