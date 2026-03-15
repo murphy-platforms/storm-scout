@@ -57,6 +57,15 @@
             </div>
         </div>
 
+        <!-- Filter Indicator -->
+        <div class="row mb-2 d-none" id="filterIndicatorRow">
+            <div class="col-12">
+                <a href="filters.html" class="badge badge-filter-active text-decoration-none" title="Click to manage filters">
+                    <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
+                </a>
+            </div>
+        </div>
+
         <!-- Map Controls -->
         <div class="row mb-3">
             <div class="col-md-8">
@@ -73,6 +82,9 @@
                                 
                                 <input type="checkbox" class="btn-check" id="filterModerate" checked>
                                 <label class="btn btn-outline-secondary" for="filterModerate">Moderate</label>
+
+                                <input type="checkbox" class="btn-check" id="filterMinor" checked>
+                                <label class="btn btn-outline-success" for="filterMinor">Minor</label>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -159,10 +171,10 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center static-card">
+                <div class="card text-center map-stat-card" id="toggleMinor" data-severity="Minor" title="Click to toggle Minor filter">
                     <div class="card-body">
-                        <h5 id="totalOfficesCount">0</h5>
-                        <small class="text-muted">Total Impacted</small>
+                        <h5 class="text-severity-minor" id="minorCount">0</h5>
+                        <small class="text-muted">Minor Offices</small>
                     </div>
                 </div>
             </div>

@@ -53,6 +53,15 @@
             </div>
         </div>
 
+        <!-- Filter Indicator -->
+        <div class="row mb-2 d-none" id="filterIndicatorRow">
+            <div class="col-12">
+                <a href="filters.html" class="badge badge-filter-active text-decoration-none" title="Click to manage filters">
+                    <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
+                </a>
+            </div>
+        </div>
+
         <!-- Active Filter Banner -->
         <div class="row mb-3 d-none" id="activeFilterBanner">
             <div class="col-12">
@@ -79,7 +88,7 @@
             </div>
             <div class="col-md-2">
                 <select class="form-select" id="weatherImpactFilter">
-                    <option value="">All Weather Impacts</option>
+                    <option value="">All Severities</option>
                     <option value="red">Extreme</option>
                     <option value="orange">Severe</option>
                     <option value="yellow">Moderate</option>
