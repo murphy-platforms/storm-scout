@@ -296,7 +296,7 @@ function renderAlertTypes() {
             const safeTypeId = escapeHtml(type.replace(/\s+/g, '_'));
 
             htmlContent += html`
-                <div class="col-md-6 col-lg-4 mb-3">
+                <div class="col-sm-6 col-lg-4 mb-3">
                     <div class="card alert-type-card ${raw(!isEnabled ? 'disabled' : '')}">
                         <div class="card-body">
                             <div class="form-check form-switch">
