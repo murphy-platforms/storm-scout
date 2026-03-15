@@ -332,8 +332,17 @@ function applyURLParameters() {
     filterOffices();
 }
 
+function updateFilterIndicator() {
+    const row = document.getElementById('filterIndicatorRow');
+    if (!row || !AlertFilters.alertTypesByLevel) return;
+    document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
+    document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
+    row.classList.toggle('d-none', !AlertFilters.hasActiveFilters());
+}
+
 // Initialize filters then load offices
 AlertFilters.init().then(async () => {
+    updateFilterIndicator();
     await loadOffices();
     // Apply URL parameters after offices are loaded
     applyURLParameters();

@@ -67,6 +67,15 @@
                 </div>
             </div>
 
+            <!-- Filter Indicator -->
+            <div class="row mb-2 d-none" id="filterIndicatorRow">
+                <div class="col-12">
+                    <a href="filters.html" class="badge badge-filter-active text-decoration-none" title="Click to manage filters">
+                        <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
+                    </a>
+                </div>
+            </div>
+
             <!-- Filter Warning Banner -->
             <div class="row" id="filterWarningContainer"></div>
 
@@ -106,8 +115,8 @@
                 <div class="col-md-3">
                     <label for="viewFilter" class="visually-hidden">Filter view</label>
                     <select class="form-select" id="viewFilter" title="Filter advisories">
-                        <option value="all">All Alerts</option>
-                        <option value="CUSTOM" selected>Office Default</option>
+                        <option value="all" selected>All Alerts</option>
+                        <option value="CUSTOM">Office Default</option>
                         <option value="OPERATIONS">Operations View</option>
                         <option value="EXECUTIVE">Executive Summary</option>
                         <option value="SAFETY">Safety Focus</option>
