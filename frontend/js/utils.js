@@ -527,3 +527,27 @@ function formatLocalTime(isoString) {
         hour12: true
     });
 }
+
+// Export for Node.js / Jest testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        escapeHtml,
+        raw,
+        html,
+        getSeverityBadge,
+        getStatusBadge,
+        VTEC_ACTION_CONFIG,
+        getActionBadge,
+        getActionBadgeWithTime,
+        formatDate,
+        cToF,
+        timeAgo,
+        isStale,
+        renderTemperatureHTML,
+        truncate,
+        debounce,
+        renderEmptyHtml,
+        renderErrorHtml,
+        formatLocalTime
+    };
+}

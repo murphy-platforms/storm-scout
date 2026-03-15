@@ -650,8 +650,15 @@ const StormScoutExport = {
 };
 
 // Auto-apply URL filters on page load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => StormScoutExport.applyURLFilters());
-} else {
-    StormScoutExport.applyURLFilters();
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => StormScoutExport.applyURLFilters());
+    } else {
+        StormScoutExport.applyURLFilters();
+    }
+}
+
+// Export for Node.js / Jest testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = StormScoutExport;
 }
