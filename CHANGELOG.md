@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **#320 BASE_PATH prefix-stripping middleware** — `app.js` middleware strips `BASE_PATH` prefix from `req.url` before route matching, enabling subpath deployments (e.g. `/stormscout/api/offices` → `/api/offices`); required for LiteSpeed Passenger which forwards full URL paths without stripping `PassengerBaseURI`; no-op when `BASE_PATH` is unset (root deployments, local dev)
+
+### Fixed
+- **deploy.sh** — `npm ci --production` replaced with `npm ci --omit=dev --ignore-scripts` to prevent `prepare` lifecycle script from failing when `husky` (dev dependency) is not installed
+
 ### Planned
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards

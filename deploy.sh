@@ -202,7 +202,7 @@ post_deploy() {
         # Install production dependencies (npm ci uses package-lock.json for
         # deterministic installs — no silent version drift).
         echo "Installing npm packages..."
-        npm ci --production
+        npm ci --omit=dev --ignore-scripts
 
         # Run pending database migrations before app restart.
         if [ "$apply_migrations" != "false" ]; then
