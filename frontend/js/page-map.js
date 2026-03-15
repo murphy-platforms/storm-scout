@@ -65,6 +65,7 @@ async function loadMapData() {
         const filtersLoaded = await AlertFilters.init();
         debugStep('AlertFilters.init() returned: ' + filtersLoaded);
         if (!filtersLoaded) throw new Error('Alert filter initialization failed');
+        updateFilterIndicator();
 
         debugStep('Fetching advisories, offices, observations...');
         const [allAdvisories, allOffices, obsData] = await Promise.all([
@@ -211,13 +212,14 @@ function updateStats(offices) {
     const counts = {
         extreme: offices.filter((o) => o.highest_severity === 'Extreme').length,
         severe: offices.filter((o) => o.highest_severity === 'Severe').length,
-        moderate: offices.filter((o) => o.highest_severity === 'Moderate').length
+        moderate: offices.filter((o) => o.highest_severity === 'Moderate').length,
+        minor: offices.filter((o) => o.highest_severity === 'Minor').length
     };
 
     document.getElementById('extremeCount').textContent = counts.extreme;
     document.getElementById('severeCount').textContent = counts.severe;
     document.getElementById('moderateCount').textContent = counts.moderate;
-    document.getElementById('totalOfficesCount').textContent = offices.length;
+    document.getElementById('minorCount').textContent = counts.minor;
 }
 
 function updateVisibleCount() {
@@ -237,6 +239,7 @@ function resetMap() {
     document.getElementById('filterExtreme').checked = true;
     document.getElementById('filterSevere').checked = true;
     document.getElementById('filterModerate').checked = true;
+    document.getElementById('filterMinor').checked = true;
     applyFilters();
 }
 
@@ -244,13 +247,14 @@ function applyFilters() {
     const showExtreme = document.getElementById('filterExtreme').checked;
     const showSevere = document.getElementById('filterSevere').checked;
     const showModerate = document.getElementById('filterModerate').checked;
+    const showMinor = document.getElementById('filterMinor').checked;
 
     markers.forEach(({ marker, severity }) => {
         const show =
             (severity === 'Extreme' && showExtreme) ||
             (severity === 'Severe' && showSevere) ||
             (severity === 'Moderate' && showModerate) ||
-            severity === 'Minor';
+            (severity === 'Minor' && showMinor);
 
         if (show) {
             marker.addTo(markerLayer);
@@ -270,7 +274,7 @@ function toggleFilter(severity) {
 }
 
 function updateStatCardStyles() {
-    const filters = ['Extreme', 'Severe', 'Moderate'];
+    const filters = ['Extreme', 'Severe', 'Moderate', 'Minor'];
     filters.forEach((severity) => {
         const checkbox = document.getElementById(`filter${severity}`);
         const card = document.querySelector(`.map-stat-card[data-severity="${severity}"]`);
@@ -288,11 +292,21 @@ function updateStatCardStyles() {
 document.getElementById('filterExtreme').addEventListener('change', applyFilters);
 document.getElementById('filterSevere').addEventListener('change', applyFilters);
 document.getElementById('filterModerate').addEventListener('change', applyFilters);
+document.getElementById('filterMinor').addEventListener('change', applyFilters);
 document.getElementById('fitAllBtn').addEventListener('click', fitAllMarkers);
 document.getElementById('resetMapBtn').addEventListener('click', resetMap);
 document.getElementById('toggleExtreme').addEventListener('click', () => toggleFilter('Extreme'));
 document.getElementById('toggleSevere').addEventListener('click', () => toggleFilter('Severe'));
 document.getElementById('toggleModerate').addEventListener('click', () => toggleFilter('Moderate'));
+document.getElementById('toggleMinor').addEventListener('click', () => toggleFilter('Minor'));
+
+function updateFilterIndicator() {
+    const row = document.getElementById('filterIndicatorRow');
+    if (!row || !AlertFilters.alertTypesByLevel) return;
+    document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
+    document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
+    row.classList.toggle('d-none', !AlertFilters.hasActiveFilters());
+}
 
 // Initialize
 initMap();

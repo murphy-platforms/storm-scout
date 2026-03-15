@@ -276,7 +276,7 @@ function renderAlertTypes() {
                 <div class="col-12">
                     <h4 class="border-bottom pb-2">
                         <span class="badge bg-${raw(color)} impact-badge">${levelName}</span>
-                        ${levelName} Impact Alerts
+                        ${levelName} Alerts
                         <button
                             class="btn btn-sm btn-outline-secondary ms-2"
                             data-toggle-level="${safeLevel}"

@@ -552,8 +552,17 @@ function applyURLParameters() {
     }
 }
 
+function updateFilterIndicator() {
+    const row = document.getElementById('filterIndicatorRow');
+    if (!row || !AlertFilters.alertTypesByLevel) return;
+    document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
+    document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
+    row.classList.toggle('d-none', !AlertFilters.hasActiveFilters());
+}
+
 // Initialize: Load filter configs then load advisories
 AlertFilters.init().then(() => {
+    updateFilterIndicator();
     loadAdvisories();
     // Apply URL parameters after advisories are loaded
     setTimeout(() => applyURLParameters(), 100);
