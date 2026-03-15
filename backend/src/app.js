@@ -82,6 +82,7 @@ app.use(
                 ],
                 styleSrc: [
                     "'self'",
+                    "'unsafe-inline'", // Required by Leaflet tile/container inline positioning
                     'cdn.jsdelivr.net',
                     'unpkg.com' // Leaflet CSS
                 ],
@@ -93,7 +94,8 @@ app.use(
                     "'self'",
                     'data:', // For inline images and icons
                     'www.googletagmanager.com',
-                    '*.tile.openstreetmap.org' // Map tiles for Leaflet (wildcard covers CDN subdomains)
+                    'tile.openstreetmap.org', // Bare domain used by modern OSM tile endpoint
+                    '*.tile.openstreetmap.org' // Wildcard kept for any subdomain usage
                 ],
                 connectSrc: [
                     "'self'",
