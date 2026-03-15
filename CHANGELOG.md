@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **#335 Frontend unit test suite** — 115 new tests across 4 suites in `backend/tests/unit/frontend/`: `utils.test.js` (38 tests — escapeHtml, html tagged template, severity badges, formatDate, celsius-to-fahrenheit, timeAgo, isStale, truncate, debounce, render helpers), `aggregation.test.js` (22 tests — severity ranking, urgency calculation, dedup, office aggregation, filter warnings), `export.test.js` (13 tests — CSV escaping, date formatting, report generation, shareable links), `alert-filters.test.js` (42 tests — preset application, filter logic, localStorage handling); `jest-environment-jsdom` added as dev dependency; `module.exports` guards added to `utils.js`, `export.js`, `alert-filters.js` for Node.js testability; total suite now 474 tests across 35 suites
+- **#334 CSP fix for Leaflet map tiles** — Added bare `tile.openstreetmap.org` to `img-src` (wildcard `*.tile.openstreetmap.org` does not match base domain per CSP spec) and `'unsafe-inline'` to `style-src` (required by Leaflet for tile positioning)
 - **#320 BASE_PATH prefix-stripping middleware** — `app.js` middleware strips `BASE_PATH` prefix from `req.url` before route matching, enabling subpath deployments (e.g. `/stormscout/api/offices` → `/api/offices`); required for LiteSpeed Passenger which forwards full URL paths without stripping `PassengerBaseURI`; no-op when `BASE_PATH` is unset (root deployments, local dev)
 
 ### Fixed

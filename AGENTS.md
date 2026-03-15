@@ -55,7 +55,7 @@ All source code in this project is AI-generated (Claude, Warp) under human direc
 - **LocalStorage Resilience**: `alert-filters.js` `loadUserPreferences()` catches `SecurityError`/`SyntaxError`; falls back to default preset and surfaces a Bootstrap Toast notification via `showToast()` in `utils.js`
 - **UpdateBanner Cleanup**: `destroy()` method clears `countdownInterval` and `pollingInterval`; wired to `beforeunload` and `visibilitychange` to stop background tab polling
 - **Empty-State Consistency**: All list pages use shared `renderEmptyHtml()` utility for zero-result states (advisories table, offices page, advisories card view)
-- **Jest Test Suite**: `jest.config.js` configured; `supertest` available; unit tests for `apiKey.js` middleware (5 cases) and `advisory.js` model (dedup paths + `findByNaturalKey`); integration tests for advisories route and `/ping`
+- **Jest Test Suite**: 474 tests across 35 suites; `jest.config.js` configured with `node` and `jsdom` environments; backend unit tests for `apiKey.js` middleware (5 cases), `advisory.js` model (dedup paths + `findByNaturalKey`), VTEC extraction, NOAA normalization; integration tests for advisories route and `/ping`; frontend unit tests in `tests/unit/frontend/` covering `utils.js` (38), `aggregation.js` (22), `export.js` (13), `alert-filters.js` (42)
 - **Automated XSS Audit**: Smoke test includes innerHTML safety check across all frontend files
 - **Version Display**: Footer on all 8 pages shows version number and release date via `/api/version` endpoint
 - **Stale Cache Safeguards**: Self-unregistering SW stub kills orphaned beta-era service worker; versioned asset URLs (`?v=X.Y.Z`) force cache busting on deploy
@@ -156,6 +156,16 @@ storm-scout/
 │   │   │   ├── import-offices.js      # Convert CSV to offices.json (run once before init-db)
 │   │   │   └── smoke-test.sh             # Pre-deploy validation (11 checks incl. XSS audit)
 │   │   ├── tests/
+│   │   │   ├── unit/
+│   │   │   │   ├── apiKey.middleware.test.js
+│   │   │   │   ├── advisory.model.test.js
+│   │   │   │   └── frontend/
+│   │   │   │       ├── utils.test.js           # 38 tests — escapeHtml, html template, badges, dates
+│   │   │   │       ├── aggregation.test.js     # 22 tests — severity, urgency, dedup, aggregation
+│   │   │   │       ├── export.test.js          # 13 tests — CSV, reports, shareable links
+│   │   │   │       └── alert-filters.test.js   # 42 tests — presets, filter logic, localStorage
+│   │   │   ├── integration/
+│   │   │   │   └── advisories.route.test.js
 │   │   │   └── fixtures/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
@@ -734,10 +744,14 @@ bash scripts/smoke-test.sh     # Pre-deploy: validates all API endpoints + front
 ```
 
 ### Unit Tests
-- **Framework**: Jest (configured in `package.json`)
-- **Test location**: `backend/tests/unit/`
+- **Framework**: Jest (configured in `jest.config.js`)
+- **Environments**: `node` (backend), `jsdom` (frontend — via `@jest-environment jsdom` docblock)
+- **Test location**: `backend/tests/unit/` (backend), `backend/tests/unit/frontend/` (frontend)
 - **Run**: `npm test` or `npm run test:watch`
-- **Existing tests**: VTEC extraction and NOAA alert normalization (9 tests)
+- **Total**: 474 tests across 35 suites (359 backend + 115 frontend)
+- **Backend tests**: API key middleware, advisory model, VTEC extraction, NOAA normalization, advisories route integration, `/ping` liveness
+- **Frontend tests**: `utils.js` (escapeHtml, html tagged template, severity badges, date formatting, celsius-to-fahrenheit, timeAgo, isStale, truncate, debounce, render helpers), `aggregation.js` (severity ranking, urgency, dedup, office aggregation, filter warnings), `export.js` (CSV escaping, date formatting, report generation, shareable links), `alert-filters.js` (preset application, filter logic, localStorage handling)
+- **Frontend testability**: `module.exports` guards in `utils.js`, `export.js`, `alert-filters.js` enable Node.js `require()` without breaking browser usage
 
 ### Smoke Test
 The smoke test script (`backend/scripts/smoke-test.sh`) automates pre-deploy validation:
