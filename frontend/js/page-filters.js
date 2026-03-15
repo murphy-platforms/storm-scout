@@ -77,6 +77,15 @@ const IMPACT_COLORS = {
     INFO: 'light'
 };
 
+// Map backend category names to canonical NOAA severity labels
+const IMPACT_LABELS = {
+    CRITICAL: 'Extreme',
+    HIGH: 'Severe',
+    MODERATE: 'Moderate',
+    LOW: 'Minor',
+    INFO: 'Informational'
+};
+
 /**
  * Fetch alert-type taxonomy and filter presets from the API, then
  * restore saved preferences and render the full settings page.
@@ -259,7 +268,7 @@ function renderAlertTypes() {
 
     for (const [level, types] of Object.entries(alertTypesByLevel)) {
         const color = IMPACT_COLORS[level];
-        const levelName = level.charAt(0) + level.slice(1).toLowerCase();
+        const levelName = IMPACT_LABELS[level] || level.charAt(0) + level.slice(1).toLowerCase();
         const safeLevel = escapeHtml(level);
 
         htmlContent += html`
@@ -267,7 +276,7 @@ function renderAlertTypes() {
                 <div class="col-12">
                     <h4 class="border-bottom pb-2">
                         <span class="badge bg-${raw(color)} impact-badge">${levelName}</span>
-                        ${level} Impact Alerts
+                        ${levelName} Impact Alerts
                         <button
                             class="btn btn-sm btn-outline-secondary ms-2"
                             data-toggle-level="${safeLevel}"
