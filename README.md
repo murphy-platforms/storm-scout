@@ -16,7 +16,15 @@ Organizations that manage physical locations — retail chains, logistics networ
 
 ## Screenshots
 
-*Screenshots are being updated. Visit the [live demo](https://topper.solutions/stormscout) to preview the dashboard UI, or run the application locally.*
+| Dashboard Overview | Map View |
+|---|---|
+| ![Dashboard Overview — advisory counts, weather impact assessment, and offices sorted by severity](docs/screenshots/overview.png) | ![Interactive map with severity-colored office markers and cluster groups](docs/screenshots/map.png) |
+
+| Active Advisories | Office Detail |
+|---|---|
+| ![Active advisories listed by office with severity badges and alert counts](docs/screenshots/advisories.png) | ![Single office detail showing highest severity alert, impact summary, and alert timeline](docs/screenshots/office-detail.png) |
+
+> Visit the **[live demo](https://topper.solutions/stormscout)** to explore the full dashboard.
 
 ## How It Works
 
