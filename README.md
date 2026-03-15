@@ -6,6 +6,8 @@
 
 Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which offices may be impacted during severe weather events.
 
+**[Live Demo](https://topper.solutions/stormscout)** | [Documentation](docs/) | [API Reference](docs/api.md) | [Architecture](docs/ARCHITECTURE.md)
+
 > **Note:** Storm Scout is an independent open-source project. It is not affiliated with, endorsed by, or connected to any government agency or postal service. See the full [Disclaimer](frontend/disclaimer.html) below.
 
 ## Why Storm Scout?
@@ -14,7 +16,7 @@ Organizations that manage physical locations — retail chains, logistics networ
 
 ## Screenshots
 
-*Screenshots are being updated. Run the application locally to preview the dashboard UI.*
+*Screenshots are being updated. Visit the [live demo](https://topper.solutions/stormscout) to preview the dashboard UI, or run the application locally.*
 
 ## How It Works
 
