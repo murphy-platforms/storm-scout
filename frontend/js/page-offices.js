@@ -128,10 +128,34 @@ function applyFiltersToOffices(offices, advisories) {
         .filter((office) => office !== null); // Remove offices without advisories
 }
 
+function sortOffices(offices) {
+    const order = document.getElementById('sortOrder').value;
+    return [...offices].sort((a, b) => {
+        switch (order) {
+            case 'severity': {
+                const rankA = OfficeAggregator.getSeverityRank(a.highest_severity || 'Minor');
+                const rankB = OfficeAggregator.getSeverityRank(b.highest_severity || 'Minor');
+                return rankB - rankA || (b.advisory_count || 0) - (a.advisory_count || 0);
+            }
+            case 'office':
+                return (a.office_code || '').localeCompare(b.office_code || '', undefined, { numeric: true });
+            case 'alerts':
+                return (b.advisory_count || 0) - (a.advisory_count || 0);
+            case 'state':
+                return (
+                    (a.state || '').localeCompare(b.state || '') ||
+                    OfficeAggregator.getSeverityRank(b.highest_severity || 'Minor') -
+                        OfficeAggregator.getSeverityRank(a.highest_severity || 'Minor')
+                );
+            default:
+                return 0;
+        }
+    });
+}
+
 /**
  * Render the office card grid from the provided list.
- * Offices are sorted highest-severity-first so the most critical locations
- * appear at the top regardless of their alphabetical order.
+ * Offices are sorted by the user-selected sort order.
  *
  * @param {Array<Object>} offices - Enriched office objects (from applyFiltersToOffices)
  * @returns {void}
@@ -147,12 +171,7 @@ function renderOffices(offices) {
         return;
     }
 
-    // Sort by urgency (offices with highest severity first)
-    const sortedOffices = [...offices].sort((a, b) => {
-        const rankA = OfficeAggregator.getSeverityRank(a.highest_severity || 'Minor');
-        const rankB = OfficeAggregator.getSeverityRank(b.highest_severity || 'Minor');
-        return rankB - rankA;
-    });
+    const sortedOffices = sortOffices(offices);
 
     container.innerHTML = sortedOffices
         .map((office) => {
@@ -290,6 +309,7 @@ document.getElementById('weatherImpactFilter').addEventListener('change', functi
     filterOffices();
 });
 document.getElementById('statusFilter').addEventListener('change', filterOffices);
+document.getElementById('sortOrder').addEventListener('change', filterOffices);
 document.getElementById('clearFilterBtn').addEventListener('click', clearWeatherFilter);
 
 /**
