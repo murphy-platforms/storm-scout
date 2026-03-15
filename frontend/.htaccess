@@ -1,12 +1,14 @@
 # Storm Scout - Apache/Passenger Routing Configuration
 # This file routes API requests to the Node.js app while serving static frontend files
+# Works at any deployment path (root or subpath like /stormscout/)
 
 # Enable RewriteEngine
 RewriteEngine On
 
 # Route /api/* and /health to the Node.js Passenger app
-RewriteCond %{REQUEST_URI} ^/api/ [OR]
-RewriteCond %{REQUEST_URI} ^/health$
+# Uses relative patterns so this works at any mount point
+RewriteCond %{REQUEST_URI} /api/ [OR]
+RewriteCond %{REQUEST_URI} /health$
 RewriteRule ^(.*)$ - [L,PT]
 
 # Serve static files if they exist
@@ -14,7 +16,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # Default to index.html for single-page app routing
-RewriteRule ^(.*)$ /index.html [L]
+RewriteRule ^(.*)$ index.html [L]
 
 # Set default directory index
 DirectoryIndex index.html

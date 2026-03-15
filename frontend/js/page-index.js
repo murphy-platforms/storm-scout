@@ -460,9 +460,9 @@ initHelpIconKeyboard();
 window.exportCurrentData = async function (type) {
     try {
         // Fetch current data
-        const overviewResponse = await fetch('/api/status/overview');
-        const officesResponse = await fetch('/api/status/offices-impacted');
-        const advisoriesResponse = await fetch('/api/advisories/active');
+        const overviewResponse = await fetch(`${API_BASE_URL}/status/overview`);
+        const officesResponse = await fetch(`${API_BASE_URL}/status/offices-impacted`);
+        const advisoriesResponse = await fetch(`${API_BASE_URL}/advisories/active`);
 
         if (!overviewResponse.ok || !officesResponse.ok || !advisoriesResponse.ok) {
             throw new Error('Failed to fetch data for export');
