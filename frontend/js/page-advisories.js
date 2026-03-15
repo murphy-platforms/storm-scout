@@ -114,6 +114,24 @@ async function loadAdvisories() {
 
 // getActionBadge() is defined in js/utils.js
 
+function sortSites(sites) {
+    const order = document.getElementById('sortOrder').value;
+    return [...sites].sort((a, b) => {
+        switch (order) {
+            case 'severity':
+                return b.urgency_score - a.urgency_score;
+            case 'office':
+                return a.office_code.localeCompare(b.office_code, undefined, { numeric: true });
+            case 'alerts':
+                return b.unique_advisory_count - a.unique_advisory_count;
+            case 'state':
+                return a.state.localeCompare(b.state) || b.urgency_score - a.urgency_score;
+            default:
+                return 0;
+        }
+    });
+}
+
 /**
  * Render all offices with active advisories as a grouped HTML table.
  * Each office is represented by a clickable header row summarising its
@@ -165,8 +183,7 @@ function renderGroupedTable(sites, filteredAdvisories) {
                 </div>
             `;
 
-    // Sort offices by office_code ascending
-    const sorted = [...sites].sort((a, b) => a.office_code.localeCompare(b.office_code, undefined, { numeric: true }));
+    const sorted = sortSites(sites);
 
     let rowsHtml = '';
     sorted.forEach((site) => {
@@ -342,8 +359,7 @@ function renderCardView(sites, originalAdvisories) {
                 </div>
             `;
 
-    // Render office cards (sorted by office code ascending)
-    const sorted = [...sites].sort((a, b) => a.office_code.localeCompare(b.office_code, undefined, { numeric: true }));
+    const sorted = sortSites(sites);
     container.innerHTML = sorted
         .map((office) => renderOfficeCard(office, observationsMap[office.office_code]))
         .join('');
@@ -530,6 +546,7 @@ document.getElementById('searchBox').addEventListener('input', debounce(renderAl
 document.getElementById('viewFilter').addEventListener('change', renderAll);
 document.getElementById('stateFilter').addEventListener('change', renderAll);
 document.getElementById('dedupToggle').addEventListener('change', renderAll);
+document.getElementById('sortOrder').addEventListener('change', renderAll);
 document.getElementById('cardViewBtn').addEventListener('click', () => switchView('card'));
 document.getElementById('tableViewBtn').addEventListener('click', () => switchView('table'));
 
