@@ -47,6 +47,25 @@ if (process.env.TRUST_PROXY === 'true') {
     );
 }
 
+// Subpath deployment: strip BASE_PATH prefix so all routes work unchanged.
+// LiteSpeed Passenger may forward the full URL (e.g. /stormscout/api/offices)
+// without stripping the base URI. This middleware normalises req.url before
+// any route matching occurs. No-op when BASE_PATH is unset.
+const basePath = (process.env.BASE_PATH || '').replace(/\/+$/, '');
+if (basePath && basePath !== '/') {
+    app.use((req, res, next) => {
+        if (req.url === basePath) {
+            req.url = '/';
+            return next();
+        }
+        if (req.url.startsWith(`${basePath}/`)) {
+            req.url = req.url.slice(basePath.length) || '/';
+        }
+        next();
+    });
+    console.info(`[INFO] BASE_PATH=${basePath} — stripping prefix from incoming requests.`);
+}
+
 // Middleware
 // Security headers via helmet
 app.use(
