@@ -1,5 +1,7 @@
 # Storm Scout
 
+[![CI](https://github.com/murphy-platforms/storm-scout-poc/actions/workflows/ci.yml/badge.svg)](https://github.com/murphy-platforms/storm-scout-poc/actions/workflows/ci.yml)
+
 **An office-focused weather advisory dashboard for operations teams**
 
 Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which offices may be impacted during severe weather events.
