@@ -14,7 +14,7 @@ Four AI tools were used throughout development, each chosen for different streng
 
 | Tool | Primary Role | Strengths |
 |------|-------------|-----------|
-| **GitHub Copilot** | Research, code suggestions | Fast inline completions, broad language model knowledge for exploring unfamiliar patterns |
+| **Copilot Prompt Coach** | Prompt Building  | AI-powered teaching assistant that helps you write better prompts|
 | **Google Gemini** | Research, architecture exploration | Strong at summarizing documentation, comparing architectural approaches, answering "how does X work" questions |
 | **Warp.dev** | Terminal-based coding assistance | AI-integrated terminal with command suggestions, inline explanations, and workflow acceleration |
 | **Claude (Anthropic)** | Primary coding, implementation | Extended context window for multi-file changes, consistent code style across sessions, strong at following project conventions |
