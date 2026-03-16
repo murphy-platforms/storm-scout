@@ -444,7 +444,7 @@ Storm Scout was built by a technical operations leader — not a software engine
 
 The project has been developed across 275 GitHub issues and 60+ commits over approximately one month. Every commit carries a `Co-Authored-By: Claude Opus 4.6` trailer — this is intentional transparency about the development methodology, not an afterthought. Features like security hardening, accessibility, circuit breaker patterns, and the VTEC deduplication system were all specified by the human developer and implemented through iterative AI-assisted coding sessions.
 
-This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
+The initial MVP is actively used by an operations team, replacing manual NOAA alert checks and Excel-based weather monitoring workflows. This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
 
 The codebase is vanilla JavaScript with no TypeScript — a deliberate trade-off for this proof of concept. Vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for future considerations.
 
