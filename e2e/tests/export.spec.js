@@ -7,7 +7,7 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Export', () => {
     test('dashboard page has export controls', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('./');
         await page.waitForLoadState('networkidle');
 
         const exportToggle = page.getByRole('button', { name: /export/i });
@@ -19,7 +19,7 @@ test.describe('Export', () => {
     });
 
     test('export csv triggers download', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('./');
         await page.waitForLoadState('networkidle');
 
         await page.getByRole('button', { name: /export/i }).click();

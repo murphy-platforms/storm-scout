@@ -108,7 +108,7 @@ async function mockOfficeDetailApis(page) {
 test.describe('Office Detail', () => {
     test('drills down from impacted offices list to office detail page', async ({ page }) => {
         await mockOfficeDetailApis(page);
-        await page.goto('/offices.html');
+        await page.goto('./offices.html');
         await page.waitForLoadState('networkidle');
 
         const officeLink = page.locator('a[href*="office-detail.html?office=99501"]').first();
@@ -122,7 +122,7 @@ test.describe('Office Detail', () => {
 
     test('opens the alert detail modal from office detail view', async ({ page }) => {
         await mockOfficeDetailApis(page);
-        await page.goto('/office-detail.html?office=99501');
+        await page.goto('./office-detail.html?office=99501');
         await page.waitForLoadState('networkidle');
 
         await expect(page.locator('#officeContent')).toBeVisible();

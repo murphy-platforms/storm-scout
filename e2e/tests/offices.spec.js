@@ -7,19 +7,19 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Offices', () => {
     test('loads offices list page', async ({ page }) => {
-        await page.goto('/offices.html');
+        await page.goto('./offices.html');
         await expect(page).toHaveTitle(/Storm Scout/);
     });
 
     test('renders office cards or table rows', async ({ page }) => {
-        await page.goto('/offices.html');
+        await page.goto('./offices.html');
         await page.waitForLoadState('networkidle');
         const items = page.locator('.card, tr, .office-item, [data-office-id]');
         await expect(items.first()).toBeVisible({ timeout: 10_000 });
     });
 
     test('navigates to office detail page', async ({ page }) => {
-        await page.goto('/offices.html');
+        await page.goto('./offices.html');
         await page.waitForLoadState('networkidle');
         // Click the first office link/card
         const link = page.locator('a[href*="office-detail"]').first();

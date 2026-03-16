@@ -7,7 +7,7 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Filter Settings', () => {
     test('persists filter changes and reflects active count on advisories page', async ({ page }) => {
-        await page.goto('/filters.html');
+        await page.goto('./filters.html');
         await page.waitForLoadState('networkidle');
 
         const enabledCount = page.locator('#enabledCount');
@@ -29,7 +29,7 @@ test.describe('Filter Settings', () => {
         await page.waitForLoadState('networkidle');
         await expect(enabledCount).toHaveText(String(expectedEnabled));
 
-        await page.goto('/advisories.html');
+        await page.goto('./advisories.html');
         await page.waitForLoadState('networkidle');
 
         await expect(page.locator('#filterIndicatorRow')).toBeVisible();
@@ -37,7 +37,7 @@ test.describe('Filter Settings', () => {
     });
 
     test('full preset increases enabled alert count and propagates to advisories page', async ({ page }) => {
-        await page.goto('/filters.html');
+        await page.goto('./filters.html');
         await page.waitForLoadState('networkidle');
         const initialEnabled = parseInt(await page.locator('#enabledCount').innerText(), 10);
 
@@ -46,7 +46,7 @@ test.describe('Filter Settings', () => {
         const enabledAfter = parseInt(await page.locator('#enabledCount').innerText(), 10);
         expect(enabledAfter).toBeGreaterThan(initialEnabled);
 
-        await page.goto('/advisories.html');
+        await page.goto('./advisories.html');
         await page.waitForLoadState('networkidle');
         await expect(page.locator('#filterIndicatorRow')).toBeVisible();
         await expect(page.locator('#filterCount')).toHaveText(String(enabledAfter));

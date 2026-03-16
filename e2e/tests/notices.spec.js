@@ -46,7 +46,7 @@ async function mockNoticesApis(page) {
 test.describe('Notices', () => {
     test('filters notice cards by jurisdiction type', async ({ page }) => {
         await mockNoticesApis(page);
-        await page.goto('/notices.html');
+        await page.goto('./notices.html');
         await page.waitForLoadState('networkidle');
 
         await expect(page.getByText('Federal Weather Operations Bulletin')).toBeVisible();

@@ -10,7 +10,8 @@ module.exports = defineConfig({
     timeout: 30_000,
     retries: 1,
     use: {
-        baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
+        // Trailing slash required for subpath deployments (e.g. /stormscout/)
+        baseURL: (process.env.E2E_BASE_URL || 'http://localhost:3000').replace(/\/?$/, '/'),
         screenshot: 'only-on-failure',
         trace: 'on-first-retry'
     },

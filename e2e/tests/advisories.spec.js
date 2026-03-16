@@ -7,13 +7,13 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Active Advisories', () => {
     test('loads advisories page', async ({ page }) => {
-        await page.goto('/advisories.html');
+        await page.goto('./advisories.html');
         await expect(page).toHaveTitle(/Storm Scout/);
         await expect(page.locator('h1, h2, h3').first()).toBeVisible();
     });
 
     test('renders advisory table or list', async ({ page }) => {
-        await page.goto('/advisories.html');
+        await page.goto('./advisories.html');
         await page.waitForLoadState('networkidle');
         // Should have a table or list of advisories
         const container = page.locator('table, .advisory-list, .card, #advisories-container');
@@ -21,7 +21,7 @@ test.describe('Active Advisories', () => {
     });
 
     test('filter controls are present', async ({ page }) => {
-        await page.goto('/advisories.html');
+        await page.goto('./advisories.html');
         // Check for filter dropdowns or inputs
         const filters = page.locator('select, input[type="search"], .filter-controls, [data-filter]');
         // At least some filter mechanism should exist
@@ -30,14 +30,14 @@ test.describe('Active Advisories', () => {
     });
 
     test('severity deep-link initializes unified view filter', async ({ page }) => {
-        await page.goto('/advisories.html?severity=Extreme');
+        await page.goto('./advisories.html?severity=Extreme');
         await page.waitForLoadState('networkidle');
 
         await expect(page.locator('#viewFilter')).toHaveValue('severity:Extreme');
     });
 
     test('supports card/table view switching and dedup toggle interaction', async ({ page }) => {
-        await page.goto('/advisories.html');
+        await page.goto('./advisories.html');
         await page.waitForLoadState('networkidle');
 
         // Switch to table view

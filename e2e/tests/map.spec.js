@@ -132,12 +132,12 @@ async function getVisibleOfficeCount(page) {
 
 test.describe('Map View', () => {
     test('loads map page', async ({ page }) => {
-        await page.goto('/map.html');
+        await page.goto('./map.html');
         await expect(page).toHaveTitle(/Storm Scout/);
     });
 
     test('renders Leaflet map container', async ({ page }) => {
-        await page.goto('/map.html');
+        await page.goto('./map.html');
         // Leaflet adds .leaflet-container to the map div
         const map = page.locator('.leaflet-container');
         await expect(map).toBeVisible({ timeout: 10_000 });
@@ -145,7 +145,7 @@ test.describe('Map View', () => {
 
     test('applies severity toggles and updates map filter state', async ({ page }) => {
         await mockMapApis(page);
-        await page.goto('/map.html');
+        await page.goto('./map.html');
         await page.waitForLoadState('networkidle');
 
         await expect(page.locator('#extremeCount')).toHaveText('1');

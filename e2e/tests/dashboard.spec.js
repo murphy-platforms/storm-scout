@@ -7,12 +7,12 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Dashboard', () => {
     test('loads overview page with title', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('./');
         await expect(page).toHaveTitle(/Storm Scout/);
     });
 
     test('renders navbar with navigation links', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('./');
         const nav = page.locator('.navbar');
         await expect(nav).toBeVisible();
         await expect(nav.getByText('Active Advisories')).toBeVisible();
@@ -21,7 +21,7 @@ test.describe('Dashboard', () => {
     });
 
     test('displays last-updated timestamp', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('./');
         const lastUpdated = page.locator('#lastUpdated');
         await expect(lastUpdated).toBeVisible();
         // Should eventually replace "Loading..." with a value
@@ -29,7 +29,7 @@ test.describe('Dashboard', () => {
     });
 
     test('renders severity summary cards', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('./');
         // Wait for JS to populate cards
         await page.waitForLoadState('networkidle');
         // The overview page should have summary statistics
