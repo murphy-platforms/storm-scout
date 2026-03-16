@@ -123,6 +123,16 @@ These items are tracked in the `[Unreleased]` section of `CHANGELOG.md` and are 
 
 ---
 
+## Testing Strategy
+
+**Backend** — 359 tests across 31 suites covering routes, services, ingestion, and database layers (~70% line coverage). Unit and integration tests run via Jest on every push through CI.
+
+**Frontend** — Frontend test coverage was deferred in favor of backend coverage depth. The 8 vanilla JS page modules are validated via manual verification and the pre-deploy smoke test in `deploy.sh` (22 assertions covering endpoint availability, response structure, and HTML page loads). Adding automated browser tests for critical user flows is tracked as a future improvement (#335).
+
+This is a deliberate scope trade-off: the backend handles data integrity, external API integration, and business logic where automated testing provides the highest return. The frontend is presentation-only with no client-side state management, making it lower-risk and well-suited to smoke-test coverage during the POC phase.
+
+---
+
 ## Backup & Recovery
 
 ### Strategy
