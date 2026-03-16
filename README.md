@@ -16,6 +16,12 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 Organizations that manage physical locations — retail chains, logistics networks, field service teams, government offices — face a common problem: there is no simple way to monitor weather threats across all of their sites at once. When severe weather hits, operations teams resort to checking weather.gov manually for each location, one zip code at a time. This leads to delayed decisions, inconsistent response across regions, and hours of effort that could be automated. Storm Scout solves this by consolidating real-time NOAA weather alerts for hundreds of locations into a single dashboard, giving operations leaders the situational awareness they need to act quickly and consistently.
 
+## Demo
+
+![Storm Scout dashboard walkthrough](docs/screenshots/demo.gif)
+
+> Visit the **[live demo](https://topper.solutions/stormscout)** to explore the full dashboard.
+
 ## Screenshots
 
 | Dashboard Overview | Map View |
@@ -25,8 +31,6 @@ Organizations that manage physical locations — retail chains, logistics networ
 | Active Advisories | Office Detail |
 |---|---|
 | ![Active advisories listed by office with severity badges and alert counts](docs/screenshots/advisories.png) | ![Single office detail showing highest severity alert, impact summary, and alert timeline](docs/screenshots/office-detail.png) |
-
-> Visit the **[live demo](https://topper.solutions/stormscout)** to explore the full dashboard.
 
 ## How It Works
 
