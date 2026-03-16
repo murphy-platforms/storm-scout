@@ -162,5 +162,5 @@ jobs:
         with:
           name: Playwright E2E Tests
           path: e2e/test-results/e2e-junit.xml
-          reporter: jest-junit
+          reporter: java-junit
           fail-on-error: 'false'
