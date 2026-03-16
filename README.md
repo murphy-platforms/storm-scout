@@ -364,19 +364,21 @@ DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
 
 See `DEPLOY.md` for detailed deployment instructions.
 
-## Adapting for Your Organization
+## Customize for Your Organization
 
 Storm Scout is designed to be forked and customized. Any set of US locations with latitude/longitude coordinates will work — swap the data, and you have a working dashboard for your sites.
 
-**Key customization points:**
+**Get started in three steps:**
 
-1. **Replace the office list** — Prepare a CSV with your locations (zip, name, city, state, latitude, longitude) and run `node src/scripts/import-offices.js /path/to/your-locations.csv` to generate a new `backend/src/data/offices.json`. Run `npm run seed-db` to load them.
+1. **Create a CSV** with your locations (columns: `zip`, `name`, `city`, `state`, `latitude`, `longitude`; optional: `region`, `county`, `ugc_codes`, `cwa`). See the examples in [`backend/src/data/csv/`](backend/src/data/csv/) — airports, train stations, drive-in theaters, and ranger stations are included to show the format.
+2. **Import your locations:** `node src/scripts/import-offices.js /path/to/your-locations.csv` then `npm run seed-db`
+3. **Start the server:** `npm run dev`
 
-2. **Adjust alert type filtering** — Edit `backend/src/config/noaa-alert-types.js` to change which of the 94 NOAA alert types are enabled by default and how they map to impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO).
+**Further customization:**
 
-3. **Customize filter presets** — Modify the built-in presets (Office Default, Operations View, Executive Summary, etc.) to match your organization's alert monitoring needs.
-
-4. **Extend the schema** — Add custom columns (region, cost center, district) to the `offices` table and include them in your import CSV for organization-specific grouping and reporting.
+- **Alert type filtering** — Edit `backend/src/config/noaa-alert-types.js` to change which of the 94 NOAA alert types are enabled by default and how they map to impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO).
+- **Filter presets** — Modify the built-in presets (Office Default, Operations View, Executive Summary, etc.) to match your organization's alert monitoring needs.
+- **Extend the schema** — Add custom columns (region, cost center, district) to the `offices` table and include them in your import CSV for organization-specific grouping and reporting.
 
 From CSV to working dashboard in about 15 minutes. See [`DEPLOY.md`](DEPLOY.md) for full setup instructions.
 
