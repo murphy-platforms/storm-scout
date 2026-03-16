@@ -145,20 +145,22 @@ jobs:
         working-directory: e2e
         run: npx playwright install --with-deps chromium
       - name: Run Playwright E2E tests
+        id: playwright
         working-directory: e2e
         run: npx playwright test --config=playwright.config.js --reporter=list --reporter=junit
         env:
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/e2e-junit.xml
       - name: Upload E2E results
-        if: always()
+        if: always() && steps.playwright.outcome != 'skipped'
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
           path: e2e/test-results/e2e-junit.xml
       - name: Report E2E results
-        if: always()
+        if: always() && steps.playwright.outcome != 'skipped'
         uses: dorny/test-reporter@v1
         with:
           name: Playwright E2E Tests
           path: e2e/test-results/e2e-junit.xml
           reporter: jest-junit
+          fail-on-error: 'false'
