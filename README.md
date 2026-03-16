@@ -8,6 +8,8 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 **[Live Demo](https://topper.solutions/stormscout)** | [Documentation](docs/) | [API Reference](docs/api.md) | [Architecture](docs/ARCHITECTURE.md)
 
+> **Storm Scout** monitors NOAA weather alerts across 300+ U.S. locations and presents operational impact in a single dashboard. Built for operations teams who need go/no-go closure decisions during severe weather. **[Live demo →](https://topper.solutions/stormscout)**
+
 > **Note:** Storm Scout is an independent open-source project. It is not affiliated with, endorsed by, or connected to any government agency or postal service. See the full [Disclaimer](frontend/disclaimer.html) below.
 
 ## Why Storm Scout?
