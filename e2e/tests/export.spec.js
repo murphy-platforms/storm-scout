@@ -1,34 +1,41 @@
 /**
  * Export E2E Tests
- * Verifies that CSV/PDF export buttons exist and trigger downloads.
+ * Verifies that dashboard export controls exist and CSV export triggers a download.
  */
 
 const { test, expect } = require('@playwright/test');
 
 test.describe('Export', () => {
-    test('advisories page has export button', async ({ page }) => {
-        await page.goto('/advisories.html');
+    test('dashboard page has export controls', async ({ page }) => {
+        await page.goto('/');
         await page.waitForLoadState('networkidle');
-        const exportBtn = page.locator('button, a').filter({ hasText: /export|download|csv|pdf/i });
-        // Export functionality should be accessible
-        const count = await exportBtn.count();
-        expect(count).toBeGreaterThan(0);
+
+        const exportToggle = page.getByRole('button', { name: /export/i });
+        await expect(exportToggle).toBeVisible();
+
+        await exportToggle.click();
+        const exportCsvItem = page.locator('a.dropdown-item').filter({ hasText: /export csv/i });
+        await expect(exportCsvItem).toBeVisible();
     });
 
-    test('export triggers download', async ({ page }) => {
-        await page.goto('/advisories.html');
+    test('export csv triggers download', async ({ page }) => {
+        await page.goto('/');
         await page.waitForLoadState('networkidle');
-        const exportBtn = page.locator('button, a').filter({ hasText: /export|csv/i }).first();
-        if ((await exportBtn.count()) > 0) {
-            const [download] = await Promise.all([
-                page.waitForEvent('download', { timeout: 5_000 }).catch(() => null),
-                exportBtn.click()
-            ]);
-            // If a download was triggered, verify the filename
-            if (download) {
-                const filename = download.suggestedFilename();
-                expect(filename).toMatch(/\.(csv|pdf|xlsx)$/);
-            }
+
+        await page.getByRole('button', { name: /export/i }).click();
+        const exportCsvItem = page.locator('a.dropdown-item').filter({ hasText: /export csv/i }).first();
+        await expect(exportCsvItem).toBeVisible();
+
+        const [download] = await Promise.all([
+            page.waitForEvent('download', { timeout: 10_000 }).catch(() => null),
+            exportCsvItem.click()
+        ]);
+
+        // Export CSV should trigger a file download.
+        expect(download).not.toBeNull();
+        if (download) {
+            const filename = download.suggestedFilename();
+            expect(filename).toMatch(/\.csv$/i);
         }
     });
 });
