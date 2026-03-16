@@ -4,7 +4,7 @@ How Storm Scout was built using AI-assisted development, from initial concept to
 
 ## Overview
 
-Storm Scout was developed by a technical operations leader using AI coding assistants over approximately one month. The project spans 180+ GitHub Issues and 300+ commits, producing a production-grade weather advisory dashboard with 9 backend test suites (129 tests), security hardening, and comprehensive documentation.
+Storm Scout was developed by a technical operations leader using AI coding assistants over approximately one month. The project spans 180+ GitHub Issues and 300+ commits, producing a production-grade weather advisory dashboard with 35 backend test suites (474 tests), security hardening, and comprehensive documentation.
 
 This document describes the methodology — not to promote AI tools, but to provide an honest account of what worked, what didn't, and how human expertise shaped every decision.
 
@@ -73,7 +73,7 @@ The workflow followed a consistent pattern:
 
 ### Automated Testing
 
-The backend has 129 tests across 9 suites covering API routes, ingestion logic, advisory deduplication, database queries, middleware, and error handling. Tests were generated alongside features — not added retroactively — which caught integration issues early.
+The backend has 474 tests across 35 suites covering API routes, ingestion logic, advisory deduplication, database queries, middleware, error handling, and frontend utilities. Tests were generated alongside features — not added retroactively — which caught integration issues early.
 
 The frontend has no automated tests. This was a deliberate trade-off: vanilla JavaScript with no build step means standard test runners don't integrate without adding complexity that would undermine the project's simplicity goals. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#test-coverage-notes) for the full rationale.
 
