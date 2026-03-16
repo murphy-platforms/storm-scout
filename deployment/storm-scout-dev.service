@@ -1,12 +1,12 @@
 [Unit]
 Description=Storm Scout DEV/QC Server
-Documentation=https://github.com/murphy-platforms/storm-scout-poc
+Documentation=https://github.com/murphy-platforms/storm-scout
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/srv/projects/storm-scout-poc/backend
-EnvironmentFile=/srv/projects/storm-scout-poc/backend/.env
+WorkingDirectory=/srv/projects/storm-scout/backend
+EnvironmentFile=/srv/projects/storm-scout/backend/.env
 ExecStart=/usr/bin/node src/server.js
 Restart=on-failure
 RestartSec=10

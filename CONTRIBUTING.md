@@ -25,8 +25,8 @@ Thank you for your interest in contributing to Storm Scout! This guide covers ev
 
 1. **Clone and install dependencies**
    ```bash
-   git clone https://github.com/murphy-platforms/storm-scout-poc.git
-   cd storm-scout-poc/backend
+   git clone https://github.com/murphy-platforms/storm-scout.git
+   cd storm-scout/backend
    npm ci
    ```
 

@@ -168,7 +168,7 @@ Daily automated MariaDB/MySQL dumps via `deployment/backup.sh`, compressed with 
 
 ## Production Readiness Checklist
 
-What enterprise deployment would require beyond the current POC:
+What enterprise deployment would require beyond the current release:
 
 - [x] Automated database backups with restore testing (`deployment/backup.sh`, `verify-backup.sh`)
 - [x] E2E test coverage for critical user flows (`e2e/` Playwright suite)

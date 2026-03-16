@@ -1,6 +1,6 @@
 # Storm Scout
 
-[![CI](https://github.com/murphy-platforms/storm-scout-poc/actions/workflows/ci.yml/badge.svg)](https://github.com/murphy-platforms/storm-scout-poc/actions/workflows/ci.yml)
+[![CI](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml)
 
 **An office-focused weather advisory dashboard for operations teams**
 
@@ -388,9 +388,9 @@ From CSV to working dashboard in about 15 minutes. See [`DEPLOY.md`](DEPLOY.md) 
 
 **Multi-tenant potential:** The current architecture is single-tenant by design — one database, one set of offices, one ingestion pipeline. Multi-tenant support (serving multiple organizations from a single deployment) would require tenant-scoped database queries, per-tenant authentication, and isolated ingestion schedules. The Express middleware layer and existing API key model provide a natural starting point for this extension.
 
-## POC Scope
+## Scope
 
-The following are intentional scope boundaries for this proof-of-concept, not missing features. Each reflects a deliberate trade-off to keep the project focused and deployable.
+The following are intentional scope boundaries for this project, not missing features. Each reflects a deliberate trade-off to keep the project focused and deployable.
 
 | Area | Scope Decision | Rationale |
 |------|---------------|-----------|
@@ -446,13 +446,17 @@ The project has been developed across 275 GitHub issues and 60+ commits over app
 
 The initial MVP is actively used by an operations team, replacing manual NOAA alert checks and Excel-based weather monitoring workflows. This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
 
-The codebase is vanilla JavaScript with no TypeScript — a deliberate trade-off for this proof of concept. Vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for future considerations.
+The codebase is vanilla JavaScript with no TypeScript — a deliberate trade-off for this project. Vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for future considerations.
 
 See [`docs/DEVELOPMENT-PROCESS.md`](docs/DEVELOPMENT-PROCESS.md) for the full methodology: AI tooling choices, human-AI collaboration workflow, quality assurance approach, and lessons learned.
 
 ## License
 
 MIT &mdash; see [LICENSE](LICENSE) for the full text and [NOTICE.md](NOTICE.md) for third-party attributions.
+
+## Commercial Use
+
+Storm Scout is MIT-licensed. You are free to use, modify, and deploy it commercially without restriction. If you're evaluating this for your organization, see [Customize for Your Organization](#customize-for-your-organization) for how to load your own locations.
 
 ## Privacy & Analytics
 

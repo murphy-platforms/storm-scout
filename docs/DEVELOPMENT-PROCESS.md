@@ -67,7 +67,7 @@ The workflow followed a consistent pattern:
 
 ### Technology Decisions
 
-**Vanilla JavaScript (no TypeScript)** — Storm Scout uses vanilla ES2020+ JavaScript with no TypeScript and no build step. This is a deliberate trade-off for the proof of concept: vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`ARCHITECTURE.md`](ARCHITECTURE.md) for future considerations.
+**Vanilla JavaScript (no TypeScript)** — Storm Scout uses vanilla ES2020+ JavaScript with no TypeScript and no build step. This is a deliberate trade-off for this project: vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`ARCHITECTURE.md`](ARCHITECTURE.md) for future considerations.
 
 ## Quality Assurance
 

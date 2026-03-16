@@ -908,5 +908,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Links
 
 - [Production](https://your-deployment.example.com)
-- [GitHub Repository](https://github.com/murphy-platforms/storm-scout-poc)
-- [Issue Tracker](https://github.com/murphy-platforms/storm-scout-poc/issues)
+- [GitHub Repository](https://github.com/murphy-platforms/storm-scout)
+- [Issue Tracker](https://github.com/murphy-platforms/storm-scout/issues)
