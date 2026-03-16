@@ -1,6 +1,7 @@
 # Storm Scout
 
 [![CI](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/murphy-platforms/3d3c0461f8f0200230dd44cdfecd0800/raw/storm-scout-coverage.json)](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml)
 
 **An office-focused weather advisory dashboard for operations teams**
 
