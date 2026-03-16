@@ -144,4 +144,24 @@ describe('GET /api/notices/:id', () => {
 
     expect(res.status).toBe(400);
   });
+
+  test('returns 500 on error', async () => {
+    Notice.getById.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/notices/1');
+
+    expect(res.status).toBe(500);
+  });
+});
+
+// ── GET /api/notices/active (error path) ───────────────────────────────
+
+describe('GET /api/notices/active (error)', () => {
+  test('returns 500 on error', async () => {
+    Notice.getActive.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/notices/active');
+
+    expect(res.status).toBe(500);
+  });
 });

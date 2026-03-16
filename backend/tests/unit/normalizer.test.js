@@ -11,6 +11,7 @@ const {
     normalizeSeverity,
     normalizeNOAAAlert,
     getSeverityFromAlertType,
+    extractVTEC,
     extractVTECEventID,
     extractVTECAction,
     isPointInAlertArea,
@@ -115,6 +116,11 @@ describe('extractVTECEventID', () => {
         expect(extractVTECEventID('not-a-vtec-code')).toBeNull();
         expect(extractVTECEventID('/invalid/')).toBeNull();
     });
+
+    test('should return null when input causes an exception', () => {
+        // Non-string truthy value triggers error in .match()
+        expect(extractVTECEventID({})).toBeNull();
+    });
 });
 
 describe('extractVTECAction', () => {
@@ -135,6 +141,11 @@ describe('extractVTECAction', () => {
 
     test('should return null for malformed VTEC code', () => {
         expect(extractVTECAction('not-a-vtec-code')).toBeNull();
+    });
+
+    test('should return null when input causes an exception', () => {
+        // Non-string truthy value triggers .match() error
+        expect(extractVTECAction({})).toBeNull();
     });
 });
 
@@ -265,7 +276,30 @@ describe('formatStatusReason', () => {
     });
 });
 
+describe('extractVTEC error handling', () => {
+    test('should return null and not throw when alert is null', () => {
+        expect(extractVTEC(null)).toBeNull();
+    });
+});
+
 describe('normalizeNOAAAlert datetime handling', () => {
+    test('should return null for invalid date strings', () => {
+        const alert = {
+            properties: {
+                event: 'Wind Advisory',
+                status: 'Actual',
+                onset: 'not-a-valid-date',
+                ends: 'also-invalid',
+                sent: '2026-03-01T10:00:00Z',
+                parameters: {}
+            }
+        };
+
+        const normalized = normalizeNOAAAlert(alert);
+        expect(normalized.start_time).toBeNull();
+        expect(normalized.end_time).toBeNull();
+    });
+
     test('should convert ISO timestamps to MySQL DATETIME format', () => {
         const alert = {
             properties: {

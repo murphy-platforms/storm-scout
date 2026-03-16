@@ -275,4 +275,79 @@ describe('GET /api/admin/audit-log', () => {
 
     expect(AuditLog.getRecent).toHaveBeenCalledWith(200);
   });
+
+  test('returns 500 on audit-log error', async () => {
+    AuditLog.getRecent.mockRejectedValue(new Error('DB fail'));
+
+    const res = await request(app)
+      .get('/api/admin/audit-log')
+      .set('X-Api-Key', API_KEY);
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+// ── Error paths ─────────────────────────────────────────────────────────
+
+describe('POST /api/admin/pause-ingestion error path', () => {
+  test('returns 500 when pause throws', async () => {
+    getSchedulerStatus.mockImplementation(() => { throw new Error('boom'); });
+
+    const res = await request(app)
+      .post('/api/admin/pause-ingestion')
+      .set('X-Api-Key', API_KEY);
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('POST /api/admin/resume-ingestion error path', () => {
+  test('returns 500 when resume throws', async () => {
+    getSchedulerStatus.mockImplementation(() => { throw new Error('boom'); });
+
+    const res = await request(app)
+      .post('/api/admin/resume-ingestion')
+      .set('X-Api-Key', API_KEY);
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('GET /api/admin/health data integrity warning', () => {
+  test('returns degraded when offices have missing UGC/county', async () => {
+    IngestionEvent.getLastSuccessful.mockResolvedValue({
+      lastUpdated: new Date().toISOString(), minutesAgo: 10
+    });
+    // First call: SELECT 1 (db check), then 3 integrity queries
+    const queryMock = jest.fn()
+      .mockResolvedValueOnce([[{ 1: 1 }]])       // SELECT 1
+      .mockResolvedValueOnce([[{ count: 5 }]])    // missing UGC
+      .mockResolvedValueOnce([[{ count: 3 }]])    // missing county
+      .mockResolvedValueOnce([[{ count: 1 }]]);   // invalid format
+    getDatabase.mockReturnValue({ query: queryMock });
+
+    const res = await request(app)
+      .get('/api/admin/health')
+      .set('X-Api-Key', API_KEY);
+
+    expect(res.status).toBe(503);
+    expect(res.body.checks.data_integrity.status).toBe('warning');
+    expect(res.body.checks.data_integrity.details.sites_missing_ugc).toBe(5);
+  });
+
+  test('returns ingestion unknown when no history exists', async () => {
+    IngestionEvent.getLastSuccessful.mockResolvedValue(null);
+    getDatabase.mockReturnValue({
+      query: jest.fn().mockResolvedValue([[{ count: 0 }]])
+    });
+
+    const res = await request(app)
+      .get('/api/admin/health')
+      .set('X-Api-Key', API_KEY);
+
+    expect(res.body.checks.ingestion.status).toBe('unknown');
+  });
 });

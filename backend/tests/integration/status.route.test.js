@@ -93,6 +93,77 @@ describe('GET /api/status/overview', () => {
   });
 });
 
+describe('GET /api/status/overview (extended)', () => {
+  test('returns cache hit when available', async () => {
+    const cache = require('../../src/utils/cache');
+    const cached = { success: true, data: { total_offices: 5 } };
+    cache.get.mockReturnValueOnce(cached);
+
+    const res = await request(app).get('/api/status/overview');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(cached);
+  });
+
+  test('returns 500 on model error', async () => {
+    Office.getAll.mockRejectedValue(new Error('DB fail'));
+
+    const res = await request(app).get('/api/status/overview');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('GET /api/status/offices-impacted', () => {
+  test('returns 200 with impacted offices', async () => {
+    OfficeStatus.getImpacted.mockResolvedValue([{ id: 1, operational_status: 'Closed' }]);
+
+    const res = await request(app).get('/api/status/offices-impacted');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.count).toBe(1);
+  });
+
+  test('returns 500 on error', async () => {
+    OfficeStatus.getImpacted.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/status/offices-impacted');
+
+    expect(res.status).toBe(500);
+  });
+});
+
+describe('GET /api/status/offices', () => {
+  test('returns 200 with all office statuses', async () => {
+    OfficeStatus.getAll.mockResolvedValue([{ id: 1, operational_status: 'Open' }]);
+
+    const res = await request(app).get('/api/status/offices');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.count).toBe(1);
+  });
+
+  test('passes filter params', async () => {
+    OfficeStatus.getAll.mockResolvedValue([]);
+
+    await request(app).get('/api/status/offices').query({ operational_status: 'closed', state: 'FL' });
+
+    expect(OfficeStatus.getAll).toHaveBeenCalledWith(expect.objectContaining({ operational_status: 'closed', state: 'FL' }));
+  });
+
+  test('returns 500 on error', async () => {
+    OfficeStatus.getAll.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/status/offices');
+
+    expect(res.status).toBe(500);
+  });
+});
+
 describe('GET /health', () => {
   test('returns 200 ok when database is reachable', async () => {
     const res = await request(app).get('/health');

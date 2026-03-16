@@ -119,6 +119,174 @@ describe('alerting module', () => {
     });
   });
 
+  // ── sendWebhookAlert ────────────────────────────────────────────────
+
+  describe('sendWebhookAlert (via sendAlert with webhook)', () => {
+    test('sends webhook when ALERT_WEBHOOK_URL is set (https)', async () => {
+      process.env.ALERT_WEBHOOK_URL = 'https://hooks.example.com/webhook';
+      const https = require('https');
+
+      // Mock the request to simulate a successful response
+      const mockReq = {
+        on: jest.fn(),
+        write: jest.fn(),
+        end: jest.fn(),
+        destroy: jest.fn()
+      };
+      https.request.mockImplementation((opts, cb) => {
+        // Simulate a 200 response asynchronously
+        process.nextTick(() => cb({ statusCode: 200 }));
+        return mockReq;
+      });
+
+      const alerting = require('../../src/utils/alerting');
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await alerting.sendAlert({
+        type: 'webhook_test_https',
+        severity: 'critical',
+        title: 'Webhook Test',
+        message: 'Testing webhook'
+      });
+
+      expect(result).toBe(true);
+      expect(https.request).toHaveBeenCalled();
+      expect(mockReq.write).toHaveBeenCalled();
+      expect(mockReq.end).toHaveBeenCalled();
+      console.error.mockRestore();
+    });
+
+    test('sends webhook via http when URL is http://', async () => {
+      process.env.ALERT_WEBHOOK_URL = 'http://hooks.example.com/webhook';
+      const http = require('http');
+
+      const mockReq = {
+        on: jest.fn(),
+        write: jest.fn(),
+        end: jest.fn(),
+        destroy: jest.fn()
+      };
+      http.request.mockImplementation((opts, cb) => {
+        process.nextTick(() => cb({ statusCode: 200 }));
+        return mockReq;
+      });
+
+      const alerting = require('../../src/utils/alerting');
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await alerting.sendAlert({
+        type: 'webhook_test_http',
+        severity: 'critical',
+        title: 'HTTP Webhook',
+        message: 'Testing http webhook'
+      });
+
+      expect(result).toBe(true);
+      expect(http.request).toHaveBeenCalled();
+      console.error.mockRestore();
+    });
+
+    test('handles webhook request error gracefully', async () => {
+      process.env.ALERT_WEBHOOK_URL = 'https://hooks.example.com/webhook';
+      const https = require('https');
+
+      const mockReq = {
+        on: jest.fn(),
+        write: jest.fn(),
+        end: jest.fn(),
+        destroy: jest.fn()
+      };
+      https.request.mockImplementation(() => {
+        // Trigger the error handler
+        process.nextTick(() => {
+          const errorHandler = mockReq.on.mock.calls.find(c => c[0] === 'error');
+          if (errorHandler) errorHandler[1](new Error('Connection refused'));
+        });
+        return mockReq;
+      });
+
+      const alerting = require('../../src/utils/alerting');
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await alerting.sendAlert({
+        type: 'webhook_error_test',
+        severity: 'critical',
+        title: 'Error Test',
+        message: 'Testing error'
+      });
+
+      expect(result).toBe(true);
+      console.error.mockRestore();
+    });
+
+    test('handles webhook timeout', async () => {
+      process.env.ALERT_WEBHOOK_URL = 'https://hooks.example.com/webhook';
+      const https = require('https');
+
+      const mockReq = {
+        on: jest.fn(),
+        write: jest.fn(),
+        end: jest.fn(),
+        destroy: jest.fn()
+      };
+      https.request.mockImplementation(() => {
+        process.nextTick(() => {
+          const timeoutHandler = mockReq.on.mock.calls.find(c => c[0] === 'timeout');
+          if (timeoutHandler) timeoutHandler[1]();
+        });
+        return mockReq;
+      });
+
+      const alerting = require('../../src/utils/alerting');
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await alerting.sendAlert({
+        type: 'webhook_timeout_test',
+        severity: 'critical',
+        title: 'Timeout Test',
+        message: 'Testing timeout'
+      });
+
+      expect(result).toBe(true);
+      console.error.mockRestore();
+    });
+  });
+
+  // ── formatSlackAlert ────────────────────────────────────────────────
+
+  describe('formatSlackAlert shape', () => {
+    test('warning severity uses warning emoji and color', async () => {
+      process.env.ALERT_WEBHOOK_URL = 'https://hooks.example.com/webhook';
+      const https = require('https');
+      let capturedPayload;
+
+      const mockReq = {
+        on: jest.fn(),
+        write: jest.fn((data) => { capturedPayload = JSON.parse(data); }),
+        end: jest.fn(),
+        destroy: jest.fn()
+      };
+      https.request.mockImplementation((opts, cb) => {
+        process.nextTick(() => cb({ statusCode: 200 }));
+        return mockReq;
+      });
+
+      const alerting = require('../../src/utils/alerting');
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      await alerting.sendAlert({
+        type: 'format_test_warning',
+        severity: 'warning',
+        title: 'Format Test',
+        message: 'Testing format'
+      });
+
+      expect(capturedPayload.text).toContain(':warning:');
+      expect(capturedPayload.attachments[0].color).toBe('#ffc107');
+      console.warn.mockRestore();
+    });
+  });
+
   // ── Convenience wrappers ──────────────────────────────────────────────
 
   describe('alertIngestionFailure', () => {

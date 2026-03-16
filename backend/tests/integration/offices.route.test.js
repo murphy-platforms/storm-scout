@@ -142,4 +142,125 @@ describe('GET /api/offices/:id', () => {
 
     expect(res.status).toBe(400);
   });
+
+  test('returns 500 when model throws', async () => {
+    Office.getById.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/offices/1');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('GET /api/offices/regions', () => {
+  test('returns 200 with regions array', async () => {
+    Office.getRegions.mockResolvedValue(['Eastern', 'Western', 'Central']);
+
+    const res = await request(app).get('/api/offices/regions');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual(['Eastern', 'Western', 'Central']);
+  });
+
+  test('returns cache hit when available', async () => {
+    const cache = require('../../src/utils/cache');
+    const cached = { success: true, data: ['Eastern'] };
+    cache.get.mockReturnValueOnce(cached);
+
+    const res = await request(app).get('/api/offices/regions');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(cached);
+  });
+
+  test('returns 500 on error', async () => {
+    Office.getRegions.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/offices/regions');
+
+    expect(res.status).toBe(500);
+  });
+});
+
+describe('GET /api/offices/:id/advisories', () => {
+  test('returns advisories for an office', async () => {
+    Office.getById.mockResolvedValue(SAMPLE_OFFICE);
+    Advisory.getByOffice.mockResolvedValue([{ id: 10, title: 'Storm Warning' }]);
+
+    const res = await request(app).get('/api/offices/1/advisories');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+  });
+
+  test('passes active_only param', async () => {
+    Office.getById.mockResolvedValue(SAMPLE_OFFICE);
+    Advisory.getByOffice.mockResolvedValue([]);
+
+    await request(app).get('/api/offices/1/advisories').query({ active_only: 'true' });
+
+    expect(Advisory.getByOffice).toHaveBeenCalledWith(expect.anything(), true);
+  });
+
+  test('returns 404 when office not found', async () => {
+    Office.getById.mockResolvedValue(null);
+
+    const res = await request(app).get('/api/offices/9999/advisories');
+
+    expect(res.status).toBe(404);
+  });
+
+  test('returns 500 on error', async () => {
+    Office.getById.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/offices/1/advisories');
+
+    expect(res.status).toBe(500);
+  });
+});
+
+describe('GET /api/offices (extended)', () => {
+  test('returns cache hit for unfiltered request', async () => {
+    const cache = require('../../src/utils/cache');
+    const cached = { success: true, data: [SAMPLE_OFFICE], count: 1 };
+    cache.get.mockReturnValueOnce(cached);
+
+    const res = await request(app).get('/api/offices');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(cached);
+  });
+
+  test('returns 500 on model error', async () => {
+    Office.getAll.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/offices');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('GET /api/offices/states (extended)', () => {
+  test('returns 500 on error', async () => {
+    Office.getStates.mockRejectedValue(new Error('fail'));
+
+    const res = await request(app).get('/api/offices/states');
+
+    expect(res.status).toBe(500);
+  });
+
+  test('returns cache hit when available', async () => {
+    const cache = require('../../src/utils/cache');
+    const cached = { success: true, data: ['CA'] };
+    cache.get.mockReturnValueOnce(cached);
+
+    const res = await request(app).get('/api/offices/states');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(cached);
+  });
 });
