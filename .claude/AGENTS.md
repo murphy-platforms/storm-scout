@@ -55,7 +55,7 @@ All source code in this project is AI-generated (Claude, Warp) under human direc
 - **LocalStorage Resilience**: `alert-filters.js` `loadUserPreferences()` catches `SecurityError`/`SyntaxError`; falls back to default preset and surfaces a Bootstrap Toast notification via `showToast()` in `utils.js`
 - **UpdateBanner Cleanup**: `destroy()` method clears `countdownInterval` and `pollingInterval`; wired to `beforeunload` and `visibilitychange` to stop background tab polling
 - **Empty-State Consistency**: All list pages use shared `renderEmptyHtml()` utility for zero-result states (advisories table, offices page, advisories card view)
-- **Jest Test Suite**: 474 tests across 35 suites; `jest.config.js` configured with `node` and `jsdom` environments; backend unit tests for `apiKey.js` middleware (5 cases), `advisory.js` model (dedup paths + `findByNaturalKey`), VTEC extraction, NOAA normalization; integration tests for advisories route and `/ping`; frontend unit tests in `tests/unit/frontend/` covering `utils.js` (38), `aggregation.js` (22), `export.js` (13), `alert-filters.js` (42)
+- **Jest Test Suite**: 561 tests across 39 suites; `jest.config.js` configured with `node` and `jsdom` environments; backend unit tests for `apiKey.js` middleware, `advisory.js` model (dedup paths + `findByNaturalKey`), VTEC extraction, NOAA normalization, alerting, metrics, validators, cache, config, cleanup, and all models; integration tests for all routes (advisories, admin, offices, status, notices, filters, observations, trends, history, operational-status, app behavior); frontend unit tests in `tests/unit/frontend/` covering `utils.js` (38), `aggregation.js` (22), `export.js` (13), `alert-filters.js` (42), `api.js`, `update-banner.js`
 - **Automated XSS Audit**: Smoke test includes innerHTML safety check across all frontend files
 - **Version Display**: Footer on all 8 pages shows version number and release date via `/api/version` endpoint
 - **Stale Cache Safeguards**: Self-unregistering SW stub kills orphaned beta-era service worker; versioned asset URLs (`?v=X.Y.Z`) force cache busting on deploy
@@ -159,13 +159,44 @@ storm-scout/
 │   │   │   ├── unit/
 │   │   │   │   ├── apiKey.middleware.test.js
 │   │   │   │   ├── advisory.model.test.js
+│   │   │   │   ├── advisoryHistory.model.test.js
+│   │   │   │   ├── alerting.test.js
+│   │   │   │   ├── api-client.test.js
+│   │   │   │   ├── auditLog.model.test.js
+│   │   │   │   ├── cache.test.js
+│   │   │   │   ├── cleanup.test.js
+│   │   │   │   ├── config.test.js
+│   │   │   │   ├── ingestionEvent.model.test.js
+│   │   │   │   ├── metrics.test.js
+│   │   │   │   ├── noaa-ingestor.test.js
+│   │   │   │   ├── normalizer.test.js
+│   │   │   │   ├── notice.model.test.js
+│   │   │   │   ├── observation.model.test.js
+│   │   │   │   ├── office.model.test.js
+│   │   │   │   ├── officeStatus.model.test.js
+│   │   │   │   ├── validate.middleware.test.js
+│   │   │   │   ├── validators.advisories.test.js
+│   │   │   │   ├── vtec-extraction.test.js
 │   │   │   │   └── frontend/
 │   │   │   │       ├── utils.test.js           # 38 tests — escapeHtml, html template, badges, dates
 │   │   │   │       ├── aggregation.test.js     # 22 tests — severity, urgency, dedup, aggregation
 │   │   │   │       ├── export.test.js          # 13 tests — CSV, reports, shareable links
-│   │   │   │       └── alert-filters.test.js   # 42 tests — presets, filter logic, localStorage
+│   │   │   │       ├── alert-filters.test.js   # 42 tests — presets, filter logic, localStorage
+│   │   │   │       ├── api.test.js
+│   │   │   │       └── update-banner.test.js
 │   │   │   ├── integration/
-│   │   │   │   └── advisories.route.test.js
+│   │   │   │   ├── admin.route.test.js
+│   │   │   │   ├── advisories.route.test.js
+│   │   │   │   ├── app.behavior.test.js
+│   │   │   │   ├── filters.route.test.js
+│   │   │   │   ├── history.route.test.js
+│   │   │   │   ├── misc-routes.test.js
+│   │   │   │   ├── notices.route.test.js
+│   │   │   │   ├── observations.route.test.js
+│   │   │   │   ├── offices.route.test.js
+│   │   │   │   ├── operational-status.route.test.js
+│   │   │   │   ├── status.route.test.js
+│   │   │   │   └── trends.route.test.js
 │   │   │   └── fixtures/
 │   │   │       └── noaa-alerts-snapshot.json  # 540-alert NOAA fixture for regression testing
 │   │   └── data/
@@ -748,9 +779,10 @@ bash scripts/smoke-test.sh     # Pre-deploy: validates all API endpoints + front
 - **Environments**: `node` (backend), `jsdom` (frontend — via `@jest-environment jsdom` docblock)
 - **Test location**: `backend/tests/unit/` (backend), `backend/tests/unit/frontend/` (frontend)
 - **Run**: `npm test` or `npm run test:watch`
-- **Total**: 474 tests across 35 suites (359 backend + 115 frontend)
-- **Backend tests**: API key middleware, advisory model, VTEC extraction, NOAA normalization, advisories route integration, `/ping` liveness
-- **Frontend tests**: `utils.js` (escapeHtml, html tagged template, severity badges, date formatting, celsius-to-fahrenheit, timeAgo, isStale, truncate, debounce, render helpers), `aggregation.js` (severity ranking, urgency, dedup, office aggregation, filter warnings), `export.js` (CSV escaping, date formatting, report generation, shareable links), `alert-filters.js` (preset application, filter logic, localStorage handling)
+- **Total**: 561 tests across 39 suites (446 backend + 115 frontend)
+- **Coverage**: 75.25% lines, 75.48% statements, 65.32% branches, 80.55% functions
+- **Backend tests**: All routes (advisories, admin, offices, status, notices, filters, observations, trends, history, operational-status, app behavior), all models (advisory, advisoryHistory, auditLog, ingestionEvent, notice, observation, office, officeStatus), middleware (apiKey, validate), utilities (alerting, cache, cleanup, config, metrics, normalizer, noaa-ingestor, api-client, vtec-extraction, validators)
+- **Frontend tests**: `utils.js` (escapeHtml, html tagged template, severity badges, date formatting, celsius-to-fahrenheit, timeAgo, isStale, truncate, debounce, render helpers), `aggregation.js` (severity ranking, urgency, dedup, office aggregation, filter warnings), `export.js` (CSV escaping, date formatting, report generation, shareable links), `alert-filters.js` (preset application, filter logic, localStorage handling), `api.js`, `update-banner.js`
 - **Frontend testability**: `module.exports` guards in `utils.js`, `export.js`, `alert-filters.js` enable Node.js `require()` without breaking browser usage
 
 ### Smoke Test
