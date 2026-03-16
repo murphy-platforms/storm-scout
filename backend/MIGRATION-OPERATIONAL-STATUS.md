@@ -162,6 +162,6 @@ WHERE operational_status IN ('open_normal', 'open_restricted', 'closed', 'pendin
 
 ## Questions?
 
-Contact: [Your contact info or refer to AGENTS.md]
+Contact: See project README or open a GitHub Issue.
 
 **Co-Authored-By:** Warp <agent@warp.dev>
