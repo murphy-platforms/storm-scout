@@ -309,7 +309,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 - `PRIMARY KEY (type_name)`
 
 **Notes:**
-- 94 pre-seeded types covering the full official NOAA alert taxonomy as of 2026
+- 96 pre-seeded types covering the full official NOAA alert taxonomy as of 2026
 - No FK from `advisories.advisory_type` due to MariaDB restriction on FKs referencing columns used in GENERATED ALWAYS AS expressions (see schema comment in `advisories` table)
 - Application-layer enforcement: ingestor runs `INSERT IGNORE INTO alert_types` before every advisory insert
 

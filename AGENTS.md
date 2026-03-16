@@ -31,7 +31,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 - **Pagination**: `GET /api/advisories/active?page=N&limit=N` — backward compatible (default returns full dataset)
 - **Observability**: `/health` includes uptime, memory (heap/RSS in MB), circuit breaker state; JSON logging via `LOG_FORMAT=json`; `/ping` liveness endpoint (no I/O, always 200) for supervisor keep-alive checks
 - **API Rate Limiting**: 30,000 req/60 min general (corporate NAT-aware, configurable via `RATE_LIMIT_API_MAX`), 20 req/15 min for writes (express-rate-limit)
-- **Input Validation**: All API endpoints validated with express-validator; advisory type params whitelisted against 94-type NOAA enum Set
+- **Input Validation**: All API endpoints validated with express-validator; advisory type params whitelisted against 96-type NOAA enum Set
 - **Timing-Safe Auth**: API key comparison uses `crypto.timingSafeEqual()` with mandatory length pre-check (prevents timing side-channel); in `middleware/apiKey.js`
 - **Database SSL**: `DB_SSL=true` env var wires `{ rejectUnauthorized: true }` into mysql2 pool for encrypted remote DB connections
 - **Fail-Fast Startup**: `config.js` validates 5 required env vars on startup (`NODE_ENV=production` only); exits immediately with `[FATAL]` stderr block if missing
@@ -318,11 +318,11 @@ Each office is mapped to its nearest NWS observation station via `/points/{lat},
 Offices near forecast zone boundaries (e.g., Anchorage) may receive multiple alerts of the same type from different NWS offices. **This is working as designed** - each alert has a unique `external_id` and represents different geographic coverage. Phase 2 (zone filtering) could optionally reduce these to preferred offices.
 
 ### Filter System
-- **Office Default (CUSTOM)**: 47 of 94 alert types enabled (all CRITICAL + all HIGH + key MODERATE for land ops)
+- **Office Default (CUSTOM)**: 49 of 96 alert types enabled (all CRITICAL + all HIGH + key MODERATE for land ops)
 - **Operations View**: All CRITICAL, HIGH, MODERATE (excluding marine/special weather statements)
 - **Executive Summary**: CRITICAL only
 - **Safety Focus**: CRITICAL through LOW (excluding marine/test)
-- **Full View**: All 94 alert types (excluding Test/Admin)
+- **Full View**: All 96 alert types (excluding Test/Admin)
 
 Filters are applied **client-side** in the frontend. The API returns all data; frontend filters based on localStorage preferences.
 
@@ -490,7 +490,7 @@ ssh -p 22 your_user@your-server "touch ~/storm-scout/tmp/restart.txt"
 - [ ] Mobile app (React Native)
 - [ ] Advanced features (alert correlation, predictive analytics)
 
-See `ROADMAP.md` for full list.
+See `CHANGELOG.md` and GitHub Issues for the full backlog.
 
 ---
 
@@ -893,9 +893,7 @@ When cutting a new release:
 
 ### Key Documentation Files
 - `README.md` - Project overview and quick start
-- `ROADMAP.md` - Feature priorities and technical debt
-- `TODO.md` - Active task list
-- `NEXT-STEPS.md` - Phase 1 results and next actions
+- `CHANGELOG.md` - Release history and feature log
 - `DEPLOY.md` - Deployment instructions
 - `backend/README.md` - Backend API documentation
 - `CHANGELOG.md` - Version history
@@ -1159,7 +1157,7 @@ When working on Storm Scout:
 
 8. **Check dependencies**: Storm Scout uses specific versions (Node 20, Bootstrap 5.3.8, MySQL 8) - ensure compatibility.
 
-9. **Follow the roadmap**: Prioritize high-priority items from `ROADMAP.md` unless user specifies otherwise.
+9. **Follow the backlog**: Prioritize open GitHub Issues unless user specifies otherwise.
 
 10. **Provide context**: When investigating issues, share relevant code snippets, database queries, and log excerpts to help the user understand.
 

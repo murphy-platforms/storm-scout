@@ -383,11 +383,11 @@ Active government and emergency notices (state/federal declarations).
 Available filter presets for alert type filtering.
 
 **Available Presets**:
-- `CUSTOM`: Office Default (47/94 types — CRITICAL + HIGH + select MODERATE)
+- `CUSTOM`: Office Default (49/96 types — CRITICAL + HIGH + select MODERATE)
 - `OPERATIONS`: Operations View (CRITICAL + HIGH only)
 - `EXECUTIVE`: Executive Summary (highest impact only)
 - `SAFETY`: Safety Focus (life-safety alerts)
-- `FULL`: Full View (all 94 types)
+- `FULL`: Full View (all 96 types)
 
 #### GET `/api/filters/types/all`
 

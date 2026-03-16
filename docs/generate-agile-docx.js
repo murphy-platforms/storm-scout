@@ -473,7 +473,7 @@ async function main() {
     children.push(...userStory('E4-S8', 'Filters API', 3, 'Operations Analyst',
         'API endpoints serving filter presets and alert type lists',
         'the frontend filter system can be configured dynamically',
-        ['GET /api/filters - all preset configs', 'GET /api/filters/types/all - 94 alert types by impact level', 'Used by frontend AlertFilters module']));
+        ['GET /api/filters - all preset configs', 'GET /api/filters/types/all - 96 alert types by impact level', 'Used by frontend AlertFilters module']));
 
     children.push(...userStory('E4-S9', 'Admin API', 5, 'System Administrator',
         'admin endpoints to control ingestion and view audit logs',
@@ -585,12 +585,12 @@ async function main() {
     children.push(...userStory('E8-S1', 'Alert Filter Engine & localStorage', 8, 'Operations Analyst',
         'a client-side alert filter system with 5 presets that persists in localStorage',
         'I only see alert types relevant to my role',
-        ['5 presets: Office Default, Operations, Executive, Safety, Full', 'Each preset defines which of 94 alert types are enabled', 'Selection saved to localStorage', 'AlertFilters module with init(), applyFilters(), isEnabled()']));
+        ['5 presets: Office Default, Operations, Executive, Safety, Full', 'Each preset defines which of 96 alert types are enabled', 'Selection saved to localStorage', 'AlertFilters module with init(), applyFilters(), isEnabled()']));
 
     children.push(...userStory('E8-S2', 'Filter Configuration Page', 8, 'Operations Analyst',
         'a dedicated page to configure which alert types are visible',
         'I can customize exactly what I see across the dashboard',
-        ['5 preset buttons at top', '94+ toggles organized by impact level', 'Enable All / Disable All per level', 'Save button persists to localStorage']));
+        ['5 preset buttons at top', '96+ toggles organized by impact level', 'Enable All / Disable All per level', 'Save button persists to localStorage']));
 
     children.push(...userStory('E8-S3', 'Cross-Page Filter Application', 5, 'Operations Analyst',
         'filter settings to apply across all pages',
@@ -726,7 +726,7 @@ async function main() {
         { name: 'E2-S4: Advisories Table & Model', pts: 5, assignee: 'Backend' },
         { name: 'E2-S5: Office Status & Observations Tables', pts: 5, assignee: 'Backend' },
         { name: 'E2-S6: Supporting Tables (6 tables)', pts: 5, assignee: 'Backend' },
-        { name: 'E2-S7: NOAA Alert Types Config (94 types)', pts: 4, assignee: 'Backend' },
+        { name: 'E2-S7: NOAA Alert Types Config (96 types)', pts: 4, assignee: 'Backend' },
         { name: 'E1-S9: README & Contributing Guide', pts: 3, assignee: 'Full-Stack' },
         { name: 'E5-S3: Frontend API Client with Caching', pts: 5, assignee: 'Frontend' },
         { name: 'E1-S8: GitHub Actions CI Pipeline', pts: 5, assignee: 'Full-Stack' },

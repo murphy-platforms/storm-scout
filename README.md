@@ -70,7 +70,7 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 - **Weather Observations** - Current conditions from nearest NWS observation station updated every 15 minutes
 
 ### Alert Filtering System
-- **94 NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
+- **96 NOAA Alert Types** - Comprehensive taxonomy covering all official NOAA weather alert types
 - **5 Impact Levels** - Alerts categorized as CRITICAL, HIGH, MODERATE, LOW, or INFO
 - **Customizable Filters** - Users can enable/disable individual alert types via interactive UI
 - **Quick Presets** - Office Default, Operations View, Executive Summary, Safety Focus, All Alerts
@@ -109,7 +109,7 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 
 ### Security
 - **API Rate Limiting** - 30,000 requests/60 min general (accommodates corporate NAT environments); 20 req/15 min for write operations; configurable via `RATE_LIMIT_API_MAX`
-- **Input Validation** - All API endpoints validated and sanitized with express-validator; advisory type query params whitelisted against the full 94-type NOAA enum
+- **Input Validation** - All API endpoints validated and sanitized with express-validator; advisory type query params whitelisted against the full 96-type NOAA enum
 - **Security Headers** - helmet.js with CSP, HSTS, X-Frame-Options, X-Content-Type-Options
 - **Timing-Safe Auth** - API key comparison uses `crypto.timingSafeEqual()` with length pre-check to prevent side-channel timing attacks
 - **XSS Prevention** - Secure `html` tagged template for safe dynamic HTML rendering
@@ -292,7 +292,7 @@ storm-scout/
 **Backend:** Node.js 18+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
 **Middleware:** node-cache (caching), compression (gzip), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (94 alert types, 1140 observation stations), 300 office locations
+**Data:** NOAA Weather API (96 alert types, 1140 observation stations), 300 office locations
 **Deployment:** Ubuntu Linux, systemd user service, Docker (MariaDB)
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
@@ -339,7 +339,7 @@ See `docs/api.md` for complete API documentation.
 
 ## Filter Configuration
 
-The default filter preset is **"Office Default" (CUSTOM)** with 47 of 94 alert types enabled:
+The default filter preset is **"Office Default" (CUSTOM)** with 49 of 96 alert types enabled:
 
 - **CRITICAL**: 13/13 enabled (all — Tornado Warning, Hurricane Warning, Blizzard Warning, etc.)
 - **HIGH**: 17/17 enabled (all — Tornado Watch, Flood Warning, High Wind Warning, etc.)

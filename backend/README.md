@@ -201,7 +201,7 @@ backend/
 │   │   ├── config.js                 # App configuration
 │   │   ├── database.js               # MySQL pool (retry logic, loadOffices)
 │   │   ├── init-database.js          # Schema init + seed runner
-│   │   └── noaa-alert-types.js       # Filter presets & alert taxonomy (94 types)
+│   │   └── noaa-alert-types.js       # Filter presets & alert taxonomy (96 types)
 │   ├── models/                       # Data access layer (async/await)
 │   │   ├── office.js                 # Office CRUD
 │   │   ├── advisory.js               # Advisory CRUD + deduplication queries
