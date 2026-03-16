@@ -28,4 +28,32 @@ test.describe('Active Advisories', () => {
         const count = await filters.count();
         expect(count).toBeGreaterThan(0);
     });
+
+    test('severity deep-link initializes unified view filter', async ({ page }) => {
+        await page.goto('/advisories.html?severity=Extreme');
+        await page.waitForLoadState('networkidle');
+
+        await expect(page.locator('#viewFilter')).toHaveValue('severity:Extreme');
+    });
+
+    test('supports card/table view switching and dedup toggle interaction', async ({ page }) => {
+        await page.goto('/advisories.html');
+        await page.waitForLoadState('networkidle');
+
+        // Switch to table view
+        await page.locator('#tableViewBtn').click();
+        await expect(page.locator('#tableViewContainer')).toBeVisible();
+        await expect(page.locator('#cardViewContainer')).toBeHidden();
+
+        // Switch back to card view
+        await page.locator('#cardViewBtn').click();
+        await expect(page.locator('#cardViewContainer')).toBeVisible();
+        await expect(page.locator('#tableViewContainer')).toBeHidden();
+
+        // Dedup toggle should be interactive and persist checked state in the DOM
+        const dedupToggle = page.locator('#dedupToggle');
+        const wasChecked = await dedupToggle.isChecked();
+        await dedupToggle.click();
+        await expect(dedupToggle).toHaveJSProperty('checked', !wasChecked);
+    });
 });

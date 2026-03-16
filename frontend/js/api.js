@@ -290,3 +290,15 @@ const API = {
         }
     }
 };
+
+// Export for Node.js / Jest testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        API,
+        fetchWithTimeout,
+        DEFAULT_TIMEOUT_MS,
+        __resetVersionCache() {
+            _versionCache = null;
+        }
+    };
+}

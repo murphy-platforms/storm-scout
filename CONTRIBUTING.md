@@ -87,28 +87,30 @@ bash scripts/smoke-test.sh
 npm start &
 bash scripts/ui-verify.sh
 
-# E2E browser tests (Playwright — separate package)
+# Frontend browser E2E tests (auto-starts backend server)
 cd ../e2e
-npm ci
-npx playwright install chromium
-npx playwright test
+npm install --no-package-lock
+npx playwright install
+npm test
 ```
 
-The CI pipeline (`npm audit --audit-level=high` + `npm test`) runs on every push and PR via GitHub Actions.
+Tests are in `backend/tests/`. Unit tests are in `tests/unit/`, integration tests in `tests/integration/`.
+
+The **UI verification script** (`scripts/ui-verify.sh`) validates all 9 frontend pages are served correctly, all 8 API dependencies return valid responses, and key data integrity constraints hold (300 offices loaded, active advisories present, severity values, filter impact levels, specific office lookup). Run it against a live server — it does not start its own.
+
+The CI pipeline runs backend linting, `npm audit --audit-level=high`, backend Jest tests, and Playwright E2E tests on every push and PR via GitHub Actions.
 
 ### Test Coverage
 
-Tests are organized in `backend/tests/`:
+Tests are organized in two layers:
 
-- **Unit tests** (`tests/unit/`) — Models, middleware, ingestion, NOAA client, caching, alerting, VTEC extraction, metrics, and frontend utility logic (via jsdom)
-- **Integration tests** (`tests/integration/`) — All API routes end-to-end via supertest
-- **Smoke tests** (`scripts/smoke-test.sh`) — Pre-deploy server health checks (11 checks)
-- **UI verification** (`scripts/ui-verify.sh`) — Validates all pages serve correctly and API dependencies respond (22 checks, requires running server)
-- **E2E browser tests** (`e2e/tests/`) — Playwright tests for critical user flows: dashboard, advisories, offices, map, export (separate package; auto-starts dev server)
+- **Jest unit/integration tests (`backend/tests/`)** — Backend routes/models/ingestion/middleware plus frontend shared client modules (`tests/unit/frontend/`)
+- **Playwright E2E browser tests (`e2e/tests/`)** — Critical user flows across dashboard, advisories, offices, office detail, map, filters, notices, and export
+**Backend + frontend unit tests (Jest):** The Jest suite covers backend routes/ingestion/data logic and frontend shared client modules (`utils.js`, `aggregation.js`, `export.js`, `alert-filters.js`, `api.js`, `update-banner.js`).
 
-All new backend code should include corresponding unit tests. Frontend logic that can be tested without a browser (utility functions, data transformations, filter logic) should include jsdom-based tests in `tests/unit/frontend/`.
+**Frontend browser tests (Playwright):** E2E coverage validates core user flows across dashboard, advisories, offices, office detail, map, filters, notices, and export interactions.
 
-**Contribution opportunity:** Additional E2E coverage for edge cases, mobile viewports, and accessibility testing. Open an issue to discuss the approach before starting.
+Because the frontend is intentionally no-build-step vanilla JavaScript, page scripts are primarily validated through browser E2E behavior checks rather than component-framework unit tests.
 
 ---
 

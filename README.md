@@ -131,7 +131,7 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 - **UI Verification Test** - 22 automated checks validating all 9 frontend pages are served with correct DOM elements, all 8 API dependencies return valid data, and data integrity constraints hold (300 offices, active advisories, severity values, filter levels)
 - **Deterministic Builds** - `npm ci` (not `npm install`) in all deploy paths ensures package-lock.json is honored
 - **Automated Migrations** - `npm run migrate` runs idempotent migrations before app restart on every deploy; `APPLY_MIGRATIONS=false` escape hatch available
-- **CI Pipeline** - GitHub Actions runs `npm ci`, `npm audit --audit-level=high`, and `npm test` on every push and pull request
+- **CI Pipeline** - GitHub Actions runs backend linting, `npm audit --audit-level=high`, backend Jest tests, and Playwright E2E tests on every push and pull request
 - **Liveness vs Readiness** - `/ping` (no I/O, always 200) for supervisor keep-alive; `/health` (may 503) for readiness monitoring
 - **Test Suite** - Jest unit and integration tests for advisory model dedup paths, API key middleware, and advisories route; `supertest` for HTTP-level assertions
 - **UI Verification** - curl-based page and API dependency validation across all 9 frontend pages (22 checks)
@@ -397,7 +397,7 @@ The following are intentional scope boundaries for this project, not missing fea
 | **Geographic coverage** | US only | NOAA Weather API covers the 50 US states and territories. International adapters (Environment Canada, MeteoAlarm, SMN) are designed for but not yet implemented. |
 | **User authentication** | Network-level | The dashboard is open to anyone with the URL. Access is controlled via reverse proxy or VPN. The API uses key-based authentication for write operations. |
 | **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#adapting-for-your-organization) above. |
-| **Frontend tests** | Backend only | Backend has 474 automated tests across 35 suites (Jest + supertest). The frontend has zero test coverage — a deliberate trade-off for the no-build-step architecture. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for rationale. |
+| **Frontend tests** | Automated unit + E2E | Frontend coverage includes Jest/jsdom unit tests for shared client modules and Playwright browser tests for core user flows (dashboard, advisories, offices, office detail, filters, notices, map, export). See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes). |
 | **Infrastructure cost** | Minimal | Runs on a single VPS ($5-10/month). No paid API dependencies — NOAA data is free and public domain. |
 
 ## Contributing

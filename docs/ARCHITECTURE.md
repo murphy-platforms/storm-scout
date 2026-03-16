@@ -129,7 +129,13 @@ TypeScript migration could provide IDE autocompletion, refactoring safety, and s
 
 ## Testing Strategy
 
-Unit, integration, smoke, and UI verification tests run via Jest and shell scripts on every push through CI. See [CONTRIBUTING.md](../CONTRIBUTING.md#test-coverage) for test organization and coverage details.
+**Backend** — Jest unit/integration coverage for routes, services, ingestion, and data layers remains a core quality gate.
+
+**Frontend** — Coverage now has two automated layers:
+- Jest/jsdom unit tests for shared client modules (`utils.js`, `aggregation.js`, `export.js`, `alert-filters.js`, `api.js`, `update-banner.js`)
+- Playwright E2E tests for critical user journeys across dashboard, advisories, offices, office detail, filters, notices, map, and export flows
+
+Both backend tests and Playwright E2E tests are enforced in CI on pushes and pull requests. The curl-based UI verification script remains a supplemental deployment smoke check.
 
 ---
 
