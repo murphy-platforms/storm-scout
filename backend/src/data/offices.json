@@ -8,7 +8,8 @@
     "county": "Bernalillo County",
     "cwa": "ABQ",
     "ugc_codes": "[\"NMZ219\",\"NMC001\"]",
-    "office_code": "87102"
+    "office_code": "87102",
+    "observation_station": "KABQ"
   },
   {
     "name": "Uptown Albuquerque",
@@ -19,7 +20,8 @@
     "county": "Bernalillo County",
     "cwa": "ABQ",
     "ugc_codes": "[\"NMZ219\",\"NMC001\"]",
-    "office_code": "87110"
+    "office_code": "87110",
+    "observation_station": "KABQ"
   },
   {
     "name": "Downtown Santa Fe",
@@ -30,7 +32,8 @@
     "county": "Santa Fe County",
     "cwa": "ABQ",
     "ugc_codes": "[\"NMZ218\",\"NMC049\"]",
-    "office_code": "87501"
+    "office_code": "87501",
+    "observation_station": "KSAF"
   },
   {
     "name": "South Santa Fe",
@@ -41,7 +44,8 @@
     "county": "Santa Fe County",
     "cwa": "ABQ",
     "ugc_codes": "[\"NMZ214\",\"NMC049\"]",
-    "office_code": "87505"
+    "office_code": "87505",
+    "observation_station": "KSAF"
   },
   {
     "name": "Downtown Anchorage",
@@ -52,7 +56,8 @@
     "county": "Anchorage Municipality",
     "cwa": "AFC",
     "ugc_codes": "[\"AKZ701\",\"AKC020\"]",
-    "office_code": "99501"
+    "office_code": "99501",
+    "observation_station": "PAMR"
   },
   {
     "name": "South Anchorage",
@@ -63,7 +68,8 @@
     "county": "Anchorage Municipality",
     "cwa": "AFC",
     "ugc_codes": "[\"AKZ701\",\"AKC020\"]",
-    "office_code": "99507"
+    "office_code": "99507",
+    "observation_station": "PAMR"
   },
   {
     "name": "Downtown Richmond",
@@ -74,7 +80,8 @@
     "county": "City of Richmond",
     "cwa": "AKQ",
     "ugc_codes": "[\"VAZ515\",\"VAC760\"]",
-    "office_code": "23219"
+    "office_code": "23219",
+    "observation_station": "KRIC"
   },
   {
     "name": "The Fan Richmond",
@@ -85,7 +92,8 @@
     "county": "City of Richmond",
     "cwa": "AKQ",
     "ugc_codes": "[\"VAZ515\",\"VAC760\"]",
-    "office_code": "23220"
+    "office_code": "23220",
+    "observation_station": "KRIC"
   },
   {
     "name": "Virginia Beach Oceanfront",
@@ -96,7 +104,8 @@
     "county": "City of Virginia Beach",
     "cwa": "AKQ",
     "ugc_codes": "[\"VAZ098\",\"VAC810\"]",
-    "office_code": "23451"
+    "office_code": "23451",
+    "observation_station": "KNTU"
   },
   {
     "name": "Norfolk",
@@ -107,7 +116,8 @@
     "county": "City of Norfolk",
     "cwa": "AKQ",
     "ugc_codes": "[\"VAZ095\",\"VAC710\"]",
-    "office_code": "23502"
+    "office_code": "23502",
+    "observation_station": "KNGU"
   },
   {
     "name": "Downtown Albany",
@@ -118,7 +128,8 @@
     "county": "Albany County",
     "cwa": "ALY",
     "ugc_codes": "[\"NYZ052\",\"NYC001\"]",
-    "office_code": "12207"
+    "office_code": "12207",
+    "observation_station": "KALB"
   },
   {
     "name": "Center Square Albany",
@@ -129,7 +140,8 @@
     "county": "Albany County",
     "cwa": "ALY",
     "ugc_codes": "[\"NYZ052\",\"NYC001\"]",
-    "office_code": "12210"
+    "office_code": "12210",
+    "observation_station": "KALB"
   },
   {
     "name": "Downtown Amarillo",
@@ -140,7 +152,8 @@
     "county": "Potter County",
     "cwa": "AMA",
     "ugc_codes": "[\"TXZ012\",\"TXC375\"]",
-    "office_code": "79101"
+    "office_code": "79101",
+    "observation_station": "KAMA"
   },
   {
     "name": "South Amarillo",
@@ -151,7 +164,8 @@
     "county": "Randall County",
     "cwa": "AMA",
     "ugc_codes": "[\"TXZ017\",\"TXC381\"]",
-    "office_code": "79109"
+    "office_code": "79109",
+    "observation_station": "KAMA"
   },
   {
     "name": "Downtown Syracuse",
@@ -162,7 +176,8 @@
     "county": "Onondaga County",
     "cwa": "BGM",
     "ugc_codes": "[\"NYZ018\",\"NYC067\"]",
-    "office_code": "13202"
+    "office_code": "13202",
+    "observation_station": "KSYR"
   },
   {
     "name": "University Hill Syracuse",
@@ -173,7 +188,8 @@
     "county": "Onondaga County",
     "cwa": "BGM",
     "ugc_codes": "[\"NYZ018\",\"NYC067\"]",
-    "office_code": "13210"
+    "office_code": "13210",
+    "observation_station": "KSYR"
   },
   {
     "name": "Downtown Scranton",
@@ -184,7 +200,8 @@
     "county": "Lackawanna County",
     "cwa": "BGM",
     "ugc_codes": "[\"PAZ044\",\"PAC069\"]",
-    "office_code": "18503"
+    "office_code": "18503",
+    "observation_station": "KAVP"
   },
   {
     "name": "South Scranton",
@@ -195,7 +212,8 @@
     "county": "Lackawanna County",
     "cwa": "BGM",
     "ugc_codes": "[\"PAZ044\",\"PAC069\"]",
-    "office_code": "18505"
+    "office_code": "18505",
+    "observation_station": "KAVP"
   },
   {
     "name": "Downtown Bismarck",
@@ -206,7 +224,8 @@
     "county": "Burleigh County",
     "cwa": "BIS",
     "ugc_codes": "[\"NDZ035\",\"NDC015\"]",
-    "office_code": "58501"
+    "office_code": "58501",
+    "observation_station": "KBIS"
   },
   {
     "name": "North Bismarck",
@@ -217,7 +236,8 @@
     "county": "Burleigh County",
     "cwa": "BIS",
     "ugc_codes": "[\"NDZ035\",\"NDC015\"]",
-    "office_code": "58504"
+    "office_code": "58504",
+    "observation_station": "KBIS"
   },
   {
     "name": "Downtown Birmingham",
@@ -228,7 +248,8 @@
     "county": "Jefferson County",
     "cwa": "BMX",
     "ugc_codes": "[\"ALZ024\",\"ALC073\"]",
-    "office_code": "35203"
+    "office_code": "35203",
+    "observation_station": "KBHM"
   },
   {
     "name": "Five Points South Birmingham",
@@ -239,7 +260,8 @@
     "county": "Jefferson County",
     "cwa": "BMX",
     "ugc_codes": "[\"ALZ024\",\"ALC073\"]",
-    "office_code": "35205"
+    "office_code": "35205",
+    "observation_station": "KBHM"
   },
   {
     "name": "Downtown Montgomery",
@@ -250,7 +272,8 @@
     "county": "Montgomery County",
     "cwa": "BMX",
     "ugc_codes": "[\"ALZ044\",\"ALC101\"]",
-    "office_code": "36104"
+    "office_code": "36104",
+    "observation_station": "KMGM"
   },
   {
     "name": "Cloverdale Montgomery",
@@ -261,7 +284,8 @@
     "county": "Montgomery County",
     "cwa": "BMX",
     "ugc_codes": "[\"ALZ044\",\"ALC101\"]",
-    "office_code": "36107"
+    "office_code": "36107",
+    "observation_station": "KMGM"
   },
   {
     "name": "Downtown Boise",
@@ -272,7 +296,8 @@
     "county": "Ada County",
     "cwa": "BOI",
     "ugc_codes": "[\"IDZ014\",\"IDC001\"]",
-    "office_code": "83702"
+    "office_code": "83702",
+    "observation_station": "KBOI"
   },
   {
     "name": "Southeast Boise",
@@ -283,7 +308,8 @@
     "county": "Ada County",
     "cwa": "BOI",
     "ugc_codes": "[\"IDZ014\",\"IDC001\"]",
-    "office_code": "83706"
+    "office_code": "83706",
+    "observation_station": "KBOI"
   },
   {
     "name": "Downtown Denver",
@@ -294,7 +320,8 @@
     "county": "Denver County",
     "cwa": "BOU",
     "ugc_codes": "[\"COZ040\",\"COC031\"]",
-    "office_code": "80202"
+    "office_code": "80202",
+    "observation_station": "KBJC"
   },
   {
     "name": "University Park Denver",
@@ -305,7 +332,8 @@
     "county": "Denver County",
     "cwa": "BOU",
     "ugc_codes": "[\"COZ040\",\"COC031\"]",
-    "office_code": "80210"
+    "office_code": "80210",
+    "observation_station": "KBKF"
   },
   {
     "name": "Downtown Boulder",
@@ -316,7 +344,8 @@
     "county": "Boulder County",
     "cwa": "BOU",
     "ugc_codes": "[\"COZ039\",\"COC013\"]",
-    "office_code": "80302"
+    "office_code": "80302",
+    "observation_station": "KBDU"
   },
   {
     "name": "East Boulder",
@@ -327,7 +356,8 @@
     "county": "Boulder County",
     "cwa": "BOU",
     "ugc_codes": "[\"COZ039\",\"COC013\"]",
-    "office_code": "80303"
+    "office_code": "80303",
+    "observation_station": "KBDU"
   },
   {
     "name": "Downtown Fort Collins",
@@ -338,7 +368,8 @@
     "county": "Larimer County",
     "cwa": "BOU",
     "ugc_codes": "[\"COZ038\",\"COC069\"]",
-    "office_code": "80521"
+    "office_code": "80521",
+    "observation_station": "KFNL"
   },
   {
     "name": "South Fort Collins",
@@ -349,7 +380,8 @@
     "county": "Larimer County",
     "cwa": "BOU",
     "ugc_codes": "[\"COZ038\",\"COC069\"]",
-    "office_code": "80525"
+    "office_code": "80525",
+    "observation_station": "KFNL"
   },
   {
     "name": "Downtown Springfield MA",
@@ -360,7 +392,8 @@
     "county": "Hampden County",
     "cwa": "BOX",
     "ugc_codes": "[\"MAZ011\",\"MAC013\"]",
-    "office_code": "01103"
+    "office_code": "01103",
+    "observation_station": "KBAF"
   },
   {
     "name": "South Springfield MA",
@@ -371,7 +404,8 @@
     "county": "Hampden County",
     "cwa": "BOX",
     "ugc_codes": "[\"MAZ011\",\"MAC013\"]",
-    "office_code": "01108"
+    "office_code": "01108",
+    "observation_station": "KCEF"
   },
   {
     "name": "Downtown Worcester",
@@ -382,7 +416,8 @@
     "county": "Worcester County",
     "cwa": "BOX",
     "ugc_codes": "[\"MAZ012\",\"MAC027\"]",
-    "office_code": "01602"
+    "office_code": "01602",
+    "observation_station": "KORH"
   },
   {
     "name": "South Worcester",
@@ -393,7 +428,8 @@
     "county": "Worcester County",
     "cwa": "BOX",
     "ugc_codes": "[\"MAZ012\",\"MAC027\"]",
-    "office_code": "01608"
+    "office_code": "01608",
+    "observation_station": "KORH"
   },
   {
     "name": "Beacon Hill Boston",
@@ -404,7 +440,8 @@
     "county": "Suffolk County",
     "cwa": "BOX",
     "ugc_codes": "[\"MAZ015\",\"MAC025\"]",
-    "office_code": "02108"
+    "office_code": "02108",
+    "observation_station": "KBOS"
   },
   {
     "name": "Fenway Boston",
@@ -415,7 +452,8 @@
     "county": "Suffolk County",
     "cwa": "BOX",
     "ugc_codes": "[\"MAZ015\",\"MAC025\"]",
-    "office_code": "02215"
+    "office_code": "02215",
+    "observation_station": "KBOS"
   },
   {
     "name": "Downtown Providence",
@@ -426,7 +464,8 @@
     "county": "Providence County",
     "cwa": "BOX",
     "ugc_codes": "[\"RIZ002\",\"RIC007\"]",
-    "office_code": "02903"
+    "office_code": "02903",
+    "observation_station": "KPVD"
   },
   {
     "name": "East Side Providence",
@@ -437,7 +476,8 @@
     "county": "Providence County",
     "cwa": "BOX",
     "ugc_codes": "[\"RIZ002\",\"RIC007\"]",
-    "office_code": "02906"
+    "office_code": "02906",
+    "observation_station": "KPVD"
   },
   {
     "name": "Downtown Hartford",
@@ -448,7 +488,8 @@
     "county": "Hartford County",
     "cwa": "BOX",
     "ugc_codes": "[\"CTZ002\",\"CTC003\"]",
-    "office_code": "06103"
+    "office_code": "06103",
+    "observation_station": "KHFD"
   },
   {
     "name": "West End Hartford",
@@ -459,7 +500,8 @@
     "county": "Hartford County",
     "cwa": "BOX",
     "ugc_codes": "[\"CTZ002\",\"CTC003\"]",
-    "office_code": "06105"
+    "office_code": "06105",
+    "observation_station": "KHFD"
   },
   {
     "name": "Downtown Brownsville",
@@ -470,7 +512,8 @@
     "county": "Cameron County",
     "cwa": "BRO",
     "ugc_codes": "[\"TXZ255\",\"TXC061\"]",
-    "office_code": "78520"
+    "office_code": "78520",
+    "observation_station": "KBRO"
   },
   {
     "name": "North Brownsville",
@@ -481,7 +524,8 @@
     "county": "Cameron County",
     "cwa": "BRO",
     "ugc_codes": "[\"TXZ255\",\"TXC061\"]",
-    "office_code": "78521"
+    "office_code": "78521",
+    "observation_station": "KBRO"
   },
   {
     "name": "Downtown Burlington",
@@ -492,7 +536,8 @@
     "county": "Chittenden County",
     "cwa": "BTV",
     "ugc_codes": "[\"VTZ005\",\"VTC007\"]",
-    "office_code": "05401"
+    "office_code": "05401",
+    "observation_station": "KPBG"
   },
   {
     "name": "South Burlington",
@@ -503,7 +548,8 @@
     "county": "Chittenden County",
     "cwa": "BTV",
     "ugc_codes": "[\"VTZ005\",\"VTC007\"]",
-    "office_code": "05403"
+    "office_code": "05403",
+    "observation_station": "KPBG"
   },
   {
     "name": "Downtown Buffalo",
@@ -514,7 +560,8 @@
     "county": "Erie County",
     "cwa": "BUF",
     "ugc_codes": "[\"NYZ010\",\"NYC029\"]",
-    "office_code": "14202"
+    "office_code": "14202",
+    "observation_station": "KBUF"
   },
   {
     "name": "University Heights Buffalo",
@@ -525,7 +572,8 @@
     "county": "Erie County",
     "cwa": "BUF",
     "ugc_codes": "[\"NYZ010\",\"NYC029\"]",
-    "office_code": "14214"
+    "office_code": "14214",
+    "observation_station": "KBUF"
   },
   {
     "name": "Downtown Rochester",
@@ -536,7 +584,8 @@
     "county": "Monroe County",
     "cwa": "BUF",
     "ugc_codes": "[\"NYZ003\",\"NYC055\"]",
-    "office_code": "14604"
+    "office_code": "14604",
+    "observation_station": "KROC"
   },
   {
     "name": "Park Avenue Rochester",
@@ -547,7 +596,8 @@
     "county": "Monroe County",
     "cwa": "BUF",
     "ugc_codes": "[\"NYZ003\",\"NYC055\"]",
-    "office_code": "14607"
+    "office_code": "14607",
+    "observation_station": "KROC"
   },
   {
     "name": "Downtown Billings",
@@ -558,7 +608,8 @@
     "county": "Yellowstone County",
     "cwa": "BYZ",
     "ugc_codes": "[\"MTZ235\",\"MTC111\"]",
-    "office_code": "59101"
+    "office_code": "59101",
+    "observation_station": "KBIL"
   },
   {
     "name": "West Billings",
@@ -569,7 +620,8 @@
     "county": "Yellowstone County",
     "cwa": "BYZ",
     "ugc_codes": "[\"MTZ235\",\"MTC111\"]",
-    "office_code": "59102"
+    "office_code": "59102",
+    "observation_station": "KBIL"
   },
   {
     "name": "Downtown Columbia SC",
@@ -580,7 +632,8 @@
     "county": "Richland County",
     "cwa": "CAE",
     "ugc_codes": "[\"SCZ028\",\"SCC079\"]",
-    "office_code": "29201"
+    "office_code": "29201",
+    "observation_station": "KCUB"
   },
   {
     "name": "Shandon Columbia SC",
@@ -591,7 +644,8 @@
     "county": "Richland County",
     "cwa": "CAE",
     "ugc_codes": "[\"SCZ028\",\"SCC079\"]",
-    "office_code": "29205"
+    "office_code": "29205",
+    "observation_station": "KCUB"
   },
   {
     "name": "Downtown Augusta",
@@ -602,7 +656,8 @@
     "county": "Richmond County",
     "cwa": "CAE",
     "ugc_codes": "[\"GAZ065\",\"GAC245\"]",
-    "office_code": "30901"
+    "office_code": "30901",
+    "observation_station": "KDNL"
   },
   {
     "name": "West Augusta",
@@ -613,7 +668,8 @@
     "county": "Richmond County",
     "cwa": "CAE",
     "ugc_codes": "[\"GAZ065\",\"GAC245\"]",
-    "office_code": "30904"
+    "office_code": "30904",
+    "observation_station": "KDNL"
   },
   {
     "name": "Downtown Bangor",
@@ -624,7 +680,8 @@
     "county": "Penobscot County",
     "cwa": "CAR",
     "ugc_codes": "[\"MEZ015\",\"MEC019\"]",
-    "office_code": "04401"
+    "office_code": "04401",
+    "observation_station": "KBGR"
   },
   {
     "name": "Brewer",
@@ -635,7 +692,8 @@
     "county": "Penobscot County",
     "cwa": "CAR",
     "ugc_codes": "[\"MEZ015\",\"MEC019\"]",
-    "office_code": "04412"
+    "office_code": "04412",
+    "observation_station": "KBGR"
   },
   {
     "name": "Downtown Charleston SC",
@@ -646,7 +704,8 @@
     "county": "Charleston County",
     "cwa": "CHS",
     "ugc_codes": "[\"SCZ050\",\"SCC019\"]",
-    "office_code": "29401"
+    "office_code": "29401",
+    "observation_station": "KJZI"
   },
   {
     "name": "West Ashley Charleston",
@@ -657,7 +716,8 @@
     "county": "Charleston County",
     "cwa": "CHS",
     "ugc_codes": "[\"SCZ050\",\"SCC019\"]",
-    "office_code": "29407"
+    "office_code": "29407",
+    "observation_station": "KJZI"
   },
   {
     "name": "Historic Savannah",
@@ -668,7 +728,8 @@
     "county": "Chatham County",
     "cwa": "CHS",
     "ugc_codes": "[\"GAZ119\",\"GAC051\"]",
-    "office_code": "31401"
+    "office_code": "31401",
+    "observation_station": "KSVN"
   },
   {
     "name": "Southside Savannah",
@@ -679,7 +740,8 @@
     "county": "Chatham County",
     "cwa": "CHS",
     "ugc_codes": "[\"GAZ118\",\"GAC051\"]",
-    "office_code": "31405"
+    "office_code": "31405",
+    "observation_station": "KSVN"
   },
   {
     "name": "Downtown Erie",
@@ -690,7 +752,8 @@
     "county": "Erie County",
     "cwa": "CLE",
     "ugc_codes": "[\"PAZ001\",\"PAC049\"]",
-    "office_code": "16501"
+    "office_code": "16501",
+    "observation_station": "KERI"
   },
   {
     "name": "East Erie",
@@ -701,7 +764,8 @@
     "county": "Erie County",
     "cwa": "CLE",
     "ugc_codes": "[\"PAZ001\",\"PAC049\"]",
-    "office_code": "16507"
+    "office_code": "16507",
+    "observation_station": "KERI"
   },
   {
     "name": "Downtown Toledo",
@@ -712,7 +776,8 @@
     "county": "Lucas County",
     "cwa": "CLE",
     "ugc_codes": "[\"OHZ003\",\"OHC095\"]",
-    "office_code": "43604"
+    "office_code": "43604",
+    "observation_station": "KDUH"
   },
   {
     "name": "Old Orchard Toledo",
@@ -723,7 +788,8 @@
     "county": "Lucas County",
     "cwa": "CLE",
     "ugc_codes": "[\"OHZ003\",\"OHC095\"]",
-    "office_code": "43606"
+    "office_code": "43606",
+    "observation_station": "KDUH"
   },
   {
     "name": "University Circle Cleveland",
@@ -734,7 +800,8 @@
     "county": "Cuyahoga County",
     "cwa": "CLE",
     "ugc_codes": "[\"OHZ011\",\"OHC035\"]",
-    "office_code": "44106"
+    "office_code": "44106",
+    "observation_station": "KBKL"
   },
   {
     "name": "Downtown Cleveland",
@@ -745,7 +812,8 @@
     "county": "Cuyahoga County",
     "cwa": "CLE",
     "ugc_codes": "[\"OHZ011\",\"OHC035\"]",
-    "office_code": "44114"
+    "office_code": "44114",
+    "observation_station": "KBKL"
   },
   {
     "name": "Downtown Akron",
@@ -756,7 +824,8 @@
     "county": "Summit County",
     "cwa": "CLE",
     "ugc_codes": "[\"OHZ021\",\"OHC153\"]",
-    "office_code": "44308"
+    "office_code": "44308",
+    "observation_station": "KCAK"
   },
   {
     "name": "North Hill Akron",
@@ -767,7 +836,8 @@
     "county": "Summit County",
     "cwa": "CLE",
     "ugc_codes": "[\"OHZ021\",\"OHC153\"]",
-    "office_code": "44311"
+    "office_code": "44311",
+    "observation_station": "KCAK"
   },
   {
     "name": "Downtown Laredo",
@@ -778,7 +848,8 @@
     "county": "Webb County",
     "cwa": "CRP",
     "ugc_codes": "[\"TXZ239\",\"TXC479\"]",
-    "office_code": "78040"
+    "office_code": "78040",
+    "observation_station": "KLRD"
   },
   {
     "name": "North Laredo",
@@ -789,7 +860,8 @@
     "county": "Webb County",
     "cwa": "CRP",
     "ugc_codes": "[\"TXZ239\",\"TXC479\"]",
-    "office_code": "78041"
+    "office_code": "78041",
+    "observation_station": "KLRD"
   },
   {
     "name": "Downtown Corpus Christi",
@@ -800,7 +872,8 @@
     "county": "Nueces County",
     "cwa": "CRP",
     "ugc_codes": "[\"TXZ343\",\"TXC355\"]",
-    "office_code": "78401"
+    "office_code": "78401",
+    "observation_station": "KCRP"
   },
   {
     "name": "South Side Corpus Christi",
@@ -811,7 +884,8 @@
     "county": "Nueces County",
     "cwa": "CRP",
     "ugc_codes": "[\"TXZ343\",\"TXC355\"]",
-    "office_code": "78411"
+    "office_code": "78411",
+    "observation_station": "KNGP"
   },
   {
     "name": "Downtown Harrisburg",
@@ -822,7 +896,8 @@
     "county": "Dauphin County",
     "cwa": "CTP",
     "ugc_codes": "[\"PAZ057\",\"PAC043\"]",
-    "office_code": "17101"
+    "office_code": "17101",
+    "observation_station": "KCXY"
   },
   {
     "name": "South Harrisburg",
@@ -833,7 +908,8 @@
     "county": "Dauphin County",
     "cwa": "CTP",
     "ugc_codes": "[\"PAZ057\",\"PAC043\"]",
-    "office_code": "17104"
+    "office_code": "17104",
+    "observation_station": "KCXY"
   },
   {
     "name": "Downtown Lancaster",
@@ -844,7 +920,8 @@
     "county": "Lancaster County",
     "cwa": "CTP",
     "ugc_codes": "[\"PAZ066\",\"PAC071\"]",
-    "office_code": "17601"
+    "office_code": "17601",
+    "observation_station": "KLNS"
   },
   {
     "name": "West Lancaster",
@@ -855,7 +932,8 @@
     "county": "Lancaster County",
     "cwa": "CTP",
     "ugc_codes": "[\"PAZ066\",\"PAC071\"]",
-    "office_code": "17603"
+    "office_code": "17603",
+    "observation_station": "KLNS"
   },
   {
     "name": "Downtown Cheyenne",
@@ -866,7 +944,8 @@
     "county": "Laramie County",
     "cwa": "CYS",
     "ugc_codes": "[\"WYZ118\",\"WYC021\"]",
-    "office_code": "82001"
+    "office_code": "82001",
+    "observation_station": "KCYS"
   },
   {
     "name": "North Cheyenne",
@@ -877,7 +956,8 @@
     "county": "Laramie County",
     "cwa": "CYS",
     "ugc_codes": "[\"WYZ118\",\"WYC021\"]",
-    "office_code": "82009"
+    "office_code": "82009",
+    "observation_station": "KCYS"
   },
   {
     "name": "Downtown Duluth",
@@ -888,7 +968,8 @@
     "county": "St. Louis County",
     "cwa": "DLH",
     "ugc_codes": "[\"MNZ037\",\"MNC137\"]",
-    "office_code": "55802"
+    "office_code": "55802",
+    "observation_station": "KDYT"
   },
   {
     "name": "West Duluth",
@@ -899,7 +980,8 @@
     "county": "St. Louis County",
     "cwa": "DLH",
     "ugc_codes": "[\"MNZ037\",\"MNC137\"]",
-    "office_code": "55811"
+    "office_code": "55811",
+    "observation_station": "KDLH"
   },
   {
     "name": "Downtown Des Moines",
@@ -910,7 +992,8 @@
     "county": "Polk County",
     "cwa": "DMX",
     "ugc_codes": "[\"IAZ060\",\"IAC153\"]",
-    "office_code": "50309"
+    "office_code": "50309",
+    "observation_station": "KDSM"
   },
   {
     "name": "South of Grand Des Moines",
@@ -921,7 +1004,8 @@
     "county": "Polk County",
     "cwa": "DMX",
     "ugc_codes": "[\"IAZ060\",\"IAC153\"]",
-    "office_code": "50312"
+    "office_code": "50312",
+    "observation_station": "KDSM"
   },
   {
     "name": "Downtown Ann Arbor",
@@ -932,7 +1016,8 @@
     "county": "Washtenaw County",
     "cwa": "DTX",
     "ugc_codes": "[\"MIZ075\",\"MIC161\"]",
-    "office_code": "48104"
+    "office_code": "48104",
+    "observation_station": "KARB"
   },
   {
     "name": "South Ann Arbor",
@@ -943,7 +1028,8 @@
     "county": "Washtenaw County",
     "cwa": "DTX",
     "ugc_codes": "[\"MIZ075\",\"MIC161\"]",
-    "office_code": "48108"
+    "office_code": "48108",
+    "observation_station": "KARB"
   },
   {
     "name": "Midtown Detroit",
@@ -954,7 +1040,8 @@
     "county": "Wayne County",
     "cwa": "DTX",
     "ugc_codes": "[\"MIZ076\",\"MIC163\"]",
-    "office_code": "48201"
+    "office_code": "48201",
+    "observation_station": "KDET"
   },
   {
     "name": "Downtown Detroit",
@@ -965,7 +1052,8 @@
     "county": "Wayne County",
     "cwa": "DTX",
     "ugc_codes": "[\"MIZ076\",\"MIC163\"]",
-    "office_code": "48226"
+    "office_code": "48226",
+    "observation_station": "KDET"
   },
   {
     "name": "Downtown Cedar Rapids",
@@ -976,7 +1064,8 @@
     "county": "Linn County",
     "cwa": "DVN",
     "ugc_codes": "[\"IAZ052\",\"IAC113\"]",
-    "office_code": "52401"
+    "office_code": "52401",
+    "observation_station": "KCID"
   },
   {
     "name": "Northeast Cedar Rapids",
@@ -987,7 +1076,8 @@
     "county": "Linn County",
     "cwa": "DVN",
     "ugc_codes": "[\"IAZ052\",\"IAC113\"]",
-    "office_code": "52402"
+    "office_code": "52402",
+    "observation_station": "KCID"
   },
   {
     "name": "Downtown Kansas City",
@@ -998,7 +1088,8 @@
     "county": "Jackson County",
     "cwa": "EAX",
     "ugc_codes": "[\"MOZ037\",\"MOC095\"]",
-    "office_code": "64106"
+    "office_code": "64106",
+    "observation_station": "KMKC"
   },
   {
     "name": "Crossroads Kansas City",
@@ -1009,7 +1100,8 @@
     "county": "Jackson County",
     "cwa": "EAX",
     "ugc_codes": "[\"MOZ037\",\"MOC095\"]",
-    "office_code": "64108"
+    "office_code": "64108",
+    "observation_station": "KMKC"
   },
   {
     "name": "Downtown El Paso",
@@ -1020,7 +1112,8 @@
     "county": "El Paso County",
     "cwa": "EPZ",
     "ugc_codes": "[\"TXZ418\",\"TXC141\"]",
-    "office_code": "79901"
+    "office_code": "79901",
+    "observation_station": "KELP"
   },
   {
     "name": "East El Paso",
@@ -1031,7 +1124,8 @@
     "county": "El Paso County",
     "cwa": "EPZ",
     "ugc_codes": "[\"TXZ419\",\"TXC141\"]",
-    "office_code": "79925"
+    "office_code": "79925",
+    "observation_station": "KELP"
   },
   {
     "name": "Downtown San Antonio",
@@ -1042,7 +1136,8 @@
     "county": "Bexar County",
     "cwa": "EWX",
     "ugc_codes": "[\"TXZ205\",\"TXC029\"]",
-    "office_code": "78205"
+    "office_code": "78205",
+    "observation_station": "KSKF"
   },
   {
     "name": "Medical Center San Antonio",
@@ -1053,7 +1148,8 @@
     "county": "Bexar County",
     "cwa": "EWX",
     "ugc_codes": "[\"TXZ205\",\"TXC029\"]",
-    "office_code": "78229"
+    "office_code": "78229",
+    "observation_station": "KSAT"
   },
   {
     "name": "Downtown Austin",
@@ -1064,7 +1160,8 @@
     "county": "Travis County",
     "cwa": "EWX",
     "ugc_codes": "[\"TXZ192\",\"TXC453\"]",
-    "office_code": "78701"
+    "office_code": "78701",
+    "observation_station": "KATT"
   },
   {
     "name": "South Austin",
@@ -1075,7 +1172,8 @@
     "county": "Travis County",
     "cwa": "EWX",
     "ugc_codes": "[\"TXZ192\",\"TXC453\"]",
-    "office_code": "78745"
+    "office_code": "78745",
+    "observation_station": "KAUS"
   },
   {
     "name": "Downtown Atlanta",
@@ -1086,7 +1184,8 @@
     "county": "Fulton County",
     "cwa": "FFC",
     "ugc_codes": "[\"GAZ033\",\"GAC121\"]",
-    "office_code": "30303"
+    "office_code": "30303",
+    "observation_station": "KATL"
   },
   {
     "name": "Buckhead Atlanta",
@@ -1097,7 +1196,8 @@
     "county": "Fulton County",
     "cwa": "FFC",
     "ugc_codes": "[\"GAZ033\",\"GAC121\"]",
-    "office_code": "30324"
+    "office_code": "30324",
+    "observation_station": "KPDK"
   },
   {
     "name": "Downtown Fargo",
@@ -1108,7 +1208,8 @@
     "county": "Cass County",
     "cwa": "FGF",
     "ugc_codes": "[\"NDZ039\",\"NDC017\"]",
-    "office_code": "58102"
+    "office_code": "58102",
+    "observation_station": "KFAR"
   },
   {
     "name": "South Fargo",
@@ -1119,7 +1220,8 @@
     "county": "Cass County",
     "cwa": "FGF",
     "ugc_codes": "[\"NDZ039\",\"NDC017\"]",
-    "office_code": "58103"
+    "office_code": "58103",
+    "observation_station": "KFAR"
   },
   {
     "name": "Downtown Sioux Falls",
@@ -1130,7 +1232,8 @@
     "county": "Minnehaha County",
     "cwa": "FSD",
     "ugc_codes": "[\"SDZ062\",\"SDC099\"]",
-    "office_code": "57104"
+    "office_code": "57104",
+    "observation_station": "KFSD"
   },
   {
     "name": "South Sioux Falls",
@@ -1141,7 +1244,8 @@
     "county": "Lincoln County",
     "cwa": "FSD",
     "ugc_codes": "[\"SDZ067\",\"SDC083\"]",
-    "office_code": "57108"
+    "office_code": "57108",
+    "observation_station": "KFSD"
   },
   {
     "name": "Downtown Dallas",
@@ -1152,7 +1256,8 @@
     "county": "Dallas County",
     "cwa": "FWD",
     "ugc_codes": "[\"TXZ119\",\"TXC113\"]",
-    "office_code": "75201"
+    "office_code": "75201",
+    "observation_station": "KDAL"
   },
   {
     "name": "Downtown Fort Worth",
@@ -1163,7 +1268,8 @@
     "county": "Tarrant County",
     "cwa": "FWD",
     "ugc_codes": "[\"TXZ118\",\"TXC439\"]",
-    "office_code": "76102"
+    "office_code": "76102",
+    "observation_station": "KFTW"
   },
   {
     "name": "Downtown Green Bay",
@@ -1174,7 +1280,8 @@
     "county": "Brown County",
     "cwa": "GRB",
     "ugc_codes": "[\"WIZ039\",\"WIC009\"]",
-    "office_code": "54301"
+    "office_code": "54301",
+    "observation_station": "KGRB"
   },
   {
     "name": "West Green Bay",
@@ -1185,7 +1292,8 @@
     "county": "Brown County",
     "cwa": "GRB",
     "ugc_codes": "[\"WIZ039\",\"WIC009\"]",
-    "office_code": "54304"
+    "office_code": "54304",
+    "observation_station": "KGRB"
   },
   {
     "name": "East Lansing",
@@ -1196,7 +1304,8 @@
     "county": "Ingham County",
     "cwa": "GRR",
     "ugc_codes": "[\"MIZ067\",\"MIC065\"]",
-    "office_code": "48912"
+    "office_code": "48912",
+    "observation_station": "KLAN"
   },
   {
     "name": "Downtown Lansing",
@@ -1207,7 +1316,8 @@
     "county": "Ingham County",
     "cwa": "GRR",
     "ugc_codes": "[\"MIZ067\",\"MIC065\"]",
-    "office_code": "48933"
+    "office_code": "48933",
+    "observation_station": "KLAN"
   },
   {
     "name": "Downtown Kalamazoo",
@@ -1218,7 +1328,8 @@
     "county": "Kalamazoo County",
     "cwa": "GRR",
     "ugc_codes": "[\"MIZ072\",\"MIC077\"]",
-    "office_code": "49007"
+    "office_code": "49007",
+    "observation_station": "KAZO"
   },
   {
     "name": "West Kalamazoo",
@@ -1229,7 +1340,8 @@
     "county": "Kalamazoo County",
     "cwa": "GRR",
     "ugc_codes": "[\"MIZ072\",\"MIC077\"]",
-    "office_code": "49008"
+    "office_code": "49008",
+    "observation_station": "KAZO"
   },
   {
     "name": "Downtown Grand Rapids",
@@ -1240,7 +1352,8 @@
     "county": "Kent County",
     "cwa": "GRR",
     "ugc_codes": "[\"MIZ057\",\"MIC081\"]",
-    "office_code": "49503"
+    "office_code": "49503",
+    "observation_station": "KGRR"
   },
   {
     "name": "East Grand Rapids",
@@ -1251,7 +1364,8 @@
     "county": "Kent County",
     "cwa": "GRR",
     "ugc_codes": "[\"MIZ057\",\"MIC081\"]",
-    "office_code": "49506"
+    "office_code": "49506",
+    "observation_station": "KGRR"
   },
   {
     "name": "Uptown Charlotte",
@@ -1262,7 +1376,8 @@
     "county": "Mecklenburg County",
     "cwa": "GSP",
     "ugc_codes": "[\"NCZ071\",\"NCC119\"]",
-    "office_code": "28202"
+    "office_code": "28202",
+    "observation_station": "KCLT"
   },
   {
     "name": "Plaza Midwood Charlotte",
@@ -1273,7 +1388,8 @@
     "county": "Mecklenburg County",
     "cwa": "GSP",
     "ugc_codes": "[\"NCZ071\",\"NCC119\"]",
-    "office_code": "28205"
+    "office_code": "28205",
+    "observation_station": "KCLT"
   },
   {
     "name": "Downtown Asheville",
@@ -1284,7 +1400,8 @@
     "county": "Buncombe County",
     "cwa": "GSP",
     "ugc_codes": "[\"NCZ053\",\"NCC021\"]",
-    "office_code": "28801"
+    "office_code": "28801",
+    "observation_station": "KAVL"
   },
   {
     "name": "West Asheville",
@@ -1295,7 +1412,8 @@
     "county": "Buncombe County",
     "cwa": "GSP",
     "ugc_codes": "[\"NCZ053\",\"NCC021\"]",
-    "office_code": "28806"
+    "office_code": "28806",
+    "observation_station": "KAVL"
   },
   {
     "name": "Downtown Greenville SC",
@@ -1306,7 +1424,8 @@
     "county": "Greenville County",
     "cwa": "GSP",
     "ugc_codes": "[\"SCZ106\",\"SCC045\"]",
-    "office_code": "29601"
+    "office_code": "29601",
+    "observation_station": "KGMU"
   },
   {
     "name": "East Greenville SC",
@@ -1317,7 +1436,8 @@
     "county": "Greenville County",
     "cwa": "GSP",
     "ugc_codes": "[\"SCZ106\",\"SCC045\"]",
-    "office_code": "29607"
+    "office_code": "29607",
+    "observation_station": "KGMU"
   },
   {
     "name": "Downtown Manchester NH",
@@ -1328,7 +1448,8 @@
     "county": "Hillsborough County",
     "cwa": "GYX",
     "ugc_codes": "[\"NHZ012\",\"NHC011\"]",
-    "office_code": "03101"
+    "office_code": "03101",
+    "observation_station": "KMHT"
   },
   {
     "name": "East Manchester NH",
@@ -1339,7 +1460,8 @@
     "county": "Hillsborough County",
     "cwa": "GYX",
     "ugc_codes": "[\"NHZ012\",\"NHC011\"]",
-    "office_code": "03104"
+    "office_code": "03104",
+    "observation_station": "KMHT"
   },
   {
     "name": "Downtown Portland ME",
@@ -1350,7 +1472,8 @@
     "county": "Cumberland County",
     "cwa": "GYX",
     "ugc_codes": "[\"MEZ024\",\"MEC005\"]",
-    "office_code": "04101"
+    "office_code": "04101",
+    "observation_station": "KPWM"
   },
   {
     "name": "West Portland ME",
@@ -1361,7 +1484,8 @@
     "county": "Cumberland County",
     "cwa": "GYX",
     "ugc_codes": "[\"MEZ024\",\"MEC005\"]",
-    "office_code": "04102"
+    "office_code": "04102",
+    "observation_station": "KPWM"
   },
   {
     "name": "Downtown Honolulu",
@@ -1372,7 +1496,8 @@
     "county": "Honolulu County",
     "cwa": "HFO",
     "ugc_codes": "[\"HIZ036\",\"HIC003\"]",
-    "office_code": "96813"
+    "office_code": "96813",
+    "observation_station": "PHNL"
   },
   {
     "name": "Waikiki",
@@ -1383,7 +1508,8 @@
     "county": "Honolulu County",
     "cwa": "HFO",
     "ugc_codes": "[\"HIZ033\",\"HIC003\"]",
-    "office_code": "96815"
+    "office_code": "96815",
+    "observation_station": "PHNL"
   },
   {
     "name": "Downtown Houston",
@@ -1394,7 +1520,8 @@
     "county": "Harris County",
     "cwa": "HGX",
     "ugc_codes": "[\"TXZ213\",\"TXC201\"]",
-    "office_code": "77002"
+    "office_code": "77002",
+    "observation_station": "KHOU"
   },
   {
     "name": "Texas Medical Center",
@@ -1405,7 +1532,8 @@
     "county": "Harris County",
     "cwa": "HGX",
     "ugc_codes": "[\"TXZ213\",\"TXC201\"]",
-    "office_code": "77030"
+    "office_code": "77030",
+    "observation_station": "KHOU"
   },
   {
     "name": "Downtown Bakersfield",
@@ -1416,7 +1544,8 @@
     "county": "Kern County",
     "cwa": "HNX",
     "ugc_codes": "[\"CAZ314\",\"CAC029\"]",
-    "office_code": "93301"
+    "office_code": "93301",
+    "observation_station": "KBFL"
   },
   {
     "name": "South Bakersfield",
@@ -1427,7 +1556,8 @@
     "county": "Kern County",
     "cwa": "HNX",
     "ugc_codes": "[\"CAZ314\",\"CAC029\"]",
-    "office_code": "93304"
+    "office_code": "93304",
+    "observation_station": "CSBFL"
   },
   {
     "name": "Downtown Fresno",
@@ -1438,7 +1568,8 @@
     "county": "Fresno County",
     "cwa": "HNX",
     "ugc_codes": "[\"CAZ307\",\"CAC019\"]",
-    "office_code": "93721"
+    "office_code": "93721",
+    "observation_station": "KFAT"
   },
   {
     "name": "Northeast Fresno",
@@ -1449,7 +1580,8 @@
     "county": "Fresno County",
     "cwa": "HNX",
     "ugc_codes": "[\"CAZ307\",\"CAC019\"]",
-    "office_code": "93726"
+    "office_code": "93726",
+    "observation_station": "KFAT"
   },
   {
     "name": "Downtown Huntsville",
@@ -1460,7 +1592,8 @@
     "county": "Madison County",
     "cwa": "HUN",
     "ugc_codes": "[\"ALZ006\",\"ALC089\"]",
-    "office_code": "35801"
+    "office_code": "35801",
+    "observation_station": "KMDQ"
   },
   {
     "name": "South Huntsville",
@@ -1471,7 +1604,8 @@
     "county": "Madison County",
     "cwa": "HUN",
     "ugc_codes": "[\"ALZ006\",\"ALC089\"]",
-    "office_code": "35805"
+    "office_code": "35805",
+    "observation_station": "KHSV"
   },
   {
     "name": "Downtown Wichita",
@@ -1482,7 +1616,8 @@
     "county": "Sedgwick County",
     "cwa": "ICT",
     "ugc_codes": "[\"KSZ083\",\"KSC173\"]",
-    "office_code": "67202"
+    "office_code": "67202",
+    "observation_station": "KICT"
   },
   {
     "name": "College Hill Wichita",
@@ -1493,7 +1628,8 @@
     "county": "Sedgwick County",
     "cwa": "ICT",
     "ugc_codes": "[\"KSZ083\",\"KSC173\"]",
-    "office_code": "67208"
+    "office_code": "67208",
+    "observation_station": "KAAO"
   },
   {
     "name": "Downtown Wilmington NC",
@@ -1504,7 +1640,8 @@
     "county": "New Hanover County",
     "cwa": "ILM",
     "ugc_codes": "[\"NCZ107\",\"NCC129\"]",
-    "office_code": "28401"
+    "office_code": "28401",
+    "observation_station": "KILM"
   },
   {
     "name": "North Wilmington NC",
@@ -1515,7 +1652,8 @@
     "county": "New Hanover County",
     "cwa": "ILM",
     "ugc_codes": "[\"NCZ107\",\"NCC129\"]",
-    "office_code": "28405"
+    "office_code": "28405",
+    "observation_station": "KILM"
   },
   {
     "name": "University District Columbus",
@@ -1526,7 +1664,8 @@
     "county": "Franklin County",
     "cwa": "ILN",
     "ugc_codes": "[\"OHZ055\",\"OHC049\"]",
-    "office_code": "43202"
+    "office_code": "43202",
+    "observation_station": "KCMH"
   },
   {
     "name": "Downtown Columbus",
@@ -1537,7 +1676,8 @@
     "county": "Franklin County",
     "cwa": "ILN",
     "ugc_codes": "[\"OHZ055\",\"OHC049\"]",
-    "office_code": "43215"
+    "office_code": "43215",
+    "observation_station": "KCMH"
   },
   {
     "name": "Downtown Cincinnati",
@@ -1548,7 +1688,8 @@
     "county": "Hamilton County",
     "cwa": "ILN",
     "ugc_codes": "[\"OHZ077\",\"OHC061\"]",
-    "office_code": "45202"
+    "office_code": "45202",
+    "observation_station": "KLUK"
   },
   {
     "name": "Clifton Cincinnati",
@@ -1559,7 +1700,8 @@
     "county": "Hamilton County",
     "cwa": "ILN",
     "ugc_codes": "[\"OHZ077\",\"OHC061\"]",
-    "office_code": "45219"
+    "office_code": "45219",
+    "observation_station": "KLUK"
   },
   {
     "name": "Downtown Dayton",
@@ -1570,7 +1712,8 @@
     "county": "Montgomery County",
     "cwa": "ILN",
     "ugc_codes": "[\"OHZ061\",\"OHC113\"]",
-    "office_code": "45402"
+    "office_code": "45402",
+    "observation_station": "KFFO"
   },
   {
     "name": "East Dayton",
@@ -1581,7 +1724,8 @@
     "county": "Montgomery County",
     "cwa": "ILN",
     "ugc_codes": "[\"OHZ061\",\"OHC113\"]",
-    "office_code": "45410"
+    "office_code": "45410",
+    "observation_station": "KFFO"
   },
   {
     "name": "Downtown Peoria",
@@ -1592,7 +1736,8 @@
     "county": "Peoria County",
     "cwa": "ILX",
     "ugc_codes": "[\"ILZ029\",\"ILC143\"]",
-    "office_code": "61602"
+    "office_code": "61602",
+    "observation_station": "KPIA"
   },
   {
     "name": "West Peoria",
@@ -1603,7 +1748,8 @@
     "county": "Peoria County",
     "cwa": "ILX",
     "ugc_codes": "[\"ILZ029\",\"ILC143\"]",
-    "office_code": "61604"
+    "office_code": "61604",
+    "observation_station": "KPIA"
   },
   {
     "name": "Downtown Indianapolis",
@@ -1614,7 +1760,8 @@
     "county": "Marion County",
     "cwa": "IND",
     "ugc_codes": "[\"INZ047\",\"INC097\"]",
-    "office_code": "46204"
+    "office_code": "46204",
+    "observation_station": "KIND"
   },
   {
     "name": "Broad Ripple Indianapolis",
@@ -1625,7 +1772,8 @@
     "county": "Marion County",
     "cwa": "IND",
     "ugc_codes": "[\"INZ047\",\"INC097\"]",
-    "office_code": "46220"
+    "office_code": "46220",
+    "observation_station": "KEYE"
   },
   {
     "name": "Downtown South Bend",
@@ -1636,7 +1784,8 @@
     "county": "St. Joseph County",
     "cwa": "IWX",
     "ugc_codes": "[\"INZ104\",\"INC141\"]",
-    "office_code": "46601"
+    "office_code": "46601",
+    "observation_station": "KSBN"
   },
   {
     "name": "East South Bend",
@@ -1647,7 +1796,8 @@
     "county": "St. Joseph County",
     "cwa": "IWX",
     "ugc_codes": "[\"INZ104\",\"INC141\"]",
-    "office_code": "46615"
+    "office_code": "46615",
+    "observation_station": "KSBN"
   },
   {
     "name": "Downtown Fort Wayne",
@@ -1658,7 +1808,8 @@
     "county": "Allen County",
     "cwa": "IWX",
     "ugc_codes": "[\"INZ018\",\"INC003\"]",
-    "office_code": "46802"
+    "office_code": "46802",
+    "observation_station": "KFWA"
   },
   {
     "name": "South Fort Wayne",
@@ -1669,7 +1820,8 @@
     "county": "Allen County",
     "cwa": "IWX",
     "ugc_codes": "[\"INZ018\",\"INC003\"]",
-    "office_code": "46806"
+    "office_code": "46806",
+    "observation_station": "KFWA"
   },
   {
     "name": "Downtown Jackson MS",
@@ -1680,7 +1832,8 @@
     "county": "Hinds County",
     "cwa": "JAN",
     "ugc_codes": "[\"MSZ048\",\"MSC049\"]",
-    "office_code": "39201"
+    "office_code": "39201",
+    "observation_station": "KHKS"
   },
   {
     "name": "Northeast Jackson MS",
@@ -1691,7 +1844,8 @@
     "county": "Hinds County",
     "cwa": "JAN",
     "ugc_codes": "[\"MSZ048\",\"MSC049\"]",
-    "office_code": "39206"
+    "office_code": "39206",
+    "observation_station": "KHKS"
   },
   {
     "name": "Downtown Jacksonville",
@@ -1702,7 +1856,8 @@
     "county": "Duval County",
     "cwa": "JAX",
     "ugc_codes": "[\"FLZ125\",\"FLC031\"]",
-    "office_code": "32202"
+    "office_code": "32202",
+    "observation_station": "KNIP"
   },
   {
     "name": "San Marco Jacksonville",
@@ -1713,7 +1868,8 @@
     "county": "Duval County",
     "cwa": "JAX",
     "ugc_codes": "[\"FLZ325\",\"FLC031\"]",
-    "office_code": "32207"
+    "office_code": "32207",
+    "observation_station": "KNIP"
   },
   {
     "name": "Downtown Gainesville",
@@ -1724,7 +1880,8 @@
     "county": "Alachua County",
     "cwa": "JAX",
     "ugc_codes": "[\"FLZ136\",\"FLC001\"]",
-    "office_code": "32601"
+    "office_code": "32601",
+    "observation_station": "KGNV"
   },
   {
     "name": "West Gainesville",
@@ -1735,7 +1892,8 @@
     "county": "Alachua County",
     "cwa": "JAX",
     "ugc_codes": "[\"FLZ136\",\"FLC001\"]",
-    "office_code": "32607"
+    "office_code": "32607",
+    "observation_station": "KGNV"
   },
   {
     "name": "Downtown Beaumont",
@@ -1746,7 +1904,8 @@
     "county": "Jefferson County",
     "cwa": "LCH",
     "ugc_codes": "[\"TXZ615\",\"TXC245\"]",
-    "office_code": "77701"
+    "office_code": "77701",
+    "observation_station": "KBPT"
   },
   {
     "name": "West Beaumont",
@@ -1757,7 +1916,8 @@
     "county": "Jefferson County",
     "cwa": "LCH",
     "ugc_codes": "[\"TXZ515\",\"TXC245\"]",
-    "office_code": "77706"
+    "office_code": "77706",
+    "observation_station": "KBPT"
   },
   {
     "name": "French Quarter New Orleans",
@@ -1768,7 +1928,8 @@
     "county": "Orleans Parish",
     "cwa": "LIX",
     "ugc_codes": "[\"LAZ077\",\"LAC071\"]",
-    "office_code": "70112"
+    "office_code": "70112",
+    "observation_station": "KNEW"
   },
   {
     "name": "Marigny New Orleans",
@@ -1779,7 +1940,8 @@
     "county": "Orleans Parish",
     "cwa": "LIX",
     "ugc_codes": "[\"LAZ077\",\"LAC071\"]",
-    "office_code": "70116"
+    "office_code": "70116",
+    "observation_station": "KNEW"
   },
   {
     "name": "Downtown Baton Rouge",
@@ -1790,7 +1952,8 @@
     "county": "East Baton Rouge Parish",
     "cwa": "LIX",
     "ugc_codes": "[\"LAZ048\",\"LAC033\"]",
-    "office_code": "70801"
+    "office_code": "70801",
+    "observation_station": "KBTR"
   },
   {
     "name": "Southdowns Baton Rouge",
@@ -1801,7 +1964,8 @@
     "county": "East Baton Rouge Parish",
     "cwa": "LIX",
     "ugc_codes": "[\"LAZ048\",\"LAC033\"]",
-    "office_code": "70808"
+    "office_code": "70808",
+    "observation_station": "KBTR"
   },
   {
     "name": "Downtown Louisville",
@@ -1812,7 +1976,8 @@
     "county": "Jefferson County",
     "cwa": "LMK",
     "ugc_codes": "[\"KYZ030\",\"KYC111\"]",
-    "office_code": "40202"
+    "office_code": "40202",
+    "observation_station": "KLOU"
   },
   {
     "name": "Highlands Louisville",
@@ -1823,7 +1988,8 @@
     "county": "Jefferson County",
     "cwa": "LMK",
     "ugc_codes": "[\"KYZ030\",\"KYC111\"]",
-    "office_code": "40205"
+    "office_code": "40205",
+    "observation_station": "KLOU"
   },
   {
     "name": "Chevy Chase Lexington",
@@ -1834,7 +2000,8 @@
     "county": "Fayette County",
     "cwa": "LMK",
     "ugc_codes": "[\"KYZ041\",\"KYC067\"]",
-    "office_code": "40502"
+    "office_code": "40502",
+    "observation_station": "KLEX"
   },
   {
     "name": "Downtown Lexington",
@@ -1845,7 +2012,8 @@
     "county": "Fayette County",
     "cwa": "LMK",
     "ugc_codes": "[\"KYZ041\",\"KYC067\"]",
-    "office_code": "40507"
+    "office_code": "40507",
+    "observation_station": "KLEX"
   },
   {
     "name": "Chicago Loop",
@@ -1856,7 +2024,8 @@
     "county": "Cook County",
     "cwa": "LOT",
     "ugc_codes": "[\"ILZ104\",\"ILC031\"]",
-    "office_code": "60601"
+    "office_code": "60601",
+    "observation_station": "KMDW"
   },
   {
     "name": "Lincoln Park Chicago",
@@ -1867,7 +2036,8 @@
     "county": "Cook County",
     "cwa": "LOT",
     "ugc_codes": "[\"ILZ104\",\"ILC031\"]",
-    "office_code": "60614"
+    "office_code": "60614",
+    "observation_station": "KMDW"
   },
   {
     "name": "Downtown Los Angeles",
@@ -1878,7 +2048,8 @@
     "county": "Los Angeles County",
     "cwa": "LOX",
     "ugc_codes": "[\"CAZ368\",\"CAC037\"]",
-    "office_code": "90012"
+    "office_code": "90012",
+    "observation_station": "KHHR"
   },
   {
     "name": "Hollywood",
@@ -1889,7 +2060,8 @@
     "county": "Los Angeles County",
     "cwa": "LOX",
     "ugc_codes": "[\"CAZ368\",\"CAC037\"]",
-    "office_code": "90028"
+    "office_code": "90028",
+    "observation_station": "KBUR"
   },
   {
     "name": "Downtown Santa Barbara",
@@ -1900,7 +2072,8 @@
     "county": "Santa Barbara County",
     "cwa": "LOX",
     "ugc_codes": "[\"CAZ350\",\"CAC083\"]",
-    "office_code": "93101"
+    "office_code": "93101",
+    "observation_station": "MOIC1"
   },
   {
     "name": "East Santa Barbara",
@@ -1911,7 +2084,8 @@
     "county": "Santa Barbara County",
     "cwa": "LOX",
     "ugc_codes": "[\"CAZ350\",\"CAC083\"]",
-    "office_code": "93103"
+    "office_code": "93103",
+    "observation_station": "MOIC1"
   },
   {
     "name": "Downtown St Louis",
@@ -1922,7 +2096,8 @@
     "county": "St. Louis city",
     "cwa": "LSX",
     "ugc_codes": "[\"MOZ064\",\"MOC510\"]",
-    "office_code": "63101"
+    "office_code": "63101",
+    "observation_station": "KCPS"
   },
   {
     "name": "South St Louis",
@@ -1933,7 +2108,8 @@
     "county": "St. Louis city",
     "cwa": "LSX",
     "ugc_codes": "[\"MOZ064\",\"MOC510\"]",
-    "office_code": "63139"
+    "office_code": "63139",
+    "observation_station": "KCPS"
   },
   {
     "name": "Downtown Columbia MO",
@@ -1944,7 +2120,8 @@
     "county": "Boone County",
     "cwa": "LSX",
     "ugc_codes": "[\"MOZ041\",\"MOC019\"]",
-    "office_code": "65201"
+    "office_code": "65201",
+    "observation_station": "KCOU"
   },
   {
     "name": "South Columbia MO",
@@ -1955,7 +2132,8 @@
     "county": "Boone County",
     "cwa": "LSX",
     "ugc_codes": "[\"MOZ041\",\"MOC019\"]",
-    "office_code": "65203"
+    "office_code": "65203",
+    "observation_station": "KCOU"
   },
   {
     "name": "Downtown Lubbock",
@@ -1966,7 +2144,8 @@
     "county": "Lubbock County",
     "cwa": "LUB",
     "ugc_codes": "[\"TXZ035\",\"TXC303\"]",
-    "office_code": "79401"
+    "office_code": "79401",
+    "observation_station": "KLBB"
   },
   {
     "name": "South Lubbock",
@@ -1977,7 +2156,8 @@
     "county": "Lubbock County",
     "cwa": "LUB",
     "ugc_codes": "[\"TXZ035\",\"TXC303\"]",
-    "office_code": "79410"
+    "office_code": "79410",
+    "observation_station": "KLBB"
   },
   {
     "name": "Downtown Washington",
@@ -1988,7 +2168,8 @@
     "county": "District of Columbia",
     "cwa": "LWX",
     "ugc_codes": "[\"DCZ001\",\"DCC001\"]",
-    "office_code": "20001"
+    "office_code": "20001",
+    "observation_station": "KDCA"
   },
   {
     "name": "Foggy Bottom",
@@ -1999,7 +2180,8 @@
     "county": "District of Columbia",
     "cwa": "LWX",
     "ugc_codes": "[\"DCZ001\",\"DCC001\"]",
-    "office_code": "20037"
+    "office_code": "20037",
+    "observation_station": "KDCA"
   },
   {
     "name": "Downtown Baltimore",
@@ -2010,7 +2192,8 @@
     "county": "Baltimore city",
     "cwa": "LWX",
     "ugc_codes": "[\"MDZ011\",\"MDC510\"]",
-    "office_code": "21201"
+    "office_code": "21201",
+    "observation_station": "KDMH"
   },
   {
     "name": "Canton Baltimore",
@@ -2021,7 +2204,8 @@
     "county": "Baltimore city",
     "cwa": "LWX",
     "ugc_codes": "[\"MDZ011\",\"MDC510\"]",
-    "office_code": "21224"
+    "office_code": "21224",
+    "observation_station": "KDMH"
   },
   {
     "name": "Downtown Little Rock",
@@ -2032,7 +2216,8 @@
     "county": "Pulaski County",
     "cwa": "LZK",
     "ugc_codes": "[\"ARZ044\",\"ARC119\"]",
-    "office_code": "72201"
+    "office_code": "72201",
+    "observation_station": "KLIT"
   },
   {
     "name": "Hillcrest Little Rock",
@@ -2043,7 +2228,8 @@
     "county": "Pulaski County",
     "cwa": "LZK",
     "ugc_codes": "[\"ARZ044\",\"ARC119\"]",
-    "office_code": "72205"
+    "office_code": "72205",
+    "observation_station": "KLIT"
   },
   {
     "name": "Downtown Memphis",
@@ -2054,7 +2240,8 @@
     "county": "Shelby County",
     "cwa": "MEG",
     "ugc_codes": "[\"TNZ088\",\"TNC157\"]",
-    "office_code": "38103"
+    "office_code": "38103",
+    "observation_station": "KMEM"
   },
   {
     "name": "East Memphis",
@@ -2065,7 +2252,8 @@
     "county": "Shelby County",
     "cwa": "MEG",
     "ugc_codes": "[\"TNZ088\",\"TNC157\"]",
-    "office_code": "38117"
+    "office_code": "38117",
+    "observation_station": "KMEM"
   },
   {
     "name": "Downtown Miami",
@@ -2076,7 +2264,8 @@
     "county": "Miami-Dade County",
     "cwa": "MFL",
     "ugc_codes": "[\"FLZ173\",\"FLC086\"]",
-    "office_code": "33101"
+    "office_code": "33101",
+    "observation_station": "KMIA"
   },
   {
     "name": "Fort Lauderdale",
@@ -2087,7 +2276,8 @@
     "county": "Broward County",
     "cwa": "MFL",
     "ugc_codes": "[\"FLZ172\",\"FLC011\"]",
-    "office_code": "33301"
+    "office_code": "33301",
+    "observation_station": "KFLL"
   },
   {
     "name": "Downtown Naples",
@@ -2098,7 +2288,8 @@
     "county": "Collier County",
     "cwa": "MFL",
     "ugc_codes": "[\"FLZ069\",\"FLC021\"]",
-    "office_code": "34102"
+    "office_code": "34102",
+    "observation_station": "KAPF"
   },
   {
     "name": "North Naples",
@@ -2109,7 +2300,8 @@
     "county": "Collier County",
     "cwa": "MFL",
     "ugc_codes": "[\"FLZ069\",\"FLC021\"]",
-    "office_code": "34108"
+    "office_code": "34108",
+    "observation_station": "KAPF"
   },
   {
     "name": "Downtown Milwaukee",
@@ -2120,7 +2312,8 @@
     "county": "Milwaukee County",
     "cwa": "MKX",
     "ugc_codes": "[\"WIZ066\",\"WIC079\"]",
-    "office_code": "53202"
+    "office_code": "53202",
+    "observation_station": "KMKE"
   },
   {
     "name": "Shorewood Milwaukee",
@@ -2131,7 +2324,8 @@
     "county": "Milwaukee County",
     "cwa": "MKX",
     "ugc_codes": "[\"WIZ066\",\"WIC079\"]",
-    "office_code": "53211"
+    "office_code": "53211",
+    "observation_station": "KMWC"
   },
   {
     "name": "Isthmus Madison",
@@ -2142,7 +2336,8 @@
     "county": "Dane County",
     "cwa": "MKX",
     "ugc_codes": "[\"WIZ063\",\"WIC025\"]",
-    "office_code": "53703"
+    "office_code": "53703",
+    "observation_station": "KMSN"
   },
   {
     "name": "West Madison",
@@ -2153,7 +2348,8 @@
     "county": "Dane County",
     "cwa": "MKX",
     "ugc_codes": "[\"WIZ063\",\"WIC025\"]",
-    "office_code": "53711"
+    "office_code": "53711",
+    "observation_station": "KC29"
   },
   {
     "name": "Downtown Orlando",
@@ -2164,7 +2360,8 @@
     "county": "Orange County",
     "cwa": "MLB",
     "ugc_codes": "[\"FLZ045\",\"FLC095\"]",
-    "office_code": "32801"
+    "office_code": "32801",
+    "observation_station": "KORL"
   },
   {
     "name": "International Drive Orlando",
@@ -2175,7 +2372,8 @@
     "county": "Orange County",
     "cwa": "MLB",
     "ugc_codes": "[\"FLZ045\",\"FLC095\"]",
-    "office_code": "32819"
+    "office_code": "32819",
+    "observation_station": "KMCO"
   },
   {
     "name": "Downtown Pensacola",
@@ -2186,7 +2384,8 @@
     "county": "Escambia County",
     "cwa": "MOB",
     "ugc_codes": "[\"FLZ202\",\"FLC033\"]",
-    "office_code": "32501"
+    "office_code": "32501",
+    "observation_station": "KPNS"
   },
   {
     "name": "East Hill Pensacola",
@@ -2197,7 +2396,8 @@
     "county": "Escambia County",
     "cwa": "MOB",
     "ugc_codes": "[\"FLZ202\",\"FLC033\"]",
-    "office_code": "32503"
+    "office_code": "32503",
+    "observation_station": "KPNS"
   },
   {
     "name": "Downtown Mobile",
@@ -2208,7 +2408,8 @@
     "county": "Mobile County",
     "cwa": "MOB",
     "ugc_codes": "[\"ALZ263\",\"ALC097\"]",
-    "office_code": "36602"
+    "office_code": "36602",
+    "observation_station": "KBFM"
   },
   {
     "name": "Midtown Mobile",
@@ -2219,7 +2420,8 @@
     "county": "Mobile County",
     "cwa": "MOB",
     "ugc_codes": "[\"ALZ263\",\"ALC097\"]",
-    "office_code": "36607"
+    "office_code": "36607",
+    "observation_station": "KBFM"
   },
   {
     "name": "Downtown St Paul",
@@ -2230,7 +2432,8 @@
     "county": "Ramsey County",
     "cwa": "MPX",
     "ugc_codes": "[\"MNZ062\",\"MNC123\"]",
-    "office_code": "55101"
+    "office_code": "55101",
+    "observation_station": "KSTP"
   },
   {
     "name": "Downtown Minneapolis",
@@ -2241,7 +2444,8 @@
     "county": "Hennepin County",
     "cwa": "MPX",
     "ugc_codes": "[\"MNZ060\",\"MNC053\"]",
-    "office_code": "55401"
+    "office_code": "55401",
+    "observation_station": "KMSP"
   },
   {
     "name": "Downtown Chattanooga",
@@ -2252,7 +2456,8 @@
     "county": "Hamilton County",
     "cwa": "MRX",
     "ugc_codes": "[\"TNZ099\",\"TNC065\"]",
-    "office_code": "37402"
+    "office_code": "37402",
+    "observation_station": "KCHA"
   },
   {
     "name": "East Brainerd Chattanooga",
@@ -2263,7 +2468,8 @@
     "county": "Hamilton County",
     "cwa": "MRX",
     "ugc_codes": "[\"TNZ099\",\"TNC065\"]",
-    "office_code": "37411"
+    "office_code": "37411",
+    "observation_station": "KCHA"
   },
   {
     "name": "Downtown Knoxville",
@@ -2274,7 +2480,8 @@
     "county": "Knox County",
     "cwa": "MRX",
     "ugc_codes": "[\"TNZ069\",\"TNC093\"]",
-    "office_code": "37902"
+    "office_code": "37902",
+    "observation_station": "KDKX"
   },
   {
     "name": "West Knoxville",
@@ -2285,7 +2492,8 @@
     "county": "Knox County",
     "cwa": "MRX",
     "ugc_codes": "[\"TNZ069\",\"TNC093\"]",
-    "office_code": "37919"
+    "office_code": "37919",
+    "observation_station": "KDKX"
   },
   {
     "name": "Downtown Missoula",
@@ -2296,7 +2504,8 @@
     "county": "Missoula County",
     "cwa": "MSO",
     "ugc_codes": "[\"MTZ005\",\"MTC063\"]",
-    "office_code": "59801"
+    "office_code": "59801",
+    "observation_station": "KMSO"
   },
   {
     "name": "University Missoula",
@@ -2307,7 +2516,8 @@
     "county": "Missoula County",
     "cwa": "MSO",
     "ugc_codes": "[\"MTZ005\",\"MTC063\"]",
-    "office_code": "59802"
+    "office_code": "59802",
+    "observation_station": "KMSO"
   },
   {
     "name": "Civic Center San Francisco",
@@ -2318,7 +2528,8 @@
     "county": "San Francisco County",
     "cwa": "MTR",
     "ugc_codes": "[\"CAZ006\",\"CAC075\"]",
-    "office_code": "94102"
+    "office_code": "94102",
+    "observation_station": "SFOC1"
   },
   {
     "name": "Downtown Oakland",
@@ -2329,7 +2540,8 @@
     "county": "Alameda County",
     "cwa": "MTR",
     "ugc_codes": "[\"CAZ508\",\"CAC001\"]",
-    "office_code": "94612"
+    "office_code": "94612",
+    "observation_station": "D3169"
   },
   {
     "name": "Downtown San Jose",
@@ -2340,7 +2552,8 @@
     "county": "Santa Clara County",
     "cwa": "MTR",
     "ugc_codes": "[\"CAZ513\",\"CAC085\"]",
-    "office_code": "95113"
+    "office_code": "95113",
+    "observation_station": "KSJC"
   },
   {
     "name": "West San Jose",
@@ -2351,7 +2564,8 @@
     "county": "Santa Clara County",
     "cwa": "MTR",
     "ugc_codes": "[\"CAZ513\",\"CAC085\"]",
-    "office_code": "95126"
+    "office_code": "95126",
+    "observation_station": "KSJC"
   },
   {
     "name": "Downtown Omaha",
@@ -2362,7 +2576,8 @@
     "county": "Douglas County",
     "cwa": "OAX",
     "ugc_codes": "[\"NEZ052\",\"NEC055\"]",
-    "office_code": "68102"
+    "office_code": "68102",
+    "observation_station": "KOMA"
   },
   {
     "name": "Dundee Omaha",
@@ -2373,7 +2588,8 @@
     "county": "Douglas County",
     "cwa": "OAX",
     "ugc_codes": "[\"NEZ052\",\"NEC055\"]",
-    "office_code": "68132"
+    "office_code": "68132",
+    "observation_station": "KMLE"
   },
   {
     "name": "Near South Lincoln",
@@ -2384,7 +2600,8 @@
     "county": "Lancaster County",
     "cwa": "OAX",
     "ugc_codes": "[\"NEZ066\",\"NEC109\"]",
-    "office_code": "68502"
+    "office_code": "68502",
+    "observation_station": "KLNK"
   },
   {
     "name": "Downtown Lincoln",
@@ -2395,7 +2612,8 @@
     "county": "Lancaster County",
     "cwa": "OAX",
     "ugc_codes": "[\"NEZ066\",\"NEC109\"]",
-    "office_code": "68508"
+    "office_code": "68508",
+    "observation_station": "KLNK"
   },
   {
     "name": "Midtown Nashville",
@@ -2406,7 +2624,8 @@
     "county": "Davidson County",
     "cwa": "OHX",
     "ugc_codes": "[\"TNZ027\",\"TNC037\"]",
-    "office_code": "37203"
+    "office_code": "37203",
+    "observation_station": "KBNA"
   },
   {
     "name": "East Nashville",
@@ -2417,7 +2636,8 @@
     "county": "Davidson County",
     "cwa": "OHX",
     "ugc_codes": "[\"TNZ027\",\"TNC037\"]",
-    "office_code": "37206"
+    "office_code": "37206",
+    "observation_station": "KBNA"
   },
   {
     "name": "Downtown New Haven",
@@ -2428,7 +2648,8 @@
     "county": "New Haven County",
     "cwa": "OKX",
     "ugc_codes": "[\"CTZ010\",\"CTC009\"]",
-    "office_code": "06510"
+    "office_code": "06510",
+    "observation_station": "KHVN"
   },
   {
     "name": "East Rock New Haven",
@@ -2439,7 +2660,8 @@
     "county": "New Haven County",
     "cwa": "OKX",
     "ugc_codes": "[\"CTZ010\",\"CTC009\"]",
-    "office_code": "06511"
+    "office_code": "06511",
+    "observation_station": "KHVN"
   },
   {
     "name": "Midtown Manhattan",
@@ -2450,7 +2672,8 @@
     "county": "New York County",
     "cwa": "OKX",
     "ugc_codes": "[\"NYZ072\",\"NYC061\"]",
-    "office_code": "10001"
+    "office_code": "10001",
+    "observation_station": "KNYC"
   },
   {
     "name": "South Bronx",
@@ -2461,7 +2684,8 @@
     "county": "Bronx County",
     "cwa": "OKX",
     "ugc_codes": "[\"NYZ073\",\"NYC005\"]",
-    "office_code": "10451"
+    "office_code": "10451",
+    "observation_station": "KNYC"
   },
   {
     "name": "Downtown Spokane",
@@ -2472,7 +2696,8 @@
     "county": "Spokane County",
     "cwa": "OTX",
     "ugc_codes": "[\"WAZ036\",\"WAC063\"]",
-    "office_code": "99201"
+    "office_code": "99201",
+    "observation_station": "KGEG"
   },
   {
     "name": "Northeast Spokane",
@@ -2483,7 +2708,8 @@
     "county": "Spokane County",
     "cwa": "OTX",
     "ugc_codes": "[\"WAZ036\",\"WAC063\"]",
-    "office_code": "99207"
+    "office_code": "99207",
+    "observation_station": "KSFF"
   },
   {
     "name": "Downtown Oklahoma City",
@@ -2494,7 +2720,8 @@
     "county": "Oklahoma County",
     "cwa": "OUN",
     "ugc_codes": "[\"OKZ025\",\"OKC109\"]",
-    "office_code": "73102"
+    "office_code": "73102",
+    "observation_station": "KOKC"
   },
   {
     "name": "North Oklahoma City",
@@ -2505,7 +2732,8 @@
     "county": "Oklahoma County",
     "cwa": "OUN",
     "ugc_codes": "[\"OKZ025\",\"OKC109\"]",
-    "office_code": "73120"
+    "office_code": "73120",
+    "observation_station": "KPWA"
   },
   {
     "name": "Downtown Evansville",
@@ -2516,7 +2744,8 @@
     "county": "Vanderburgh County",
     "cwa": "PAH",
     "ugc_codes": "[\"INZ086\",\"INC163\"]",
-    "office_code": "47708"
+    "office_code": "47708",
+    "observation_station": "KEVV"
   },
   {
     "name": "East Evansville",
@@ -2527,7 +2756,8 @@
     "county": "Vanderburgh County",
     "cwa": "PAH",
     "ugc_codes": "[\"INZ086\",\"INC163\"]",
-    "office_code": "47714"
+    "office_code": "47714",
+    "observation_station": "KEVV"
   },
   {
     "name": "Oakland Pittsburgh",
@@ -2538,7 +2768,8 @@
     "county": "Allegheny County",
     "cwa": "PBZ",
     "ugc_codes": "[\"PAZ021\",\"PAC003\"]",
-    "office_code": "15213"
+    "office_code": "15213",
+    "observation_station": "KAGC"
   },
   {
     "name": "Downtown Pittsburgh",
@@ -2549,7 +2780,8 @@
     "county": "Allegheny County",
     "cwa": "PBZ",
     "ugc_codes": "[\"PAZ021\",\"PAC003\"]",
-    "office_code": "15222"
+    "office_code": "15222",
+    "observation_station": "KAGC"
   },
   {
     "name": "Downtown Bend",
@@ -2560,7 +2792,8 @@
     "county": "Deschutes County",
     "cwa": "PDT",
     "ugc_codes": "[\"ORZ511\",\"ORC017\"]",
-    "office_code": "97701"
+    "office_code": "97701",
+    "observation_station": "KBDN"
   },
   {
     "name": "South Bend OR",
@@ -2571,7 +2804,8 @@
     "county": "Deschutes County",
     "cwa": "PDT",
     "ugc_codes": "[\"ORZ511\",\"ORC017\"]",
-    "office_code": "97702"
+    "office_code": "97702",
+    "observation_station": "KBDN"
   },
   {
     "name": "Downtown Trenton",
@@ -2582,7 +2816,8 @@
     "county": "Mercer County",
     "cwa": "PHI",
     "ugc_codes": "[\"NJZ015\",\"NJC021\"]",
-    "office_code": "08608"
+    "office_code": "08608",
+    "observation_station": "KTTN"
   },
   {
     "name": "West Trenton",
@@ -2593,7 +2828,8 @@
     "county": "Mercer County",
     "cwa": "PHI",
     "ugc_codes": "[\"NJZ015\",\"NJC021\"]",
-    "office_code": "08618"
+    "office_code": "08618",
+    "observation_station": "KTTN"
   },
   {
     "name": "Center City Philadelphia",
@@ -2604,7 +2840,8 @@
     "county": "Philadelphia County",
     "cwa": "PHI",
     "ugc_codes": "[\"PAZ071\",\"PAC101\"]",
-    "office_code": "19102"
+    "office_code": "19102",
+    "observation_station": "KPHL"
   },
   {
     "name": "Kensington Philadelphia",
@@ -2615,7 +2852,8 @@
     "county": "Philadelphia County",
     "cwa": "PHI",
     "ugc_codes": "[\"PAZ071\",\"PAC101\"]",
-    "office_code": "19134"
+    "office_code": "19134",
+    "observation_station": "KPNE"
   },
   {
     "name": "Downtown Wilmington DE",
@@ -2626,7 +2864,8 @@
     "county": "New Castle County",
     "cwa": "PHI",
     "ugc_codes": "[\"DEZ001\",\"DEC003\"]",
-    "office_code": "19801"
+    "office_code": "19801",
+    "observation_station": "KILG"
   },
   {
     "name": "West Wilmington DE",
@@ -2637,7 +2876,8 @@
     "county": "New Castle County",
     "cwa": "PHI",
     "ugc_codes": "[\"DEZ001\",\"DEC003\"]",
-    "office_code": "19805"
+    "office_code": "19805",
+    "observation_station": "KILG"
   },
   {
     "name": "Downtown Dover",
@@ -2648,7 +2888,8 @@
     "county": "Kent County",
     "cwa": "PHI",
     "ugc_codes": "[\"DEZ002\",\"DEC001\"]",
-    "office_code": "19901"
+    "office_code": "19901",
+    "observation_station": "KDOV"
   },
   {
     "name": "North Dover",
@@ -2659,7 +2900,8 @@
     "county": "Kent County",
     "cwa": "PHI",
     "ugc_codes": "[\"DEZ002\",\"DEC001\"]",
-    "office_code": "19904"
+    "office_code": "19904",
+    "observation_station": "KDOV"
   },
   {
     "name": "Downtown Portland",
@@ -2670,7 +2912,8 @@
     "county": "Multnomah County",
     "cwa": "PQR",
     "ugc_codes": "[\"ORZ111\",\"ORC051\"]",
-    "office_code": "97201"
+    "office_code": "97201",
+    "observation_station": "KPDX"
   },
   {
     "name": "Southeast Portland",
@@ -2681,7 +2924,8 @@
     "county": "Multnomah County",
     "cwa": "PQR",
     "ugc_codes": "[\"ORZ111\",\"ORC051\"]",
-    "office_code": "97214"
+    "office_code": "97214",
+    "observation_station": "KPDX"
   },
   {
     "name": "Downtown Eugene",
@@ -2692,7 +2936,8 @@
     "county": "Lane County",
     "cwa": "PQR",
     "ugc_codes": "[\"ORZ118\",\"ORC039\"]",
-    "office_code": "97401"
+    "office_code": "97401",
+    "observation_station": "KEUG"
   },
   {
     "name": "South Eugene",
@@ -2703,7 +2948,8 @@
     "county": "Lane County",
     "cwa": "PQR",
     "ugc_codes": "[\"ORZ118\",\"ORC039\"]",
-    "office_code": "97405"
+    "office_code": "97405",
+    "observation_station": "KEUG"
   },
   {
     "name": "Downtown Phoenix",
@@ -2714,7 +2960,8 @@
     "county": "Maricopa County",
     "cwa": "PSR",
     "ugc_codes": "[\"AZZ543\",\"AZC013\"]",
-    "office_code": "85004"
+    "office_code": "85004",
+    "observation_station": "KPHX"
   },
   {
     "name": "Tempe",
@@ -2725,7 +2972,8 @@
     "county": "Maricopa County",
     "cwa": "PSR",
     "ugc_codes": "[\"AZZ548\",\"AZC013\"]",
-    "office_code": "85281"
+    "office_code": "85281",
+    "observation_station": "KPHX"
   },
   {
     "name": "Downtown Colorado Springs",
@@ -2736,7 +2984,8 @@
     "county": "El Paso County",
     "cwa": "PUB",
     "ugc_codes": "[\"COZ085\",\"COC041\"]",
-    "office_code": "80903"
+    "office_code": "80903",
+    "observation_station": "KCOS"
   },
   {
     "name": "East Colorado Springs",
@@ -2747,7 +2996,8 @@
     "county": "El Paso County",
     "cwa": "PUB",
     "ugc_codes": "[\"COZ085\",\"COC041\"]",
-    "office_code": "80909"
+    "office_code": "80909",
+    "observation_station": "KCOS"
   },
   {
     "name": "Downtown Greensboro",
@@ -2758,7 +3008,8 @@
     "county": "Guilford County",
     "cwa": "RAH",
     "ugc_codes": "[\"NCZ022\",\"NCC081\"]",
-    "office_code": "27401"
+    "office_code": "27401",
+    "observation_station": "KGSO"
   },
   {
     "name": "College Hill Greensboro",
@@ -2769,7 +3020,8 @@
     "county": "Guilford County",
     "cwa": "RAH",
     "ugc_codes": "[\"NCZ022\",\"NCC081\"]",
-    "office_code": "27408"
+    "office_code": "27408",
+    "observation_station": "KGSO"
   },
   {
     "name": "Downtown Raleigh",
@@ -2780,7 +3032,8 @@
     "county": "Wake County",
     "cwa": "RAH",
     "ugc_codes": "[\"NCZ041\",\"NCC183\"]",
-    "office_code": "27601"
+    "office_code": "27601",
+    "observation_station": "KJNX"
   },
   {
     "name": "West Raleigh",
@@ -2791,7 +3044,8 @@
     "county": "Wake County",
     "cwa": "RAH",
     "ugc_codes": "[\"NCZ041\",\"NCC183\"]",
-    "office_code": "27607"
+    "office_code": "27607",
+    "observation_station": "KJNX"
   },
   {
     "name": "Downtown Durham",
@@ -2802,7 +3056,8 @@
     "county": "Durham County",
     "cwa": "RAH",
     "ugc_codes": "[\"NCZ025\",\"NCC063\"]",
-    "office_code": "27701"
+    "office_code": "27701",
+    "observation_station": "KRDU"
   },
   {
     "name": "West Durham",
@@ -2813,7 +3068,8 @@
     "county": "Durham County",
     "cwa": "RAH",
     "ugc_codes": "[\"NCZ025\",\"NCC063\"]",
-    "office_code": "27705"
+    "office_code": "27705",
+    "observation_station": "KBUY"
   },
   {
     "name": "Downtown Reno",
@@ -2824,7 +3080,8 @@
     "county": "Washoe County",
     "cwa": "REV",
     "ugc_codes": "[\"NVZ003\",\"NVC031\"]",
-    "office_code": "89501"
+    "office_code": "89501",
+    "observation_station": "E6216"
   },
   {
     "name": "South Reno",
@@ -2835,7 +3092,8 @@
     "county": "Washoe County",
     "cwa": "REV",
     "ugc_codes": "[\"NVZ003\",\"NVC031\"]",
-    "office_code": "89509"
+    "office_code": "89509",
+    "observation_station": "E6216"
   },
   {
     "name": "Downtown Charleston WV",
@@ -2846,7 +3104,8 @@
     "county": "Kanawha County",
     "cwa": "RLX",
     "ugc_codes": "[\"WVZ015\",\"WVC039\"]",
-    "office_code": "25301"
+    "office_code": "25301",
+    "observation_station": "KCRW"
   },
   {
     "name": "South Hills Charleston WV",
@@ -2857,7 +3116,8 @@
     "county": "Kanawha County",
     "cwa": "RLX",
     "ugc_codes": "[\"WVZ015\",\"WVC039\"]",
-    "office_code": "25304"
+    "office_code": "25304",
+    "observation_station": "KCRW"
   },
   {
     "name": "Downtown Roanoke",
@@ -2868,7 +3128,8 @@
     "county": "City of Roanoke",
     "cwa": "RNK",
     "ugc_codes": "[\"VAZ022\",\"VAC770\"]",
-    "office_code": "24011"
+    "office_code": "24011",
+    "observation_station": "KROA"
   },
   {
     "name": "South Roanoke",
@@ -2879,7 +3140,8 @@
     "county": "City of Roanoke",
     "cwa": "RNK",
     "ugc_codes": "[\"VAZ022\",\"VAC770\"]",
-    "office_code": "24016"
+    "office_code": "24016",
+    "observation_station": "KROA"
   },
   {
     "name": "Downtown Seattle",
@@ -2890,7 +3152,8 @@
     "county": "King County",
     "cwa": "SEW",
     "ugc_codes": "[\"WAZ315\",\"WAC033\"]",
-    "office_code": "98101"
+    "office_code": "98101",
+    "observation_station": "KBFI"
   },
   {
     "name": "University District Seattle",
@@ -2901,7 +3164,8 @@
     "county": "King County",
     "cwa": "SEW",
     "ugc_codes": "[\"WAZ315\",\"WAC033\"]",
-    "office_code": "98115"
+    "office_code": "98115",
+    "observation_station": "SEAW1"
   },
   {
     "name": "Downtown Tacoma",
@@ -2912,7 +3176,8 @@
     "county": "Pierce County",
     "cwa": "SEW",
     "ugc_codes": "[\"WAZ316\",\"WAC053\"]",
-    "office_code": "98402"
+    "office_code": "98402",
+    "observation_station": "KTIW"
   },
   {
     "name": "South Tacoma",
@@ -2923,7 +3188,8 @@
     "county": "Pierce County",
     "cwa": "SEW",
     "ugc_codes": "[\"WAZ316\",\"WAC053\"]",
-    "office_code": "98405"
+    "office_code": "98405",
+    "observation_station": "KTIW"
   },
   {
     "name": "West Springfield MO",
@@ -2934,7 +3200,8 @@
     "county": "Greene County",
     "cwa": "SGF",
     "ugc_codes": "[\"MOZ090\",\"MOC077\"]",
-    "office_code": "65802"
+    "office_code": "65802",
+    "observation_station": "KSGF"
   },
   {
     "name": "Downtown Springfield MO",
@@ -2945,7 +3212,8 @@
     "county": "Greene County",
     "cwa": "SGF",
     "ugc_codes": "[\"MOZ090\",\"MOC077\"]",
-    "office_code": "65806"
+    "office_code": "65806",
+    "observation_station": "KSGF"
   },
   {
     "name": "Downtown San Diego",
@@ -2956,7 +3224,8 @@
     "county": "San Diego County",
     "cwa": "SGX",
     "ugc_codes": "[\"CAZ043\",\"CAC073\"]",
-    "office_code": "92101"
+    "office_code": "92101",
+    "observation_station": "KSAN"
   },
   {
     "name": "Pacific Beach",
@@ -2967,7 +3236,8 @@
     "county": "San Diego County",
     "cwa": "SGX",
     "ugc_codes": "[\"CAZ043\",\"CAC073\"]",
-    "office_code": "92109"
+    "office_code": "92109",
+    "observation_station": "E9873"
   },
   {
     "name": "San Bernardino",
@@ -2978,7 +3248,8 @@
     "county": "San Bernardino County",
     "cwa": "SGX",
     "ugc_codes": "[\"CAZ048\",\"CAC071\"]",
-    "office_code": "92401"
+    "office_code": "92401",
+    "observation_station": "KSBD"
   },
   {
     "name": "Downtown Riverside",
@@ -2989,7 +3260,8 @@
     "county": "Riverside County",
     "cwa": "SGX",
     "ugc_codes": "[\"CAZ048\",\"CAC065\"]",
-    "office_code": "92501"
+    "office_code": "92501",
+    "observation_station": "KRAL"
   },
   {
     "name": "Downtown Shreveport",
@@ -3000,7 +3272,8 @@
     "county": "Caddo Parish",
     "cwa": "SHV",
     "ugc_codes": "[\"LAZ001\",\"LAC017\"]",
-    "office_code": "71101"
+    "office_code": "71101",
+    "observation_station": "KDTN"
   },
   {
     "name": "South Highlands Shreveport",
@@ -3011,7 +3284,8 @@
     "county": "Caddo Parish",
     "cwa": "SHV",
     "ugc_codes": "[\"LAZ001\",\"LAC017\"]",
-    "office_code": "71105"
+    "office_code": "71105",
+    "observation_station": "KDTN"
   },
   {
     "name": "Downtown Salt Lake City",
@@ -3022,7 +3296,8 @@
     "county": "Salt Lake County",
     "cwa": "SLC",
     "ugc_codes": "[\"UTZ105\",\"UTC035\"]",
-    "office_code": "84101"
+    "office_code": "84101",
+    "observation_station": "KSLC"
   },
   {
     "name": "Sugar House Salt Lake City",
@@ -3033,7 +3308,8 @@
     "county": "Salt Lake County",
     "cwa": "SLC",
     "ugc_codes": "[\"UTZ105\",\"UTC035\"]",
-    "office_code": "84105"
+    "office_code": "84105",
+    "observation_station": "KSLC"
   },
   {
     "name": "Downtown Provo",
@@ -3044,7 +3320,8 @@
     "county": "Utah County",
     "cwa": "SLC",
     "ugc_codes": "[\"UTZ106\",\"UTC049\"]",
-    "office_code": "84601"
+    "office_code": "84601",
+    "observation_station": "KPVU"
   },
   {
     "name": "North Provo",
@@ -3055,7 +3332,8 @@
     "county": "Utah County",
     "cwa": "SLC",
     "ugc_codes": "[\"UTZ106\",\"UTC049\"]",
-    "office_code": "84604"
+    "office_code": "84604",
+    "observation_station": "KPVU"
   },
   {
     "name": "Downtown Stockton",
@@ -3066,7 +3344,8 @@
     "county": "San Joaquin County",
     "cwa": "STO",
     "ugc_codes": "[\"CAZ019\",\"CAC077\"]",
-    "office_code": "95202"
+    "office_code": "95202",
+    "observation_station": "KSCK"
   },
   {
     "name": "North Stockton",
@@ -3077,7 +3356,8 @@
     "county": "San Joaquin County",
     "cwa": "STO",
     "ugc_codes": "[\"CAZ019\",\"CAC077\"]",
-    "office_code": "95207"
+    "office_code": "95207",
+    "observation_station": "KSCK"
   },
   {
     "name": "West Modesto",
@@ -3088,7 +3368,8 @@
     "county": "Stanislaus County",
     "cwa": "STO",
     "ugc_codes": "[\"CAZ019\",\"CAC099\"]",
-    "office_code": "95350"
+    "office_code": "95350",
+    "observation_station": "KMOD"
   },
   {
     "name": "Downtown Modesto",
@@ -3099,7 +3380,8 @@
     "county": "Stanislaus County",
     "cwa": "STO",
     "ugc_codes": "[\"CAZ019\",\"CAC099\"]",
-    "office_code": "95354"
+    "office_code": "95354",
+    "observation_station": "KMOD"
   },
   {
     "name": "Downtown Sacramento",
@@ -3110,7 +3392,8 @@
     "county": "Sacramento County",
     "cwa": "STO",
     "ugc_codes": "[\"CAZ017\",\"CAC067\"]",
-    "office_code": "95814"
+    "office_code": "95814",
+    "observation_station": "KSAC"
   },
   {
     "name": "Arden Arcade Sacramento",
@@ -3121,7 +3404,8 @@
     "county": "Sacramento County",
     "cwa": "STO",
     "ugc_codes": "[\"CAZ017\",\"CAC067\"]",
-    "office_code": "95821"
+    "office_code": "95821",
+    "observation_station": "KMHR"
   },
   {
     "name": "Downtown Tallahassee",
@@ -3132,7 +3416,8 @@
     "county": "Leon County",
     "cwa": "TAE",
     "ugc_codes": "[\"FLZ017\",\"FLC073\"]",
-    "office_code": "32301"
+    "office_code": "32301",
+    "observation_station": "KTLH"
   },
   {
     "name": "Midtown Tallahassee",
@@ -3143,7 +3428,8 @@
     "county": "Leon County",
     "cwa": "TAE",
     "ugc_codes": "[\"FLZ017\",\"FLC073\"]",
-    "office_code": "32303"
+    "office_code": "32303",
+    "observation_station": "KTLH"
   },
   {
     "name": "Downtown Tampa",
@@ -3154,7 +3440,8 @@
     "county": "Hillsborough County",
     "cwa": "TBW",
     "ugc_codes": "[\"FLZ151\",\"FLC057\"]",
-    "office_code": "33602"
+    "office_code": "33602",
+    "observation_station": "KTPF"
   },
   {
     "name": "St Petersburg",
@@ -3165,7 +3452,8 @@
     "county": "Pinellas County",
     "cwa": "TBW",
     "ugc_codes": "[\"FLZ050\",\"FLC103\"]",
-    "office_code": "33701"
+    "office_code": "33701",
+    "observation_station": "KSPG"
   },
   {
     "name": "South Sarasota",
@@ -3176,7 +3464,8 @@
     "county": "Sarasota County",
     "cwa": "TBW",
     "ugc_codes": "[\"FLZ160\",\"FLC115\"]",
-    "office_code": "34231"
+    "office_code": "34231",
+    "observation_station": "KSRQ"
   },
   {
     "name": "Downtown Sarasota",
@@ -3187,7 +3476,8 @@
     "county": "Sarasota County",
     "cwa": "TBW",
     "ugc_codes": "[\"FLZ160\",\"FLC115\"]",
-    "office_code": "34237"
+    "office_code": "34237",
+    "observation_station": "KSRQ"
   },
   {
     "name": "Downtown Topeka",
@@ -3198,7 +3488,8 @@
     "county": "Shawnee County",
     "cwa": "TOP",
     "ugc_codes": "[\"KSZ039\",\"KSC177\"]",
-    "office_code": "66603"
+    "office_code": "66603",
+    "observation_station": "KTOP"
   },
   {
     "name": "East Topeka",
@@ -3209,7 +3500,8 @@
     "county": "Shawnee County",
     "cwa": "TOP",
     "ugc_codes": "[\"KSZ039\",\"KSC177\"]",
-    "office_code": "66607"
+    "office_code": "66607",
+    "observation_station": "KTOP"
   },
   {
     "name": "Downtown Tulsa",
@@ -3220,7 +3512,8 @@
     "county": "Tulsa County",
     "cwa": "TSA",
     "ugc_codes": "[\"OKZ060\",\"OKC143\"]",
-    "office_code": "74103"
+    "office_code": "74103",
+    "observation_station": "KTUL"
   },
   {
     "name": "Brookside Tulsa",
@@ -3231,7 +3524,8 @@
     "county": "Tulsa County",
     "cwa": "TSA",
     "ugc_codes": "[\"OKZ060\",\"OKC143\"]",
-    "office_code": "74114"
+    "office_code": "74114",
+    "observation_station": "KRVS"
   },
   {
     "name": "Downtown Tucson",
@@ -3242,7 +3536,8 @@
     "county": "Pima County",
     "cwa": "TWC",
     "ugc_codes": "[\"AZZ504\",\"AZC019\"]",
-    "office_code": "85701"
+    "office_code": "85701",
+    "observation_station": "KDMA"
   },
   {
     "name": "University Tucson",
@@ -3253,7 +3548,8 @@
     "county": "Pima County",
     "cwa": "TWC",
     "ugc_codes": "[\"AZZ504\",\"AZC019\"]",
-    "office_code": "85719"
+    "office_code": "85719",
+    "observation_station": "KDMA"
   },
   {
     "name": "Downtown Rapid City",
@@ -3264,7 +3560,8 @@
     "county": "Meade County",
     "cwa": "UNR",
     "ugc_codes": "[\"SDZ072\",\"SDC093\"]",
-    "office_code": "57701"
+    "office_code": "57701",
+    "observation_station": "KRAP"
   },
   {
     "name": "West Rapid City",
@@ -3275,7 +3572,8 @@
     "county": "Pennington County",
     "cwa": "UNR",
     "ugc_codes": "[\"SDZ028\",\"SDC103\"]",
-    "office_code": "57702"
+    "office_code": "57702",
+    "observation_station": "KRAP"
   },
   {
     "name": "Downtown Las Vegas",
@@ -3286,7 +3584,8 @@
     "county": "Clark County",
     "cwa": "VEF",
     "ugc_codes": "[\"NVZ020\",\"NVC003\"]",
-    "office_code": "89101"
+    "office_code": "89101",
+    "observation_station": "KVGT"
   },
   {
     "name": "The Strip Las Vegas",
@@ -3297,6 +3596,7 @@
     "county": "Clark County",
     "cwa": "VEF",
     "ugc_codes": "[\"NVZ020\",\"NVC003\"]",
-    "office_code": "89109"
+    "office_code": "89109",
+    "observation_station": "KLAS"
   }
 ]

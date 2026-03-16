@@ -191,8 +191,8 @@ async function loadOffices() {
     const officesData = JSON.parse(fs.readFileSync(officesPath, 'utf8'));
 
     const sql = `
-    INSERT IGNORE INTO offices (office_code, name, city, state, latitude, longitude, region, county, ugc_codes, cwa)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT IGNORE INTO offices (office_code, name, city, state, latitude, longitude, region, county, ugc_codes, cwa, observation_station)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
     for (const office of officesData) {
@@ -206,7 +206,8 @@ async function loadOffices() {
             office.region || null,
             office.county || null,
             office.ugc_codes || null,
-            office.cwa || null
+            office.cwa || null,
+            office.observation_station || null
         ]);
     }
 
