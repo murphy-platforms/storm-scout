@@ -446,7 +446,7 @@ The project has been developed across 275 GitHub issues and 60+ commits over app
 
 This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
 
-The codebase is vanilla JavaScript with no TypeScript — a deliberate choice. When AI writes all the code, TypeScript's core value proposition (helping human developers catch type errors and navigate unfamiliar code) becomes irrelevant. AI agents handle the correctness that TypeScript would normally enforce, while vanilla JS eliminates build complexity and keeps the frontend servable as static files.
+The codebase is vanilla JavaScript with no TypeScript — a deliberate trade-off for this proof of concept. Vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for future considerations.
 
 See [`docs/DEVELOPMENT-PROCESS.md`](docs/DEVELOPMENT-PROCESS.md) for the full methodology: AI tooling choices, human-AI collaboration workflow, quality assurance approach, and lessons learned.
 
