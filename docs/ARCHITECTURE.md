@@ -121,6 +121,10 @@ These items are tracked in the `[Unreleased]` section of `CHANGELOG.md` and are 
 - **Database backup automation** — Scheduled MariaDB dumps with retention policy
 - **Predictive analytics** — ML-based impact forecasting from historical patterns
 
+### TypeScript Consideration
+
+TypeScript migration could provide IDE autocompletion, refactoring safety, and self-documenting interfaces as the codebase grows. The current vanilla JS approach optimizes for zero build complexity and AI-generation speed, but this trade-off should be re-evaluated if the project gains multiple human contributors.
+
 ---
 
 ## Testing Strategy
