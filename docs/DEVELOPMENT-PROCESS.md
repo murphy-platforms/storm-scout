@@ -4,7 +4,7 @@ How Storm Scout was built using AI-assisted development, from initial concept to
 
 ## Overview
 
-Storm Scout was developed by a technical operations leader using AI coding assistants over approximately one month. The project spans 180+ GitHub Issues and 300+ commits, producing a production-grade weather advisory dashboard with 35 backend test suites (474 tests), security hardening, and comprehensive documentation.
+Storm Scout was developed by a technical operations leader using AI coding assistants over approximately one month. The project spans 275 GitHub Issues and 60+ commits, producing a production-grade weather advisory dashboard with 35 backend test suites (474 tests), security hardening, and comprehensive documentation.
 
 This document describes the methodology — not to promote AI tools, but to provide an honest account of what worked, what didn't, and how human expertise shaped every decision.
 

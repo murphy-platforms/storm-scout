@@ -438,7 +438,7 @@ Storm Scout uses exclusively public domain data from the US federal government:
 
 Storm Scout was built by a technical operations leader — not a software engineer — using AI-assisted development with [Claude Code](https://claude.ai). The entire project, from first commit to production deployment, was developed through human-AI collaboration: the human directed architecture decisions, defined requirements, and managed the project backlog while AI generated the code, tests, and documentation.
 
-The project has been developed across 180+ GitHub issues and 300+ commits over approximately one month. Every commit carries a `Co-Authored-By: Claude Opus 4.6` trailer — this is intentional transparency about the development methodology, not an afterthought. Features like security hardening, accessibility, circuit breaker patterns, and the VTEC deduplication system were all specified by the human developer and implemented through iterative AI-assisted coding sessions.
+The project has been developed across 275 GitHub issues and 60+ commits over approximately one month. Every commit carries a `Co-Authored-By: Claude Opus 4.6` trailer — this is intentional transparency about the development methodology, not an afterthought. Features like security hardening, accessibility, circuit breaker patterns, and the VTEC deduplication system were all specified by the human developer and implemented through iterative AI-assisted coding sessions.
 
 This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
 
