@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -41,8 +45,44 @@ jobs:
         run: npm ci
       - name: Audit dependencies
         run: npm audit --audit-level=high
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npx jest --coverage --coverageReporters=text --coverageReporters=json-summary --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./test-results
+          JEST_JUNIT_OUTPUT_NAME: junit.xml
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-results
+          path: backend/test-results/junit.xml
+      - name: Report test results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest Unit Tests
+          path: backend/test-results/junit.xml
+          reporter: jest-junit
+      - name: Extract coverage percentage
+        if: github.ref == 'refs/heads/main'
+        id: coverage
+        run: |
+          COVERAGE=$(node -e "const c = require('./coverage/coverage-summary.json'); console.log(c.total.lines.pct)")
+          echo "lines=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "Coverage: $COVERAGE%"
+      - name: Update coverage badge
+        if: github.ref == 'refs/heads/main' && steps.coverage.outcome == 'success'
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gistID: ${{ vars.COVERAGE_GIST_ID }}
+          filename: storm-scout-coverage.json
+          label: coverage
+          message: ${{ steps.coverage.outputs.lines }}%
+          valColorRange: ${{ steps.coverage.outputs.lines }}
+          minColorRange: 40
+          maxColorRange: 90
+          isError: ${{ steps.coverage.outputs.lines < 50 }}
 
   e2e:
     runs-on: ubuntu-latest
@@ -106,4 +146,19 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run Playwright E2E tests
         working-directory: e2e
-        run: npm test
+        run: npx playwright test --config=playwright.config.js --reporter=list --reporter=junit
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/e2e-junit.xml
+      - name: Upload E2E results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: e2e/test-results/e2e-junit.xml
+      - name: Report E2E results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Playwright E2E Tests
+          path: e2e/test-results/e2e-junit.xml
+          reporter: jest-junit

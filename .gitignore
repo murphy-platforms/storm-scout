@@ -39,8 +39,10 @@ logs/
 dist/
 build/
 
-# Test coverage
+# Test coverage & results
 backend/coverage/
+backend/test-results/
+test-results/
 
 # Temporary files
 tmp/
