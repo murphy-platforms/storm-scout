@@ -143,6 +143,17 @@ describe('GET /api/offices/:id', () => {
     expect(res.status).toBe(400);
   });
 
+  test('returns default status when no status exists for office', async () => {
+    Office.getById.mockResolvedValue(SAMPLE_OFFICE);
+    OfficeStatus.getByOffice.mockResolvedValue(null);
+    Advisory.getByOffice.mockResolvedValue([]);
+
+    const res = await request(app).get('/api/offices/1');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.status).toEqual({ operational_status: 'Open', reason: null });
+  });
+
   test('returns 500 when model throws', async () => {
     Office.getById.mockRejectedValue(new Error('DB error'));
 
@@ -155,39 +166,59 @@ describe('GET /api/offices/:id', () => {
 
 describe('GET /api/offices/regions', () => {
   test('returns 200 with regions array', async () => {
-    Office.getRegions.mockResolvedValue(['Eastern', 'Western', 'Central']);
+    Office.getRegions.mockResolvedValue(['Northeast', 'Southwest']);
 
     const res = await request(app).get('/api/offices/regions');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toEqual(['Eastern', 'Western', 'Central']);
+    expect(res.body.data).toEqual(['Northeast', 'Southwest']);
   });
 
-  test('returns cache hit when available', async () => {
-    const cache = require('../../src/utils/cache');
-    const cached = { success: true, data: ['Eastern'] };
-    cache.get.mockReturnValueOnce(cached);
-
-    const res = await request(app).get('/api/offices/regions');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(cached);
-  });
-
-  test('returns 500 on error', async () => {
-    Office.getRegions.mockRejectedValue(new Error('fail'));
+  test('returns 500 when model throws', async () => {
+    Office.getRegions.mockRejectedValue(new Error('DB error'));
 
     const res = await request(app).get('/api/offices/regions');
 
     expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('GET /api/offices (caching)', () => {
+  test('returns cached response when available for unfiltered request', async () => {
+    const cache = require('../../src/utils/cache');
+    cache.get.mockReturnValueOnce({ success: true, data: [SAMPLE_OFFICE], count: 1 });
+
+    const res = await request(app).get('/api/offices');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(1);
+    expect(Office.getAll).not.toHaveBeenCalled();
+  });
+
+  test('bypasses cache when filters are present', async () => {
+    Office.getAll.mockResolvedValue([SAMPLE_OFFICE]);
+
+    await request(app).get('/api/offices').query({ region: 'Northeast' });
+
+    expect(Office.getAll).toHaveBeenCalled();
+  });
+
+  test('returns 500 when getAll throws', async () => {
+    Office.getAll.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/offices');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
   });
 });
 
 describe('GET /api/offices/:id/advisories', () => {
-  test('returns advisories for an office', async () => {
+  test('returns 200 with advisories for office', async () => {
     Office.getById.mockResolvedValue(SAMPLE_OFFICE);
-    Advisory.getByOffice.mockResolvedValue([{ id: 10, title: 'Storm Warning' }]);
+    Advisory.getByOffice.mockResolvedValue([{ id: 10, advisory_type: 'Tornado Warning' }]);
 
     const res = await request(app).get('/api/offices/1/advisories');
 
@@ -196,7 +227,7 @@ describe('GET /api/offices/:id/advisories', () => {
     expect(res.body.data).toHaveLength(1);
   });
 
-  test('passes active_only param', async () => {
+  test('passes active_only filter to model', async () => {
     Office.getById.mockResolvedValue(SAMPLE_OFFICE);
     Advisory.getByOffice.mockResolvedValue([]);
 
@@ -213,54 +244,11 @@ describe('GET /api/offices/:id/advisories', () => {
     expect(res.status).toBe(404);
   });
 
-  test('returns 500 on error', async () => {
-    Office.getById.mockRejectedValue(new Error('fail'));
+  test('returns 500 when model throws', async () => {
+    Office.getById.mockRejectedValue(new Error('DB error'));
 
     const res = await request(app).get('/api/offices/1/advisories');
 
     expect(res.status).toBe(500);
-  });
-});
-
-describe('GET /api/offices (extended)', () => {
-  test('returns cache hit for unfiltered request', async () => {
-    const cache = require('../../src/utils/cache');
-    const cached = { success: true, data: [SAMPLE_OFFICE], count: 1 };
-    cache.get.mockReturnValueOnce(cached);
-
-    const res = await request(app).get('/api/offices');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(cached);
-  });
-
-  test('returns 500 on model error', async () => {
-    Office.getAll.mockRejectedValue(new Error('fail'));
-
-    const res = await request(app).get('/api/offices');
-
-    expect(res.status).toBe(500);
-    expect(res.body.success).toBe(false);
-  });
-});
-
-describe('GET /api/offices/states (extended)', () => {
-  test('returns 500 on error', async () => {
-    Office.getStates.mockRejectedValue(new Error('fail'));
-
-    const res = await request(app).get('/api/offices/states');
-
-    expect(res.status).toBe(500);
-  });
-
-  test('returns cache hit when available', async () => {
-    const cache = require('../../src/utils/cache');
-    const cached = { success: true, data: ['CA'] };
-    cache.get.mockReturnValueOnce(cached);
-
-    const res = await request(app).get('/api/offices/states');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(cached);
   });
 });

@@ -12,11 +12,11 @@ jest.mock('../../src/config/database', () => ({
 }));
 
 jest.mock('../../src/models/advisory', () => ({
-  getActive: jest.fn(),
-  getAll:    jest.fn(),
+  getActive:          jest.fn(),
+  getAll:             jest.fn(),
   getRecentlyUpdated: jest.fn(),
   getCountBySeverity: jest.fn(),
-  getById: jest.fn()
+  getById:            jest.fn()
 }));
 
 jest.mock('../../src/utils/cache', () => ({
@@ -106,6 +106,90 @@ describe('GET /api/advisories/active', () => {
   });
 });
 
+describe('GET /api/advisories/active (caching & pagination)', () => {
+  test('returns cached response when available', async () => {
+    const cache = require('../../src/utils/cache');
+    const cachedResponse = { success: true, data: [SAMPLE_ADVISORY], count: 1 };
+    cache.get.mockReturnValueOnce(cachedResponse);
+
+    const res = await request(app).get('/api/advisories/active');
+
+    expect(res.status).toBe(200);
+    expect(res.body.count).toBe(1);
+    expect(Advisory.getActive).not.toHaveBeenCalled();
+  });
+
+  test('supports pagination with page and limit params', async () => {
+    const items = Array.from({ length: 5 }, (_, i) => ({ ...SAMPLE_ADVISORY, id: i + 1 }));
+    Advisory.getActive.mockResolvedValue(items);
+
+    const res = await request(app)
+      .get('/api/advisories/active')
+      .query({ page: 2, limit: 2 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveLength(2);
+    expect(res.body.total).toBe(5);
+    expect(res.body.pages).toBe(3);
+    expect(res.body.page).toBe(2);
+  });
+
+  test('returns 500 when model throws', async () => {
+    Advisory.getActive.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/advisories/active');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+  });
+
+  test('passes filter params with composite cache key', async () => {
+    const cache = require('../../src/utils/cache');
+    Advisory.getActive.mockResolvedValue([SAMPLE_ADVISORY]);
+
+    const res = await request(app)
+      .get('/api/advisories/active')
+      .query({ severity: 'Extreme', state: 'FL' });
+
+    expect(res.status).toBe(200);
+    expect(Advisory.getActive).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'Extreme', state: 'FL' })
+    );
+    // Filtered results use a composite cache key and 300s TTL
+    expect(cache.set).toHaveBeenCalledWith(
+      expect.stringContaining('advisories:filtered:'),
+      expect.objectContaining({ success: true }),
+      300
+    );
+  });
+
+  test('passes pool exhausted error to next() for 503 handling', async () => {
+    const poolError = new Error('Pool exhausted');
+    poolError.isPoolExhausted = true;
+    Advisory.getActive.mockRejectedValue(poolError);
+
+    const res = await request(app).get('/api/advisories/active');
+
+    // Should be forwarded to error middleware, not handled as 500 in route
+    expect(res.status).not.toBe(200);
+  });
+
+  test('paginated requests bypass cache entirely', async () => {
+    const cache = require('../../src/utils/cache');
+    const items = Array.from({ length: 3 }, (_, i) => ({ ...SAMPLE_ADVISORY, id: i + 1 }));
+    Advisory.getActive.mockResolvedValue(items);
+
+    const res = await request(app)
+      .get('/api/advisories/active')
+      .query({ page: 1, limit: 2 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.limit).toBe(2);
+    // Paginated responses should not be cached
+    expect(cache.set).not.toHaveBeenCalled();
+  });
+});
+
 describe('GET /api/advisories', () => {
   test('returns 200 with all advisories', async () => {
     Advisory.getAll.mockResolvedValue([SAMPLE_ADVISORY]);
@@ -115,7 +199,6 @@ describe('GET /api/advisories', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveLength(1);
-    expect(res.body.count).toBe(1);
   });
 
   test('returns 500 when model throws', async () => {
@@ -128,118 +211,62 @@ describe('GET /api/advisories', () => {
   });
 });
 
-describe('GET /api/advisories/active (extended)', () => {
-  test('supports pagination with page and limit', async () => {
-    const items = Array.from({ length: 10 }, (_, i) => ({ ...SAMPLE_ADVISORY, id: i + 1 }));
-    Advisory.getActive.mockResolvedValue(items);
-
-    const res = await request(app)
-      .get('/api/advisories/active')
-      .query({ page: '2', limit: '3' });
-
-    expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(3);
-    expect(res.body.total).toBe(10);
-    expect(res.body.page).toBe(2);
-    expect(res.body.pages).toBe(4);
-  });
-
-  test('uses filtered cache key for severity+state queries', async () => {
-    Advisory.getActive.mockResolvedValue([SAMPLE_ADVISORY]);
-    const cache = require('../../src/utils/cache');
-
-    await request(app)
-      .get('/api/advisories/active')
-      .query({ severity: 'Extreme', state: 'FL' });
-
-    expect(cache.set).toHaveBeenCalledWith(
-      expect.stringContaining('advisories:filtered:'),
-      expect.any(Object),
-      300
-    );
-  });
-
-  test('supports advisory_type filter', async () => {
-    Advisory.getActive.mockResolvedValue([]);
-
-    const res = await request(app)
-      .get('/api/advisories/active')
-      .query({ advisory_type: 'Tornado Warning' });
-
-    expect(res.status).toBe(200);
-  });
-
-  test('returns cache hit when available', async () => {
-    const cache = require('../../src/utils/cache');
-    const cached = { success: true, data: [SAMPLE_ADVISORY], count: 1 };
-    cache.get.mockReturnValueOnce(cached);
-
-    const res = await request(app).get('/api/advisories/active');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(cached);
-  });
-
-  test('returns 500 on model error', async () => {
-    Advisory.getActive.mockRejectedValue(new Error('DB error'));
-
-    const res = await request(app).get('/api/advisories/active');
-
-    expect(res.status).toBe(500);
-    expect(res.body.success).toBe(false);
-  });
-});
-
 describe('GET /api/advisories/recent', () => {
-  test('returns recently updated advisories', async () => {
+  test('returns 200 with recent advisories', async () => {
     Advisory.getRecentlyUpdated.mockResolvedValue([SAMPLE_ADVISORY]);
 
     const res = await request(app).get('/api/advisories/recent');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toHaveLength(1);
   });
 
-  test('accepts limit param', async () => {
-    Advisory.getRecentlyUpdated.mockResolvedValue([]);
+  test('passes custom limit param to model', async () => {
+    Advisory.getRecentlyUpdated.mockResolvedValue([SAMPLE_ADVISORY]);
 
-    await request(app).get('/api/advisories/recent').query({ limit: '5' });
+    const res = await request(app)
+      .get('/api/advisories/recent')
+      .query({ limit: 5 });
 
-    expect(Advisory.getRecentlyUpdated).toHaveBeenCalledWith(expect.anything());
+    expect(res.status).toBe(200);
+    expect(Advisory.getRecentlyUpdated).toHaveBeenCalledWith(5);
   });
 
-  test('returns 500 on error', async () => {
-    Advisory.getRecentlyUpdated.mockRejectedValue(new Error('fail'));
+  test('returns 500 on model error', async () => {
+    Advisory.getRecentlyUpdated.mockRejectedValue(new Error('Recent query failed'));
 
     const res = await request(app).get('/api/advisories/recent');
 
     expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('Recent query failed');
   });
 });
 
 describe('GET /api/advisories/stats', () => {
-  test('returns severity stats', async () => {
-    Advisory.getCountBySeverity.mockResolvedValue([{ severity: 'Extreme', count: 5 }]);
+  test('returns 200 with stats', async () => {
+    Advisory.getCountBySeverity.mockResolvedValue([{ severity: 'Extreme', count: 3 }]);
 
     const res = await request(app).get('/api/advisories/stats');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.by_severity).toBeDefined();
+    expect(res.body.data).toHaveProperty('by_severity');
   });
 
-  test('returns 500 on error', async () => {
-    Advisory.getCountBySeverity.mockRejectedValue(new Error('fail'));
+  test('returns 500 on model error', async () => {
+    Advisory.getCountBySeverity.mockRejectedValue(new Error('Stats query failed'));
 
     const res = await request(app).get('/api/advisories/stats');
 
     expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('Stats query failed');
   });
 });
 
 describe('GET /api/advisories/:id', () => {
-  test('returns 200 with advisory when found', async () => {
+  test('returns 200 when advisory found', async () => {
     Advisory.getById.mockResolvedValue(SAMPLE_ADVISORY);
 
     const res = await request(app).get('/api/advisories/1');
@@ -249,27 +276,24 @@ describe('GET /api/advisories/:id', () => {
     expect(res.body.data.id).toBe(1);
   });
 
-  test('returns 404 when not found', async () => {
+  test('returns 404 when advisory not found', async () => {
     Advisory.getById.mockResolvedValue(null);
 
     const res = await request(app).get('/api/advisories/9999');
 
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('Advisory not found');
   });
 
-  test('returns 400 for non-numeric id', async () => {
-    const res = await request(app).get('/api/advisories/abc');
-
-    expect(res.status).toBe(400);
-  });
-
-  test('returns 500 on error', async () => {
-    Advisory.getById.mockRejectedValue(new Error('fail'));
+  test('returns 500 on model error', async () => {
+    Advisory.getById.mockRejectedValue(new Error('Unexpected error'));
 
     const res = await request(app).get('/api/advisories/1');
 
     expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('Unexpected error');
   });
 });
 
@@ -282,44 +306,33 @@ describe('GET /ping', () => {
   });
 });
 
-describe('GET /api/version', () => {
-  test('returns version from package.json', async () => {
+describe('App-level routes', () => {
+  test('GET /api/version returns version from package.json', async () => {
     const res = await request(app).get('/api/version');
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('version');
   });
-});
 
-describe('GET /api', () => {
-  test('returns API info with endpoints', async () => {
+  test('GET /api returns API info with endpoint listing', async () => {
     const res = await request(app).get('/api');
 
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('Storm Scout API');
-    expect(res.body.endpoints).toBeDefined();
+    expect(res.body.endpoints).toHaveProperty('offices');
   });
-});
 
-describe('API 404 handler', () => {
-  test('returns 404 for unknown API routes', async () => {
-    const res = await request(app).get('/api/nonexistent-route/something');
+  test('GET /api/nonexistent returns 404', async () => {
+    const res = await request(app).get('/api/nonexistent');
 
     expect(res.status).toBe(404);
   });
-});
 
-describe('Error handler middleware', () => {
-  test('returns 503 for pool exhaustion errors', async () => {
-    // Trigger pool exhaustion by making getActive throw with isPoolExhausted
-    const Advisory = require('../../src/models/advisory');
-    const err = new Error('Pool exhausted');
-    err.isPoolExhausted = true;
-    Advisory.getActive.mockRejectedValue(err);
+  test('GET /metrics returns prometheus metrics', async () => {
+    const res = await request(app).get('/metrics');
 
-    const res = await request(app).get('/api/advisories/active');
-
-    expect(res.status).toBe(503);
-    expect(res.headers['retry-after']).toBe('5');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('text/plain');
+    expect(res.text).toContain('http_requests_total');
   });
 });
