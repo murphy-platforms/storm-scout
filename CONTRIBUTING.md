@@ -5,7 +5,7 @@ Thank you for your interest in contributing to Storm Scout! This guide covers ev
 ## Table of Contents
 - [Local Development Setup](#local-development-setup)
 - [Running Tests](#running-tests)
-  - [Test Coverage Notes](#test-coverage-notes)
+  - [Test Coverage](#test-coverage)
 - [Code Style](#code-style)
 - [Commit Conventions](#commit-conventions)
 - [Pull Request Process](#pull-request-process)
@@ -86,26 +86,29 @@ bash scripts/smoke-test.sh
 # UI verification (requires running server, 22 checks)
 npm start &
 bash scripts/ui-verify.sh
+
+# E2E browser tests (Playwright — separate package)
+cd ../e2e
+npm ci
+npx playwright install chromium
+npx playwright test
 ```
-
-Tests are in `backend/tests/`. Unit tests are in `tests/unit/`, integration tests in `tests/integration/`.
-
-The **UI verification script** (`scripts/ui-verify.sh`) validates all 9 frontend pages are served correctly, all 8 API dependencies return valid responses, and key data integrity constraints hold (300 offices loaded, active advisories present, severity values, filter impact levels, specific office lookup). Run it against a live server — it does not start its own.
 
 The CI pipeline (`npm audit --audit-level=high` + `npm test`) runs on every push and PR via GitHub Actions.
 
-### Test Coverage Notes
+### Test Coverage
 
-**Backend (129 tests across 9 suites):** Covers API routes, ingestion logic, advisory deduplication, database queries, middleware, and error handling. All new backend code should include corresponding tests.
+Tests are organized in `backend/tests/`:
 
-**Frontend (no automated tests):** The frontend currently has zero automated test coverage. This is a deliberate architectural trade-off — the frontend is vanilla JavaScript with no build step, no bundler, and no module system, which means standard test runners (Jest, Vitest, etc.) don't integrate cleanly without adding a transpilation layer that would undermine the project's "no build step" philosophy.
+- **Unit tests** (`tests/unit/`) — Models, middleware, ingestion, NOAA client, caching, alerting, VTEC extraction, metrics, and frontend utility logic (via jsdom)
+- **Integration tests** (`tests/integration/`) — All API routes end-to-end via supertest
+- **Smoke tests** (`scripts/smoke-test.sh`) — Pre-deploy server health checks (11 checks)
+- **UI verification** (`scripts/ui-verify.sh`) — Validates all pages serve correctly and API dependencies respond (22 checks, requires running server)
+- **E2E browser tests** (`e2e/tests/`) — Playwright tests for critical user flows: dashboard, advisories, offices, map, export (separate package; auto-starts dev server)
 
-Frontend reliability is maintained through:
-- Manual testing across the 6 dashboard pages
-- Strict coding conventions (`js/api.js` as the single fetch abstraction, `escapeHtml()` for all dynamic content)
-- ESLint and Prettier enforcement
+All new backend code should include corresponding unit tests. Frontend logic that can be tested without a browser (utility functions, data transformations, filter logic) should include jsdom-based tests in `tests/unit/frontend/`.
 
-> **Contribution opportunity:** If you're interested in adding frontend test coverage — whether through a lightweight approach like Playwright for E2E tests or a minimal unit test setup — we'd welcome the contribution. Open an issue to discuss the approach before starting.
+**Contribution opportunity:** Additional E2E coverage for edge cases, mobile viewports, and accessibility testing. Open an issue to discuss the approach before starting.
 
 ---
 

@@ -66,6 +66,10 @@ staging/
 # Build-time data artifacts (Issue #152)
 backend/src/data/ugc-codes-output.json
 
+# Office documents (internal artifacts, not for public repo)
+docs/*.pptx
+docs/*.docx
+
 # Development/debugging artifacts (Issue #154)
 fix-severity-bug.sh
 test-database.sh

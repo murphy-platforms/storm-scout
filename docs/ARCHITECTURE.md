@@ -17,7 +17,7 @@ Storm Scout is a Node.js + Express API backend paired with a Bootstrap 5.3 stati
 
 | Resource | Current | Notes |
 |----------|---------|-------|
-| Office locations | 1373 | All 50 states + territories |
+| Office locations | 300 | All 50 states + territories |
 | Active advisories (peak) | ~800–1,200 | Per 15-min ingestion cycle |
 | DB connection pool | 40 | Configurable via `DB_POOL_LIMIT` |
 | API response (full advisory list) | ~80 KB gzipped | ~500 KB raw |
@@ -59,7 +59,7 @@ The system is designed and tested for 300 locations. The following table documen
 |-----------|-----------------|---------|-----------------|
 | `advisories` table | InnoDB, no partitioning | ~5M rows before query plans degrade without partitioning | `idx_advisories_status_time` index covers common queries well to this range |
 | `advisory_history` table | InnoDB, no partitioning; 30-day TTL cleanup | ~500K rows (300 offices × 4 snapshots/day × 30 days = 36K rows/month) | Safe at current scale; partition by month at ~300K rows/month |
-| `offices` table | Full table scan acceptable | No ceiling at 1640 | Static data; cached aggressively |
+| `offices` table | Full table scan acceptable | No practical ceiling at 300 | Static data; cached aggressively |
 | Backup strategy | Not automated | Any scale | See Planned work below |
 
 **Recommended partition threshold:** Run `SELECT COUNT(*) FROM advisory_history` periodically. When row count exceeds 200,000, add time-based partitioning to enable fast partition pruning on time-range queries.
@@ -129,11 +129,7 @@ TypeScript migration could provide IDE autocompletion, refactoring safety, and s
 
 ## Testing Strategy
 
-**Backend** — 383 tests across 31 suites covering routes, services, ingestion, and database layers (~70% line coverage). Unit and integration tests run via Jest on every push through CI.
-
-**Frontend** — Frontend test coverage was deferred in favor of backend coverage depth. The 8 vanilla JS page modules are validated via manual verification and the pre-deploy smoke test in `deploy.sh` (22 assertions covering endpoint availability, response structure, and HTML page loads). Adding automated browser tests for critical user flows is tracked as a future improvement (#335).
-
-This is a deliberate scope trade-off: the backend handles data integrity, external API integration, and business logic where automated testing provides the highest return. The frontend is presentation-only with no client-side state management, making it lower-risk and well-suited to smoke-test coverage during the POC phase.
+Unit, integration, smoke, and UI verification tests run via Jest and shell scripts on every push through CI. See [CONTRIBUTING.md](../CONTRIBUTING.md#test-coverage) for test organization and coverage details.
 
 ---
 

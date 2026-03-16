@@ -5,7 +5,7 @@ Backend REST API for the Storm Scout weather advisory system.
 ## Base URL
 
 **Local Development**: `http://localhost:3000/api`
-**Production**: Update when production server is configured.
+**Production**: See the [live demo](https://topper.solutions/stormscout). API endpoints are relative to the deployment root.
 
 ---
 
