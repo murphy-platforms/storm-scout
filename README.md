@@ -376,7 +376,7 @@ Storm Scout is designed to be forked and customized. Any set of US locations wit
 
 **Further customization:**
 
-- **Alert type filtering** — Edit `backend/src/config/noaa-alert-types.js` to change which of the 94 NOAA alert types are enabled by default and how they map to impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO).
+- **Alert type filtering** — Edit `backend/src/config/noaa-alert-types.js` to change which of the 96 NOAA alert types are enabled by default and how they map to impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO).
 - **Filter presets** — Modify the built-in presets (Office Default, Operations View, Executive Summary, etc.) to match your organization's alert monitoring needs.
 - **Extend the schema** — Add custom columns (region, cost center, district) to the `offices` table and include them in your import CSV for organization-specific grouping and reporting.
 

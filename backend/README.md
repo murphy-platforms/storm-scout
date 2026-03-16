@@ -140,7 +140,7 @@ The script is idempotent — rerun it to fill in any offices that failed on prev
 ### Filters
 
 - `GET /api/filters` — All filter presets
-- `GET /api/filters/types/all` — All 94 NOAA alert types by impact level
+- `GET /api/filters/types/all` — All 96 NOAA alert types by impact level
 - `GET /api/filters/types/:level` — Alert types for a specific impact level
 
 ### System

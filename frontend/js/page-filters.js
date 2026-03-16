@@ -1,6 +1,6 @@
 /**
  * page-filters.js
- * Filter settings page — lets users configure which of the 94 NOAA alert
+ * Filter settings page — lets users configure which of the 96 NOAA alert
  * types to include; saves preferences to localStorage.
  *
  * Key responsibilities:

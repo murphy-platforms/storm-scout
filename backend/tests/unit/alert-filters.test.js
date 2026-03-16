@@ -21,8 +21,8 @@ describe('NOAA Alert Type Taxonomy', () => {
 
   test('should have expected type counts per category', () => {
     expect(NOAA_ALERT_TYPES.CRITICAL).toHaveLength(13);
-    expect(NOAA_ALERT_TYPES.HIGH).toHaveLength(17);
-    expect(NOAA_ALERT_TYPES.MODERATE).toHaveLength(23);
+    expect(NOAA_ALERT_TYPES.HIGH).toHaveLength(18);
+    expect(NOAA_ALERT_TYPES.MODERATE).toHaveLength(24);
     expect(NOAA_ALERT_TYPES.LOW).toHaveLength(23);
     expect(NOAA_ALERT_TYPES.INFO).toHaveLength(18);
   });
@@ -127,7 +127,7 @@ describe('CUSTOM (Office Default) Filter', () => {
         });
       }
     }
-    expect(enabledCount).toBe(47);
+    expect(enabledCount).toBe(49);
   });
 });
 

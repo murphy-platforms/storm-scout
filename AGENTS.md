@@ -17,7 +17,7 @@ Storm Scout is a weather advisory monitoring system that consolidates active NOA
 ### Key Capabilities
 - **Real-time NOAA Data**: Automatic ingestion every 15 minutes from NOAA Weather API
 - **300 Monitored Locations**: Monitoring offices across all 50 US states and territories
-- **Smart Filtering**: 94 NOAA alert types across 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
+- **Smart Filtering**: 96 NOAA alert types across 5 impact levels (CRITICAL, HIGH, MODERATE, LOW, INFO)
 - **Operational Status**: Automatically calculated (Open/Closed/At Risk) based on advisory severity
 - **Duplicate Prevention**: Multi-level deduplication using external_id, VTEC event IDs, and VTEC codes; natural-key fallback `(office_id, advisory_type, source, start_time)` guards against malformed payloads where both fields are absent
 - **Filter Presets**: Office Default, Operations View, Executive Summary, Safety Focus, All Alerts

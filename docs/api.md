@@ -391,7 +391,7 @@ Available filter presets for alert type filtering.
 
 #### GET `/api/filters/types/all`
 
-All 94 NOAA alert types grouped by impact level (`CRITICAL`, `HIGH`, `MODERATE`, `LOW`, `INFO`).
+All 96 NOAA alert types grouped by impact level (`CRITICAL`, `HIGH`, `MODERATE`, `LOW`, `INFO`).
 
 ---
 

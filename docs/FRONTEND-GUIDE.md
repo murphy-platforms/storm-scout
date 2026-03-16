@@ -87,7 +87,7 @@ User filter preferences are persisted to `localStorage` under the key `stormScou
 { "Tornado Warning": true, "Dense Fog Advisory": false, ... }
 ```
 
-If localStorage is unavailable or the stored value is corrupt JSON, the `CUSTOM` preset (47/94 types) is applied and a toast warning is shown.
+If localStorage is unavailable or the stored value is corrupt JSON, the `CUSTOM` preset (49/96 types) is applied and a toast warning is shown.
 
 ---
 
@@ -103,7 +103,7 @@ await AlertFilters.init();
 
 `init()` makes two API calls:
 1. `GET /api/filters` — loads preset definitions (categories and exclusions per preset)
-2. `GET /api/filters/types/all` — loads all 94 alert type names grouped by impact level
+2. `GET /api/filters/types/all` — loads all 96 alert type names grouped by impact level
 
 Then calls `loadUserPreferences()` to restore saved state from localStorage.
 
@@ -116,7 +116,7 @@ Then calls `loadUserPreferences()` to restore saved state from localStorage.
 | `AlertFilters.shouldIncludeAlertType(type)` | Check a single type; returns boolean |
 | `AlertFilters.applyPreset(presetName)` | Apply a named preset (e.g. `'CUSTOM'`, `'FULL'`) to in-memory state |
 | `AlertFilters.getEnabledCount()` | Count of currently enabled alert types |
-| `AlertFilters.getTotalAlertTypes()` | Total available alert types (94) |
+| `AlertFilters.getTotalAlertTypes()` | Total available alert types (96) |
 | `AlertFilters.hasActiveFilters()` | True if not all types are enabled |
 | `AlertFilters.getFilterStatus()` | Human-readable name of active filter state |
 | `AlertFilters.matchesPreset(name)` | True if current state matches the named preset |
