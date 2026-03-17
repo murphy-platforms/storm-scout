@@ -140,33 +140,25 @@ const STATE_REGIONS = {
 //   - office_code (5-digit zip), name, city, state_full
 //   - address (for geocoding) OR note with "NEEDS VERIFICATION"
 // The script will geocode coordinates and fetch NOAA weather data automatically.
+// Replace these with your own office data before running.
 const NEW_OFFICES = [
     {
-        office_code: '76710',
-        name: 'Waco',
-        city: 'Waco',
-        state_full: 'TEXAS',
+        office_code: '10001',
+        name: 'Example Office A',
+        city: 'New York',
+        state_full: 'NEW YORK',
         address: '123 Main St',
-        zip: '76710',
-        source: 'Public address directory'
+        zip: '10001',
+        source: 'Example entry — replace with real data'
     },
     {
-        office_code: '59102',
-        name: 'Billings',
-        city: 'Billings',
-        state_full: 'MONTANA',
+        office_code: '90210',
+        name: 'Example Office B',
+        city: 'Beverly Hills',
+        state_full: 'CALIFORNIA',
         address: '456 Elm Ave',
-        zip: '59102',
-        source: 'Public address directory'
-    },
-    {
-        office_code: '87505',
-        name: 'Santa Fe',
-        city: 'Santa Fe',
-        state_full: 'NEW MEXICO',
-        address: '789 Oak Blvd',
-        zip: '87505',
-        source: 'Public address directory'
+        zip: '90210',
+        source: 'Example entry — replace with real data'
     }
 ];
 

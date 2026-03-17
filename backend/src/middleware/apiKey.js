@@ -45,7 +45,9 @@ const crypto = require('crypto');
 
 /**
  * Require a valid API key on the request.
- * Returns 401 if the header is missing or does not match API_KEY.
+ * Returns 404 if the header is missing or does not match API_KEY — this
+ * makes protected routes indistinguishable from non-existent routes to
+ * unauthenticated callers, preventing admin endpoint enumeration.
  * Returns 503 if the server has not been configured with an API_KEY (fail-closed).
  *
  * Uses crypto.timingSafeEqual() to prevent timing side-channel attacks that
@@ -60,18 +62,18 @@ function requireApiKey(req, res, next) {
     // where the env var was forgotten.
     if (!configuredKey) {
         console.error('[AUTH] API_KEY is not set — write endpoint is inaccessible until configured');
-        return res.status(503).json({
+        return res.status(404).json({
             success: false,
-            error: 'Service unavailable: authentication is not configured'
+            error: 'Not found'
         });
     }
 
     const providedKey = req.headers['x-api-key'];
 
     if (!providedKey) {
-        return res.status(401).json({
+        return res.status(404).json({
             success: false,
-            error: 'Unauthorized: valid X-Api-Key header required'
+            error: 'Not found'
         });
     }
 
@@ -81,9 +83,9 @@ function requireApiKey(req, res, next) {
     const a = Buffer.from(providedKey);
     const b = Buffer.from(configuredKey);
     if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-        return res.status(401).json({
+        return res.status(404).json({
             success: false,
-            error: 'Unauthorized: valid X-Api-Key header required'
+            error: 'Not found'
         });
     }
 

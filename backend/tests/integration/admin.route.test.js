@@ -75,17 +75,17 @@ afterEach(() => jest.clearAllMocks());
 // ── Authentication ──────────────────────────────────────────────────────
 
 describe('Admin API key enforcement', () => {
-  test('returns 401 when X-Api-Key header is missing', async () => {
+  test('returns 404 when X-Api-Key header is missing (hides admin routes)', async () => {
     const res = await request(app).get('/api/admin/status');
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);
   });
 
-  test('returns 401 when X-Api-Key is wrong', async () => {
+  test('returns 404 when X-Api-Key is wrong (hides admin routes)', async () => {
     const res = await request(app)
       .get('/api/admin/status')
       .set('X-Api-Key', 'wrong-key');
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(404);
   });
 });
 

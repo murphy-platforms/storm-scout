@@ -11,7 +11,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 > **Storm Scout** monitors NOAA weather alerts across 300+ U.S. locations and presents operational impact in a single dashboard. Built for operations teams who need go/no-go closure decisions during severe weather. **[Live demo →](https://topper.solutions/stormscout)**
 
-> **Note:** Storm Scout is an independent open-source project. It is not affiliated with, endorsed by, or connected to any government agency or postal service. See the full [Disclaimer](frontend/disclaimer.html) below.
+> **Note:** Storm Scout is an independent open-source project, not affiliated with or endorsed by any organization. See the full [Disclaimer](frontend/disclaimer.html).
 
 ## Why Storm Scout?
 
@@ -445,7 +445,7 @@ Storm Scout was built by a technical operations leader — not a software engine
 
 The project has been developed across 275 GitHub issues and 60+ commits over approximately one month. Every commit carries a `Co-Authored-By: Claude Opus 4.6` trailer — this is intentional transparency about the development methodology, not an afterthought. Features like security hardening, accessibility, circuit breaker patterns, and the VTEC deduplication system were all specified by the human developer and implemented through iterative AI-assisted coding sessions.
 
-The initial MVP is actively used by an operations team, replacing manual NOAA alert checks and Excel-based weather monitoring workflows. This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
+The initial MVP demonstrates how an operations team would replace manual NOAA alert checks and Excel-based weather monitoring workflows. This project serves as a case study in what's possible when domain expertise (operations management, weather monitoring workflows) meets AI-assisted software development — a production-grade application built by someone who understands the problem deeply but relied on AI tooling to write the code.
 
 The codebase is vanilla JavaScript with no TypeScript — a deliberate trade-off for this project. Vanilla JS eliminates build tooling complexity, keeps the frontend servable as static files, and enables faster iteration cycles with AI assistants. TypeScript would be a natural evolution for team-based development or production scaling — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for future considerations.
 

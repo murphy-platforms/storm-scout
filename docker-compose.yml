@@ -3,6 +3,7 @@ services:
     image: mariadb:11
     container_name: storm-scout-db
     restart: unless-stopped
+    # DEV ONLY — never use these credentials in production
     environment:
       MYSQL_ROOT_PASSWORD: rootdev
       MYSQL_DATABASE: storm_scout_dev
