@@ -892,7 +892,26 @@ describe('ingestObservations() via ingestNOAAData()', () => {
       station_id: 'KMIA',
       temperature_c: 28.5,
       wind_direction_deg: 181, // rounded
-      text_description: 'Partly Cloudy'
+      text_description: 'Partly Cloudy',
+      observed_at: expect.any(Date)
+    }));
+  });
+
+  test('upsert includes temperature_c and observed_at for frontend display', async () => {
+    const office = makeOffice({ id: 1, observation_station: 'KORD' });
+    setupHappyPath({ offices: [office] });
+
+    const observedTime = '2026-03-15T14:00:00Z';
+    getLatestObservation.mockResolvedValue({
+      temperature: { value: 12.3 },
+      timestamp: observedTime
+    });
+
+    await ingestNOAAData();
+
+    expect(ObservationModel.upsert).toHaveBeenCalledWith(1, expect.objectContaining({
+      temperature_c: 12.3,
+      observed_at: new Date(observedTime)
     }));
   });
 
