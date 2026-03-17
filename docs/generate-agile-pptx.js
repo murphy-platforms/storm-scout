@@ -5,6 +5,7 @@
  */
 const pptxgen = require('pptxgenjs');
 const fs = require('fs');
+const path = require('path');
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_16x9';
@@ -498,7 +499,7 @@ s10.addText('Storm Scout  |  Retrospective Agile Breakdown  |  March 2026', {
 // ═══════════════════════════════════════════════════════════
 // SAVE
 // ═══════════════════════════════════════════════════════════
-const outputPath = './docs/Storm Scout - Agile Breakdown.pptx';
+const outputPath = path.join(__dirname, 'Storm Scout - Agile Breakdown.pptx');
 pres.writeFile({ fileName: outputPath }).then(() => {
     const stats = fs.statSync(outputPath);
     console.log(`Presentation created: ${outputPath}`);

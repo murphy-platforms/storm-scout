@@ -5,6 +5,7 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 const {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
     Header, Footer, AlignmentType, LevelFormat,
@@ -983,7 +984,7 @@ async function main() {
     });
 
     const buffer = await Packer.toBuffer(doc);
-    const outputPath = './docs/Storm Scout - Retrospective Agile Breakdown.docx';
+    const outputPath = path.join(__dirname, 'Storm Scout - Retrospective Agile Breakdown.docx');
     fs.writeFileSync(outputPath, buffer);
     console.log(`Document created: ${outputPath}`);
     console.log(`Size: ${(buffer.length / 1024).toFixed(1)} KB`);
