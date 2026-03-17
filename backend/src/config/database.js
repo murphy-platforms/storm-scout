@@ -191,8 +191,19 @@ async function loadOffices() {
     const officesData = JSON.parse(fs.readFileSync(officesPath, 'utf8'));
 
     const sql = `
-    INSERT IGNORE INTO offices (office_code, name, city, state, latitude, longitude, region, county, ugc_codes, cwa, observation_station)
+    INSERT INTO offices (office_code, name, city, state, latitude, longitude, region, county, ugc_codes, cwa, observation_station)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      name = VALUES(name),
+      city = VALUES(city),
+      state = VALUES(state),
+      latitude = VALUES(latitude),
+      longitude = VALUES(longitude),
+      region = VALUES(region),
+      county = VALUES(county),
+      ugc_codes = VALUES(ugc_codes),
+      cwa = VALUES(cwa),
+      observation_station = VALUES(observation_station)
   `;
 
     for (const office of officesData) {
