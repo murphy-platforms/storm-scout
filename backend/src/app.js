@@ -202,8 +202,9 @@ if (config.env === 'development' || jsonLogging) {
 // Liveness probe — always returns 200 with no I/O, for supervisor keep-alive checks. (closes #104)
 app.get('/ping', (req, res) => res.json({ status: 'ok' }));
 
-// Prometheus metrics endpoint — unauthenticated, for Prometheus scraping
-mountMetricsEndpoint(app);
+// Prometheus metrics endpoint — API key required (prevents leaking Node.js version,
+// memory stats, request patterns, ingestion timing, and other operational details)
+mountMetricsEndpoint(app, requireApiKey);
 
 // Public health check — returns only status for load balancers and supervisors.
 // Detailed diagnostics (memory, circuit breaker, ingestion) are at /api/admin/health behind API key auth.
@@ -247,16 +248,16 @@ app.use('/api/history', historyRouter);
 app.use('/api/observations', observationsRouter);
 app.use('/api/admin', adminRouter);
 
-// Version endpoint
-app.get('/api/version', (req, res) => {
+// Version endpoint — API key required (prevents exposing exact version for targeted attacks)
+app.get('/api/version', requireApiKey, (req, res) => {
     res.json({
         version: pkg.version,
         released: pkg.releasedDate || null
     });
 });
 
-// API info endpoint
-app.get('/api', (req, res) => {
+// API info endpoint — API key required (prevents exposing full route map)
+app.get('/api', requireApiKey, (req, res) => {
     res.json({
         name: 'Storm Scout API',
         version: pkg.version,

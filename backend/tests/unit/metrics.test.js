@@ -79,7 +79,7 @@ describe('mountMetricsEndpoint', () => {
     // Build a minimal Express-like app to capture the route handler
     let registeredHandler;
     const fakeApp = {
-      get: jest.fn((path, handler) => { registeredHandler = handler; })
+      get: jest.fn((...args) => { registeredHandler = args[args.length - 1]; })
     };
 
     mountMetricsEndpoint(fakeApp);
@@ -96,6 +96,14 @@ describe('mountMetricsEndpoint', () => {
 
     expect(mockRes.set).toHaveBeenCalledWith('Content-Type', expect.stringContaining('text'));
     expect(mockRes.end).toHaveBeenCalledWith(expect.any(String));
+  });
+
+  test('passes middleware before handler when provided', () => {
+    const middleware = jest.fn((req, res, next) => next());
+    const fakeApp = { get: jest.fn() };
+    mountMetricsEndpoint(fakeApp, middleware);
+
+    expect(fakeApp.get).toHaveBeenCalledWith('/metrics', middleware, expect.any(Function));
   });
 
   test('updates DB pool gauge when pool object is available', async () => {

@@ -50,6 +50,11 @@ const request    = require('supertest');
 const app        = require('../../src/app');
 const Advisory   = require('../../src/models/advisory');
 
+const API_KEY = 'test-admin-secret-key';
+
+beforeAll(() => { process.env.API_KEY = API_KEY; });
+afterAll(() => { delete process.env.API_KEY; });
+
 const SAMPLE_ADVISORY = {
   id: 1,
   office_id: 1,
@@ -308,18 +313,32 @@ describe('GET /ping', () => {
 
 describe('App-level routes', () => {
   test('GET /api/version returns version from package.json', async () => {
-    const res = await request(app).get('/api/version');
+    const res = await request(app).get('/api/version')
+      .set('X-Api-Key', API_KEY);
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('version');
   });
 
+  test('GET /api/version without API key returns 404', async () => {
+    const res = await request(app).get('/api/version');
+
+    expect(res.status).toBe(404);
+  });
+
   test('GET /api returns API info with endpoint listing', async () => {
-    const res = await request(app).get('/api');
+    const res = await request(app).get('/api')
+      .set('X-Api-Key', API_KEY);
 
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('Storm Scout API');
     expect(res.body.endpoints).toHaveProperty('offices');
+  });
+
+  test('GET /api without API key returns 404', async () => {
+    const res = await request(app).get('/api');
+
+    expect(res.status).toBe(404);
   });
 
   test('GET /api/nonexistent returns 404', async () => {
@@ -329,10 +348,17 @@ describe('App-level routes', () => {
   });
 
   test('GET /metrics returns prometheus metrics', async () => {
-    const res = await request(app).get('/metrics');
+    const res = await request(app).get('/metrics')
+      .set('X-Api-Key', API_KEY);
 
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toContain('text/plain');
     expect(res.text).toContain('http_requests_total');
+  });
+
+  test('GET /metrics without API key returns 404', async () => {
+    const res = await request(app).get('/metrics');
+
+    expect(res.status).toBe(404);
   });
 });

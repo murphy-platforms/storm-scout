@@ -93,8 +93,8 @@ const CIRCUIT_STATE_MAP = { CLOSED: 0, HALF_OPEN: 1, OPEN: 2 };
  * Should be called once during app setup.
  * Updates point-in-time gauges (circuit breaker, DB pool) on each scrape.
  */
-function mountMetricsEndpoint(app) {
-    app.get('/metrics', async (req, res) => {
+function mountMetricsEndpoint(app, ...middleware) {
+    app.get('/metrics', ...middleware, async (req, res) => {
         // Update circuit breaker gauge from current state
         try {
             const { getCircuitBreakerState } = require('../ingestion/utils/api-client');
