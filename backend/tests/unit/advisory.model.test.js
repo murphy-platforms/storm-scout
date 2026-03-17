@@ -160,6 +160,15 @@ describe('AdvisoryModel.findByNaturalKey()', () => {
 
     expect(result).toBeNull();
   });
+
+  test('returns null on DB error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB error')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.findByNaturalKey(1, 'Flood Warning', 'NOAA', null);
+
+    expect(result).toBeNull();
+  });
 });
 
 // ── getAll ─────────────────────────────────────────────────────────────────────
@@ -401,6 +410,17 @@ describe('AdvisoryModel.findByVTECEventID()', () => {
   });
 });
 
+// ── findByExternalID (no officeId — fallback error path) ──────────────────────
+
+describe('AdvisoryModel.findByExternalID() — fallback error path', () => {
+  test('returns null on DB error for legacy callers (no officeId)', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB error')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.findByExternalID('urn:123')).toBeNull();
+  });
+});
+
 // ── findByVTEC (legacy) ────────────────────────────────────────────────────────
 
 describe('AdvisoryModel.findByVTEC()', () => {
@@ -418,6 +438,13 @@ describe('AdvisoryModel.findByVTEC()', () => {
       expect.stringContaining('advisory_type = ?'),
       ['/O.NEW.KIWX.TO.W.0001/', 1, 'Tornado Warning']
     );
+  });
+
+  test('returns null on DB error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB error')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.findByVTEC('/O.NEW.KIWX.TO.W.0001/', 1)).toBeNull();
   });
 });
 
@@ -494,6 +521,82 @@ describe('AdvisoryModel.delete()', () => {
   });
 });
 
+// ── create() — raw_payload extraction branches ────────────────────────────────
+
+describe('AdvisoryModel.create() — raw_payload extraction', () => {
+  test('extracts externalId from raw_payload object (not string)', async () => {
+    const advisory = { ...BASE_ADVISORY, external_id: null, raw_payload: { id: 'urn:from-object', properties: {} } };
+    const newRow = { id: 88, external_id: 'urn:from-object' };
+    const db = {
+      query: jest.fn()
+        .mockResolvedValueOnce([[], {}])              // findByExternalID → not found
+        .mockResolvedValueOnce([{ insertId: 88 }, {}]) // INSERT
+        .mockResolvedValueOnce([[newRow], {}])          // getById
+    };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.create(advisory);
+
+    expect(result).toEqual(newRow);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('external_id = ? AND office_id = ?'),
+      ['urn:from-object', advisory.office_id]
+    );
+  });
+
+  test('extracts externalId from raw_payload.properties.id when top-level id absent', async () => {
+    const advisory = { ...BASE_ADVISORY, external_id: null, raw_payload: { properties: { id: 'urn:from-properties' } } };
+    const newRow = { id: 89, external_id: 'urn:from-properties' };
+    const db = {
+      query: jest.fn()
+        .mockResolvedValueOnce([[], {}])
+        .mockResolvedValueOnce([{ insertId: 89 }, {}])
+        .mockResolvedValueOnce([[newRow], {}])
+    };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.create(advisory);
+
+    expect(result).toEqual(newRow);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('external_id = ? AND office_id = ?'),
+      ['urn:from-properties', advisory.office_id]
+    );
+  });
+
+  test('parses raw_payload string to extract externalId', async () => {
+    const rawPayload = JSON.stringify({ id: 'urn:from-string' });
+    const advisory = { ...BASE_ADVISORY, external_id: null, raw_payload: rawPayload };
+    const newRow = { id: 90, external_id: 'urn:from-string' };
+    const db = {
+      query: jest.fn()
+        .mockResolvedValueOnce([[], {}])
+        .mockResolvedValueOnce([{ insertId: 90 }, {}])
+        .mockResolvedValueOnce([[newRow], {}])
+    };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.create(advisory);
+
+    expect(result).toEqual(newRow);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('external_id = ? AND office_id = ?'),
+      ['urn:from-string', advisory.office_id]
+    );
+  });
+
+  test('throws on DB error during INSERT', async () => {
+    const db = {
+      query: jest.fn()
+        .mockResolvedValueOnce([[], {}])                        // findByExternalID → not found
+        .mockRejectedValueOnce(new Error('insert error'))       // INSERT fails
+    };
+    getDatabase.mockReturnValue(db);
+
+    await expect(AdvisoryModel.create({ ...BASE_ADVISORY })).rejects.toThrow('insert error');
+  });
+});
+
 // ── getCountBySeverity ─────────────────────────────────────────────────────────
 
 describe('AdvisoryModel.getCountBySeverity()', () => {
@@ -517,6 +620,13 @@ describe('AdvisoryModel.getCountBySeverity()', () => {
     const sql = db.query.mock.calls[0][0];
     expect(sql).not.toContain('WHERE');
   });
+
+  test('returns empty array on DB error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB error')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.getCountBySeverity()).toEqual([]);
+  });
 });
 
 // ── getRecentlyUpdated ─────────────────────────────────────────────────────────
@@ -538,6 +648,13 @@ describe('AdvisoryModel.getRecentlyUpdated()', () => {
     await AdvisoryModel.getRecentlyUpdated(5);
 
     expect(db.query).toHaveBeenCalledWith(expect.stringContaining('LIMIT ?'), [5]);
+  });
+
+  test('returns empty array on DB error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB error')) };
+    getDatabase.mockReturnValue(db);
+
+    expect(await AdvisoryModel.getRecentlyUpdated()).toEqual([]);
   });
 });
 

@@ -77,4 +77,23 @@ describe('config.js — fail-fast validation', () => {
 
     expect(config.cors.origin).toEqual(['https://a.com', 'https://b.com']);
   });
+
+  test('CORS_ORIGIN with single value returns string (not array)', () => {
+    process.env.CORS_ORIGIN = 'https://single.example.com';
+
+    const config = require('../../src/config/config');
+
+    expect(config.cors.origin).toBe('https://single.example.com');
+  });
+
+  test('CORS_ORIGIN empty string returns false (fails closed)', () => {
+    // Set to empty string rather than deleting: dotenv.config() (called in config.js)
+    // only sets missing vars, so a pre-existing empty string prevents the .env value
+    // from being applied, leaving `raw` falsy and returning false.
+    process.env.CORS_ORIGIN = '';
+
+    const config = require('../../src/config/config');
+
+    expect(config.cors.origin).toBe(false);
+  });
 });

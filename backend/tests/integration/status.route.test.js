@@ -228,6 +228,25 @@ describe('GET /api/status/overview (error handling)', () => {
   });
 });
 
+describe('GET /api/status/overview — last_updated null branch', () => {
+  test('sets last_updated to null when getLastIngestionTime returns null', async () => {
+    const { getLastIngestionTime } = require('../../src/ingestion/noaa-ingestor');
+    getLastIngestionTime.mockResolvedValueOnce(null);
+
+    Office.getAll.mockResolvedValue([{ id: 1 }]);
+    Advisory.getActive.mockResolvedValue([]);
+    Advisory.getCountBySeverity.mockResolvedValue([]);
+    OfficeStatus.getCountByStatus.mockResolvedValue([]);
+    OfficeStatus.getCountByWeatherImpact.mockResolvedValue([]);
+    OfficeStatus.getRecentlyUpdated.mockResolvedValue([]);
+
+    const res = await request(app).get('/api/status/overview');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.last_updated).toBeNull();
+  });
+});
+
 describe('GET /api/status/offices-impacted', () => {
   test('returns 200 with impacted offices', async () => {
     OfficeStatus.getImpacted.mockResolvedValue([

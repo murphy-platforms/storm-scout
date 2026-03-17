@@ -398,6 +398,29 @@ describe('populateExternalIds', () => {
         const result = await populateExternalIds();
         expect(result).toBe(0);
     });
+
+    test('re-throws non-ER_DUP_ENTRY commit errors (line 367) and continues', async () => {
+        // SELECT advisories without external_id — return one to process
+        mockDb.query.mockResolvedValueOnce([[
+            { id: 7, raw_payload: JSON.stringify({ id: 'NWS-007' }) }
+        ]]);
+
+        // Lock check: no existing row with same external_id
+        mockConnection.query.mockResolvedValueOnce([[]])
+            .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE
+
+        // Commit throws a non-ER_DUP_ENTRY error (e.g. connection reset)
+        const connError = new Error('Connection reset');
+        connError.code = 'ECONNRESET';
+        mockConnection.commit.mockRejectedValueOnce(connError);
+
+        // Should NOT throw — outer catch in populateExternalIds handles it
+        const result = await populateExternalIds();
+        expect(mockConnection.rollback).toHaveBeenCalled();
+        expect(mockConnection.release).toHaveBeenCalled();
+        // updated++ ran before commit failed, but result may vary
+        expect(typeof result).toBe('number');
+    });
 });
 
 describe('checkSchema', () => {
@@ -566,5 +589,146 @@ describe('runCleanup', () => {
 
         expect(results.startTime).toBeDefined();
         expect(new Date(results.startTime).getTime()).not.toBeNaN();
+    });
+
+    test('logs non-zero removal counts in summary (covers conditional log lines)', async () => {
+        // Override to return 1 vtec code duplicate for the 'vtec' mode run
+        mockDb.query.mockImplementation((sql) => {
+            if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+                return [[
+                    { COLUMN_NAME: 'external_id' },
+                    { COLUMN_NAME: 'vtec_code' },
+                    { COLUMN_NAME: 'vtec_event_id' },
+                    { COLUMN_NAME: 'vtec_action' }
+                ]];
+            }
+            // vtec_code duplicate found
+            if (sql.includes('GROUP BY') && sql.includes('vtec_code')) {
+                return [[
+                    { vtec_code: 'TO.W', office_id: 1, advisory_type: 'Tornado Warning', ids: '500,400', count: 2 }
+                ]];
+            }
+            if (sql.includes('DELETE')) {
+                return [{ affectedRows: 1 }];
+            }
+            return [{ affectedRows: 0 }];
+        });
+
+        const results = await runCleanup('vtec', { silent: false, exitOnComplete: false });
+
+        expect(results.vtecCodeDuplicates).toBe(1);
+        expect(results.success).toBe(true);
+    });
+
+    test('logs expired removal count in summary', async () => {
+        mockDb.query.mockImplementation((sql) => {
+            if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+                return [[
+                    { COLUMN_NAME: 'external_id' }, { COLUMN_NAME: 'vtec_code' },
+                    { COLUMN_NAME: 'vtec_event_id' }, { COLUMN_NAME: 'vtec_action' }
+                ]];
+            }
+            if (sql.includes('UPDATE advisories')) {
+                return [{ affectedRows: 3 }]; // markExpiredByEndTime
+            }
+            if (sql.includes('SELECT id FROM')) {
+                return [[{ id: 10 }, { id: 11 }, { id: 12 }]]; // expired rows
+            }
+            if (sql.includes('DELETE')) {
+                return [{ affectedRows: 3 }];
+            }
+            return [{ affectedRows: 0 }];
+        });
+
+        const results = await runCleanup('expired', { silent: false, exitOnComplete: false });
+
+        expect(results.expiredRemoved).toBe(3);
+        expect(results.success).toBe(true);
+    });
+
+    test('logs rawPayloadsNullified count in summary', async () => {
+        mockDb.query.mockImplementation((sql) => {
+            if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+                return [[
+                    { COLUMN_NAME: 'external_id' }, { COLUMN_NAME: 'vtec_code' },
+                    { COLUMN_NAME: 'vtec_event_id' }, { COLUMN_NAME: 'vtec_action' }
+                ]];
+            }
+            if (sql.includes('raw_payload = NULL')) {
+                return [{ affectedRows: 5 }];
+            }
+            return [{ affectedRows: 0 }];
+        });
+
+        const results = await runCleanup('payloads', { silent: false, exitOnComplete: false });
+
+        expect(results.rawPayloadsNullified).toBe(5);
+        expect(results.success).toBe(true);
+    });
+
+    test('logs vtecEventIdDuplicates count in summary (event_id mode)', async () => {
+        mockDb.query.mockImplementation((sql) => {
+            if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+                return [[
+                    { COLUMN_NAME: 'external_id' }, { COLUMN_NAME: 'vtec_code' },
+                    { COLUMN_NAME: 'vtec_event_id' }, { COLUMN_NAME: 'vtec_action' }
+                ]];
+            }
+            if (sql.includes('GROUP BY') && sql.includes('vtec_event_id')) {
+                return [[
+                    { vtec_event_id: 'KIWX.TO.W.0001', office_id: 1, advisory_type: 'Tornado Warning', ids: '300,200,100', count: 3 }
+                ]];
+            }
+            if (sql.includes('DELETE')) {
+                return [{ affectedRows: 2 }];
+            }
+            return [{ affectedRows: 0 }];
+        });
+
+        const results = await runCleanup('event_id', { silent: false, exitOnComplete: false });
+
+        expect(results.vtecEventIdDuplicates).toBe(2);
+        expect(results.success).toBe(true);
+    });
+
+    test('logs externalIdDuplicates and typeDuplicates in summary (duplicates mode)', async () => {
+        mockDb.query.mockImplementation((sql) => {
+            if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+                return [[
+                    { COLUMN_NAME: 'external_id' }, { COLUMN_NAME: 'vtec_code' },
+                    { COLUMN_NAME: 'vtec_event_id' }, { COLUMN_NAME: 'vtec_action' }
+                ]];
+            }
+            // external_id duplicates
+            if (sql.includes('GROUP BY') && sql.includes('external_id')) {
+                return [[
+                    { external_id: 'urn:123', office_id: 1, ids: '10,9', count: 2 }
+                ]];
+            }
+            // vtec_event_id duplicates (return none so only external_id and type are non-zero)
+            if (sql.includes('GROUP BY') && sql.includes('vtec_event_id')) {
+                return [[]];
+            }
+            // vtec_code duplicates (return none)
+            if (sql.includes('GROUP BY') && sql.includes('vtec_code')) {
+                return [[]];
+            }
+            // type duplicates
+            if (sql.includes('GROUP BY') && sql.includes('advisory_type')) {
+                return [[
+                    { office_id: 1, advisory_type: 'Flood Warning', ids: '20,19', count: 2 }
+                ]];
+            }
+            if (sql.includes('DELETE')) {
+                return [{ affectedRows: 1 }];
+            }
+            return [{ affectedRows: 0 }];
+        });
+
+        const results = await runCleanup('duplicates', { silent: false, exitOnComplete: false });
+
+        expect(results.externalIdDuplicates).toBe(1);
+        expect(results.typeDuplicates).toBe(1);
+        expect(results.success).toBe(true);
     });
 });
