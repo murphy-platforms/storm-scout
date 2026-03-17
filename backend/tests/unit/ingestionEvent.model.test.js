@@ -73,6 +73,18 @@ describe('IngestionEvent.recordFailure()', () => {
       ['NOAA API timeout', 5000, 10]
     );
   });
+
+  test('defaults durationMs to 0 when not provided', async () => {
+    const db = makeDb({ affectedRows: 1 });
+    getDatabase.mockReturnValue(db);
+
+    await IngestionEvent.recordFailure(10, 'timeout');
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.anything(),
+      ['timeout', 0, 10]
+    );
+  });
 });
 
 // ── getLastSuccessful ──────────────────────────────────────────────────────

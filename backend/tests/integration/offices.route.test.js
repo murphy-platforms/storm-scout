@@ -252,3 +252,43 @@ describe('GET /api/offices/:id/advisories', () => {
     expect(res.status).toBe(500);
   });
 });
+
+// ── GET /api/offices/states — error path ──────────────────────────────
+
+describe('GET /api/offices/states — error', () => {
+  test('returns 500 when getStates throws', async () => {
+    const cache = require('../../src/utils/cache');
+    cache.get.mockReturnValue(null);
+    Office.getStates.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/offices/states');
+
+    expect(res.status).toBe(500);
+  });
+
+  test('returns cached data on cache hit', async () => {
+    const cache = require('../../src/utils/cache');
+    const cached = { success: true, data: ['CA', 'IN'] };
+    cache.get.mockReturnValue(cached);
+
+    const res = await request(app).get('/api/offices/states');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(cached);
+  });
+});
+
+// ── GET /api/offices/regions — cache hit ──────────────────────────────
+
+describe('GET /api/offices/regions — cache hit', () => {
+  test('returns cached data on cache hit', async () => {
+    const cache = require('../../src/utils/cache');
+    const cached = { success: true, data: ['Northeast', 'Southeast'] };
+    cache.get.mockReturnValue(cached);
+
+    const res = await request(app).get('/api/offices/regions');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(cached);
+  });
+});

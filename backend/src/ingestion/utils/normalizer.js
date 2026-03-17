@@ -300,6 +300,7 @@ function calculateHighestWeatherImpact(advisories) {
         }
     }
 
+    /* istanbul ignore next -- unreachable: impactOrder includes all calculateWeatherImpact return values */
     return 'green';
 }
 

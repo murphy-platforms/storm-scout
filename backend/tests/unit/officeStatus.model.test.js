@@ -140,6 +140,18 @@ describe('OfficeStatusModel.upsert()', () => {
     expect(sql).toContain('weather_impact_level');
   });
 
+  test('includes reason field when provided', async () => {
+    const db = makeDb([{ office_id: 1 }]);
+    getDatabase.mockReturnValue(db);
+
+    await OfficeStatusModel.upsert(1, { reason: 'Hurricane approaching' });
+
+    const sql = db.query.mock.calls[0][0];
+    expect(sql).toContain('reason');
+    const params = db.query.mock.calls[0][1];
+    expect(params).toContain('Hurricane approaching');
+  });
+
   test('includes decision_by and auto-sets decision_at', async () => {
     const db = makeDb([{ office_id: 1 }]);
     getDatabase.mockReturnValue(db);
@@ -212,5 +224,35 @@ describe('OfficeStatusModel.bulkSetOperationalStatus()', () => {
     const result = await OfficeStatusModel.bulkSetOperationalStatus([1, 2, 3], 'Closed', 'admin', 'storm');
 
     expect(result).toBe(3);
+  });
+});
+
+// ── setOperationalStatus ──────────────────────────────────────────────────
+
+describe('OfficeStatusModel.setOperationalStatus()', () => {
+  test('delegates to upsert with correct params', async () => {
+    const spy = jest.spyOn(OfficeStatusModel, 'upsert').mockResolvedValue({ office_id: 1, operational_status: 'closed' });
+
+    const result = await OfficeStatusModel.setOperationalStatus(1, 'closed', 'admin', 'storm damage');
+
+    expect(spy).toHaveBeenCalledWith(1, {
+      operational_status: 'closed',
+      decision_by: 'admin',
+      decision_reason: 'storm damage'
+    });
+    expect(result).toEqual({ office_id: 1, operational_status: 'closed' });
+    spy.mockRestore();
+  });
+});
+
+// ── upsert error path ────────────────────────────────────────────────────
+
+describe('OfficeStatusModel.upsert() — error path', () => {
+  test('throws on DB error', async () => {
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    await expect(OfficeStatusModel.upsert(1, { weather_impact_level: 'red' }))
+      .rejects.toThrow('DB fail');
   });
 });

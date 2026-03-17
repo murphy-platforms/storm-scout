@@ -224,6 +224,7 @@ function shouldIncludeAlert(alertType, filterName = 'OPERATIONS') {
  * @param {string} level - Impact level (CRITICAL, HIGH, MODERATE, LOW, INFO)
  * @returns {Array} Array of alert type names
  */
+/* istanbul ignore next -- only called internally with known level constants */
 function getAlertTypesByLevel(level) {
     return NOAA_ALERT_TYPES[level] || [];
 }

@@ -558,3 +558,119 @@ describe('AdvisoryModel.markExpired()', () => {
     expect(await AdvisoryModel.markExpired()).toBe(0);
   });
 });
+
+// ── findByExternalID legacy fallback error ──────────────────────────────────
+
+describe('AdvisoryModel.findByExternalID() — legacy fallback error', () => {
+  test('returns null when legacy (no officeId) query fails', async () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.findByExternalID('urn:123');
+
+    expect(result).toBeNull();
+    spy.mockRestore();
+  });
+});
+
+// ── findByNaturalKey error ──────────────────────────────────────────────────
+
+describe('AdvisoryModel.findByNaturalKey() — error path', () => {
+  test('returns null on DB error', async () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.findByNaturalKey(1, 'Flood Warning', 'NOAA', '2026-01-01');
+
+    expect(result).toBeNull();
+    spy.mockRestore();
+  });
+});
+
+// ── findByVTEC error ────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.findByVTEC() — error path', () => {
+  test('returns null on DB error', async () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.findByVTEC('/O.NEW.KIWX.TO.W.0001/', 1);
+
+    expect(result).toBeNull();
+    spy.mockRestore();
+  });
+});
+
+// ── create error ────────────────────────────────────────────────────────────
+
+describe('AdvisoryModel.create() — error path', () => {
+  test('throws on DB error during create', async () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    await expect(AdvisoryModel.create({ ...BASE_ADVISORY, external_id: null, vtec_event_id: null, vtec_code: null }))
+      .rejects.toThrow('DB fail');
+    spy.mockRestore();
+  });
+
+  test('extracts external_id from raw_payload string', async () => {
+    const spy = jest.spyOn(console, 'log').mockImplementation();
+    const advisory = {
+      ...BASE_ADVISORY,
+      external_id: null,
+      vtec_event_id: null,
+      vtec_code: null,
+      raw_payload: JSON.stringify({ id: 'urn:extracted-id' })
+    };
+
+    // findByExternalID returns existing match
+    const existing = { id: 88, ...advisory, external_id: 'urn:extracted-id' };
+    const db = makeDb([
+      [[existing], {}],  // findByExternalID
+      [{}, {}],          // UPDATE
+      [[existing], {}]   // getById
+    ]);
+    getDatabase.mockReturnValue(db);
+    const updateSpy = jest.spyOn(AdvisoryModel, 'update').mockResolvedValue(existing);
+
+    const result = await AdvisoryModel.create(advisory);
+
+    expect(result).toEqual(existing);
+    updateSpy.mockRestore();
+    spy.mockRestore();
+  });
+});
+
+// ── getCountBySeverity error ────────────────────────────────────────────────
+
+describe('AdvisoryModel.getCountBySeverity() — error path', () => {
+  test('returns empty array on DB error', async () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.getCountBySeverity();
+
+    expect(result).toEqual([]);
+    spy.mockRestore();
+  });
+});
+
+// ── getRecentlyUpdated error ────────────────────────────────────────────────
+
+describe('AdvisoryModel.getRecentlyUpdated() — error path', () => {
+  test('returns empty array on DB error', async () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const db = { query: jest.fn().mockRejectedValue(new Error('DB fail')) };
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryModel.getRecentlyUpdated();
+
+    expect(result).toEqual([]);
+    spy.mockRestore();
+  });
+});

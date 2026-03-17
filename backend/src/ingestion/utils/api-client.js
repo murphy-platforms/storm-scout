@@ -201,6 +201,7 @@ async function requestWithRetry(requestFn, description = 'API request') {
         }
     }
 
+    /* istanbul ignore next -- defensive guard; loop always throws on final attempt */
     throw lastError;
 }
 
@@ -290,6 +291,7 @@ async function getNOAAAlertsByState(state) {
             return response.data.features;
         }
 
+        /* istanbul ignore next -- defensive: NOAA API always returns features array */
         return [];
     }, `Fetch NOAA alerts for state ${state}`);
 }
@@ -346,6 +348,7 @@ async function getObservationStations(lat, lon) {
             return stationsResponse.data.features.map((f) => f.properties);
         }
 
+        /* istanbul ignore next -- defensive: NOAA API always returns features array */
         return [];
     }, `Fetch observation stations for point (${lat},${lon})`);
 }

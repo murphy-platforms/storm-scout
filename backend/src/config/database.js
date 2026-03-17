@@ -66,6 +66,7 @@ async function withRetry(operation, operationName = 'Database operation') {
         }
     }
 
+    /* istanbul ignore next -- defensive guard; loop always throws on final attempt */
     throw lastError;
 }
 

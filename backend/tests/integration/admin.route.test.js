@@ -350,4 +350,18 @@ describe('GET /api/admin/health data integrity warning', () => {
 
     expect(res.body.checks.ingestion.status).toBe('unknown');
   });
+
+  test('returns ingestion error when getLastSuccessful throws', async () => {
+    IngestionEvent.getLastSuccessful.mockRejectedValue(new Error('table missing'));
+    getDatabase.mockReturnValue({
+      query: jest.fn().mockResolvedValue([[{ count: 0 }]])
+    });
+
+    const res = await request(app)
+      .get('/api/admin/health')
+      .set('X-Api-Key', API_KEY);
+
+    expect(res.body.checks.ingestion.status).toBe('error');
+    expect(res.body.checks.ingestion.message).toContain('table missing');
+  });
 });

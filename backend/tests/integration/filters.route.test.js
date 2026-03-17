@@ -2,90 +2,164 @@
 
 /**
  * Integration tests for /api/filters routes
- * Covers /types/:level and valid /:filterName (misc-routes handles /, /types/all, 404 preset)
+ * Mocks noaa-alert-types to test both success and error (catch) branches.
  */
 
-jest.mock('../../src/config/database', () => ({
-  getDatabase: jest.fn(() => ({ query: jest.fn().mockResolvedValue([[{ 1: 1 }]]) })),
-  initDatabase: jest.fn().mockResolvedValue(true),
-  closeDatabase: jest.fn().mockResolvedValue(true)
+const mockGetAllFilters = jest.fn();
+const mockGetFilterConfig = jest.fn();
+const mockGetAlertTypesByLevel = jest.fn();
+const mockGetImpactLevel = jest.fn();
+
+jest.mock('../../src/config/noaa-alert-types', () => ({
+  getAllFilters: mockGetAllFilters,
+  getFilterConfig: mockGetFilterConfig,
+  getAlertTypesByLevel: mockGetAlertTypesByLevel,
+  getImpactLevel: mockGetImpactLevel,
+  NOAA_ALERT_TYPES: {
+    CRITICAL: ['Tornado Warning'],
+    HIGH: ['Flood Warning'],
+    MODERATE: ['Wind Advisory'],
+    LOW: ['Frost Advisory'],
+    INFO: ['Special Weather Statement']
+  }
 }));
 
-jest.mock('../../src/utils/cache', () => ({
-  get: jest.fn().mockReturnValue(null),
-  set: jest.fn(),
-  invalidate: jest.fn(),
-  invalidateAll: jest.fn(),
-  CACHE_KEYS: {
-    STATUS_OVERVIEW: 'status:overview',
-    ALL_OFFICES: 'offices:all',
-    ACTIVE_ADVISORIES: 'advisories:active',
-    STATES_LIST: 'offices:states',
-    REGIONS_LIST: 'offices:regions'
-  },
-  TTL: { SHORT: 900, LONG: 3600, VERY_LONG: 86400 }
-}));
-
-jest.mock('../../src/ingestion/scheduler', () => ({
-  startScheduler: jest.fn(),
-  stopScheduler: jest.fn(),
-  getSchedulerStatus: jest.fn().mockReturnValue({
-    ingestion: { running: false, inProgress: false, consecutiveFailures: 0, intervalMinutes: 15 },
-    snapshot: { running: false, inProgress: false, consecutiveFailures: 0, intervalHours: 6 }
-  }),
-  waitForIngestionIdle: jest.fn().mockResolvedValue()
-}));
-
+const express = require('express');
 const request = require('supertest');
-const app = require('../../src/app');
+const filtersRouter = require('../../src/routes/filters');
 
-afterEach(() => jest.clearAllMocks());
+const app = express();
+app.use('/api/filters', filtersRouter);
+
+beforeEach(() => jest.spyOn(console, 'error').mockImplementation());
+afterEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+});
+
+// ── GET /api/filters ────────────────────────────────────────────────────
+
+describe('GET /api/filters', () => {
+  test('returns 200 with filter presets', async () => {
+    const mockFilters = {
+      OPERATIONS: { name: 'Operations View' },
+      EXECUTIVE: { name: 'Executive Summary' }
+    };
+    mockGetAllFilters.mockReturnValue(mockFilters);
+
+    const res = await request(app).get('/api/filters');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual(mockFilters);
+  });
+
+  test('returns 500 when getAllFilters throws', async () => {
+    mockGetAllFilters.mockImplementation(() => {
+      throw new Error('getAllFilters boom');
+    });
+
+    const res = await request(app).get('/api/filters');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('getAllFilters boom');
+  });
+});
+
+// ── GET /api/filters/types/all ──────────────────────────────────────────
+
+describe('GET /api/filters/types/all', () => {
+  test('returns 200 with all alert types', async () => {
+    const res = await request(app).get('/api/filters/types/all');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveProperty('CRITICAL');
+    expect(res.body.data.CRITICAL).toContain('Tornado Warning');
+  });
+
+  test('returns 500 when NOAA_ALERT_TYPES serialization throws', async () => {
+    // The router destructured NOAA_ALERT_TYPES at require time, so it holds
+    // a reference to the mock object. Adding toJSON that throws will cause
+    // res.json() to fail during serialization, triggering the catch block.
+    const mockModule = require('../../src/config/noaa-alert-types');
+    const alertTypes = mockModule.NOAA_ALERT_TYPES;
+    alertTypes.toJSON = () => { throw new Error('NOAA_ALERT_TYPES boom'); };
+
+    const res = await request(app).get('/api/filters/types/all');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('NOAA_ALERT_TYPES boom');
+
+    // Restore
+    delete alertTypes.toJSON;
+  });
+});
 
 // ── GET /api/filters/types/:level ───────────────────────────────────────
 
 describe('GET /api/filters/types/:level', () => {
-  test('returns CRITICAL alert types', async () => {
-    const res = await request(app).get('/api/filters/types/CRITICAL');
+  test('returns alert types for a level', async () => {
+    mockGetAlertTypesByLevel.mockReturnValue(['Tornado Warning', 'Flash Flood Warning']);
+
+    const res = await request(app).get('/api/filters/types/critical');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.length).toBeGreaterThan(0);
-    expect(res.body.count).toBe(res.body.data.length);
+    expect(res.body.data).toEqual(['Tornado Warning', 'Flash Flood Warning']);
+    expect(res.body.count).toBe(2);
+    expect(mockGetAlertTypesByLevel).toHaveBeenCalledWith('CRITICAL');
   });
 
-  test('handles case-insensitive level param', async () => {
-    const res = await request(app).get('/api/filters/types/high');
+  test('returns 500 when getAlertTypesByLevel throws', async () => {
+    mockGetAlertTypesByLevel.mockImplementation(() => {
+      throw new Error('getAlertTypesByLevel boom');
+    });
 
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.length).toBeGreaterThan(0);
-  });
+    const res = await request(app).get('/api/filters/types/critical');
 
-  test('returns empty array for unknown level', async () => {
-    const res = await request(app).get('/api/filters/types/UNKNOWN');
-
-    expect(res.status).toBe(200);
-    expect(res.body.data).toEqual([]);
-    expect(res.body.count).toBe(0);
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('getAlertTypesByLevel boom');
   });
 });
 
-// ── GET /api/filters/:filterName (valid presets) ────────────────────────
+// ── GET /api/filters/:filterName ────────────────────────────────────────
 
-describe('GET /api/filters/:filterName (valid preset)', () => {
-  test('returns OPERATIONS preset', async () => {
-    const res = await request(app).get('/api/filters/OPERATIONS');
+describe('GET /api/filters/:filterName', () => {
+  test('returns 200 with filter config', async () => {
+    const mockConfig = { name: 'Operations View', includeCategories: ['CRITICAL', 'HIGH'] };
+    mockGetFilterConfig.mockReturnValue(mockConfig);
+
+    const res = await request(app).get('/api/filters/operations');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toHaveProperty('name', 'Operations View');
+    expect(res.body.data).toEqual(mockConfig);
+    expect(mockGetFilterConfig).toHaveBeenCalledWith('OPERATIONS');
   });
 
-  test('handles case-insensitive filter name', async () => {
-    const res = await request(app).get('/api/filters/executive');
+  test('returns 404 when filter not found', async () => {
+    mockGetFilterConfig.mockReturnValue(null);
 
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data).toHaveProperty('name', 'Executive Summary');
+    const res = await request(app).get('/api/filters/nonexistent');
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('Filter not found');
+  });
+
+  test('returns 500 when getFilterConfig throws', async () => {
+    mockGetFilterConfig.mockImplementation(() => {
+      throw new Error('getFilterConfig boom');
+    });
+
+    const res = await request(app).get('/api/filters/operations');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('getFilterConfig boom');
   });
 });

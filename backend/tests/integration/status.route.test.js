@@ -115,6 +115,25 @@ describe('GET /api/status/overview (extended)', () => {
   });
 });
 
+describe('GET /api/status/overview — null ingestion time', () => {
+  test('returns last_updated as null when no ingestion history', async () => {
+    const { getLastIngestionTime } = require('../../src/ingestion/noaa-ingestor');
+    getLastIngestionTime.mockResolvedValueOnce(null);
+
+    Office.getAll.mockResolvedValue([{ id: 1 }]);
+    Advisory.getActive.mockResolvedValue([]);
+    Advisory.getCountBySeverity.mockResolvedValue([]);
+    OfficeStatus.getCountByStatus.mockResolvedValue([]);
+    OfficeStatus.getCountByWeatherImpact.mockResolvedValue([]);
+    OfficeStatus.getRecentlyUpdated.mockResolvedValue([]);
+
+    const res = await request(app).get('/api/status/overview');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.last_updated).toBeNull();
+  });
+});
+
 describe('GET /api/status/offices-impacted', () => {
   test('returns 200 with impacted offices', async () => {
     OfficeStatus.getImpacted.mockResolvedValue([{ id: 1, operational_status: 'Closed' }]);

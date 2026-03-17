@@ -165,6 +165,15 @@ describe('OfficeModel.findNearby()', () => {
     expect(db.query.mock.calls[0][1]).toHaveLength(11);
     expect(db.query.mock.calls[0][1][10]).toBe(50); // radiusMiles is last param
   });
+
+  test('defaults radiusMiles to 50 when not provided', async () => {
+    const db = makeDb([]);
+    getDatabase.mockReturnValue(db);
+
+    await OfficeModel.findNearby(39.77, -86.16);
+
+    expect(db.query.mock.calls[0][1][10]).toBe(50);
+  });
 });
 
 // ── getCountByState, getStates, getRegions ────────────────────────────────

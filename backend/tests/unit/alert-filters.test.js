@@ -161,4 +161,15 @@ describe('Other Filter Presets', () => {
     expect(shouldIncludeAlert('Special Weather Statement', 'FULL')).toBe(true);
     expect(shouldIncludeAlert('Test', 'FULL')).toBe(false);
   });
+
+  test('unknown filter name includes everything', () => {
+    expect(shouldIncludeAlert('Tornado Warning', 'NONEXISTENT_FILTER')).toBe(true);
+    expect(shouldIncludeAlert('Made Up Alert', 'NONEXISTENT_FILTER')).toBe(true);
+  });
+
+  test('unknown alert type defaults to included for known filters', () => {
+    // 'Completely Made Up Alert' is not in any NOAA_ALERT_TYPES category
+    // so getImpactLevel returns null, and shouldIncludeAlert returns true
+    expect(shouldIncludeAlert('Completely Made Up Alert', 'OPERATIONS')).toBe(true);
+  });
 });

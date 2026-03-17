@@ -74,6 +74,7 @@ function shouldThrottle(alertType) {
  * @returns {Promise<boolean>} True if the webhook returned 2xx; false otherwise
  */
 async function sendWebhookAlert(payload) {
+    /* istanbul ignore next -- defensive guard; sendAlert() already gates on webhookUrl */
     if (!ALERT_CONFIG.webhookUrl) {
         return false;
     }

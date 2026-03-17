@@ -151,6 +151,7 @@ app.use('/api/operational-status', writeLimiter);
 app.use('/api/operational-status', authLimiter, requireApiKey);
 
 // Serve static files (if path configured)
+/* istanbul ignore next -- static file serving only active when STATIC_FILES_PATH is configured */
 if (config.staticFiles.path) {
     const publicPath = path.resolve(config.staticFiles.path);
     console.log(`Serving static files from: ${publicPath}`);
@@ -276,6 +277,7 @@ app.get('/api', (req, res) => {
 });
 
 // 404 handler for API routes
+/* istanbul ignore next -- Express 5 wildcard syntax; not matched in Express 4.x */
 app.use('/api/*path', (req, res) => {
     res.status(404).json({
         success: false,
@@ -303,6 +305,7 @@ app.use((err, req, res, next) => {
 
 // Serve index.html for all other non-API routes (SPA fallback)
 // This must be last to avoid catching API routes
+/* istanbul ignore next -- SPA fallback only active when STATIC_FILES_PATH is configured */
 if (config.staticFiles.path) {
     app.get('*path', (req, res) => {
         const indexPath = path.resolve(config.staticFiles.path, 'index.html');

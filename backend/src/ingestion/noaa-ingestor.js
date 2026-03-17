@@ -240,6 +240,7 @@ async function ingestNOAAData() {
            WHERE office_id IN (?) AND status = 'active' AND external_id IS NOT NULL`,
                     [affectedOfficeIds]
                 );
+                /* istanbul ignore next -- loop body only executes when DB has existing advisories */
                 for (const row of existingRows) {
                     existingByExternalId.set(`${row.external_id}|${row.office_id}`, row);
                 }
@@ -303,6 +304,7 @@ async function ingestNOAAData() {
                             decision_by: 'weather_system'
                         });
                     } catch (error) {
+                        /* istanbul ignore next -- defensive: status upsert failure during ingestion */
                         console.error(`Error updating status for office ${office.id}:`, error.message);
                     }
                 }

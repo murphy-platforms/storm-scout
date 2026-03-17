@@ -194,6 +194,22 @@ describe('AdvisoryHistory.getTrend()', () => {
     expect(result.advisory_change).toBe(1);
   });
 
+  test('handles unknown severity (defaults to rank 0)', async () => {
+    const history = [
+      { id: 1, snapshot_time: '2026-03-01T00:00:00Z', highest_severity: null, advisory_count: 1 },
+      { id: 2, snapshot_time: '2026-03-03T00:00:00Z', highest_severity: 'CustomType', advisory_count: 2 }
+    ];
+    const db = makeDb([[history, {}]]);
+    getDatabase.mockReturnValue(db);
+
+    const result = await AdvisoryHistory.getTrend(1, 7);
+
+    expect(result.trend).toBe('stable');
+    expect(result.severity_change).toBe(0);
+    expect(result.first_severity).toBeNull();
+    expect(result.last_severity).toBe('CustomType');
+  });
+
   test('calculates duration_hours correctly', async () => {
     const history = [
       { id: 1, snapshot_time: '2026-03-01T00:00:00Z', highest_severity: 'Minor', advisory_count: 1 },

@@ -127,6 +127,30 @@ describe('mountMetricsEndpoint', () => {
     jest.restoreAllMocks();
   });
 
+  test('handles unknown circuit breaker state (defaults to 0)', async () => {
+    jest.resetModules();
+
+    jest.doMock('../../src/ingestion/utils/api-client', () => ({
+      getCircuitBreakerState: () => ({ state: 'UNKNOWN_STATE' })
+    }));
+    jest.doMock('../../src/config/database', () => ({
+      getDatabase: () => ({})  // no pool.pool property
+    }));
+
+    const { mountMetricsEndpoint: mount3 } = require('../../src/middleware/metrics');
+
+    let handler;
+    const fakeApp = { get: jest.fn((p, h) => { handler = h; }) };
+    mount3(fakeApp);
+
+    const mockRes = { set: jest.fn(), end: jest.fn() };
+    await handler({}, mockRes);
+
+    expect(mockRes.end).toHaveBeenCalled();
+
+    jest.restoreAllMocks();
+  });
+
   test('handles errors from circuit breaker and DB pool gracefully', async () => {
     // Force require to throw for api-client and database
     jest.mock('../../src/ingestion/utils/api-client', () => {

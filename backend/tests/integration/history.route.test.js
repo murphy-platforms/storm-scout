@@ -199,4 +199,34 @@ describe('GET /api/history/data-availability', () => {
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('accumulating');
   });
+
+  test('returns 500 on database error', async () => {
+    mockQuery.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/history/data-availability');
+
+    expect(res.status).toBe(500);
+  });
+});
+
+// ── Error paths for remaining routes ──────────────────────────────────
+
+describe('GET /api/history/severity-trends — error', () => {
+  test('returns 500 on database error', async () => {
+    mockQuery.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/history/severity-trends');
+
+    expect(res.status).toBe(500);
+  });
+});
+
+describe('GET /api/history/office-trends/:officeId — error', () => {
+  test('returns 500 on database error', async () => {
+    mockQuery.mockRejectedValue(new Error('DB error'));
+
+    const res = await request(app).get('/api/history/office-trends/1');
+
+    expect(res.status).toBe(500);
+  });
 });
