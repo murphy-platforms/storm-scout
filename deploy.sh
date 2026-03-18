@@ -17,7 +17,9 @@ SERVER_HOST="${DEPLOY_HOST:-your-server.example.com}"
 SERVER_USER="${DEPLOY_USER:-your_ssh_user}"
 SERVER_PORT="${DEPLOY_PORT:-22}"
 SERVER_BACKEND_PATH="${DEPLOY_BACKEND_PATH:-~/storm-scout}"
-SERVER_FRONTEND_PATH="${DEPLOY_FRONTEND_PATH:-~/public_html}"
+SERVER_FRONTEND_PATH="${DEPLOY_FRONTEND_PATH:-~/public_html/stormscout}"
+FRONTEND_RSYNC_DELETE="${FRONTEND_RSYNC_DELETE:-false}"
+ALLOW_ROOT_DOCROOT_DEPLOY="${ALLOW_ROOT_DOCROOT_DEPLOY:-false}"
 
 # SSH command with port
 SSH_CMD="ssh -p $SERVER_PORT"
@@ -42,6 +44,24 @@ log_error() {
 
 log_step() {
     echo -e "\n${BLUE}▶${NC} $1"
+}
+# Prevent accidental overwrite of a primary website docroot when Storm Scout
+# should be deployed to a subdirectory (e.g. ~/public_html/stormscout).
+validate_frontend_target() {
+    case "$SERVER_FRONTEND_PATH" in
+        "~/public_html"|"/home/"*/"public_html"|"/home/"*/"public_html/"|"/home2/"*/"public_html"|"/home2/"*/"public_html/")
+            if [ "$ALLOW_ROOT_DOCROOT_DEPLOY" != "true" ]; then
+                log_error "Refusing to deploy Storm Scout frontend to root docroot: $SERVER_FRONTEND_PATH"
+                echo ""
+                echo "This can overwrite another site hosted on the same cPanel account."
+                echo "Use a dedicated subpath, e.g.: DEPLOY_FRONTEND_PATH=~/public_html/stormscout"
+                echo "If root deployment is intentional, override explicitly:"
+                echo "  ALLOW_ROOT_DOCROOT_DEPLOY=true ./deploy.sh"
+                exit 1
+            fi
+            log_warn "ALLOW_ROOT_DOCROOT_DEPLOY=true — root docroot deployment explicitly allowed"
+            ;;
+    esac
 }
 
 # Check if SSH connection works
@@ -174,12 +194,30 @@ deploy_backend() {
 # Deploy frontend
 deploy_frontend() {
     log_step "Deploying frontend..."
-    
-    # Sync frontend files
-    rsync -avz -e "$RSYNC_SSH" --delete \
-        --exclude '.DS_Store' \
+
+    # Safe by default:
+    # - preserve .htaccess (Passenger routing in cPanel/shared hosting)
+    # - avoid destructive deletes unless explicitly requested
+    local rsync_opts=(-avz -e "$RSYNC_SSH")
+    rsync_opts+=(--exclude '.DS_Store')
+    rsync_opts+=(--exclude '.htaccess')
+    rsync_opts+=(--exclude '.well-known/')
+    rsync_opts+=(--exclude 'cgi-bin/')
+
+    if [ "$FRONTEND_RSYNC_DELETE" = "true" ]; then
+        rsync_opts+=(--delete)
+        log_warn "FRONTEND_RSYNC_DELETE=true — frontend rsync will delete remote files not present locally"
+    else
+        log_info "Safe frontend sync mode (no --delete). Set FRONTEND_RSYNC_DELETE=true to enable destructive cleanup."
+    fi
+
+    rsync "${rsync_opts[@]}" \
         "$LOCAL_FRONTEND" "$SERVER_USER@$SERVER_HOST:$SERVER_FRONTEND_PATH/"
-    
+
+    # Warn immediately if Passenger routing file is missing after sync.
+    if ! $SSH_CMD "$SERVER_USER@$SERVER_HOST" "[ -f \"$SERVER_FRONTEND_PATH/.htaccess\" ]"; then
+        log_warn "No .htaccess found at $SERVER_FRONTEND_PATH — Passenger routing may be broken"
+    fi
     log_info "Frontend files synced"
 }
 
@@ -290,6 +328,7 @@ main() {
     show_deployment_info
     check_connection
     confirm_deployment
+    validate_frontend_target
     
     # [OPS-1] Pause ingestion during deploy window
     pause_ingestion

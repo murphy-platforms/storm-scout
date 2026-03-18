@@ -37,6 +37,7 @@ docker run -d --name storm-scout-db \
   mariadb:11
 ```
 
+
 The `--restart unless-stopped` policy means Docker will restart the container automatically on system reboot (as long as the Docker service itself is enabled, which it is).
 
 ### 2. Configure the Backend
@@ -229,8 +230,9 @@ ssh $DEPLOY_USER@$DEPLOY_HOST "systemctl --user restart storm-scout-dev"
 Or use the project deploy script (set `DEPLOY_HOST` and `DEPLOY_USER` first):
 
 ```bash
-DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
+DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser DEPLOY_FRONTEND_PATH=~/public_html/stormscout ./deploy.sh
 ```
+On shared cPanel hosts, keep Storm Scout in a dedicated subpath (for example `~/public_html/stormscout`) so it cannot overwrite another project in `~/public_html`. `deploy.sh` blocks root-docroot frontend deploys by default; only bypass this intentionally with `ALLOW_ROOT_DOCROOT_DEPLOY=true`.
 
 ### After deploying schema changes
 
