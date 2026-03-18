@@ -93,16 +93,10 @@ app.use(
                 imgSrc: [
                     "'self'",
                     'data:', // For inline images and icons
-                    'www.googletagmanager.com',
                     'tile.openstreetmap.org', // Bare domain used by modern OSM tile endpoint
                     '*.tile.openstreetmap.org' // Wildcard kept for any subdomain usage
                 ],
-                connectSrc: [
-                    "'self'",
-                    'www.google-analytics.com',
-                    'region1.google-analytics.com',
-                    '*.google-analytics.com'
-                ],
+                connectSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 upgradeInsecureRequests: config.env === 'production' ? [] : null
             }
