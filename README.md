@@ -2,16 +2,30 @@
 
 [![CI](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/murphy-platforms/3d3c0461f8f0200230dd44cdfecd0800/raw/storm-scout-coverage.json)](https://github.com/murphy-platforms/storm-scout/actions/workflows/ci.yml)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://topper.solutions/stormscout)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**An office-focused weather advisory dashboard for operations teams**
+**A location-focused weather advisory dashboard for operations teams**
 
-Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which offices may be impacted during severe weather events.
+Storm Scout consolidates active weather advisories and operational signals by location to help quickly identify which sites may be impacted during severe weather events. In this demo, "offices" represent any monitored physical location — retail stores, warehouses, data centers, or field offices. [Swap in your own locations](#customize-for-your-organization) via CSV import.
 
 **[Live Demo](https://topper.solutions/stormscout)** | [Documentation](docs/) | [API Reference](docs/api.md) | [Architecture](docs/ARCHITECTURE.md)
 
 > **Storm Scout** monitors NOAA weather alerts across 300+ U.S. locations and presents operational impact in a single dashboard. Built for operations teams who need go/no-go closure decisions during severe weather. **[Live demo →](https://topper.solutions/stormscout)**
 
 > **Note:** Storm Scout is an independent open-source project, not affiliated with or endorsed by any organization. See the full [Disclaimer](frontend/disclaimer.html).
+
+## At a Glance
+
+| | |
+|---|---|
+| **What** | Weather advisory dashboard that monitors NOAA alerts across 300+ US locations |
+| **Who** | Operations teams managing physical sites — retail, logistics, field services, government |
+| **Why** | Replace manual weather.gov checks with a single consolidated view for faster go/no-go decisions |
+| **Built by** | A technical operations leader (not a developer) using AI-assisted coding with [Claude Code](https://claude.ai) |
+| **Cost** | Free — NOAA API is public domain, runs on a single VPS ($5–10/month) |
+
+**Quick links:** [Screenshots](#screenshots) · [How It Works](#how-it-works) · [Use Cases](#use-cases) · [Features](#-features) · [Quick Start](#quick-start) · [Customize for Your Organization](#customize-for-your-organization) · [Development Story](#development-story)
 
 ## Why Storm Scout?
 
@@ -148,6 +162,17 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 ## Quick Start
 
 > **Terminology:** Throughout this documentation, "locations" and "offices" refer to the same 300 monitored facilities. The codebase and API use "office" consistently.
+
+### One-Command Setup
+
+If you have Node.js 18+ and Docker installed:
+
+```bash
+bash scripts/setup.sh     # starts DB, installs deps, seeds 300 locations
+cd backend && npm run dev  # dashboard at http://localhost:3000
+```
+
+Or follow the step-by-step instructions below.
 
 ### Prerequisites
 
@@ -400,6 +425,20 @@ The following are intentional scope boundaries for this project, not missing fea
 | **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#adapting-for-your-organization) above. |
 | **Automated tests** | Backend + Frontend | 474 tests across 35 suites (Jest + supertest): 359 backend tests covering API routes, ingestion, deduplication, middleware, and models; 115 frontend unit tests covering utilities, aggregation, export, and alert filtering. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for details. |
 | **Infrastructure cost** | Minimal | Runs on a single VPS ($5-10/month). No paid API dependencies — NOAA data is free and public domain. |
+
+## Roadmap
+
+Storm Scout is a working demo, not a feature-complete product. The following are natural next steps — not commitments — for anyone extending the project:
+
+| Area | Description |
+|------|-------------|
+| **Notification integrations** | Email, Slack, or PagerDuty alerts when new high-severity advisories are ingested |
+| **Manual status overrides** | Allow operations teams to manually set office status (currently auto-calculated from advisories). The API endpoint exists but returns 501 pending UI and auth work. |
+| **Role-based access** | User authentication with role-based permissions (viewer, operator, admin) for multi-team deployments |
+| **International weather sources** | Adapter pattern is designed for Environment Canada (ECCC), MeteoAlarm (EU), and SMN (Mexico) — not yet implemented |
+| **TypeScript migration** | Natural evolution for team-based development; see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+
+Contributions welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to get started.
 
 ## Contributing
 
