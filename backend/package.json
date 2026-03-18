@@ -18,8 +18,8 @@
     "map-stations": "node scripts/map-observation-stations.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint src/ --ext .js",
-    "lint:fix": "eslint src/ --ext .js --fix",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "format": "prettier --write 'src/**/*.js' '../frontend/js/**/*.js'",
     "format:check": "prettier --check 'src/**/*.js' '../frontend/js/**/*.js'",
     "prepare": "cd .. && husky .husky"
