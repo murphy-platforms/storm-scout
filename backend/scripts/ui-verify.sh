@@ -5,7 +5,7 @@
 #   bash scripts/ui-verify.sh
 
 PORT="${PORT:-3000}"
-BASE="http://localhost:$PORT"
+BASE="${BASE:-http://localhost:$PORT}"
 PASS=0
 FAIL=0
 
@@ -117,13 +117,29 @@ check_api "/api/filters"                "GET /api/filters"                '"data
 # /api/filters/types/all — used by filters.html
 check_api "/api/filters/types/all"      "GET /api/filters/types/all"      '"CRITICAL"'
 
-# /api/version — used by footer on all pages (returns version directly, no success wrapper)
+# /api/version — used by footer on all pages.
+# Endpoint is API-key protected and intentionally returns 404 when unauthenticated.
 VERSION_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/api/version" 2>/dev/null)
 VERSION_BODY=$(curl -s "$BASE/api/version" 2>/dev/null)
-if [ "$VERSION_CODE" = "200" ] && echo "$VERSION_BODY" | grep -q '"version"'; then
-  pass "GET /api/version — OK"
+if [ "$VERSION_CODE" = "404" ]; then
+  pass "GET /api/version (unauthenticated) — expected 404 (protected endpoint)"
+elif [ "$VERSION_CODE" = "200" ] && echo "$VERSION_BODY" | grep -q '\"version\"'; then
+  pass "GET /api/version (unauthenticated) — OK (public mode)"
 else
-  fail "GET /api/version — HTTP $VERSION_CODE"
+  fail "GET /api/version (unauthenticated) — unexpected HTTP $VERSION_CODE"
+fi
+
+# Optional authenticated verification for protected mode.
+# Provide API key via environment variable when needed:
+#   API_KEY=... BASE=https://example.com/stormscout bash scripts/ui-verify.sh
+if [ -n "${API_KEY:-}" ]; then
+  VERSION_AUTH_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "X-Api-Key: $API_KEY" "$BASE/api/version" 2>/dev/null)
+  VERSION_AUTH_BODY=$(curl -s -H "X-Api-Key: $API_KEY" "$BASE/api/version" 2>/dev/null)
+  if [ "$VERSION_AUTH_CODE" = "200" ] && echo "$VERSION_AUTH_BODY" | grep -q '\"version\"'; then
+    pass "GET /api/version (authenticated) — OK"
+  else
+    fail "GET /api/version (authenticated) — HTTP $VERSION_AUTH_CODE"
+  fi
 fi
 echo ""
 
