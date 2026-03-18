@@ -423,7 +423,7 @@ The following are intentional scope boundaries for this project, not missing fea
 | **Geographic coverage** | US only | NOAA Weather API covers the 50 US states and territories. International adapters (Environment Canada, MeteoAlarm, SMN) are designed for but not yet implemented. |
 | **User authentication** | Network-level | The dashboard is open to anyone with the URL. Access is controlled via reverse proxy or VPN. The API uses key-based authentication for write operations. |
 | **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#adapting-for-your-organization) above. |
-| **Automated tests** | Backend + Frontend | 474 tests across 35 suites (Jest + supertest): 359 backend tests covering API routes, ingestion, deduplication, middleware, and models; 115 frontend unit tests covering utilities, aggregation, export, and alert filtering. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for details. |
+| **Automated tests** | Backend + Frontend | 771 tests across 43 suites (Jest + supertest): 645 backend tests covering API routes, ingestion, deduplication, middleware, and models; 126 frontend unit tests covering utilities, aggregation, export, and alert filtering. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for details. |
 | **Infrastructure cost** | Minimal | Runs on a single VPS ($5-10/month). No paid API dependencies — NOAA data is free and public domain. |
 
 ## Roadmap
