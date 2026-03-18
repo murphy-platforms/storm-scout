@@ -25,11 +25,11 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 | **Built by** | A technical operations leader (not a developer) using AI-assisted coding with [Claude Code](https://claude.ai) |
 | **Cost** | Free — NOAA API is public domain, runs on a single VPS ($5–10/month) |
 
-**Quick links:** [Screenshots](#screenshots) · [How It Works](#how-it-works) · [Use Cases](#use-cases) · [Features](#-features) · [Quick Start](#quick-start) · [Customize for Your Organization](#customize-for-your-organization) · [Development Story](#development-story)
+**Quick links:** [Screenshots](#screenshots) · [How It Works](#how-it-works) · [Use Cases](#use-cases) · [Features](#-features) · [Quick Start](#quick-start) · [Customize for Your Organization](#customize-for-your-organization) · [Development Story](#development-story) · [Contributing](CONTRIBUTING.md) · [Quick Reference](docs/QUICK-REFERENCE.md)
 
 ## Why Storm Scout?
 
-Organizations that manage physical locations — retail chains, logistics networks, field service teams, government offices — face a common problem: there is no simple way to monitor weather threats across all of their sites at once. When severe weather hits, operations teams resort to checking weather.gov manually for each location, one zip code at a time. This leads to delayed decisions, inconsistent response across regions, and hours of effort that could be automated. Storm Scout solves this by consolidating real-time NOAA weather alerts for hundreds of locations into a single dashboard, giving operations leaders the situational awareness they need to act quickly and consistently.
+Organizations that manage physical locations — retail chains, logistics networks, field service teams, government offices — face a common problem: there is no simple way to monitor weather threats across all of their sites at once. When severe weather hits, operations teams resort to checking weather.gov manually for each location, one zip code at a time. This leads to delayed decisions, inconsistent response across regions, and hours of effort that could be automated. Storm Scout solves this by consolidating real-time NOAA weather alerts for hundreds of locations into a single dashboard, giving operations leaders the situational awareness they need to act quickly and consistently. For a 300-location network during an active storm, Storm Scout replaces what would otherwise be hours of manual weather.gov lookups with a single real-time view — no API fees, no per-seat licensing, and no dependency on a third-party SaaS platform.
 
 ## Demo
 
@@ -97,7 +97,7 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 - **Real-Time Recalculation** - Counts and impacted offices update based on active filter preferences
 
 ### User Interface
-- **Clean, Responsive UI** - Bootstrap 5.3 dashboard optimized for desktop and tablet
+- **Clean, Responsive UI** - Bootstrap 5.3 dashboard optimized for desktop, tablet, and mobile (44px touch targets, responsive layouts)
 - **6 Dashboard Pages** - Overview, Active Advisories, Offices Impacted, Notices, Filter Settings, Sources
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
 - **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on office detail pages
@@ -319,7 +319,7 @@ storm-scout/
 
 ## 🛠 Tech Stack
 
-**Backend:** Node.js 18+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
+**Backend:** Node.js 20+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
 **Middleware:** node-cache (caching), compression (gzip), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
 **Data:** NOAA Weather API (96 alert types, 1140 observation stations), 300 office locations
@@ -347,52 +347,15 @@ npm run seed-db
 npm start
 ```
 
-### Key API Endpoints
+### API & Configuration
 
-- `GET /ping` - Liveness probe (always 200, no DB I/O)
-- `GET /health` - Readiness and operational health check
-- `GET /api/status/overview` - Dashboard statistics (with filter-aware frontend calculations)
-- `GET /api/advisories/active` - All active advisories. Supports `?page=N&limit=N` pagination; returns full dataset by default for backward compatibility.
-- `GET /api/offices` - All 300 offices
-- `GET /api/status/offices-impacted` - Offices with Closed or At Risk status
-- `GET /api/filters` - Available filter presets
-- `GET /api/filters/types/all` - All NOAA alert types by impact level
-- `GET /api/observations` - Current weather observations for all offices
-- `GET /api/observations/:officeCode` - Weather observation for a specific office
-- `GET /api/trends` - Advisory trend data for all offices
-- `GET /api/trends/:officeId` - Trend data for a single office
-- `POST /api/admin/pause-ingestion` - Pause ingestion before deploy (API key required)
-- `POST /api/admin/resume-ingestion` - Resume ingestion after maintenance (API key required)
-- `GET /api/admin/status` - Ingestion scheduler state (API key required)
+See [`docs/api.md`](docs/api.md) for the complete API reference (15 endpoints including health checks, advisory queries, office data, filters, and admin controls).
 
-See `docs/api.md` for complete API documentation.
+The default filter preset enables 49 of 96 NOAA alert types (all CRITICAL and HIGH, most MODERATE). Users can customize their preferences at `/filters.html`. See [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) for CLI commands and curl examples.
 
-## Filter Configuration
+### Deployment
 
-The default filter preset is **"Office Default" (CUSTOM)** with 49 of 96 alert types enabled:
-
-- **CRITICAL**: 13/13 enabled (all — Tornado Warning, Hurricane Warning, Blizzard Warning, etc.)
-- **HIGH**: 17/17 enabled (all — Tornado Watch, Flood Warning, High Wind Warning, etc.)
-- **MODERATE**: 17/23 enabled (Winter Weather Advisory, Dense Fog Advisory, Flood Watch, etc.)
-- **LOW**: 0/23 enabled (all disabled)
-- **INFO**: 0/18 enabled (all disabled)
-
-Users can customize their filter preferences at **/filters.html**, and changes are automatically applied across all dashboard pages.
-
-## Deployment
-
-```bash
-# Pre-deploy smoke test (11 checks incl. XSS audit)
-cd backend && bash scripts/smoke-test.sh
-
-# UI verification (22 checks — pages, API deps, data integrity; requires running server)
-cd backend && bash scripts/ui-verify.sh
-
-# Deploy via rsync to target server
-DEPLOY_HOST=your-server.example.com DEPLOY_USER=youruser ./deploy.sh
-```
-
-See `DEPLOY.md` for detailed deployment instructions.
+See [`DEPLOY.md`](DEPLOY.md) for deployment instructions, including pre-deploy smoke tests (11 checks), UI verification (22 checks), and rsync-based deployment.
 
 ## Customize for Your Organization
 
@@ -428,7 +391,7 @@ The following are intentional scope boundaries for this project, not missing fea
 
 ## Roadmap
 
-Storm Scout is a working demo, not a feature-complete product. The following are natural next steps — not commitments — for anyone extending the project:
+Storm Scout is a fully functional application. The following are natural next steps for anyone extending the project:
 
 | Area | Description |
 |------|-------------|
