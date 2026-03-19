@@ -223,10 +223,17 @@ describe('GET /api/history/severity-trends — error', () => {
 
 describe('GET /api/history/office-trends/:officeId — error', () => {
   test('returns 500 on database error', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     mockQuery.mockRejectedValue(new Error('DB error'));
 
     const res = await request(app).get('/api/history/office-trends/1');
 
     expect(res.status).toBe(500);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error fetching office trends for office %s:',
+      1,
+      expect.any(Error)
+    );
+    consoleErrorSpy.mockRestore();
   });
 });

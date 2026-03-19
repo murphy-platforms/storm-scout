@@ -295,7 +295,7 @@ router.get('/office-trends/:officeId', historyValidators.getOfficeTrends, handle
             }
         });
     } catch (error) {
-        console.error(`Error fetching office trends for office ${req.params.officeId}:`, error);
+        console.error('Error fetching office trends for office %s:', req.params.officeId, error);
         res.status(500).json({ error: 'Failed to fetch office trends' });
     }
 });
