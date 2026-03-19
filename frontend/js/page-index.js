@@ -31,6 +31,25 @@
 let nextUpdateTime = null;
 let countdownInterval = null;
 let observationsMap = {};
+let isRefreshing = false;
+let refreshTimeout = null;
+const REFRESH_RETRY_MS = 30000;
+
+/**
+ * Schedule a single loadOverview call, replacing any existing scheduled refresh.
+ *
+ * @param {number} delayMs
+ * @returns {void}
+ */
+function scheduleOverviewReload(delayMs) {
+    if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+    }
+    refreshTimeout = setTimeout(() => {
+        refreshTimeout = null;
+        loadOverview();
+    }, delayMs);
+}
 
 /**
  * Update the "next update" countdown display.
@@ -49,13 +68,18 @@ function updateCountdown() {
 
     if (diff <= 0) {
         document.getElementById('nextUpdate').textContent = 'Updating now...';
+
+        // Guard against duplicate reload triggers while a refresh is already in-flight.
+        if (isRefreshing) return;
+
+        isRefreshing = true;
         // Clear interval to prevent duplicate reload calls (race condition)
         if (countdownInterval) {
             clearInterval(countdownInterval);
             countdownInterval = null;
         }
         // Reload data after a short delay
-        setTimeout(() => loadOverview(), 2000);
+        scheduleOverviewReload(2000);
         return;
     }
 
@@ -83,6 +107,12 @@ async function loadOverview() {
             API.getActiveAdvisories(),
             API.getObservations().catch(() => [])
         ]);
+
+        // Successful refresh: cancel any pending retry.
+        if (refreshTimeout) {
+            clearTimeout(refreshTimeout);
+            refreshTimeout = null;
+        }
 
         // Build observations lookup by office_code
         observationsMap = {};
@@ -229,6 +259,22 @@ async function loadOverview() {
     } catch (error) {
         console.error('Failed to load overview:', error);
         showError('Failed to load dashboard data');
+
+        // Fail-safe: never leave banner stuck on "Updating now...".
+        // Show a retry countdown and attempt to reload automatically.
+        nextUpdateTime = new Date(Date.now() + REFRESH_RETRY_MS);
+        const nextUpdateEl = document.getElementById('nextUpdate');
+        if (nextUpdateEl) {
+            nextUpdateEl.textContent = `Retrying in ${Math.floor(REFRESH_RETRY_MS / 60000)}m 0s`;
+        }
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+        scheduleOverviewReload(REFRESH_RETRY_MS);
+    } finally {
+        isRefreshing = false;
     }
 }
 
