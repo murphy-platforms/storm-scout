@@ -14,24 +14,25 @@ jest.mock('express-rate-limit', () => {
   });
 });
 
-const { apiLimiter, writeLimiter, authLimiter } = require('../../src/middleware/rateLimiter');
+const { apiLimiter, writeLimiter, authLimiter, spaFallbackLimiter } = require('../../src/middleware/rateLimiter');
+const [apiConfig, writeConfig, spaConfig, authConfig] = configs;
 
-// apiLimiter is configs[0] (has skip and handler)
+// apiConfig is configs[0] (has skip and handler)
 
 beforeEach(() => jest.spyOn(console, 'error').mockImplementation());
 afterEach(() => jest.restoreAllMocks());
 
 describe('apiLimiter skip function', () => {
   test('returns true for /health path', () => {
-    expect(configs[0].skip({ path: '/health' })).toBe(true);
+    expect(apiConfig.skip({ path: '/health' })).toBe(true);
   });
 
   test('returns false for /offices path', () => {
-    expect(configs[0].skip({ path: '/offices' })).toBe(false);
+    expect(apiConfig.skip({ path: '/offices' })).toBe(false);
   });
 
   test('returns false for root path', () => {
-    expect(configs[0].skip({ path: '/' })).toBe(false);
+    expect(apiConfig.skip({ path: '/' })).toBe(false);
   });
 });
 
@@ -53,10 +54,10 @@ describe('apiLimiter handler function', () => {
     const next = jest.fn();
     const options = {
       statusCode: 429,
-      message: configs[0].message
+      message: apiConfig.message
     };
 
-    configs[0].handler(req, res, next, options);
+    apiConfig.handler(req, res, next, options);
 
     expect(console.error).toHaveBeenCalledWith(
       expect.stringContaining('[RATE LIMIT]')
@@ -84,9 +85,9 @@ describe('apiLimiter handler function', () => {
       json: jest.fn()
     };
 
-    configs[0].handler(req, res, jest.fn(), {
+    apiConfig.handler(req, res, jest.fn(), {
       statusCode: 429,
-      message: configs[0].message
+      message: apiConfig.message
     });
 
     expect(res.status).toHaveBeenCalledWith(429);
@@ -96,23 +97,29 @@ describe('apiLimiter handler function', () => {
 
 describe('rate limiter configuration', () => {
   test('apiLimiter is created with correct window and max', () => {
-    expect(configs[0].windowMs).toBe(60 * 60 * 1000);
-    expect(configs[0].max).toBe(30000);
+    expect(apiConfig.windowMs).toBe(60 * 60 * 1000);
+    expect(apiConfig.max).toBe(30000);
   });
 
   test('writeLimiter is created with correct window and max', () => {
-    expect(configs[1].windowMs).toBe(15 * 60 * 1000);
-    expect(configs[1].max).toBe(20);
+    expect(writeConfig.windowMs).toBe(15 * 60 * 1000);
+    expect(writeConfig.max).toBe(20);
+  });
+
+  test('spaFallbackLimiter is created with correct window and max', () => {
+    expect(spaConfig.windowMs).toBe(15 * 60 * 1000);
+    expect(spaConfig.max).toBe(600);
   });
 
   test('authLimiter is created with correct window and max', () => {
-    expect(configs[2].windowMs).toBe(15 * 60 * 1000);
-    expect(configs[2].max).toBe(10);
+    expect(authConfig.windowMs).toBe(15 * 60 * 1000);
+    expect(authConfig.max).toBe(10);
   });
 
   test('all limiters export middleware functions', () => {
     expect(typeof apiLimiter).toBe('function');
     expect(typeof writeLimiter).toBe('function');
     expect(typeof authLimiter).toBe('function');
+    expect(typeof spaFallbackLimiter).toBe('function');
   });
 });

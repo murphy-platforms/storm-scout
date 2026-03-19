@@ -31,7 +31,7 @@ Storm Scout implements the following security controls:
 | Security Headers | helmet.js (CSP, HSTS, X-Frame-Options, X-Content-Type-Options) |
 | CDN Integrity | SRI hashes on all external CDN resources |
 | Input Validation | express-validator on all API endpoints |
-| Rate Limiting | express-rate-limit (30,000 req/60 min general; 20 req/15 min write) |
+| Rate Limiting | express-rate-limit (30,000 req/60 min API; 600 req/15 min SPA fallback; 20 req/15 min write) |
 | API Authentication | Timing-safe API key comparison via `crypto.timingSafeEqual()` |
 | SQL Injection | Parameterized queries only — no string interpolation |
 

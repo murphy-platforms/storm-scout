@@ -90,6 +90,7 @@ Set in `backend/.env` (development) or `backend/.env.production` (production).
 | `CORS_ORIGIN` | *(required)* | Allowed CORS origin (no default) |
 | `TRUST_PROXY` | `false` | Set `true` when behind a reverse proxy |
 | `RATE_LIMIT_API_MAX` | `30000` | General API rate limit (requests per 60 min) |
+| `RATE_LIMIT_SPA_MAX` | `600` | SPA fallback rate limit for `index.html` catch-all route (requests per 15 min) |
 | `RATE_LIMIT_WRITE_MAX` | `20` | Write endpoint rate limit (requests per 15 min) |
 | `LOG_FORMAT` | *(unset)* | Set to `json` for structured request logging |
 | `APPLY_MIGRATIONS` | `true` | Set to `false` to skip auto-migrations on deploy |

@@ -545,11 +545,12 @@ Response includes `Retry-After` header indicating when the window resets.
 
 ## Rate Limiting
 
-Three rate limit tiers are applied independently:
+Four rate limit tiers are applied independently:
 
 | Tier | Limit | Window | Applies to | Configurable |
 |------|-------|--------|------------|--------------|
 | General | 30,000 requests | 60 minutes | All `/api/*` routes | `RATE_LIMIT_API_MAX` env var |
+| SPA fallback | 600 requests | 15 minutes | Non-API fallback route serving `index.html` | `RATE_LIMIT_SPA_MAX` env var |
 | Write | 20 requests | 15 minutes | `/api/operational-status` write endpoints | `RATE_LIMIT_WRITE_MAX` env var |
 | Admin | API key required | — | `/api/admin/*` | — |
 

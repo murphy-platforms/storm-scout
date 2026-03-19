@@ -38,6 +38,9 @@ jest.mock('../../src/ingestion/scheduler', () => ({
 }));
 
 const request = require('supertest');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 afterEach(() => jest.clearAllMocks());
 
@@ -70,6 +73,44 @@ describe('BASE_PATH stripping', () => {
   test('passes through requests without BASE_PATH prefix', async () => {
     const res = await request(app).get('/ping');
     expect(res.status).toBe(200);
+  });
+});
+
+describe('SPA fallback rate limiting', () => {
+  let app;
+  let tempStaticDir;
+
+  beforeAll(() => {
+    jest.resetModules();
+    tempStaticDir = fs.mkdtempSync(path.join(os.tmpdir(), 'storm-scout-spa-'));
+    fs.writeFileSync(
+      path.join(tempStaticDir, 'index.html'),
+      '<!doctype html><html><body>storm-scout-spa-test</body></html>'
+    );
+    process.env.STATIC_FILES_PATH = tempStaticDir;
+    process.env.RATE_LIMIT_SPA_MAX = '1';
+    app = require('../../src/app');
+  });
+
+  afterAll(() => {
+    delete process.env.STATIC_FILES_PATH;
+    delete process.env.RATE_LIMIT_SPA_MAX;
+    if (tempStaticDir) {
+      fs.rmSync(tempStaticDir, { recursive: true, force: true });
+    }
+  });
+
+  test('returns 429 after exceeding fallback request limit', async () => {
+    const first = await request(app).get('/path');
+    expect(first.status).toBe(200);
+
+    const second = await request(app).get('/path');
+    expect(second.status).toBe(429);
+    expect(second.body).toMatchObject({
+      success: false,
+      error: 'Too many page requests, please try again later',
+      retryAfter: '15 minutes'
+    });
   });
 });
 
@@ -237,7 +278,6 @@ describe('production CORS warning', () => {
 describe('static file serving', () => {
   test('serves static files with cache headers when STATIC_FILES_PATH is set', async () => {
     jest.resetModules();
-    const path = require('path');
     process.env.STATIC_FILES_PATH = path.resolve(__dirname, '../../public');
     const app = require('../../src/app');
     // Request the SPA fallback route
