@@ -37,11 +37,12 @@ This documentation covers security controls, vulnerability tracking, and depende
 | Package | Pinned Version | CVEs Addressed | Review Trigger |
 |---------|---------------|----------------|----------------|
 | `qs` | `6.14.2` | CVE-2026-2391 (prototype pollution), CVE-2026-27903 (ReDoS via minimatch) | Remove override when upstream `axios` or its dependency chain ships `qs ≥ 6.14.2` natively |
+| `flatted` | `3.4.2` | GHSA-rf6f-7fwh-wjgh (prototype pollution via `parse()` in `<=3.4.1`) | Remove override when upstream `eslint`/`file-entry-cache`/`flat-cache` chain resolves to `flatted > 3.4.1` without pinning |
 
 **Maintenance procedure:**
-1. On each `npm audit` finding referencing `qs`, verify whether the installed transitive version is still `6.14.2` or higher.
-2. Run `npm ls qs` after any major dependency upgrade to confirm the pin is still effective.
-3. Remove the `overrides.qs` entry (and its `overrideReasons.qs` companion) once the upstream package resolves the dependency without the pin.
+1. On each `npm audit` finding referencing `qs` or `flatted`, verify whether the installed transitive version remains at or above the pinned safe version.
+2. Run `npm ls qs` and `npm ls flatted` after any major dependency upgrade to confirm pins are still effective.
+3. Remove stale `overrides` entries (and matching `overrideReasons` companions) once upstream resolves the dependency chain without pinning.
 
 ---
 

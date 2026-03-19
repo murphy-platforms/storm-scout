@@ -65,9 +65,11 @@
     "supertest": "^7.0.0"
   },
   "overrides": {
-    "qs": "6.14.2"
+    "qs": "6.14.2",
+    "flatted": "3.4.2"
   },
   "overrideReasons": {
-    "qs": "Pinned to 6.14.2 to patch two transitive-dependency vulnerabilities: CVE-2026-2391 (prototype pollution via qs) and CVE-2026-27903 (minimatch ReDoS via qs transitive chain). Review on each major qs or axios release — remove override once upstream ships a clean version. See docs/security/README.md § Dependency Overrides."
+    "qs": "Pinned to 6.14.2 to patch two transitive-dependency vulnerabilities: CVE-2026-2391 (prototype pollution via qs) and CVE-2026-27903 (minimatch ReDoS via qs transitive chain). Review on each major qs or axios release — remove override once upstream ships a clean version. See docs/security/README.md § Dependency Overrides.",
+    "flatted": "Pinned to 3.4.2 to patch GHSA-rf6f-7fwh-wjgh (prototype pollution via flatted parse() in <=3.4.1), pulled transitively through eslint -> file-entry-cache -> flat-cache. Review on eslint/file-entry-cache upgrades and remove when upstream resolves without this override."
   }
 }
