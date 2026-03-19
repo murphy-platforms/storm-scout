@@ -63,6 +63,24 @@ const writeLimiter = rateLimit({
 });
 
 /**
+ * SPA fallback limiter
+ * Protects index.html fallback route from high-volume request abuse.
+ * Configurable via RATE_LIMIT_SPA_MAX env var for production tuning.
+ */
+const spaFallbackLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: parseInt(process.env.RATE_LIMIT_SPA_MAX) || 600, // 600 requests per window
+    message: {
+        success: false,
+        error: 'Too many page requests, please try again later',
+        retryAfter: '15 minutes'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: { xForwardedForHeader: false }
+});
+
+/**
  * Very strict limiter for authentication/sensitive endpoints
  * 10 requests per 15 minutes per IP
  * (Not used currently, but available for future auth endpoints)
@@ -83,5 +101,6 @@ const authLimiter = rateLimit({
 module.exports = {
     apiLimiter,
     writeLimiter,
-    authLimiter
+    authLimiter,
+    spaFallbackLimiter
 };
