@@ -161,6 +161,22 @@ PassengerStartupFile src/server.js
 
 **LiteSpeed Passenger does NOT strip `PassengerBaseURI`** from the URL before forwarding to Express. The app receives `/stormscout/api/offices` instead of `/api/offices`. Set `BASE_PATH=/stormscout` in `.env` to enable the prefix-stripping middleware in `app.js`.
 
+### STATIC_FILES_PATH for split app-root/docroot deployments
+
+When Passenger app root and frontend docroot are different directories (common on cPanel), `STATIC_FILES_PATH` must point to the actual frontend directory that contains `index.html`.
+
+Example for this layout:
+- Passenger app root: `/home/username/stormscout`
+- Frontend docroot: `/home/username/your-domain.example.com/stormscout`
+
+Set in app-root `.env`:
+
+```bash
+STATIC_FILES_PATH=/home/username/your-domain.example.com/stormscout
+```
+
+If `STATIC_FILES_PATH` points to a non-existent path (for example `./frontend` when no `frontend/` exists in app root), SPA deep links will return `Cannot GET /stormscout/...`.
+
 ### Installing Dependencies
 
 npm is **not** on the default `$PATH`. Use the cPanel Node.js virtual environment:

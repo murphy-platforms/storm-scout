@@ -220,6 +220,50 @@ deploy_frontend() {
     fi
     log_info "Frontend files synced"
 }
+# Verify remote STATIC_FILES_PATH resolves to a directory containing index.html.
+# This catches split-path cPanel misconfigurations where backend app root and
+# frontend docroot are deployed separately.
+verify_remote_static_files_path() {
+    log_step "Validating remote STATIC_FILES_PATH..."
+
+    $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << EOF
+        set -e
+        BACKEND_PATH="$SERVER_BACKEND_PATH"
+        BACKEND_PATH="\${BACKEND_PATH/#\~/\$HOME}"
+        ENV_FILE="\$BACKEND_PATH/.env"
+
+        if [ ! -f "\$ENV_FILE" ]; then
+            echo "[ERROR] Missing environment file: \$ENV_FILE"
+            exit 1
+        fi
+
+        STATIC_RAW=\$(grep -E '^STATIC_FILES_PATH=' "\$ENV_FILE" | tail -n 1 | cut -d= -f2-)
+        if [ -z "\$STATIC_RAW" ]; then
+            echo "[ERROR] STATIC_FILES_PATH is not set in \$ENV_FILE"
+            exit 1
+        fi
+
+        if [[ "\$STATIC_RAW" == /* ]]; then
+            STATIC_PATH="\$STATIC_RAW"
+        else
+            STATIC_PATH="\$BACKEND_PATH/\$STATIC_RAW"
+        fi
+
+        if [ ! -d "\$STATIC_PATH" ]; then
+            echo "[ERROR] STATIC_FILES_PATH directory does not exist: \$STATIC_PATH"
+            exit 1
+        fi
+
+        if [ ! -f "\$STATIC_PATH/index.html" ]; then
+            echo "[ERROR] Missing index.html under STATIC_FILES_PATH: \$STATIC_PATH/index.html"
+            exit 1
+        fi
+
+        echo "Resolved STATIC_FILES_PATH: \$STATIC_PATH"
+EOF
+
+    log_info "Remote STATIC_FILES_PATH is valid"
+}
 
 # Install dependencies, run migrations, prepare for restart. (closes #100)
 # Migrations run AFTER npm ci (new migration files may ship with this deploy)
@@ -232,7 +276,9 @@ post_deploy() {
 
     $SSH_CMD "$SERVER_USER@$SERVER_HOST" /bin/bash << EOF
         set -e
-        cd ~/storm-scout
+        APP_ROOT=\"$SERVER_BACKEND_PATH\"
+        APP_ROOT=\"\${APP_ROOT/#\\~/\\$HOME}\"
+        cd \"\\$APP_ROOT\"
 
         # Activate Node environment (if applicable)
         source "${NODE_ENV_ACTIVATE:-/dev/null}" 2>/dev/null || true
@@ -341,6 +387,7 @@ main() {
 
     deploy_backend
     deploy_frontend
+    verify_remote_static_files_path
     post_deploy
     restart_app
 
