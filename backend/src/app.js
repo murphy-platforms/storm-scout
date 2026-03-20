@@ -302,7 +302,7 @@ app.use((err, req, res, next) => {
 // This must be last to avoid catching API routes
 /* istanbul ignore next -- SPA fallback only active when STATIC_FILES_PATH is configured */
 if (config.staticFiles.path) {
-    app.get('*path', spaFallbackLimiter, (req, res) => {
+    app.get('*', spaFallbackLimiter, (req, res) => {
         const indexPath = path.resolve(config.staticFiles.path, 'index.html');
         res.sendFile(indexPath);
     });

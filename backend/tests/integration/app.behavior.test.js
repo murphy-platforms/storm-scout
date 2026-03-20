@@ -76,6 +76,37 @@ describe('BASE_PATH stripping', () => {
   });
 });
 
+describe('BASE_PATH + SPA deep-link fallback', () => {
+  let app;
+  let tempStaticDir;
+
+  beforeAll(() => {
+    process.env.BASE_PATH = '/stormscout';
+    tempStaticDir = fs.mkdtempSync(path.join(os.tmpdir(), 'storm-scout-basepath-spa-'));
+    fs.writeFileSync(
+      path.join(tempStaticDir, 'index.html'),
+      '<!doctype html><html><body>storm-scout-basepath-spa</body></html>'
+    );
+    process.env.STATIC_FILES_PATH = tempStaticDir;
+    jest.resetModules();
+    app = require('../../src/app');
+  });
+
+  afterAll(() => {
+    delete process.env.BASE_PATH;
+    delete process.env.STATIC_FILES_PATH;
+    if (tempStaticDir) {
+      fs.rmSync(tempStaticDir, { recursive: true, force: true });
+    }
+  });
+
+  test('serves index.html for deep links under BASE_PATH', async () => {
+    const res = await request(app).get('/stormscout/some-route');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('storm-scout-basepath-spa');
+  });
+});
+
 describe('SPA fallback rate limiting', () => {
   let app;
   let tempStaticDir;
