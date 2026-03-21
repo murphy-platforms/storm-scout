@@ -55,20 +55,26 @@ const API = {
      * page load and tab switches. Hard-refresh (Ctrl+Shift+R) bypasses cache.
      * Max staleness: 5-min client TTL + 15-min ingestion interval = 20 min.
      */
-    async getOverview() {
+    async getOverview(options = {}) {
+        const { forceRefresh = false } = options;
         const CACHE_KEY = 'cache:overview';
         const CACHE_TTL = 5 * 60 * 1000;
-        try {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if (raw) {
-                const { data, ts } = JSON.parse(raw);
-                if (Date.now() - ts < CACHE_TTL) return data;
+        if (!forceRefresh) {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (raw) {
+                    const { data, ts } = JSON.parse(raw);
+                    if (Date.now() - ts < CACHE_TTL) return data;
+                }
+            } catch (e) {
+                /* localStorage unavailable — proceed to fetch */
             }
-        } catch (e) {
-            /* localStorage unavailable — proceed to fetch */
         }
 
-        const response = await fetchWithTimeout(`${API_BASE_URL}/status/overview`);
+        const response = await fetchWithTimeout(
+            `${API_BASE_URL}/status/overview`,
+            forceRefresh ? { cache: 'no-store' } : {}
+        );
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch overview');
 
@@ -87,20 +93,26 @@ const API = {
      * fetches on page load and tab switches.
      * Max staleness: 5-min client TTL + 15-min ingestion interval = 20 min.
      */
-    async getActiveAdvisories() {
+    async getActiveAdvisories(options = {}) {
+        const { forceRefresh = false } = options;
         const CACHE_KEY = 'cache:advisories';
         const CACHE_TTL = 5 * 60 * 1000;
-        try {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if (raw) {
-                const { data, ts } = JSON.parse(raw);
-                if (Date.now() - ts < CACHE_TTL) return data;
+        if (!forceRefresh) {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (raw) {
+                    const { data, ts } = JSON.parse(raw);
+                    if (Date.now() - ts < CACHE_TTL) return data;
+                }
+            } catch (e) {
+                /* localStorage unavailable — proceed to fetch */
             }
-        } catch (e) {
-            /* localStorage unavailable — proceed to fetch */
         }
 
-        const response = await fetchWithTimeout(`${API_BASE_URL}/advisories/active`);
+        const response = await fetchWithTimeout(
+            `${API_BASE_URL}/advisories/active`,
+            forceRefresh ? { cache: 'no-store' } : {}
+        );
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch advisories');
 
@@ -138,20 +150,26 @@ const API = {
      * Cached in localStorage for 5 minutes — observation data refreshes on
      * the same ingestion cycle as advisories.
      */
-    async getObservations() {
+    async getObservations(options = {}) {
+        const { forceRefresh = false } = options;
         const CACHE_KEY = 'cache:observations';
         const CACHE_TTL = 5 * 60 * 1000;
-        try {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if (raw) {
-                const { data, ts } = JSON.parse(raw);
-                if (Date.now() - ts < CACHE_TTL) return data;
+        if (!forceRefresh) {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (raw) {
+                    const { data, ts } = JSON.parse(raw);
+                    if (Date.now() - ts < CACHE_TTL) return data;
+                }
+            } catch (e) {
+                /* localStorage unavailable — proceed to fetch */
             }
-        } catch (e) {
-            /* localStorage unavailable — proceed to fetch */
         }
 
-        const response = await fetchWithTimeout(`${API_BASE_URL}/observations`);
+        const response = await fetchWithTimeout(
+            `${API_BASE_URL}/observations`,
+            forceRefresh ? { cache: 'no-store' } : {}
+        );
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch observations');
 
@@ -171,6 +189,17 @@ const API = {
         const response = await fetchWithTimeout(`${API_BASE_URL}/offices`);
         const json = await response.json();
         if (!json.success) throw new Error(json.error || 'Failed to fetch offices');
+        return json.data;
+    },
+
+    /**
+     * Get authoritative timing metadata for update countdown synchronization.
+     * Always bypasses browser caches.
+     */
+    async getTiming() {
+        const response = await fetchWithTimeout(`${API_BASE_URL}/status/timing`, { cache: 'no-store' });
+        const json = await response.json();
+        if (!json.success) throw new Error(json.error || 'Failed to fetch timing');
         return json.data;
     },
 

@@ -12,9 +12,30 @@ const OfficeModel = require('../models/office');
 const AdvisoryModel = require('../models/advisory');
 const OfficeStatusModel = require('../models/officeStatus');
 const { getLastIngestionTime } = require('../ingestion/noaa-ingestor');
+const { getSchedulerStatus } = require('../ingestion/scheduler');
 const cache = require('../utils/cache');
 const { handleValidationErrors } = require('../middleware/validate');
 const statusValidators = require('../validators/status');
+
+/**
+ * Calculate the next scheduler-aligned ingestion time from the current server clock.
+ * Scheduler uses an every-N-minutes cron expression aligned to minute 0.
+ * @param {Date} now - Current server time
+ * @param {number} intervalMinutes - Ingestion interval in minutes
+ * @returns {Date} Next scheduled ingestion wall-clock time
+ */
+function getNextScheduledUpdateAt(now, intervalMinutes) {
+    const safeInterval = Math.max(1, parseInt(intervalMinutes, 10) || 15);
+    const next = new Date(now);
+    next.setSeconds(0, 0);
+
+    const currentMinute = next.getMinutes();
+    const remainder = currentMinute % safeInterval;
+    const minutesToAdd = remainder === 0 ? safeInterval : safeInterval - remainder;
+    next.setMinutes(currentMinute + minutesToAdd);
+
+    return next;
+}
 
 /**
  * GET /api/status/overview
@@ -76,6 +97,41 @@ router.get('/overview', async (req, res) => {
         res.json(response);
     } catch (error) {
         console.error('Error fetching overview:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * GET /api/status/timing
+ * Lightweight timing metadata for countdown synchronization.
+ * Always uncached so clients receive authoritative scheduler timing.
+ */
+router.get('/timing', async (req, res) => {
+    try {
+        const lastIngestion = await getLastIngestionTime();
+        const schedulerStatus = getSchedulerStatus();
+        const updateIntervalMinutes = config.ingestion.intervalMinutes || 15;
+        const serverNow = new Date();
+        const nextScheduled = getNextScheduledUpdateAt(serverNow, updateIntervalMinutes);
+
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+
+        res.json({
+            success: true,
+            data: {
+                server_time: serverNow.toISOString(),
+                last_updated: lastIngestion?.lastUpdated || null,
+                update_interval_minutes: updateIntervalMinutes,
+                ingestion_active: Boolean(schedulerStatus?.ingestion?.inProgress),
+                scheduler_running: Boolean(schedulerStatus?.ingestion?.running),
+                next_scheduled_update_at: nextScheduled.toISOString()
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching timing metadata:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });

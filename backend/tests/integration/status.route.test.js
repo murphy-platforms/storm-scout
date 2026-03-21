@@ -134,6 +134,45 @@ describe('GET /api/status/overview — null ingestion time', () => {
   });
 });
 
+describe('GET /api/status/timing', () => {
+  test('returns authoritative timing metadata with no-store cache headers', async () => {
+    const { getLastIngestionTime } = require('../../src/ingestion/noaa-ingestor');
+    const { getSchedulerStatus } = require('../../src/ingestion/scheduler');
+
+    getLastIngestionTime.mockResolvedValueOnce({ lastUpdated: '2026-03-21T18:45:00.000Z' });
+    getSchedulerStatus.mockReturnValueOnce({
+      ingestion: { running: true, inProgress: true, consecutiveFailures: 0, intervalMinutes: 15 },
+      snapshot: { running: true, inProgress: false, consecutiveFailures: 0, intervalHours: 6 }
+    });
+
+    const res = await request(app).get('/api/status/timing');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.last_updated).toBe('2026-03-21T18:45:00.000Z');
+    expect(res.body.data.ingestion_active).toBe(true);
+    expect(res.body.data.scheduler_running).toBe(true);
+    expect(res.body.data.update_interval_minutes).toBe(15);
+    expect(Date.parse(res.body.data.server_time)).not.toBeNaN();
+    expect(Date.parse(res.body.data.next_scheduled_update_at)).not.toBeNaN();
+    expect(res.headers['cache-control']).toContain('no-store');
+    expect(res.headers.pragma).toBe('no-cache');
+    expect(res.headers.expires).toBe('0');
+  });
+
+  test('returns null last_updated when ingestion history is unavailable', async () => {
+    const { getLastIngestionTime } = require('../../src/ingestion/noaa-ingestor');
+    getLastIngestionTime.mockResolvedValueOnce(null);
+
+    const res = await request(app).get('/api/status/timing');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.last_updated).toBeNull();
+    expect(res.body.data).toHaveProperty('next_scheduled_update_at');
+  });
+});
+
 describe('GET /api/status/offices-impacted', () => {
   test('returns 200 with impacted offices', async () => {
     OfficeStatus.getImpacted.mockResolvedValue([{ id: 1, operational_status: 'Closed' }]);

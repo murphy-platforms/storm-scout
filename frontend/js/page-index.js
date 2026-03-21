@@ -33,22 +33,176 @@ let countdownInterval = null;
 let observationsMap = {};
 let isRefreshing = false;
 let refreshTimeout = null;
+let serverTimeOffsetMs = 0;
+let lastDisplayedUpdateIso = null;
+let currentUpdateIntervalMinutes = 15;
 const REFRESH_RETRY_MS = 30000;
+const TIMING_POLL_INTERVAL_MS = 10000;
+const TIMING_POLL_TIMEOUT_MS = 3 * 60 * 1000;
+const STALE_DATA_INTERVAL_MULTIPLIER = 3;
+
+/**
+ * Return current time adjusted to server clock using last observed offset.
+ * @returns {Date}
+ */
+function getServerNow() {
+    return new Date(Date.now() + serverTimeOffsetMs);
+}
+
+/**
+ * Apply timing metadata from server response (or overview fallback).
+ * @param {Object|null} timingData
+ * @param {Object|null} fallbackOverviewData
+ */
+function applyTimingMetadata(timingData, fallbackOverviewData = null) {
+    if (timingData?.server_time) {
+        const serverTime = new Date(timingData.server_time);
+        if (!isNaN(serverTime.getTime())) {
+            serverTimeOffsetMs = serverTime.getTime() - Date.now();
+        }
+    }
+
+    const effectiveLastUpdated = timingData?.last_updated || fallbackOverviewData?.last_updated || null;
+    const effectiveInterval =
+        timingData?.update_interval_minutes ||
+        fallbackOverviewData?.update_interval_minutes ||
+        currentUpdateIntervalMinutes;
+    currentUpdateIntervalMinutes = effectiveInterval;
+    lastDisplayedUpdateIso = effectiveLastUpdated;
+
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    if (lastUpdatedEl) {
+        lastUpdatedEl.textContent = formatLocalTime(effectiveLastUpdated);
+    }
+
+    if (timingData?.next_scheduled_update_at) {
+        const nextScheduled = new Date(timingData.next_scheduled_update_at);
+        if (!isNaN(nextScheduled.getTime())) {
+            nextUpdateTime = nextScheduled;
+            return;
+        }
+    }
+
+    if (effectiveLastUpdated && effectiveInterval) {
+        const lastUpdate = new Date(effectiveLastUpdated);
+        if (!isNaN(lastUpdate.getTime())) {
+            nextUpdateTime = new Date(lastUpdate.getTime() + effectiveInterval * 60000);
+            return;
+        }
+    }
+
+    nextUpdateTime = null;
+}
 
 /**
  * Schedule a single loadOverview call, replacing any existing scheduled refresh.
  *
  * @param {number} delayMs
+ * @param {Object} [reloadOptions]
  * @returns {void}
  */
-function scheduleOverviewReload(delayMs) {
+function scheduleOverviewReload(delayMs, reloadOptions = {}) {
     if (refreshTimeout) {
         clearTimeout(refreshTimeout);
     }
     refreshTimeout = setTimeout(() => {
         refreshTimeout = null;
-        loadOverview();
+        loadOverview(reloadOptions);
     }, delayMs);
+}
+
+/**
+ * Start/restart countdown interval based on current nextUpdateTime.
+ */
+function resumeCountdownInterval() {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+    if (!nextUpdateTime) return;
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+/**
+ * Enter retry mode after transient failures so UI never remains stuck.
+ */
+function enterRetryMode() {
+    nextUpdateTime = new Date(getServerNow().getTime() + REFRESH_RETRY_MS);
+    const nextUpdateEl = document.getElementById('nextUpdate');
+    if (nextUpdateEl) {
+        nextUpdateEl.textContent = `Retrying in ${Math.floor(REFRESH_RETRY_MS / 60000)}m 0s`;
+    }
+    isRefreshing = false;
+    resumeCountdownInterval();
+    scheduleOverviewReload(REFRESH_RETRY_MS, { forceRefresh: true });
+}
+
+/**
+ * Promise-based sleep utility for timing polling.
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Poll timing metadata until data advances, or scheduler indicates next run.
+ * @param {string|null} previousLastUpdatedIso
+ * @returns {Promise<{advanced: boolean, timedOut: boolean, timing: Object|null}>}
+ */
+async function pollTimingUntilResolved(previousLastUpdatedIso) {
+    const startedAt = Date.now();
+    let latestTiming = null;
+    const previousTs = previousLastUpdatedIso ? new Date(previousLastUpdatedIso).getTime() : null;
+
+    while (Date.now() - startedAt < TIMING_POLL_TIMEOUT_MS) {
+        latestTiming = await API.getTiming();
+        applyTimingMetadata(latestTiming);
+
+        const currentTs = latestTiming.last_updated ? new Date(latestTiming.last_updated).getTime() : null;
+        const hasAdvanced = currentTs && (!previousTs || currentTs > previousTs);
+        if (hasAdvanced) {
+            return { advanced: true, timedOut: false, timing: latestTiming };
+        }
+
+        const nextScheduledTs = latestTiming.next_scheduled_update_at
+            ? new Date(latestTiming.next_scheduled_update_at).getTime()
+            : null;
+        if (!latestTiming.ingestion_active && nextScheduledTs && nextScheduledTs > getServerNow().getTime()) {
+            return { advanced: false, timedOut: false, timing: latestTiming };
+        }
+
+        await delay(TIMING_POLL_INTERVAL_MS);
+    }
+
+    return { advanced: false, timedOut: true, timing: latestTiming };
+}
+
+/**
+ * Resolve countdown rollover with authoritative timing metadata and force refresh.
+ */
+async function recoverFromCountdownExpiry() {
+    const previousLastUpdatedIso = lastDisplayedUpdateIso;
+
+    try {
+        const timingResult = await pollTimingUntilResolved(previousLastUpdatedIso);
+        if (timingResult.advanced) {
+            await loadOverview({ forceRefresh: true });
+            return;
+        }
+        if (timingResult.timedOut) {
+            throw new Error('Timed out waiting for updated ingestion timing');
+        }
+
+        // No new data yet, but server timing is authoritative. Resume countdown.
+        isRefreshing = false;
+        resumeCountdownInterval();
+    } catch (error) {
+        console.error('Failed to recover overview timing after countdown expiry:', error);
+        enterRetryMode();
+    }
 }
 
 /**
@@ -62,12 +216,14 @@ function scheduleOverviewReload(delayMs) {
  */
 function updateCountdown() {
     if (!nextUpdateTime) return;
-
+    const now = getServerNow();
     const now = new Date();
     const diff = nextUpdateTime - now;
+    const nextUpdateEl = document.getElementById('nextUpdate');
+    if (!nextUpdateEl) return;
 
     if (diff <= 0) {
-        document.getElementById('nextUpdate').textContent = 'Updating now...';
+        nextUpdateEl.textContent = 'Refreshing data...';
 
         // Guard against duplicate reload triggers while a refresh is already in-flight.
         if (isRefreshing) return;
@@ -78,34 +234,48 @@ function updateCountdown() {
             clearInterval(countdownInterval);
             countdownInterval = null;
         }
-        // Reload data after a short delay
-        scheduleOverviewReload(2000);
+        recoverFromCountdownExpiry();
         return;
+    }
+
+    if (lastDisplayedUpdateIso) {
+        const lastUpdated = new Date(lastDisplayedUpdateIso);
+        if (!isNaN(lastUpdated.getTime())) {
+            const ageMinutes = Math.floor((now.getTime() - lastUpdated.getTime()) / 60000);
+            const staleThresholdMinutes = Math.max(currentUpdateIntervalMinutes * STALE_DATA_INTERVAL_MULTIPLIER, 45);
+            if (ageMinutes > staleThresholdMinutes) {
+                nextUpdateEl.textContent = `Data delayed (${ageMinutes}m old)`;
+                return;
+            }
+        }
     }
 
     const minutes = Math.floor(diff / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
-    document.getElementById('nextUpdate').textContent = `${minutes}m ${seconds}s`;
+    nextUpdateEl.textContent = `${minutes}m ${seconds}s`;
 }
 
 /**
  * Fetch all dashboard data in parallel and render the full page.
- * Uses Promise.all for overview, advisories, and observations so
- * the three independent requests do not wait on each other.
+ * Uses Promise.all for overview, advisories, observations, and timing metadata.
  * Applies AlertFilters before aggregating so filtered counts match
  * the offices and advisories pages.
- * Wrapped so it can be called both on initial load and by the countdown
- * when the next ingestion cycle is due.
+ * Wrapped so it can be called both on initial load and by countdown recovery.
  *
+ * @param {Object} [options]
+ * @param {boolean} [options.forceRefresh=false]
  * @returns {Promise<void>}
  */
-async function loadOverview() {
+async function loadOverview(options = {}) {
+    const { forceRefresh = false } = options;
+
     try {
         // Get all raw data
-        const [overviewData, allAdvisories, obsData] = await Promise.all([
-            API.getOverview(),
-            API.getActiveAdvisories(),
-            API.getObservations().catch(() => [])
+        const [overviewData, allAdvisories, obsData, timingData] = await Promise.all([
+            API.getOverview({ forceRefresh }),
+            API.getActiveAdvisories({ forceRefresh }),
+            API.getObservations({ forceRefresh }).catch(() => []),
+            API.getTiming().catch(() => null)
         ]);
 
         // Successful refresh: cancel any pending retry.
@@ -120,20 +290,9 @@ async function loadOverview() {
             observationsMap[obs.office_code] = obs;
         });
 
-        // Update timestamp and countdown
-        document.getElementById('lastUpdated').textContent = formatLocalTime(overviewData.last_updated);
-
-        if (overviewData.last_updated && overviewData.update_interval_minutes) {
-            const lastUpdate = new Date(overviewData.last_updated);
-            nextUpdateTime = new Date(lastUpdate.getTime() + overviewData.update_interval_minutes * 60000);
-
-            // Clear existing countdown interval
-            if (countdownInterval) clearInterval(countdownInterval);
-
-            // Update countdown immediately and then every second
-            updateCountdown();
-            countdownInterval = setInterval(updateCountdown, 1000);
-        }
+        // Update timestamp + countdown from authoritative timing metadata
+        applyTimingMetadata(timingData, overviewData);
+        resumeCountdownInterval();
 
         // Apply user's filter preferences
         const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
@@ -259,20 +418,8 @@ async function loadOverview() {
     } catch (error) {
         console.error('Failed to load overview:', error);
         showError('Failed to load dashboard data');
-
-        // Fail-safe: never leave banner stuck on "Updating now...".
-        // Show a retry countdown and attempt to reload automatically.
-        nextUpdateTime = new Date(Date.now() + REFRESH_RETRY_MS);
-        const nextUpdateEl = document.getElementById('nextUpdate');
-        if (nextUpdateEl) {
-            nextUpdateEl.textContent = `Retrying in ${Math.floor(REFRESH_RETRY_MS / 60000)}m 0s`;
-        }
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-        }
-        updateCountdown();
-        countdownInterval = setInterval(updateCountdown, 1000);
-        scheduleOverviewReload(REFRESH_RETRY_MS);
+        enterRetryMode();
+        return;
     } finally {
         isRefreshing = false;
     }
