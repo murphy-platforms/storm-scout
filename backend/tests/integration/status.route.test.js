@@ -171,6 +171,17 @@ describe('GET /api/status/timing', () => {
     expect(res.body.data.last_updated).toBeNull();
     expect(res.body.data).toHaveProperty('next_scheduled_update_at');
   });
+
+  test('returns 500 when timing metadata lookup fails', async () => {
+    const { getLastIngestionTime } = require('../../src/ingestion/noaa-ingestor');
+    getLastIngestionTime.mockRejectedValueOnce(new Error('timing fetch failed'));
+
+    const res = await request(app).get('/api/status/timing');
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe('timing fetch failed');
+  });
 });
 
 describe('GET /api/status/offices-impacted', () => {
