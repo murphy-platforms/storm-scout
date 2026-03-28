@@ -6,7 +6,7 @@
  * Key responsibilities:
  *   - Fetches all offices from the backend API via LocationFilters.init()
  *   - Loads existing preferences from localStorage and renders a toggle card
- *     for each office, grouped by state in collapsible accordion sections
+ *     for each office, grouped by state in flat sections
  *   - Supports search by name/city/zip, bulk enable/disable per state,
  *     and global enable/disable all
  *   - Persists the current toggle state to localStorage on save; the
@@ -275,6 +275,13 @@ function applyLocationPreset(presetName) {
 function getActivePresetName() {
     const allStates = LocationFilters.getStates();
 
+    // Build enabledStates once (not per-preset) to avoid O(presets * states * offices)
+    const enabledStates = new Set();
+    allStates.forEach((state) => {
+        const { enabled, total } = LocationFilters.getStateCount(state);
+        if (enabled === total && total > 0) enabledStates.add(state);
+    });
+
     for (const [key, preset] of Object.entries(LOCATION_PRESETS)) {
         let targetStates;
         if (preset.states === null && !preset.excludeStates) {
@@ -289,12 +296,6 @@ function getActivePresetName() {
         }
 
         // Check: every target state fully enabled, every non-target state fully disabled
-        const enabledStates = new Set();
-        allStates.forEach((state) => {
-            const { enabled, total } = LocationFilters.getStateCount(state);
-            if (enabled === total && total > 0) enabledStates.add(state);
-        });
-
         const targetSet = new Set(targetStates);
         if (targetSet.size === enabledStates.size && [...targetSet].every((s) => enabledStates.has(s))) {
             return preset.name;
@@ -356,9 +357,11 @@ function toggleState(stateCode, enable) {
  * @param {string} stateCode
  */
 function updateStateCounter(stateCode) {
+    const { enabled, total } = LocationFilters.getStateCount(stateCode);
+
+    // Update badge
     const counter = document.getElementById(`state-count-${CSS.escape(stateCode)}`);
     if (counter) {
-        const { enabled, total } = LocationFilters.getStateCount(stateCode);
         const icon = enabled === total ? 'bi-check-circle-fill' : enabled === 0 ? 'bi-x-circle' : 'bi-dash-circle';
         counter.innerHTML = `<i class="bi ${icon}"></i> ${enabled}/${total}`;
         counter.className = `badge ${enabled === total ? 'bg-success' : enabled === 0 ? 'bg-secondary' : 'bg-warning text-dark'}`;
@@ -367,7 +370,6 @@ function updateStateCounter(stateCode) {
     // Update heading visual hierarchy
     const heading = document.querySelector(`[data-state-heading="${CSS.escape(stateCode)}"]`);
     if (heading) {
-        const { enabled, total } = LocationFilters.getStateCount(stateCode);
         heading.classList.remove('state-all-enabled', 'state-partial', 'state-all-disabled');
         heading.classList.add(
             enabled === total ? 'state-all-enabled' : enabled === 0 ? 'state-all-disabled' : 'state-partial'
@@ -534,7 +536,7 @@ function populateStateFilter() {
 }
 
 /**
- * Jump to a state's accordion section and expand it.
+ * Jump to a state's section heading and scroll it into view.
  * @param {string} stateCode
  */
 function jumpToState(stateCode) {

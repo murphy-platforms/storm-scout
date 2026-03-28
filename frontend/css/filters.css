@@ -31,7 +31,7 @@
 }
 .alert-type-card.disabled .form-check-label,
 .alert-type-card.disabled p.text-muted {
-    color: #6c757d !important;
+    color: #595f66 !important;
 }
 
 .alert-type-card.disabled .form-check-input {
