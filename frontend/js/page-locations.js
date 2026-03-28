@@ -44,7 +44,26 @@ const LOCATION_PRESETS = {
     EAST_COAST: {
         name: 'East Coast',
         icon: 'bi-sunrise',
-        states: ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA', 'DE', 'MD', 'DC', 'VA', 'WV', 'NC', 'SC', 'GA', 'FL']
+        states: [
+            'ME',
+            'NH',
+            'VT',
+            'MA',
+            'RI',
+            'CT',
+            'NY',
+            'NJ',
+            'PA',
+            'DE',
+            'MD',
+            'DC',
+            'VA',
+            'WV',
+            'NC',
+            'SC',
+            'GA',
+            'FL'
+        ]
     },
     GULF_COAST: {
         name: 'Gulf Coast',
@@ -240,9 +259,7 @@ function applyLocationPreset(presetName) {
         // Start with all disabled, then enable matching states
         LocationFilters.disableAll();
         const allStates = LocationFilters.getStates();
-        const targetStates = preset.states
-            ? preset.states
-            : allStates.filter((s) => !preset.excludeStates.includes(s));
+        const targetStates = preset.states ? preset.states : allStates.filter((s) => !preset.excludeStates.includes(s));
         targetStates.forEach((state) => LocationFilters.enableByState(state));
     }
 
@@ -279,10 +296,7 @@ function getActivePresetName() {
         });
 
         const targetSet = new Set(targetStates);
-        if (
-            targetSet.size === enabledStates.size &&
-            [...targetSet].every((s) => enabledStates.has(s))
-        ) {
+        if (targetSet.size === enabledStates.size && [...targetSet].every((s) => enabledStates.has(s))) {
             return preset.name;
         }
     }
