@@ -65,7 +65,7 @@ rsync -avz \
   backend/ $DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/backend/
 
 # Install/update dependencies on server
-ssh $DEPLOY_USER@$DEPLOY_HOST "cd $APP_ROOT/backend && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd $APP_ROOT/backend && npm ci --production"
 
 # Restart application
 ssh $DEPLOY_USER@$DEPLOY_HOST "systemctl --user restart storm-scout-dev"
@@ -73,7 +73,7 @@ ssh $DEPLOY_USER@$DEPLOY_HOST "systemctl --user restart storm-scout-dev"
 
 **Important Notes**:
 - Never deploy `.env` files — configure environment variables directly on the server
-- Always run `npm install --production` after deploying if `package.json` changed
+- Always run `npm ci --production` after deploying if `package.json` changed
 - Exclude `tmp/` from rsync to avoid interfering with any runtime state
 
 ### Database Migrations
@@ -136,7 +136,7 @@ scp -P $DEPLOY_PORT frontend/advisories.html $DEPLOY_USER@$DEPLOY_HOST:~/public_
 rsync -avz -e "ssh -p $DEPLOY_PORT" --exclude='node_modules' --exclude='.env' backend/ $DEPLOY_USER@$DEPLOY_HOST:~/storm-scout/
 
 # 2. Install dependencies (if package.json changed)
-ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && npm install --production"
+ssh $DEPLOY_USER@$DEPLOY_HOST "cd ~/storm-scout && npm ci --production"
 
 # 3. Restart app
 ssh $DEPLOY_USER@$DEPLOY_HOST "touch ~/storm-scout/tmp/restart.txt"
@@ -344,7 +344,7 @@ SELECT office_code, COUNT(*) as alert_count FROM advisories GROUP BY office_code
 2. Verify Node.js version: `node --version` (should be 18+)
 3. Check database connection in `.env`
 4. Verify Docker container is running: `docker ps | grep storm-scout-db`
-5. Reinstall dependencies: `cd $APP_ROOT/backend && rm -rf node_modules && npm install --production`
+5. Reinstall dependencies: `cd $APP_ROOT/backend && rm -rf node_modules && npm ci --production`
 
 #### Data Not Updating
 
@@ -532,12 +532,12 @@ const advisories = await API.getActiveAdvisories();
 
 ## CI/CD Considerations
 
-Currently, deployment is manual. Future improvements could include:
+GitHub Actions CI runs automatically on every pull request: lint (ESLint + Prettier), test (Jest with coverage thresholds), E2E (Playwright), and CodeQL security analysis. All checks must pass before merge. Deployment to production is initiated manually via `deploy.sh`.
 
-1. **GitHub Actions**: Automated testing on push
-2. **Deployment Scripts**: Single-command deploy from local machine
-3. **Environment Testing**: Automated API endpoint tests post-deploy
-4. **Rollback Automation**: One-command rollback to previous version
+### v2.1.x Migrations
+
+- `20260328-add-ingestion-timeout-status.sql` — Adds `'timeout'` to `ingestion_events.status` ENUM
+- `20260328-add-station-name.sql` — Adds `station_name VARCHAR(100)` to `offices` table
 
 ## Documentation References
 
@@ -548,5 +548,5 @@ Currently, deployment is manual. Future improvements could include:
 
 ---
 
-**Last Updated**: March 8, 2026
+**Last Updated**: March 28, 2026
 **Maintained By**: Storm Scout Team

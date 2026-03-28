@@ -92,6 +92,15 @@ These keys are commented out in `.env.production.example` and are not currently 
 
 ---
 
+### v2.1.x Security Controls
+
+- **SSRF Domain Validation**: `getObservationStations()` in `api-client.js` validates that the stations URL starts with `https://api.weather.gov/` before following redirects from NOAA API responses
+- **Input Sanitization**: `sanitizeStationName()` in `map-observation-stations.js` validates type, strips control characters and Unicode bidi overrides, and truncates to column width before database insertion
+- **Prototype Pollution Guard**: `Object.hasOwn()` used for preset lookup in `applyLocationPreset()` to prevent inherited Object.prototype method names from being treated as valid presets
+- **JSON Schema Validation**: `loadPreferences()` in both `location-filters.js` and `page-filters.js` validates localStorage JSON is a non-null, non-array object before use
+- **XSS Defense**: `escapeHtml()` applied to VTEC action code fallback path in `getActionBadge()` and `getActionBadgeWithTime()` in `utils.js`
+- **Health Endpoint Rate Limiting**: Dedicated `healthLimiter` (120 req/min per IP) on `/health` endpoint prevents database connection pool exhaustion via flood attacks
+
 ### `/policies` (Future)
 Security policies and procedures specific to Storm Scout.
 

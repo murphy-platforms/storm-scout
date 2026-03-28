@@ -356,7 +356,7 @@ async function main() {
     children.push(...userStory('E2-S3', 'Offices Table & 300 Office Seed Data', 8, 'developer',
         'an offices table seeded with 300 US office locations including coordinates, UGC codes, and observation station IDs',
         'the system can match weather alerts to geographic locations',
-        ['offices table with id, office_code, name, city, state, region, lat/lng, ugc_codes, observation_station', 'Seed script populates 300 offices from JSON', 'Each office has valid coordinates', 'UGC codes mapped per office for NOAA matching', 'Import script can load from CSV']));
+        ['offices table with id, office_code, name, city, state, region, lat/lng, ugc_codes, observation_station', 'Seed script populates 302 offices from JSON', 'Each office has valid coordinates', 'UGC codes mapped per office for NOAA matching', 'Import script can load from CSV']));
 
     children.push(...userStory('E2-S4', 'Advisories Table & Model', 5, 'developer',
         'an advisories table and model for storing NOAA weather alerts',

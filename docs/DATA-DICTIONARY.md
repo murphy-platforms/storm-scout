@@ -20,7 +20,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 
 ## offices
 
-**Purpose:** Static reference list of all 300 office locations. Loaded from `backend/src/data/offices.json` at database initialization and rarely modified thereafter.
+**Purpose:** Static reference list of all 302 office locations. Loaded from `backend/src/data/offices.json` at database initialization and rarely modified thereafter.
 
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
@@ -36,6 +36,7 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 | `longitude` | DECIMAL(10,7) | No | Decimal longitude |
 | `region` | VARCHAR(50) | Yes | Region name |
 | `observation_station` | VARCHAR(10) | Yes | Nearest NWS observation station ICAO code (e.g. `KORD`). Used to fetch current weather conditions. |
+| `station_name` | VARCHAR(100) | Yes | Human-readable name of the observation station (e.g. `Andrews Air Force Base`). Populated by `map-observation-stations.js --backfill-names`. |
 | `created_at` | DATETIME | No | Row creation timestamp (auto-set) |
 | `updated_at` | DATETIME | No | Last modification timestamp (auto-updated) |
 
@@ -331,6 +332,25 @@ Complete column reference for all database tables. Schema source: `backend/src/d
 - Migration files live in `backend/src/data/migrations/` and are applied in filename (lexicographic) order
 - To check migration status: `node src/scripts/run-migrations.js --status`
 - To roll back: manually revert the schema change and delete the row from this table (see `DEPLOY.md` for rollback procedure)
+
+---
+
+### `ingestion_events`
+
+**Purpose:** Tracks each NOAA data ingestion cycle — start time, completion, status, and counts. Used by the `X-Data-Age` header middleware and admin health diagnostics.
+
+| Column | Type | Nullable | Description |
+|--------|------|----------|-------------|
+| `id` | INT (PK, auto-increment) | No | Unique event identifier |
+| `started_at` | DATETIME | No | When the ingestion cycle began |
+| `completed_at` | DATETIME | Yes | When the cycle finished (NULL if still running) |
+| `status` | ENUM('running','success','failure','timeout') | No | Cycle outcome. `timeout` added in v2.1.0 for cycles exceeding `INGESTION_MAX_DURATION_MS`. |
+| `advisories_created` | INT | Yes | Number of advisories created/updated in this cycle |
+| `advisories_expired` | INT | Yes | Number of advisories marked expired |
+| `error_message` | TEXT | Yes | Error details on failure or timeout |
+| `duration_ms` | INT | Yes | Total cycle duration in milliseconds |
+
+**Indexes:** `idx_ingestion_status (status)`, `idx_ingestion_completed (completed_at)`
 
 ---
 

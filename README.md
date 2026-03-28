@@ -29,7 +29,7 @@ Storm Scout consolidates active weather advisories and operational signals by lo
 
 ## Why Storm Scout?
 
-Organizations that manage physical locations — retail chains, logistics networks, field service teams, government offices — face a common problem: there is no simple way to monitor weather threats across all of their sites at once. When severe weather hits, operations teams resort to checking weather.gov manually for each location, one zip code at a time. This leads to delayed decisions, inconsistent response across regions, and hours of effort that could be automated. Storm Scout solves this by consolidating real-time NOAA weather alerts for hundreds of locations into a single dashboard, giving operations leaders the situational awareness they need to act quickly and consistently. For a 300-location network during an active storm, Storm Scout replaces what would otherwise be hours of manual weather.gov lookups with a single real-time view — no API fees, no per-seat licensing, and no dependency on a third-party SaaS platform.
+Organizations that manage physical locations — retail chains, logistics networks, field service teams, government offices — face a common problem: there is no simple way to monitor weather threats across all of their sites at once. When severe weather hits, operations teams resort to checking weather.gov manually for each location, one zip code at a time. This leads to delayed decisions, inconsistent response across regions, and hours of effort that could be automated. Storm Scout solves this by consolidating real-time NOAA weather alerts for hundreds of locations into a single dashboard, giving operations leaders the situational awareness they need to act quickly and consistently. For a 302-location network during an active storm, Storm Scout replaces what would otherwise be hours of manual weather.gov lookups with a single real-time view — no API fees, no per-seat licensing, and no dependency on a third-party SaaS platform.
 
 ## Demo
 
@@ -80,7 +80,7 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 ## ✨ Features
 
 ### Core Functionality
-- **300 Demo Locations** - Ships with a realistic 300-location dataset of US offices spanning all 50 states and territories, identified by 5-digit zip codes. [Swap for your own locations](#adapting-for-your-organization) via CSV import in minutes.
+- **302 Demo Locations** - Ships with a realistic 302-location dataset of US offices spanning all 50 states and territories, identified by 5-digit zip codes. [Swap for your own locations](#customize-for-your-organization) via CSV import in minutes.
 - **Real-Time NOAA Weather Data** - Automatic ingestion of weather alerts every 15 minutes
 - **Automated Advisory Cleanup** - Removes duplicate and expired advisories after each ingestion
 - **Automatic Alert Expiration** - Alerts marked expired when their `end_time` passes
@@ -98,7 +98,7 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 
 ### User Interface
 - **Clean, Responsive UI** - Bootstrap 5.3 dashboard optimized for desktop, tablet, and mobile (44px touch targets, responsive layouts)
-- **6 Dashboard Pages** - Overview, Active Advisories, Offices Impacted, Notices, Filter Settings, Sources
+- **10 Dashboard Pages** - Overview, Active Advisories, Offices Impacted, Office Detail, Map, Notices, Alert Filters, Location Settings, Sources, Disclaimer
 - **Filter-Aware Display** - All pages respect user's filter preferences for consistent data views
 - **Alert Detail Modal** - View full NOAA narrative descriptions with "View Full Alert" button on office detail pages
 - **Enhanced Alert Cards** - Office detail page shows alert headline, *WHAT description, *WHEN timing, issued time, and source extracted from NOAA descriptions
@@ -143,13 +143,13 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 - **Safe Deploys** - `deploy.sh` calls `POST /api/admin/pause-ingestion` (API key authenticated) before rsync and waits for any active cycle to finish; ERR trap calls resume on deploy failure; ingestion auto-resumes on app restart
 - **Admin API** - `POST /api/admin/pause-ingestion`, `POST /api/admin/resume-ingestion`, `GET /api/admin/status` endpoints (all behind API key); used by deploy script and available for manual operational control
 - **Pre-Deploy Smoke Test** - 11 automated checks including API validation and XSS audit; aborts deploy on any failure
-- **UI Verification Test** - 22 automated checks validating all 9 frontend pages are served with correct DOM elements, all 8 API dependencies return valid data, and data integrity constraints hold (300 offices, active advisories, severity values, filter levels)
+- **UI Verification Test** - 22 automated checks validating all 10 frontend pages are served with correct DOM elements, all 8 API dependencies return valid data, and data integrity constraints hold (302 offices, active advisories, severity values, filter levels)
 - **Deterministic Builds** - `npm ci` (not `npm install`) in all deploy paths ensures package-lock.json is honored
 - **Automated Migrations** - `npm run migrate` runs idempotent migrations before app restart on every deploy; `APPLY_MIGRATIONS=false` escape hatch available
 - **CI Pipeline** - GitHub Actions runs `npm ci`, `npm audit --audit-level=high`, and `npm test` on every push and pull request
 - **Liveness vs Readiness** - `/ping` (no I/O, always 200) for supervisor keep-alive; `/health` (may 503) for readiness monitoring
 - **Test Suite** - Jest unit and integration tests for advisory model dedup paths, API key middleware, and advisories route; `supertest` for HTTP-level assertions
-- **UI Verification** - curl-based page and API dependency validation across all 9 frontend pages (22 checks)
+- **UI Verification** - curl-based page and API dependency validation across all 10 frontend pages (22 checks)
 
 ### Global Architecture (Planned)
 - **Multi-Country Design** - Adapter pattern for ECCC (Canada), MeteoAlarm (EU), SMN (Mexico)
@@ -161,14 +161,14 @@ Data flows from NOAA every 15 minutes through the ingestor, which matches alerts
 
 ## Quick Start
 
-> **Terminology:** Throughout this documentation, "locations" and "offices" refer to the same 300 monitored facilities. The codebase and API use "office" consistently.
+> **Terminology:** Throughout this documentation, "locations" and "offices" refer to the same 302 monitored facilities. The codebase and API use "office" consistently.
 
 ### One-Command Setup
 
 If you have Node.js 18+ and Docker installed:
 
 ```bash
-bash scripts/setup.sh     # starts DB, installs deps, seeds 300 locations
+bash scripts/setup.sh     # starts DB, installs deps, seeds 302 locations
 cd backend && npm run dev  # dashboard at http://localhost:3000
 ```
 
@@ -224,7 +224,7 @@ npm run init-db
 
 #### Option A: Quick Start with Demo Data (recommended)
 
-Storm Scout ships with 300 pre-populated US office locations in `backend/src/data/offices.json`. To get running immediately:
+Storm Scout ships with 302 pre-populated US office locations in `backend/src/data/offices.json`. To get running immediately:
 
 ```bash
 npm run seed-db
@@ -293,7 +293,7 @@ storm-scout/
 │   │   ├── routes/      # REST API endpoints
 │   │   ├── ingestion/   # NOAA alert + observation fetching
 │   │   ├── scripts/     # Maintenance scripts (office import, station mapping)
-│   │   └── data/        # Schema, offices.json (300 locations), migrations/
+│   │   └── data/        # Schema, offices.json (302 locations), migrations/
 │   ├── package.json
 │   └── README.md
 │
@@ -322,7 +322,7 @@ storm-scout/
 **Backend:** Node.js 20+, Express, MariaDB 11 (Docker), mysql2, node-cron, axios
 **Middleware:** node-cache (caching), compression (gzip), express-rate-limit, express-validator
 **Frontend:** HTML5, Bootstrap 5.3.8, Vanilla JavaScript, localStorage API
-**Data:** NOAA Weather API (96 alert types, 1140 observation stations), 300 office locations
+**Data:** NOAA Weather API (96 alert types, 1140 observation stations), 302 office locations
 **Deployment:** Ubuntu Linux, systemd user service, Docker (MariaDB)
 **Storage:** MySQL async/await models, unique indexes for data integrity
 
@@ -385,8 +385,8 @@ The following are intentional scope boundaries for this project, not missing fea
 |------|---------------|-----------|
 | **Geographic coverage** | US only | NOAA Weather API covers the 50 US states and territories. International adapters (Environment Canada, MeteoAlarm, SMN) are designed for but not yet implemented. |
 | **User authentication** | Network-level | The dashboard is open to anyone with the URL. Access is controlled via reverse proxy or VPN. The API uses key-based authentication for write operations. |
-| **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#adapting-for-your-organization) above. |
-| **Automated tests** | Backend + Frontend | 771 tests across 43 suites (Jest + supertest): 645 backend tests covering API routes, ingestion, deduplication, middleware, and models; 126 frontend unit tests covering utilities, aggregation, export, and alert filtering. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for details. |
+| **Architecture** | Single-tenant | One database, one ingestion pipeline, one organization. See [multi-tenant potential](#customize-for-your-organization) above. |
+| **Automated tests** | Backend + Frontend | 842 tests across 45 suites (Jest + supertest): 645 backend tests covering API routes, ingestion, deduplication, middleware, and models; 126 frontend unit tests covering utilities, aggregation, export, and alert filtering. See [`CONTRIBUTING.md`](CONTRIBUTING.md#test-coverage-notes) for details. |
 | **Infrastructure cost** | Minimal | Runs on a single VPS ($5-10/month). No paid API dependencies — NOAA data is free and public domain. |
 
 ## Roadmap
@@ -439,7 +439,7 @@ Storm Scout uses exclusively public domain data from the US federal government:
 
 - **NOAA/NWS Weather API** ([api.weather.gov](https://api.weather.gov)) — All weather alerts, warnings, advisories, and observation data. NOAA data is US government work and in the public domain. No API key is required — the only requirement is a `User-Agent` header with a contact email, per NOAA's [API documentation](https://www.weather.gov/documentation/services-web-api). There are no usage fees or rate limits beyond reasonable use.
 
-- **Office locations** — The monitored locations in `backend/src/data/offices.json` are user-provided via CSV import. See [Adapting for Your Organization](#adapting-for-your-organization) for how to load your own locations.
+- **Office locations** — The monitored locations in `backend/src/data/offices.json` are user-provided via CSV import. See [Adapting for Your Organization](#customize-for-your-organization) for how to load your own locations.
 
 ## Development Story
 

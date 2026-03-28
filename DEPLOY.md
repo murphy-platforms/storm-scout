@@ -68,7 +68,7 @@ docker exec -i storm-scout-db mariadb -u storm_scout -plocaldev storm_scout_dev 
 
 ```bash
 node backend/src/scripts/import-offices.js /path/to/locations.csv
-# Output: backend/src/data/offices.json (300 offices)
+# Output: backend/src/data/offices.json (302 offices)
 npm run seed-db
 ```
 
@@ -294,7 +294,7 @@ If a migration causes issues in production:
 # Health check (database, ingestion state, data integrity)
 curl http://localhost:3000/health
 
-# Confirm 300 offices loaded
+# Confirm 302 offices loaded
 curl http://localhost:3000/api/offices | python3 -c \
   "import json,sys; d=json.load(sys.stdin); print(d['count'], 'offices')"
 
@@ -515,6 +515,7 @@ See [docs/ARCHITECTURE.md — Backup & Recovery](docs/ARCHITECTURE.md#backup--re
 | `NODE_ENV` | Environment | `development` |
 | `INGESTION_ENABLED` | Enable NOAA polling | `true` |
 | `INGESTION_INTERVAL_MINUTES` | Poll interval | `15` |
+| `INGESTION_MAX_DURATION_MS` | Max ingestion cycle duration (ms). Cycles exceeding this are aborted. | `600000` (10 min) |
 | `NOAA_API_USER_AGENT` | NOAA API contact | `(Storm Scout, ops@example.com)` |
 | `CORS_ORIGIN` | Allowed CORS origin (required — no default) | `https://your-domain.example.com` |
 | `TRUST_PROXY` | Set `true` when behind a reverse proxy (Nginx, Apache, etc.) | `false` |

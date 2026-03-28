@@ -4,7 +4,7 @@ Node.js + Express API server for the Storm Scout weather advisory dashboard.
 
 ## Tech Stack
 
-- **Runtime**: Node.js 18+ LTS
+- **Runtime**: Node.js 20 LTS
 - **Framework**: Express.js 4.18
 - **Database**: MariaDB 11 (Docker) / MySQL 8.0+, via mysql2
 - **Scheduling**: node-cron (15-minute ingestion, 6-hour snapshots)
@@ -78,7 +78,7 @@ Import locations from CSV, then seed:
 
 ```bash
 node src/scripts/import-offices.js /path/to/locations.csv
-# Output: src/data/offices.json (300 offices)
+# Output: src/data/offices.json (302 offices)
 
 npm run seed-db
 ```
@@ -97,7 +97,7 @@ Server starts at **http://localhost:3000** and runs initial NOAA ingestion immed
 
 ### Offices
 
-- `GET /api/offices` — Get all 300 offices (filters: state, region)
+- `GET /api/offices` — Get all 302 offices (filters: state, region)
 - `GET /api/offices/states` — List of states
 - `GET /api/offices/regions` — List of regions
 - `GET /api/offices/:id` — Get office by ID with status and advisories
@@ -125,11 +125,19 @@ Server starts at **http://localhost:3000** and runs initial NOAA ingestion immed
 **Station setup:** Observations require each office to be mapped to its nearest NWS observation station. Run the mapping script once after seeding offices:
 
 ```bash
-npm run map-stations   # calls NOAA /points API for each office (~5 min for 300 offices)
+npm run map-stations   # calls NOAA /points API for each office (~5 min for 302 offices)
 npm run ingest         # fetches observations for mapped stations
 ```
 
 The script is idempotent — rerun it to fill in any offices that failed on previous runs.
+
+To populate station names for offices that already have station codes mapped:
+
+```bash
+node scripts/map-observation-stations.js --backfill-names
+```
+
+This deduplicates API calls (~185 unique stations) and batch-updates all offices sharing each station.
 
 ### Notices
 
@@ -234,7 +242,7 @@ backend/
 │   └── data/
 │       ├── schema.sql                # Full database schema
 │       ├── seed.sql                  # Sample notices + default office statuses
-│       ├── offices.json              # 300 offices (zip-code based)
+│       ├── offices.json              # 302 offices (zip-code based)
 │       └── migrations/               # SQL migration files (date-prefixed)
 ├── .env.example
 ├── package.json

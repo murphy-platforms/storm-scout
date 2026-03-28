@@ -4,7 +4,7 @@ How Storm Scout was built using AI-assisted development, from initial concept to
 
 ## Overview
 
-Storm Scout was developed by a technical operations leader using AI coding assistants over approximately one month. The project spans 275 GitHub Issues and 60+ commits, producing a production-grade weather advisory dashboard with 43 test suites (771 tests, 100% line coverage), security hardening, and comprehensive documentation.
+Storm Scout was developed by a technical operations leader using AI coding assistants over approximately one month. The project spans 275 GitHub Issues and 60+ commits, producing a production-grade weather advisory dashboard with 45 test suites (842 tests, 100% line coverage), security hardening, and comprehensive documentation.
 
 This document describes the methodology — not to promote AI tools, but to provide an honest account of what worked, what didn't, and how human expertise shaped every decision.
 
@@ -73,7 +73,7 @@ The workflow followed a consistent pattern:
 
 ### Automated Testing
 
-The project has 771 tests across 43 suites: 645 backend tests covering API routes, ingestion logic, advisory deduplication, database queries, middleware, and error handling; 126 frontend unit tests covering utilities, aggregation, export, alert filtering, and the API client (100% line coverage). Tests were generated alongside features — not added retroactively — which caught integration issues early. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#test-coverage-notes) for the full rationale.
+The project has 842 tests across 45 suites: 716 backend tests covering API routes, ingestion logic, advisory deduplication, database queries, middleware, and error handling; 126 frontend unit tests covering utilities, aggregation, export, alert filtering, and the API client (100% line coverage). Tests were generated alongside features — not added retroactively — which caught integration issues early. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#test-coverage-notes) for the full rationale.
 
 ### Code Review Process
 

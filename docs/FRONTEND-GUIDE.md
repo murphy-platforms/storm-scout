@@ -6,7 +6,7 @@ This guide covers the frontend architecture, conventions, and patterns used acro
 
 ## 1. Page Overview
 
-Storm Scout has 8 HTML pages, each with a corresponding embedded JavaScript module:
+Storm Scout has 10 HTML pages, each with a corresponding embedded JavaScript module:
 
 | Page | File | JS Module | Purpose |
 |------|------|-----------|---------|
@@ -16,8 +16,10 @@ Storm Scout has 8 HTML pages, each with a corresponding embedded JavaScript modu
 | Office Detail | `office-detail.html` | `page-office-detail.js` | Single-office view: advisory list, observations, trend sparkline |
 | Interactive Map | `map.html` | `page-map.js` | Leaflet map with severity-colored markers and MarkerCluster |
 | Government Notices | `notices.html` | `page-notices.js` | Active government and emergency notices |
-| Filter Settings | `filters.html` | `page-filters.js` | Toggle individual alert types, apply presets, persist to localStorage |
+| Alert Filters | `filters.html` | `page-filters.js` | Toggle individual alert types, apply presets, persist to localStorage |
+| Location Settings | `locations.html` | `page-locations.js` | Configure which monitored offices appear in dashboard views; 6 geographic presets |
 | Data Sources | `sources.html` | *(inline script)* | Static information page about data sources |
+| Disclaimer | `disclaimer.html` | *(inline script)* | Legal disclaimer |
 
 ---
 
@@ -126,6 +128,38 @@ Then calls `loadUserPreferences()` to restore saved state from localStorage.
 2. All other pages call `AlertFilters.init()` on load, which restores saved preferences
 3. Pages call `AlertFilters.filterAdvisories(allAdvisories)` to get the working set
 4. Counts and office cards are re-calculated from the filtered set — the raw API response is never displayed directly
+
+---
+
+## 4a. LocationFilters Singleton
+
+`LocationFilters` (in `frontend/js/location-filters.js`) parallels `AlertFilters` for user location preferences. It manages which of the 302 monitored offices appear in dashboard views.
+
+**Initialization:**
+```javascript
+await LocationFilters.init(); // Fetches /api/offices, restores localStorage prefs
+```
+
+**Key methods:**
+
+| Method | Description |
+|--------|-------------|
+| `LocationFilters.init()` | Load offices from API, restore user prefs from localStorage |
+| `LocationFilters.filterAdvisoriesByLocation(advisories)` | Filter array: returns only advisories from enabled offices |
+| `LocationFilters.hasActiveFilters()` | True when not all offices are enabled |
+| `LocationFilters.enableByState(code)` | Enable all offices in a state (e.g., `'FL'`) |
+| `LocationFilters.disableByState(code)` | Disable all offices in a state |
+| `LocationFilters.getStates()` | List of unique state codes from all offices |
+| `LocationFilters.getOfficesByState()` | Offices grouped by state (sorted) |
+
+**Data pipeline order:**
+1. API data → `LocationFilters.filterAdvisoriesByLocation()` → `AlertFilters.filterAdvisories()` → page rendering
+2. Location filters are applied first (structural: which offices), then alert filters (content: which alert types)
+
+**Filter flow across pages:**
+1. User configures locations on `locations.html`; choices saved to localStorage
+2. All data pages call `LocationFilters.init()` alongside `AlertFilters.init()` via `Promise.all()`
+3. Pages apply `LocationFilters.filterAdvisoriesByLocation()` before `AlertFilters.filterAdvisories()`
 
 ---
 
@@ -296,7 +330,7 @@ Before submitting a PR, verify:
 - [ ] URL parameters read via `new URLSearchParams(window.location.search)` and escaped before insertion into DOM
 
 ### Step 4 — Add to navigation
-Update the navbar in all 8 existing HTML files to include the new page link.
+Update the navbar in all 10 existing HTML files to include the new page link.
 
 ### Step 5 — Register in README
 Add the new page to the "Project Structure" file list and "Key API Endpoints" section in `README.md`.
