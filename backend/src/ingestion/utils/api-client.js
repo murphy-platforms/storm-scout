@@ -340,6 +340,11 @@ async function getObservationStations(lat, lon) {
             return [];
         }
 
+        // Validate URL domain to prevent SSRF via compromised API response
+        if (!stationsUrl.startsWith('https://api.weather.gov/')) {
+            throw new Error(`Unexpected stations URL domain: ${stationsUrl}`);
+        }
+
         // Step 2: Fetch the station list (full URL, not relative)
         await enforceRateLimit();
         const stationsResponse = await axios.get(stationsUrl, {

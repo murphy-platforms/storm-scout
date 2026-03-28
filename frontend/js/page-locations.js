@@ -402,7 +402,9 @@ function renderLocations() {
                     o.city.toLowerCase().includes(term) ||
                     (o.office_code && o.office_code.toLowerCase().includes(term)) ||
                     stateCode.toLowerCase().includes(term) ||
-                    (STATE_NAMES[stateCode] && STATE_NAMES[stateCode].toLowerCase().includes(term))
+                    (STATE_NAMES[stateCode] && STATE_NAMES[stateCode].toLowerCase().includes(term)) ||
+                    (o.observation_station && o.observation_station.toLowerCase().includes(term)) ||
+                    (o.station_name && o.station_name.toLowerCase().includes(term))
             );
         }
 
@@ -463,6 +465,8 @@ function renderLocations() {
             const safeName = escapeHtml(office.name);
             const safeCity = escapeHtml(office.city);
             const safeZip = escapeHtml(office.office_code || '');
+            const safeStation = escapeHtml(office.observation_station || '');
+            const safeStationName = escapeHtml(office.station_name || '');
 
             htmlContent += html`
                 <div class="col-sm-6 col-lg-4 mb-3">
@@ -487,6 +491,11 @@ function renderLocations() {
                                 <i class="bi bi-geo-alt"></i> ${safeCity},
                                 ${safeState}${raw(safeZip ? ' &middot; ' : '')}${safeZip}
                             </p>
+                            ${raw(
+                                safeStation
+                                    ? `<p class="text-muted small mb-0 mt-1 station-info"><i class="bi bi-broadcast"></i> ${safeStation}${safeStationName ? ` &mdash; ${safeStationName}` : ''}</p>`
+                                    : ''
+                            )}
                         </div>
                     </div>
                 </div>

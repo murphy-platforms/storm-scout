@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS offices (
     longitude DECIMAL(10, 7) NOT NULL,
     region VARCHAR(50),
     observation_station VARCHAR(10),          -- Nearest NWS observation station ICAO code (e.g., KORD)
+    station_name VARCHAR(100),                -- Human-readable name of the observation station (e.g., Andrews Air Force Base)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
