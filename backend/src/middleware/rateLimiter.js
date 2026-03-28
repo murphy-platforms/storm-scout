@@ -98,9 +98,29 @@ const authLimiter = rateLimit({
     validate: { xForwardedForHeader: false }
 });
 
+/**
+ * Health check rate limiter
+ * 120 requests per minute per IP — generous for load balancers and
+ * frontend polling, but prevents DB connection pool exhaustion via
+ * flood attacks (each /health call runs SELECT 1).
+ * Resolves CodeQL js/missing-rate-limiting alert #2.
+ */
+const healthLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 120, // 120 requests per minute
+    message: {
+        status: 'rate_limited',
+        error: 'Too many health check requests, please try again later'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: { xForwardedForHeader: false }
+});
+
 module.exports = {
     apiLimiter,
     writeLimiter,
     authLimiter,
-    spaFallbackLimiter
+    spaFallbackLimiter,
+    healthLimiter
 };
