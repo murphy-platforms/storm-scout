@@ -510,6 +510,28 @@ describe('getObservationStations', () => {
         });
     });
 
+    test('should reject stationsUrl from non-weather.gov domain (SSRF protection)', async () => {
+        jest.resetModules();
+        jest.doMock('../../src/config/config', () => ({
+            noaa: { baseUrl: 'https://api.weather.gov', userAgent: 'TestApp/1.0 (test@example.com)' }
+        }));
+        const mockAxios = require('axios');
+        const mockClient = {
+            get: jest.fn().mockResolvedValue({
+                data: {
+                    properties: {
+                        observationStations: 'https://evil.example.com/stations'
+                    }
+                }
+            })
+        };
+        mockAxios.create.mockReturnValue(mockClient);
+
+        const apiClient = require('../../src/ingestion/utils/api-client');
+
+        await expect(apiClient.getObservationStations(40.0, -90.0)).rejects.toThrow('Unexpected stations URL domain');
+    });
+
     test('should return empty array when no observationStations URL', () => {
         jest.resetModules();
         jest.doMock('../../src/config/config', () => ({
