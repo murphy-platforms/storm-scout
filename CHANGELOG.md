@@ -14,6 +14,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [2.1.2] - 2026-03-28
+
+### Added
+
+- **#366 Weather station details on Location Settings cards** — Each location card now displays a 3rd line with the observation station ICAO code and name (e.g., "KADW — Andrews Air Force Base"); station codes and names are searchable; long names truncate with CSS ellipsis
+- **`--backfill-names` mode for mapping script** — Deduplicates ~185 unique stations, fetches each name once from the NOAA API, batch-updates all offices sharing that station
+- **`station_name VARCHAR(100)` column** — Added to `offices` table with migration and rollback; schema.sql updated for fresh installs
+
+### Changed
+
+- **#365 Location data update** — Replaced Canton Baltimore (21224) with Chesapeake Beach (20732, Calvert County, MD); updated coordinates, UGC codes, and observation station (KDMH → KADW)
+
+### Security
+
+- **SSRF domain validation** — `getObservationStations()` now validates that the stations URL starts with `https://api.weather.gov/` before following it (pre-existing risk, hardened as part of backfill work)
+- **`sanitizeStationName()`** — Station names from NOAA API are validated (type check), sanitized (control characters and Unicode bidi overrides stripped), and truncated to column width before DB insertion
+
 ## [2.1.1] - 2026-03-28
 
 ### Fixed
