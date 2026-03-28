@@ -27,7 +27,7 @@
 
 /* Keep text visually dimmed without using opacity (which reduces contrast below WCAG AA) */
 .alert-type-card.disabled .card-body {
-    color: #6c757d; /* ~4.5:1 on #f8f9fa — meets WCAG AA */
+    color: #595f66; /* ~5.2:1 on #f8f9fa — exceeds WCAG AA 4.5:1 */
 }
 .alert-type-card.disabled .form-check-label,
 .alert-type-card.disabled p.text-muted {
