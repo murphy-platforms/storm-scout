@@ -62,7 +62,10 @@ function applyTimingMetadata(timingData, fallbackOverviewData = null) {
         }
     }
 
-    const effectiveLastUpdated = timingData?.last_updated || fallbackOverviewData?.last_updated || null;
+    const hasTimingPayload = Boolean(timingData && typeof timingData === 'object');
+    const effectiveLastUpdated = hasTimingPayload
+        ? timingData.last_updated ?? null
+        : fallbackOverviewData?.last_updated || null;
     const effectiveInterval =
         timingData?.update_interval_minutes ||
         fallbackOverviewData?.update_interval_minutes ||
