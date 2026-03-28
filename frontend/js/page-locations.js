@@ -249,8 +249,8 @@ function resetToDefaults() {
  * @param {string} presetName - Key from LOCATION_PRESETS
  */
 function applyLocationPreset(presetName) {
+    if (!Object.hasOwn(LOCATION_PRESETS, presetName)) return;
     const preset = LOCATION_PRESETS[presetName];
-    if (!preset) return;
 
     if (preset.states === null && !preset.excludeStates) {
         // "All Locations" — enable everything
