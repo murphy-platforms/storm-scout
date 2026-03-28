@@ -7,21 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Test coverage increase to 75.25%** — 87 new tests across 4 new files and 6 expanded files; total suite now 561 tests across 39 suites (75.25% lines, 75.48% stmts, 65.32% branches, 80.55% functions); new integration tests for admin, offices, status, notices, and app behavior routes; new unit tests for alerting (webhook paths), metrics endpoint, normalizer edge cases, and advisory type validators; Jest coverage thresholds raised to branches 62%, functions 78%, lines/stmts 72%
-- **#335 Frontend unit test suite** — 115 new tests across 4 suites in `backend/tests/unit/frontend/`: `utils.test.js` (38 tests — escapeHtml, html tagged template, severity badges, formatDate, celsius-to-fahrenheit, timeAgo, isStale, truncate, debounce, render helpers), `aggregation.test.js` (22 tests — severity ranking, urgency calculation, dedup, office aggregation, filter warnings), `export.test.js` (13 tests — CSV escaping, date formatting, report generation, shareable links), `alert-filters.test.js` (42 tests — preset application, filter logic, localStorage handling); `jest-environment-jsdom` added as dev dependency; `module.exports` guards added to `utils.js`, `export.js`, `alert-filters.js` for Node.js testability
-- **#334 CSP fix for Leaflet map tiles** — Added bare `tile.openstreetmap.org` to `img-src` (wildcard `*.tile.openstreetmap.org` does not match base domain per CSP spec) and `'unsafe-inline'` to `style-src` (required by Leaflet for tile positioning)
-- **#320 BASE_PATH prefix-stripping middleware** — `app.js` middleware strips `BASE_PATH` prefix from `req.url` before route matching, enabling subpath deployments (e.g. `/stormscout/api/offices` → `/api/offices`); required for LiteSpeed Passenger which forwards full URL paths without stripping `PassengerBaseURI`; no-op when `BASE_PATH` is unset (root deployments, local dev)
-
-### Fixed
-- **deploy.sh** — `npm ci --production` replaced with `npm ci --omit=dev --ignore-scripts` to prevent `prepare` lifecycle script from failing when `husky` (dev dependency) is not installed
-
 ### Planned
 - Historical data API endpoints for trend retrieval
 - Trend visualization dashboards
 - Predictive analytics based on historical patterns
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
+
+## [2.1.0] - 2026-03-28
+
+### Added
+
+- **#355 Location filters** — New Location Settings page (`locations.html`) lets users enable/disable which of 302 monitored NWS offices appear across all dashboard views; preferences persist in localStorage; integrated into the data pipeline on Overview, Advisories, Offices, and Map pages via `LocationFilters.filterAdvisoriesByLocation()` applied before `AlertFilters.filterAdvisories()`; includes search by name/city/zip/state, bulk enable/disable per state, and "Jump to State" navigation; reviewed by architect, DevOps, QC, UI/UX, and security expert panels before merge
+- **#355 Accessibility & security hardening** — ARIA labels on all toggle switches and state-level buttons; color-blind accessible badge icons (check/dash/x alongside color); WCAG AA contrast fix for disabled text (`#595f66`, ~5.2:1 ratio); `CSS.escape()` on querySelector calls; localStorage schema validation; unsaved changes `beforeunload` guard; `escapeHtml()` on `renderEmptyHtml` icon parameter
+- **#352 Ingestion cycle timeout** — Configurable maximum execution time for NOAA ingestion cycles (`INGESTION_MAX_DURATION_MS`, default 10 minutes); uses `AbortController` to cleanly cancel in-flight observation station fetches; prevents indefinite hangs that block all future scheduled cycles; `ERR_CANCELED` guard prevents abort from tripping circuit breaker; new `'timeout'` status in `ingestion_events` table
+- **#351 Server-authoritative timing** — New `/api/status/timing` endpoint provides uncached server time, last ingestion timestamp, scheduler state, and next scheduled update; frontend countdown uses server-authoritative timing instead of local calculation; `recoverFromCountdownExpiry()` polls for recovery with stale data display ("Data delayed (Nm old)")
+- **#354 New monitor locations** — Added Foggy Creek (CA) and Mox Mox (MT), bringing total to 302 offices
+
+### Changed
+
+- **Navigation renamed** — "Filter Settings" renamed to "Alert Filters" across all pages; new "Location Settings" nav item added between Alert Filters and Sources
+- **Cache-busting version bump** — All frontend asset `?v=` params updated from `1.10.1` to `1.11.0`
+- **Public `/health` endpoint** — Now includes `ingestion` status (active flag, startedAt) for frontend polling
+
+### Fixed
+
+- **#350 SPA deep-link fallback** — Fixed `/stormscout` subpath deep links and hardened deploy static-path validation
+- **#349 CodeQL rate limiting** — Added rate limiting on SPA fallback route
+- **#348 Flatted vulnerability** — Patched transitive vulnerability for CI audit gate
+- **#356 CI coverage gap** — Added integration test for `/api/status/timing` error path (lines 134-135 of `status.js`)
+- **npm audit** — Fixed high-severity vulnerabilities in path-to-regexp and picomatch
+
+### Security
+
+- `CSS.escape()` applied to all dynamic `querySelector` selectors to prevent selector injection
+- localStorage `JSON.parse` validated with schema check (rejects arrays, strings, numbers)
+- `renderEmptyHtml` icon parameter escaped (pre-existing defense-in-depth fix)
+- `raw()` zip code pattern restructured to keep dynamic data in auto-escaping path
 
 ## [2.0.0] - 2026-03-13
 
