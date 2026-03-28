@@ -96,10 +96,7 @@ async function runIngestionWithTimeout(timeoutMs) {
     });
 
     try {
-        return await Promise.race([
-            ingestNOAAData({ signal }),
-            timeoutPromise
-        ]);
+        return await Promise.race([ingestNOAAData({ signal }), timeoutPromise]);
     } finally {
         clearTimeout(timer);
         controller.abort();

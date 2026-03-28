@@ -1058,3 +1058,39 @@ describe('getLastIngestionTime()', () => {
     expect(result).toBeNull();
   });
 });
+
+// ── AbortSignal timeout behavior ──────────────────────────────────────────
+
+describe('ingestNOAAData with abort signal', () => {
+  test('records timeout status when signal is aborted and main fetch fails', async () => {
+    setupHappyPath();
+    IngestionEvent.recordTimeout.mockResolvedValue();
+
+    // Make the alert fetch fail — this triggers the outer catch block
+    getNOAAAlerts.mockRejectedValue(new Error('request aborted'));
+
+    const controller = new AbortController();
+    controller.abort(); // pre-abort so signal.aborted === true in catch
+
+    await expect(ingestNOAAData({ signal: controller.signal })).rejects.toThrow('request aborted');
+
+    // With signal.aborted === true, catch should call recordTimeout instead of recordFailure
+    expect(IngestionEvent.recordTimeout).toHaveBeenCalledWith(42, expect.any(Number));
+    expect(IngestionEvent.recordFailure).not.toHaveBeenCalled();
+  });
+
+  test('skips observation stations when signal is aborted', async () => {
+    const office1 = makeOffice({ id: 1, observation_station: 'KORD' });
+    const office2 = makeOffice({ id: 2, observation_station: 'KJFK', state: 'NY' });
+    setupHappyPath({ offices: [office1, office2] });
+
+    const controller = new AbortController();
+    controller.abort(); // pre-abort
+
+    // The observation loop should break immediately due to aborted signal
+    const result = await ingestNOAAData({ signal: controller.signal });
+
+    // Neither station should have been fetched
+    expect(getLatestObservation).not.toHaveBeenCalled();
+  });
+});

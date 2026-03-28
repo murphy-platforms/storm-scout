@@ -87,6 +87,34 @@ describe('IngestionEvent.recordFailure()', () => {
   });
 });
 
+// ── recordTimeout ──────────────────────────────────────────────────────────
+
+describe('IngestionEvent.recordTimeout()', () => {
+  test('updates event with timeout status and duration', async () => {
+    const db = makeDb({ affectedRows: 1 });
+    getDatabase.mockReturnValue(db);
+
+    await IngestionEvent.recordTimeout(10, 600000);
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining("status = 'timeout'"),
+      [600000, 10]
+    );
+  });
+
+  test('defaults durationMs to 0 when not provided', async () => {
+    const db = makeDb({ affectedRows: 1 });
+    getDatabase.mockReturnValue(db);
+
+    await IngestionEvent.recordTimeout(10);
+
+    expect(db.query).toHaveBeenCalledWith(
+      expect.anything(),
+      [0, 10]
+    );
+  });
+});
+
 // ── getLastSuccessful ──────────────────────────────────────────────────────
 
 describe('IngestionEvent.getLastSuccessful()', () => {
