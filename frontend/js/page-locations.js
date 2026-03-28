@@ -27,19 +27,62 @@ let dirty = false;
 
 // US state name lookup for display
 const STATE_NAMES = {
-    AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
-    CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', DC: 'District of Columbia',
-    FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois',
-    IN: 'Indiana', IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana',
-    ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota',
-    MS: 'Mississippi', MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada',
-    NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York',
-    NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma',
-    OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina',
-    SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont',
-    VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin',
-    WY: 'Wyoming', PR: 'Puerto Rico', GU: 'Guam', VI: 'Virgin Islands',
-    AS: 'American Samoa', MP: 'Northern Mariana Islands'
+    AL: 'Alabama',
+    AK: 'Alaska',
+    AZ: 'Arizona',
+    AR: 'Arkansas',
+    CA: 'California',
+    CO: 'Colorado',
+    CT: 'Connecticut',
+    DE: 'Delaware',
+    DC: 'District of Columbia',
+    FL: 'Florida',
+    GA: 'Georgia',
+    HI: 'Hawaii',
+    ID: 'Idaho',
+    IL: 'Illinois',
+    IN: 'Indiana',
+    IA: 'Iowa',
+    KS: 'Kansas',
+    KY: 'Kentucky',
+    LA: 'Louisiana',
+    ME: 'Maine',
+    MD: 'Maryland',
+    MA: 'Massachusetts',
+    MI: 'Michigan',
+    MN: 'Minnesota',
+    MS: 'Mississippi',
+    MO: 'Missouri',
+    MT: 'Montana',
+    NE: 'Nebraska',
+    NV: 'Nevada',
+    NH: 'New Hampshire',
+    NJ: 'New Jersey',
+    NM: 'New Mexico',
+    NY: 'New York',
+    NC: 'North Carolina',
+    ND: 'North Dakota',
+    OH: 'Ohio',
+    OK: 'Oklahoma',
+    OR: 'Oregon',
+    PA: 'Pennsylvania',
+    RI: 'Rhode Island',
+    SC: 'South Carolina',
+    SD: 'South Dakota',
+    TN: 'Tennessee',
+    TX: 'Texas',
+    UT: 'Utah',
+    VT: 'Vermont',
+    VA: 'Virginia',
+    WA: 'Washington',
+    WV: 'West Virginia',
+    WI: 'Wisconsin',
+    WY: 'Wyoming',
+    PR: 'Puerto Rico',
+    GU: 'Guam',
+    VI: 'Virgin Islands',
+    AS: 'American Samoa',
+    MP: 'Northern Mariana Islands'
 };
 
 /**
@@ -139,7 +182,7 @@ function disableAllLocations() {
  * Reset to defaults (all enabled) with confirmation.
  */
 function resetToDefaults() {
-    if (confirm('Reset all locations to enabled? You\'ll need to save to keep changes.')) {
+    if (confirm("Reset all locations to enabled? You'll need to save to keep changes.")) {
         enableAllLocations();
     }
 }
@@ -223,12 +266,13 @@ function renderLocations() {
 
         // Apply search filter
         if (term) {
-            offices = offices.filter((o) =>
-                o.name.toLowerCase().includes(term) ||
-                o.city.toLowerCase().includes(term) ||
-                (o.office_code && o.office_code.toLowerCase().includes(term)) ||
-                stateCode.toLowerCase().includes(term) ||
-                (STATE_NAMES[stateCode] && STATE_NAMES[stateCode].toLowerCase().includes(term))
+            offices = offices.filter(
+                (o) =>
+                    o.name.toLowerCase().includes(term) ||
+                    o.city.toLowerCase().includes(term) ||
+                    (o.office_code && o.office_code.toLowerCase().includes(term)) ||
+                    stateCode.toLowerCase().includes(term) ||
+                    (STATE_NAMES[stateCode] && STATE_NAMES[stateCode].toLowerCase().includes(term))
             );
         }
 
@@ -247,34 +291,50 @@ function renderLocations() {
         htmlContent += html`
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading-${safeState}">
-                    <button class="accordion-button ${raw(isExpanded ? '' : 'collapsed')}"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapse-${safeState}"
-                            aria-expanded="${raw(isExpanded ? 'true' : 'false')}"
-                            aria-controls="collapse-${safeState}">
+                    <button
+                        class="accordion-button ${raw(isExpanded ? '' : 'collapsed')}"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse-${safeState}"
+                        aria-expanded="${raw(isExpanded ? 'true' : 'false')}"
+                        aria-controls="collapse-${safeState}"
+                    >
                         <span class="me-2 fw-bold">${stateName}</span>
-                        <span class="badge ${raw(badgeClass)} me-2" id="state-count-${safeState}">${raw(`<i class="bi ${badgeIcon}"></i>`)} ${raw(String(enabled))}/${raw(String(total))}</span>
+                        <span class="badge ${raw(badgeClass)} me-2" id="state-count-${safeState}"
+                            >${raw(`<i class="bi ${badgeIcon}"></i>`)}
+                            ${raw(String(enabled))}/${raw(String(total))}</span
+                        >
                         <span class="text-muted small">(${safeState})</span>
                     </button>
                 </h2>
-                <div id="collapse-${safeState}"
-                     class="accordion-collapse collapse ${raw(isExpanded ? 'show' : '')}"
-                     aria-labelledby="heading-${safeState}">
+                <div
+                    id="collapse-${safeState}"
+                    class="accordion-collapse collapse ${raw(isExpanded ? 'show' : '')}"
+                    aria-labelledby="heading-${safeState}"
+                >
                     <div class="accordion-body">
                         <div class="mb-2">
-                            <button class="btn btn-sm btn-outline-secondary me-1"
-                                    data-toggle-state="${safeState}" data-enable="true"
-                                    aria-label="${raw(`Enable all offices in ${escapeHtml(stateName)}`)}">
+                            <button
+                                class="btn btn-sm btn-outline-secondary me-1"
+                                data-toggle-state="${safeState}"
+                                data-enable="true"
+                                aria-label="${raw(`Enable all offices in ${escapeHtml(stateName)}`)}"
+                            >
                                 <i class="bi bi-check-all"></i> Enable All ${safeState}
                             </button>
-                            <button class="btn btn-sm btn-outline-secondary"
-                                    data-toggle-state="${safeState}" data-enable="false"
-                                    aria-label="${raw(`Disable all offices in ${escapeHtml(stateName)}`)}">
+                            <button
+                                class="btn btn-sm btn-outline-secondary"
+                                data-toggle-state="${safeState}"
+                                data-enable="false"
+                                aria-label="${raw(`Disable all offices in ${escapeHtml(stateName)}`)}"
+                            >
                                 <i class="bi bi-x-lg"></i> Disable All ${safeState}
                             </button>
                         </div>
-                        <div class="row">
+                        <div class="row"></div>
+                    </div>
+                </div>
+            </div>
         `;
 
         offices.forEach((office) => {
@@ -286,22 +346,26 @@ function renderLocations() {
 
             htmlContent += html`
                 <div class="col-sm-6 col-lg-4 mb-3">
-                    <div class="card location-card ${raw(!isEnabled ? 'disabled' : '')}"
-                         data-office-id="${safeId}">
+                    <div class="card location-card ${raw(!isEnabled ? 'disabled' : '')}" data-office-id="${safeId}">
                         <div class="card-body py-2 px-3">
                             <div class="form-check form-switch">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       id="loc_${safeId}"
-                                       data-office-id="${safeId}"
-                                       aria-label="${raw(`Enable monitoring for ${escapeHtml(office.name)}, ${escapeHtml(office.city)}, ${escapeHtml(office.state)}`)}"
-                                       ${raw(isEnabled ? 'checked' : '')} />
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="loc_${safeId}"
+                                    data-office-id="${safeId}"
+                                    aria-label="${raw(
+                                        `Enable monitoring for ${escapeHtml(office.name)}, ${escapeHtml(office.city)}, ${escapeHtml(office.state)}`
+                                    )}"
+                                    ${raw(isEnabled ? 'checked' : '')}
+                                />
                                 <label class="form-check-label" for="loc_${safeId}">
                                     <strong>${safeName}</strong>
                                 </label>
                             </div>
                             <p class="text-muted small mb-0 mt-1">
-                                <i class="bi bi-geo-alt"></i> ${safeCity}, ${safeState}${raw(safeZip ? ' &middot; ' : '')}${safeZip}
+                                <i class="bi bi-geo-alt"></i> ${safeCity},
+                                ${safeState}${raw(safeZip ? ' &middot; ' : '')}${safeZip}
                             </p>
                         </div>
                     </div>
