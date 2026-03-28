@@ -14,6 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [2.1.1] - 2026-03-28
+
+### Fixed
+
+- **#358 Location Settings grid layout** — Fixed broken 3-column card grid caused by self-closing `<div class="row"></div>` in `renderLocations()` template; cards now render inside the `.row` container in proper `col-sm-6 col-lg-4` layout
+- **#359 Accordion replaced with flat sections** — Removed 50 collapsible Bootstrap accordion panels; state sections are now always visible with inline Enable All / Disable All buttons, matching the Alert Filters page pattern
+- **Performance: `getActivePresetName()`** — Hoisted `enabledStates` computation above the preset loop, eliminating redundant O(presets × states × offices) iteration on every status update
+- **Performance: `updateStateCounter()`** — Consolidated duplicate `getStateCount()` call; badge and heading class now share a single lookup
+- **Disabled text contrast** — Aligned `filters.css` disabled text color from `#6c757d` to `#595f66` (~5.2:1 ratio, exceeds WCAG AA 4.5:1) matching `locations.css`
+- **Stale comments** — Removed accordion references from `locations.html` comment and `page-locations.js` JSDoc
+
+### Added
+
+- **#360 Geographic presets** — 6 one-click location presets (All Locations, Continental US, East Coast, Gulf Coast, Tornado Alley, Hurricane Zone) defined as client-side state-code arrays; Quick Actions card renamed to Quick Presets with `btn-group` layout; status bar shows active preset name or "Custom"
+- **#361 Visual hierarchy on state headings** — State section headings display colored left-border based on enable ratio: green (all enabled), yellow (partial), gray (all disabled)
+- **#362 Dirty-state tracking on Alert Filters** — Backported unsaved-changes indicator and `beforeunload` guard from Location Settings to Alert Filters page
+
+### Changed
+
+- **Cache-busting version bump** — `locations.html` and `filters.html` asset params updated from `?v=1.11.0` to `?v=1.12.0`
+- **Heading consistency** — Removed icon from Location Settings `<h1>` to match Alert Filters heading style
+
+### Security
+
+- **CodeQL #2: `/health` rate limiting** — Added dedicated `healthLimiter` (120 req/min per IP) to the public `/health` endpoint; prevents DB connection pool exhaustion via flood attacks on the `SELECT 1` probe
+- **`Object.hasOwn()` guard on preset lookup** — Prevents inherited `Object.prototype` method names from being treated as valid preset names via DOM manipulation
+- **JSON schema validation in `page-filters.js`** — `loadPreferences()` now validates parsed localStorage JSON is a non-null, non-array object (matching `location-filters.js` pattern)
+- **`escapeHtml()` on VTEC action fallback** — Unknown VTEC action codes in `getActionBadge()` and `getActionBadgeWithTime()` are now escaped in the fallback path (pre-existing issue)
+
 ## [2.1.0] - 2026-03-28
 
 ### Added
