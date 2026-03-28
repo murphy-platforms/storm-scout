@@ -28,6 +28,11 @@ jobs:
         run: npm run lint
       - name: Check formatting
         run: npm run format:check
+      - name: Check frontend JavaScript syntax
+        run: |
+          for file in ../frontend/js/*.js; do
+            node --check "$file"
+          done
 
   test:
     runs-on: ubuntu-latest

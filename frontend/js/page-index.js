@@ -217,7 +217,6 @@ async function recoverFromCountdownExpiry() {
 function updateCountdown() {
     if (!nextUpdateTime) return;
     const now = getServerNow();
-    const now = new Date();
     const diff = nextUpdateTime - now;
     const nextUpdateEl = document.getElementById('nextUpdate');
     if (!nextUpdateEl) return;
