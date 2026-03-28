@@ -929,7 +929,7 @@ describe('ingestObservations() via ingestNOAAData()', () => {
 
     // Station fetched only once
     expect(getLatestObservation).toHaveBeenCalledTimes(1);
-    expect(getLatestObservation).toHaveBeenCalledWith('KMIA');
+    expect(getLatestObservation).toHaveBeenCalledWith('KMIA', { signal: undefined });
     // But upserted for both offices
     expect(ObservationModel.upsert).toHaveBeenCalledTimes(2);
   });

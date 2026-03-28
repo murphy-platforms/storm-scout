@@ -175,6 +175,12 @@ async function requestWithRetry(requestFn, description = 'API request') {
         } catch (error) {
             lastError = error;
 
+            // Abort cancellations should propagate immediately without
+            // tripping the circuit breaker — they are intentional, not server failures.
+            if (error.code === 'ERR_CANCELED') {
+                throw error;
+            }
+
             if (!isRetryable(error) || attempt === RETRY_CONFIG.maxRetries) {
                 // Only trip the circuit breaker when we've genuinely exhausted retries
                 // on a server-side problem. Non-retryable errors (4xx) are client errors
@@ -358,9 +364,9 @@ async function getObservationStations(lat, lon) {
  * @param {string} stationId - ICAO station identifier (e.g., 'KORD')
  * @returns {Promise<Object|null>} Observation properties or null
  */
-async function getLatestObservation(stationId) {
+async function getLatestObservation(stationId, { signal } = {}) {
     return requestWithRetry(async () => {
-        const response = await getNoaaClient().get(`/stations/${stationId}/observations/latest`);
+        const response = await getNoaaClient().get(`/stations/${stationId}/observations/latest`, { signal });
         return response.data?.properties || null;
     }, `Fetch latest observation for station ${stationId}`);
 }

@@ -537,7 +537,7 @@ describe('getLatestObservation', () => {
 
         return apiClient.getLatestObservation('KORD').then((result) => {
             expect(result).toEqual(mockObs);
-            expect(mockClient.get).toHaveBeenCalledWith('/stations/KORD/observations/latest');
+            expect(mockClient.get).toHaveBeenCalledWith('/stations/KORD/observations/latest', { signal: undefined });
         });
     });
 

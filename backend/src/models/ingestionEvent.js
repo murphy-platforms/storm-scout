@@ -53,6 +53,17 @@ const IngestionEvent = {
         );
     },
 
+    async recordTimeout(eventId, durationMs = 0) {
+        const db = getDatabase();
+        await db.query(
+            `UPDATE ingestion_events
+             SET status = 'timeout', completed_at = NOW(),
+                 error_message = 'Cycle exceeded maximum duration', duration_ms = ?
+             WHERE id = ?`,
+            [durationMs, eventId]
+        );
+    },
+
     /**
      * Get the last successful ingestion timestamp.
      * Used by X-Data-Age header and health checks.

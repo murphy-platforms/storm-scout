@@ -202,6 +202,9 @@ mountMetricsEndpoint(app, requireApiKey);
 
 // Public health check — returns only status for load balancers and supervisors.
 // Detailed diagnostics (memory, circuit breaker, ingestion) are at /api/admin/health behind API key auth.
+// Includes basic ingestion status so frontend polling can detect cycle completion.
+const { getIngestionStatus } = require('./ingestion/noaa-ingestor');
+
 app.get('/health', async (req, res) => {
     let status = 'ok';
     try {
@@ -212,7 +215,11 @@ app.get('/health', async (req, res) => {
     }
 
     const httpStatus = status === 'ok' ? 200 : 503;
-    res.status(httpStatus).json({ status, timestamp: new Date().toISOString() });
+    res.status(httpStatus).json({
+        status,
+        timestamp: new Date().toISOString(),
+        ingestion: getIngestionStatus()
+    });
 });
 
 // X-Data-Age header — tells the frontend how old the data is (seconds since last ingestion)

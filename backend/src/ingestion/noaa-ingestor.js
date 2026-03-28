@@ -41,7 +41,7 @@ function getIngestionStatus() {
 /**
  * Main ingestion function for NOAA weather data
  */
-async function ingestNOAAData() {
+async function ingestNOAAData({ signal } = {}) {
     console.log('\n═══ NOAA Weather Data Ingestion Started ═══');
     console.log(`Time: ${new Date().toISOString()}\n`);
 
@@ -443,7 +443,7 @@ async function ingestNOAAData() {
         }
 
         // Step 9: Ingest weather observations from nearest stations
-        const observationResult = await ingestObservations(offices);
+        const observationResult = await ingestObservations(offices, { signal });
 
         // Invalidate dynamic cache keys (advisories, status).
         // Static keys (sites, states, regions) are preserved to avoid thundering herd.
@@ -507,10 +507,16 @@ async function ingestNOAAData() {
             observationsTotal: observationResult.total
         };
     } catch (error) {
-        console.error('\n✗ NOAA ingestion failed:', error.message);
+        const isTimeout = signal?.aborted;
+        console.error(`\n✗ NOAA ingestion ${isTimeout ? 'timed out' : 'failed'}:`, error.message);
         if (ingestionEventId) {
             try {
-                await IngestionEvent.recordFailure(ingestionEventId, error.message, Date.now() - ingestionStart);
+                const duration = Date.now() - ingestionStart;
+                if (isTimeout) {
+                    await IngestionEvent.recordTimeout(ingestionEventId, duration);
+                } else {
+                    await IngestionEvent.recordFailure(ingestionEventId, error.message, duration);
+                }
             } catch (_) {
                 /* non-critical */
             }
@@ -528,7 +534,7 @@ async function ingestNOAAData() {
  * @param {Array} offices - All office objects from database
  * @returns {Object} { total, updated, failed, uniqueStations }
  */
-async function ingestObservations(offices) {
+async function ingestObservations(offices, { signal } = {}) {
     console.log('\n═══ Weather Observations Ingestion ═══');
 
     // Filter to offices with observation_station mapped
@@ -556,8 +562,13 @@ async function ingestObservations(offices) {
     let failed = 0;
 
     for (const [stationId, stationSites] of stationToSites.entries()) {
+        if (signal?.aborted) {
+            const skipped = stationToSites.size - updated - failed;
+            console.warn(`[Observations] Aborted — ${updated} stations completed, ${skipped} skipped`);
+            break;
+        }
         try {
-            const obs = await getLatestObservation(stationId);
+            const obs = await getLatestObservation(stationId, { signal });
 
             if (!obs) {
                 console.warn(`  Station ${stationId}: No observation data`);
