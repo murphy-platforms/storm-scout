@@ -6,7 +6,7 @@
  * Key responsibilities:
  *   - Fetches all offices from the backend API via LocationFilters.init()
  *   - Loads existing preferences from localStorage and renders a toggle card
- *     for each office, grouped by state in collapsible accordion sections
+ *     for each office, grouped by state in flat sections
  *   - Supports search by name/city/zip, bulk enable/disable per state,
  *     and global enable/disable all
  *   - Persists the current toggle state to localStorage on save; the
@@ -24,6 +24,63 @@
 
 let searchTerm = '';
 let dirty = false;
+
+// Non-CONUS state/territory codes (excluded by Continental US preset)
+const NON_CONUS = ['AK', 'HI', 'PR', 'GU', 'VI', 'AS', 'MP'];
+
+// Geographic presets — state-code arrays, no backend needed
+const LOCATION_PRESETS = {
+    ALL: {
+        name: 'All Locations',
+        icon: 'bi-globe',
+        states: null // null = enable all
+    },
+    CONUS: {
+        name: 'Continental US',
+        icon: 'bi-map',
+        states: null, // computed at apply time: all states minus NON_CONUS
+        excludeStates: NON_CONUS
+    },
+    EAST_COAST: {
+        name: 'East Coast',
+        icon: 'bi-sunrise',
+        states: [
+            'ME',
+            'NH',
+            'VT',
+            'MA',
+            'RI',
+            'CT',
+            'NY',
+            'NJ',
+            'PA',
+            'DE',
+            'MD',
+            'DC',
+            'VA',
+            'WV',
+            'NC',
+            'SC',
+            'GA',
+            'FL'
+        ]
+    },
+    GULF_COAST: {
+        name: 'Gulf Coast',
+        icon: 'bi-water',
+        states: ['TX', 'LA', 'MS', 'AL', 'FL']
+    },
+    TORNADO_ALLEY: {
+        name: 'Tornado Alley',
+        icon: 'bi-tornado',
+        states: ['TX', 'OK', 'KS', 'NE', 'SD', 'ND', 'IA', 'MO']
+    },
+    HURRICANE: {
+        name: 'Hurricane Zone',
+        icon: 'bi-tropical-storm',
+        states: ['FL', 'GA', 'SC', 'NC', 'VA', 'TX', 'LA', 'MS', 'AL', 'PR', 'VI', 'GU']
+    }
+};
 
 // US state name lookup for display
 const STATE_NAMES = {
@@ -183,8 +240,69 @@ function disableAllLocations() {
  */
 function resetToDefaults() {
     if (confirm("Reset all locations to enabled? You'll need to save to keep changes.")) {
-        enableAllLocations();
+        applyLocationPreset('ALL');
     }
+}
+
+/**
+ * Apply a geographic preset — enables offices in the preset's states, disables the rest.
+ * @param {string} presetName - Key from LOCATION_PRESETS
+ */
+function applyLocationPreset(presetName) {
+    if (!Object.hasOwn(LOCATION_PRESETS, presetName)) return;
+    const preset = LOCATION_PRESETS[presetName];
+
+    if (preset.states === null && !preset.excludeStates) {
+        // "All Locations" — enable everything
+        LocationFilters.enableAll();
+    } else {
+        // Start with all disabled, then enable matching states
+        LocationFilters.disableAll();
+        const allStates = LocationFilters.getStates();
+        const targetStates = preset.states ? preset.states : allStates.filter((s) => !preset.excludeStates.includes(s));
+        targetStates.forEach((state) => LocationFilters.enableByState(state));
+    }
+
+    markDirty();
+    renderLocations();
+    updateStatus();
+}
+
+/**
+ * Detect which preset matches the current filter configuration.
+ * @returns {string} Matching preset name or 'Custom'
+ */
+function getActivePresetName() {
+    const allStates = LocationFilters.getStates();
+
+    // Build enabledStates once (not per-preset) to avoid O(presets * states * offices)
+    const enabledStates = new Set();
+    allStates.forEach((state) => {
+        const { enabled, total } = LocationFilters.getStateCount(state);
+        if (enabled === total && total > 0) enabledStates.add(state);
+    });
+
+    for (const [key, preset] of Object.entries(LOCATION_PRESETS)) {
+        let targetStates;
+        if (preset.states === null && !preset.excludeStates) {
+            // "All" preset — check if everything is enabled
+            if (LocationFilters.isFullView()) return preset.name;
+            continue;
+        } else if (preset.states === null && preset.excludeStates) {
+            // "CONUS" — all minus excluded
+            targetStates = allStates.filter((s) => !preset.excludeStates.includes(s));
+        } else {
+            targetStates = preset.states;
+        }
+
+        // Check: every target state fully enabled, every non-target state fully disabled
+        const targetSet = new Set(targetStates);
+        if (targetSet.size === enabledStates.size && [...targetSet].every((s) => enabledStates.has(s))) {
+            return preset.name;
+        }
+    }
+
+    return 'Custom';
 }
 
 /**
@@ -235,21 +353,34 @@ function toggleState(stateCode, enable) {
 }
 
 /**
- * Update the counter badge for a specific state accordion header.
+ * Update the counter badge for a specific state section heading.
  * @param {string} stateCode
  */
 function updateStateCounter(stateCode) {
+    const { enabled, total } = LocationFilters.getStateCount(stateCode);
+
+    // Update badge
     const counter = document.getElementById(`state-count-${CSS.escape(stateCode)}`);
     if (counter) {
-        const { enabled, total } = LocationFilters.getStateCount(stateCode);
         const icon = enabled === total ? 'bi-check-circle-fill' : enabled === 0 ? 'bi-x-circle' : 'bi-dash-circle';
         counter.innerHTML = `<i class="bi ${icon}"></i> ${enabled}/${total}`;
         counter.className = `badge ${enabled === total ? 'bg-success' : enabled === 0 ? 'bg-secondary' : 'bg-warning text-dark'}`;
     }
+
+    // Update heading visual hierarchy
+    const heading = document.querySelector(`[data-state-heading="${CSS.escape(stateCode)}"]`);
+    if (heading) {
+        heading.classList.remove('state-all-enabled', 'state-partial', 'state-all-disabled');
+        heading.classList.add(
+            enabled === total ? 'state-all-enabled' : enabled === 0 ? 'state-all-disabled' : 'state-partial'
+        );
+    }
 }
 
 /**
- * Render the full location grid grouped by state in an accordion.
+ * Render the full location grid grouped by state in flat sections.
+ * Matches the Alert Filters page pattern: always-visible sections with
+ * inline bulk actions and a 3-column card grid.
  */
 function renderLocations() {
     const container = document.getElementById('locationsContainer');
@@ -257,8 +388,7 @@ function renderLocations() {
     const states = Object.keys(officesByState).sort();
     const term = searchTerm.toLowerCase().trim();
 
-    let htmlContent = '<div class="accordion" id="locationAccordion">';
-
+    let htmlContent = '';
     let visibleOfficeCount = 0;
 
     states.forEach((stateCode) => {
@@ -285,57 +415,47 @@ function renderLocations() {
         const safeState = escapeHtml(stateCode);
         const badgeClass = enabled === total ? 'bg-success' : enabled === 0 ? 'bg-secondary' : 'bg-warning text-dark';
         const badgeIcon = enabled === total ? 'bi-check-circle-fill' : enabled === 0 ? 'bi-x-circle' : 'bi-dash-circle';
-        // Expand accordion item if searching
-        const isExpanded = term.length > 0;
 
+        const stateClass =
+            enabled === total ? 'state-all-enabled' : enabled === 0 ? 'state-all-disabled' : 'state-partial';
+
+        // State section heading (flat, always visible — matches filters.html pattern)
         htmlContent += html`
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-${safeState}">
-                    <button
-                        class="accordion-button ${raw(isExpanded ? '' : 'collapsed')}"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse-${safeState}"
-                        aria-expanded="${raw(isExpanded ? 'true' : 'false')}"
-                        aria-controls="collapse-${safeState}"
+            <div class="row mb-2" id="heading-${safeState}">
+                <div class="col-12">
+                    <h4
+                        class="state-section-heading border-bottom pb-2 ${raw(stateClass)}"
+                        data-state-heading="${safeState}"
                     >
-                        <span class="me-2 fw-bold">${stateName}</span>
                         <span class="badge ${raw(badgeClass)} me-2" id="state-count-${safeState}"
                             >${raw(`<i class="bi ${badgeIcon}"></i>`)}
                             ${raw(String(enabled))}/${raw(String(total))}</span
                         >
-                        <span class="text-muted small">(${safeState})</span>
-                    </button>
-                </h2>
-                <div
-                    id="collapse-${safeState}"
-                    class="accordion-collapse collapse ${raw(isExpanded ? 'show' : '')}"
-                    aria-labelledby="heading-${safeState}"
-                >
-                    <div class="accordion-body">
-                        <div class="mb-2">
-                            <button
-                                class="btn btn-sm btn-outline-secondary me-1"
-                                data-toggle-state="${safeState}"
-                                data-enable="true"
-                                aria-label="${raw(`Enable all offices in ${escapeHtml(stateName)}`)}"
-                            >
-                                <i class="bi bi-check-all"></i> Enable All ${safeState}
-                            </button>
-                            <button
-                                class="btn btn-sm btn-outline-secondary"
-                                data-toggle-state="${safeState}"
-                                data-enable="false"
-                                aria-label="${raw(`Disable all offices in ${escapeHtml(stateName)}`)}"
-                            >
-                                <i class="bi bi-x-lg"></i> Disable All ${safeState}
-                            </button>
-                        </div>
-                        <div class="row"></div>
-                    </div>
+                        ${stateName}
+                        <span class="text-muted small fw-normal">(${safeState})</span>
+                        <button
+                            class="btn btn-sm btn-outline-secondary ms-2"
+                            data-toggle-state="${safeState}"
+                            data-enable="true"
+                            aria-label="${raw(`Enable all offices in ${escapeHtml(stateName)}`)}"
+                        >
+                            Enable All
+                        </button>
+                        <button
+                            class="btn btn-sm btn-outline-secondary"
+                            data-toggle-state="${safeState}"
+                            data-enable="false"
+                            aria-label="${raw(`Disable all offices in ${escapeHtml(stateName)}`)}"
+                        >
+                            Disable All
+                        </button>
+                    </h4>
                 </div>
             </div>
         `;
+
+        // Office cards in 3-column grid
+        htmlContent += '<div class="row">';
 
         offices.forEach((office) => {
             const isEnabled = LocationFilters.shouldIncludeOffice(office.id);
@@ -347,7 +467,7 @@ function renderLocations() {
             htmlContent += html`
                 <div class="col-sm-6 col-lg-4 mb-3">
                     <div class="card location-card ${raw(!isEnabled ? 'disabled' : '')}" data-office-id="${safeId}">
-                        <div class="card-body py-2 px-3">
+                        <div class="card-body">
                             <div class="form-check form-switch">
                                 <input
                                     class="form-check-input"
@@ -363,7 +483,7 @@ function renderLocations() {
                                     <strong>${safeName}</strong>
                                 </label>
                             </div>
-                            <p class="text-muted small mb-0 mt-1">
+                            <p class="text-muted small mb-0 mt-2">
                                 <i class="bi bi-geo-alt"></i> ${safeCity},
                                 ${safeState}${raw(safeZip ? ' &middot; ' : '')}${safeZip}
                             </p>
@@ -373,15 +493,8 @@ function renderLocations() {
             `;
         });
 
-        htmlContent += `
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+        htmlContent += '</div>';
     });
-
-    htmlContent += '</div>';
 
     if (visibleOfficeCount === 0 && term) {
         htmlContent = renderEmptyHtml(
@@ -403,7 +516,7 @@ function updateStatus() {
 
     document.getElementById('enabledLocationCount').textContent = enabled;
     document.getElementById('totalLocationCount').textContent = total;
-    document.getElementById('activeLocationStatus').textContent = LocationFilters.getFilterStatus();
+    document.getElementById('activeLocationStatus').textContent = getActivePresetName();
 }
 
 /**
@@ -423,22 +536,14 @@ function populateStateFilter() {
 }
 
 /**
- * Jump to a state's accordion section and expand it.
+ * Jump to a state's section heading and scroll it into view.
  * @param {string} stateCode
  */
 function jumpToState(stateCode) {
     if (!stateCode) return;
-    const collapseEl = document.getElementById(`collapse-${stateCode}`);
-    if (collapseEl) {
-        // Expand the accordion item
-        const bsCollapse = new bootstrap.Collapse(collapseEl, { toggle: false });
-        bsCollapse.show();
-
-        // Scroll into view
-        const heading = document.getElementById(`heading-${stateCode}`);
-        if (heading) {
-            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+    const heading = document.getElementById(`heading-${stateCode}`);
+    if (heading) {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
@@ -446,6 +551,11 @@ function jumpToState(stateCode) {
 // Event delegation for dynamically generated elements
 // ---------------------------------------------------------------------------
 document.addEventListener('click', function (e) {
+    // Preset buttons
+    if (e.target.closest('[data-location-preset]')) {
+        const preset = e.target.closest('[data-location-preset]').dataset.locationPreset;
+        applyLocationPreset(preset);
+    }
     // State-level toggle buttons
     if (e.target.closest('[data-toggle-state]')) {
         const btn = e.target.closest('[data-toggle-state]');
@@ -463,8 +573,6 @@ document.addEventListener('change', function (e) {
 });
 
 // Static button event listeners
-document.getElementById('enableAllBtn').addEventListener('click', enableAllLocations);
-document.getElementById('disableAllBtn').addEventListener('click', disableAllLocations);
 document.getElementById('resetDefaultsBtn').addEventListener('click', resetToDefaults);
 document.getElementById('savePrefsBtn').addEventListener('click', savePreferences);
 

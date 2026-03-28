@@ -32,6 +32,7 @@ const DEFAULT_PRESET = 'CUSTOM';
 let alertTypesByLevel = {};
 let filterPresets = {};
 let currentFilters = {};
+let dirty = false;
 
 // Alert type descriptions
 const ALERT_DESCRIPTIONS = {
@@ -130,12 +131,46 @@ async function loadData() {
  * @returns {void}
  */
 function loadPreferences() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        currentFilters = JSON.parse(saved);
-    } else {
-        // Use default preset
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                currentFilters = parsed;
+            } else {
+                applyPreset(DEFAULT_PRESET, false);
+            }
+        } else {
+            applyPreset(DEFAULT_PRESET, false);
+        }
+    } catch (e) {
+        console.warn('[AlertFilters] localStorage unavailable or corrupt:', e.message);
         applyPreset(DEFAULT_PRESET, false);
+    }
+}
+
+/**
+ * Mark the page as having unsaved changes.
+ */
+function markDirty() {
+    dirty = true;
+    updateSaveButton();
+}
+
+/**
+ * Update the Save button appearance based on dirty state.
+ */
+function updateSaveButton() {
+    const btn = document.getElementById('savePrefsBtn');
+    if (!btn) return;
+    if (dirty) {
+        btn.innerHTML = '<i class="bi bi-check-circle"></i> Save Preferences *';
+        btn.classList.add('btn-warning');
+        btn.classList.remove('btn-success');
+    } else {
+        btn.innerHTML = '<i class="bi bi-check-circle"></i> Save Preferences';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-warning');
     }
 }
 
@@ -149,6 +184,9 @@ function loadPreferences() {
  */
 function savePreferences() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(currentFilters));
+
+    dirty = false;
+    updateSaveButton();
 
     // Show success message
     const statusEl = document.getElementById('activeFilterStatus');
@@ -231,6 +269,7 @@ function toggleAlertType(alertType) {
     // Toggle state
     const newState = currentFilters[alertType] === true ? undefined : true;
     currentFilters[alertType] = newState;
+    markDirty();
 
     // Update DOM immediately for instant visual feedback
     const elementId = `alert_${alertType.replace(/\s+/g, '_')}`;
@@ -348,6 +387,7 @@ function toggleLevel(level, enable) {
         currentFilters[type] = enable;
     });
 
+    markDirty();
     renderAlertTypes();
     updateStatus();
 }
@@ -436,6 +476,13 @@ document.addEventListener('change', function (e) {
 // Static button event listeners
 document.getElementById('resetDefaultsBtn').addEventListener('click', resetToDefaults);
 document.getElementById('savePrefsBtn').addEventListener('click', savePreferences);
+
+// Warn before navigating away with unsaved changes
+window.addEventListener('beforeunload', function (e) {
+    if (dirty) {
+        e.preventDefault();
+    }
+});
 
 // Initialize
 loadData();
