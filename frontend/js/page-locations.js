@@ -235,7 +235,7 @@ function toggleState(stateCode, enable) {
 }
 
 /**
- * Update the counter badge for a specific state accordion header.
+ * Update the counter badge for a specific state section heading.
  * @param {string} stateCode
  */
 function updateStateCounter(stateCode) {
@@ -249,7 +249,9 @@ function updateStateCounter(stateCode) {
 }
 
 /**
- * Render the full location grid grouped by state in an accordion.
+ * Render the full location grid grouped by state in flat sections.
+ * Matches the Alert Filters page pattern: always-visible sections with
+ * inline bulk actions and a 3-column card grid.
  */
 function renderLocations() {
     const container = document.getElementById('locationsContainer');
@@ -257,8 +259,7 @@ function renderLocations() {
     const states = Object.keys(officesByState).sort();
     const term = searchTerm.toLowerCase().trim();
 
-    let htmlContent = '<div class="accordion" id="locationAccordion">';
-
+    let htmlContent = '';
     let visibleOfficeCount = 0;
 
     states.forEach((stateCode) => {
@@ -285,57 +286,41 @@ function renderLocations() {
         const safeState = escapeHtml(stateCode);
         const badgeClass = enabled === total ? 'bg-success' : enabled === 0 ? 'bg-secondary' : 'bg-warning text-dark';
         const badgeIcon = enabled === total ? 'bi-check-circle-fill' : enabled === 0 ? 'bi-x-circle' : 'bi-dash-circle';
-        // Expand accordion item if searching
-        const isExpanded = term.length > 0;
 
+        // State section heading (flat, always visible — matches filters.html pattern)
         htmlContent += html`
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-${safeState}">
-                    <button
-                        class="accordion-button ${raw(isExpanded ? '' : 'collapsed')}"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse-${safeState}"
-                        aria-expanded="${raw(isExpanded ? 'true' : 'false')}"
-                        aria-controls="collapse-${safeState}"
-                    >
-                        <span class="me-2 fw-bold">${stateName}</span>
+            <div class="row mb-2" id="heading-${safeState}">
+                <div class="col-12">
+                    <h4 class="state-section-heading border-bottom pb-2 ${raw(enabled === 0 ? 'text-muted' : '')}">
                         <span class="badge ${raw(badgeClass)} me-2" id="state-count-${safeState}"
                             >${raw(`<i class="bi ${badgeIcon}"></i>`)}
                             ${raw(String(enabled))}/${raw(String(total))}</span
                         >
-                        <span class="text-muted small">(${safeState})</span>
-                    </button>
-                </h2>
-                <div
-                    id="collapse-${safeState}"
-                    class="accordion-collapse collapse ${raw(isExpanded ? 'show' : '')}"
-                    aria-labelledby="heading-${safeState}"
-                >
-                    <div class="accordion-body">
-                        <div class="mb-2">
-                            <button
-                                class="btn btn-sm btn-outline-secondary me-1"
-                                data-toggle-state="${safeState}"
-                                data-enable="true"
-                                aria-label="${raw(`Enable all offices in ${escapeHtml(stateName)}`)}"
-                            >
-                                <i class="bi bi-check-all"></i> Enable All ${safeState}
-                            </button>
-                            <button
-                                class="btn btn-sm btn-outline-secondary"
-                                data-toggle-state="${safeState}"
-                                data-enable="false"
-                                aria-label="${raw(`Disable all offices in ${escapeHtml(stateName)}`)}"
-                            >
-                                <i class="bi bi-x-lg"></i> Disable All ${safeState}
-                            </button>
-                        </div>
-                        <div class="row"></div>
-                    </div>
+                        ${stateName}
+                        <span class="text-muted small fw-normal">(${safeState})</span>
+                        <button
+                            class="btn btn-sm btn-outline-secondary ms-2"
+                            data-toggle-state="${safeState}"
+                            data-enable="true"
+                            aria-label="${raw(`Enable all offices in ${escapeHtml(stateName)}`)}"
+                        >
+                            Enable All
+                        </button>
+                        <button
+                            class="btn btn-sm btn-outline-secondary"
+                            data-toggle-state="${safeState}"
+                            data-enable="false"
+                            aria-label="${raw(`Disable all offices in ${escapeHtml(stateName)}`)}"
+                        >
+                            Disable All
+                        </button>
+                    </h4>
                 </div>
             </div>
         `;
+
+        // Office cards in 3-column grid
+        htmlContent += '<div class="row">';
 
         offices.forEach((office) => {
             const isEnabled = LocationFilters.shouldIncludeOffice(office.id);
@@ -347,7 +332,7 @@ function renderLocations() {
             htmlContent += html`
                 <div class="col-sm-6 col-lg-4 mb-3">
                     <div class="card location-card ${raw(!isEnabled ? 'disabled' : '')}" data-office-id="${safeId}">
-                        <div class="card-body py-2 px-3">
+                        <div class="card-body">
                             <div class="form-check form-switch">
                                 <input
                                     class="form-check-input"
@@ -363,7 +348,7 @@ function renderLocations() {
                                     <strong>${safeName}</strong>
                                 </label>
                             </div>
-                            <p class="text-muted small mb-0 mt-1">
+                            <p class="text-muted small mb-0 mt-2">
                                 <i class="bi bi-geo-alt"></i> ${safeCity},
                                 ${safeState}${raw(safeZip ? ' &middot; ' : '')}${safeZip}
                             </p>
@@ -373,15 +358,8 @@ function renderLocations() {
             `;
         });
 
-        htmlContent += `
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+        htmlContent += '</div>';
     });
-
-    htmlContent += '</div>';
 
     if (visibleOfficeCount === 0 && term) {
         htmlContent = renderEmptyHtml(
@@ -428,17 +406,9 @@ function populateStateFilter() {
  */
 function jumpToState(stateCode) {
     if (!stateCode) return;
-    const collapseEl = document.getElementById(`collapse-${stateCode}`);
-    if (collapseEl) {
-        // Expand the accordion item
-        const bsCollapse = new bootstrap.Collapse(collapseEl, { toggle: false });
-        bsCollapse.show();
-
-        // Scroll into view
-        const heading = document.getElementById(`heading-${stateCode}`);
-        if (heading) {
-            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+    const heading = document.getElementById(`heading-${stateCode}`);
+    if (heading) {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 

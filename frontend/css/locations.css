@@ -38,15 +38,20 @@
     opacity: 1 !important;
 }
 
-/* Accordion header styling */
-.accordion-button:not(.collapsed) {
-    background-color: rgba(27, 40, 69, 0.05);
-    color: var(--ss-navy);
+/* State section headings (flat layout — matches filters.html pattern) */
+.state-section-heading {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
 }
 
-.accordion-button:focus {
-    border-color: var(--ss-green);
-    box-shadow: 0 0 0 0.25rem rgba(122, 182, 72, 0.25);
+.state-section-heading .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.45rem;
+    vertical-align: middle;
+}
+
+.state-section-heading .btn {
+    vertical-align: middle;
 }
 
 /* Search input focus state */
@@ -59,10 +64,4 @@
 .form-check-input:checked {
     background-color: var(--ss-green);
     border-color: var(--ss-green);
-}
-
-/* State count badges in accordion headers */
-.accordion-button .badge {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.45rem;
 }
