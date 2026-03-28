@@ -28,6 +28,34 @@ test.describe('Dashboard', () => {
         await expect(lastUpdated).not.toHaveText('Loading...', { timeout: 10_000 });
     });
 
+    test('recovers banner timing from stale cached overview data', async ({ page }) => {
+        await page.addInitScript(() => {
+            const staleOverview = {
+                data: {
+                    total_offices: 300,
+                    offices_with_advisories: 0,
+                    total_active_advisories: 0,
+                    advisories_by_severity: [],
+                    operational_status_counts: [],
+                    weather_impact_counts: [],
+                    recently_updated: [],
+                    last_updated: '2000-01-01T00:00:00.000Z',
+                    update_interval_minutes: 15
+                },
+                ts: Date.now()
+            };
+            localStorage.setItem('cache:overview', JSON.stringify(staleOverview));
+        });
+
+        await page.goto('./');
+        const lastUpdated = page.locator('#lastUpdated');
+        const nextUpdate = page.locator('#nextUpdate');
+
+        await expect(lastUpdated).not.toHaveText('Loading...', { timeout: 10_000 });
+        await expect(lastUpdated).not.toContainText('2000', { timeout: 30_000 });
+        await expect(nextUpdate).not.toContainText('Refreshing data', { timeout: 30_000 });
+    });
+
     test('renders severity summary cards', async ({ page }) => {
         await page.goto('./');
         // Wait for JS to populate cards
