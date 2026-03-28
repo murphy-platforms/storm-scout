@@ -2196,16 +2196,16 @@
     "observation_station": "KDMH"
   },
   {
-    "name": "Canton Baltimore",
-    "city": "Baltimore",
+    "name": "Chesapeake Beach",
+    "city": "Chesapeake Beach",
     "state": "MD",
-    "latitude": 39.2762,
-    "longitude": -76.5734,
-    "county": "Baltimore city",
+    "latitude": 38.6862,
+    "longitude": -76.5347,
+    "county": "Calvert",
     "cwa": "LWX",
-    "ugc_codes": "[\"MDZ011\",\"MDC510\"]",
-    "office_code": "21224",
-    "observation_station": "KDMH"
+    "ugc_codes": "[\"MDZ018\",\"MDC009\"]",
+    "office_code": "20732",
+    "observation_station": "KADW"
   },
   {
     "name": "Downtown Little Rock",
