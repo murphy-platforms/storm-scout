@@ -1,7 +1,7 @@
 # Storm Scout — Architecture & Scale Considerations
 
-**Last Updated:** 2026-03-10
-**Current Production Scale:** 300 locations
+**Last Updated:** 2026-03-28
+**Current Production Scale:** 302 locations
 
 ---
 
@@ -28,7 +28,7 @@ Storm Scout is a Node.js + Express API backend paired with a Bootstrap 5.3 stati
 
 ## Scale Ceilings by Component
 
-The system is designed and tested for 300 locations. The following table documents implicit scale ceilings — points where a specific component will degrade or require architectural work before scaling further.
+The system is designed and tested for 302 locations. The following table documents implicit scale ceilings — points where a specific component will degrade or require architectural work before scaling further.
 
 ### UI / Frontend
 
@@ -47,7 +47,7 @@ The system is designed and tested for 300 locations. The following table documen
 | Component | Current approach | Ceiling | Risk at ceiling |
 |-----------|-----------------|---------|-----------------|
 | `getAllTrends()` | Single SQL query + O(n) JS grouping (post-#105 fix) | ~10,000 history rows/query | Acceptable; further growth requires index tuning or partitioning |
-| `getImpacted()` | Derived-table LEFT JOIN (post-#107 fix) | No practical ceiling at 300 offices | Well-optimized |
+| `getImpacted()` | Derived-table LEFT JOIN (post-#107 fix) | No practical ceiling at 302 offices | Well-optimized |
 | Ingestion cycle | Sequential per-office UGC matching | ~500 offices before cycle exceeds 30s | NOAA API rate limits (500ms between calls) are the primary constraint |
 | Connection pool | 40 connections (configurable) | Governed by MariaDB `max_connections` | Raise `DB_POOL_LIMIT` and verify `SHOW VARIABLES LIKE 'max_connections'` before scaling |
 | Rate limiter | 30,000 req/60 min per IP (default; configurable via `RATE_LIMIT_API_MAX` env var) | Accommodates corporate NAT environments where many users share one IP | N/A |
@@ -58,7 +58,7 @@ The system is designed and tested for 300 locations. The following table documen
 | Component | Current approach | Ceiling | Risk at ceiling |
 |-----------|-----------------|---------|-----------------|
 | `advisories` table | InnoDB, no partitioning | ~5M rows before query plans degrade without partitioning | `idx_advisories_status_time` index covers common queries well to this range |
-| `advisory_history` table | InnoDB, no partitioning; 30-day TTL cleanup | ~500K rows (300 offices × 4 snapshots/day × 30 days = 36K rows/month) | Safe at current scale; partition by month at ~300K rows/month |
+| `advisory_history` table | InnoDB, no partitioning; 30-day TTL cleanup | ~500K rows (302 offices × 4 snapshots/day × 30 days = 36K rows/month) | Safe at current scale; partition by month at ~300K rows/month |
 | `offices` table | Full table scan acceptable | No practical ceiling at 300 | Static data; cached aggressively |
 | Backup strategy | Not automated | Any scale | See Planned work below |
 
@@ -205,4 +205,6 @@ What enterprise deployment would require beyond the current release:
 | `backend/src/routes/admin.js` | Operational control endpoints (pause/resume ingestion) |
 | `frontend/js/page-map.js` | Leaflet map; markercluster; severity-aware cluster icons |
 | `frontend/js/alert-filters.js` | 96-type NOAA filter taxonomy; localStorage persistence |
+| `frontend/js/location-filters.js` | Location filter utilities — user office preferences; localStorage persistence |
+| `frontend/js/page-locations.js` | Location Settings page controller — presets, rendering, search |
 | `backend/src/data/schema.sql` | Full DB schema; index rationale; FK constraint notes |

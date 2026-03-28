@@ -30,11 +30,17 @@ Public liveness probe — returns database connectivity status only. For detaile
 ```json
 {
     "status": "ok",
-    "timestamp": "2026-03-10T14:00:00.000Z"
+    "timestamp": "2026-03-28T14:00:00.000Z",
+    "ingestion": {
+        "active": false,
+        "startedAt": null
+    }
 }
 ```
 
 Returns HTTP 200 if healthy, HTTP 503 if degraded (database unreachable).
+
+**Rate limit:** 120 requests/minute per IP (dedicated `healthLimiter`).
 
 #### GET `/api/admin/health` _(requires API key)_
 
@@ -97,7 +103,7 @@ Dashboard summary statistics.
 
 #### GET `/api/offices`
 
-Get all 300 office locations.
+Get all 302 office locations.
 
 **Response**:
 ```json
@@ -126,6 +132,38 @@ Get all 300 office locations.
 - `office_code`: 5-digit zip code (primary identifier)
 - `ugc_codes`: NWS Universal Geographic Code zones — used for precise alert geo-matching
 - `cwa`: NWS County Warning Area code
+
+#### GET `/api/status/timing`
+
+Lightweight timing metadata for countdown synchronization. Always uncached — clients receive authoritative scheduler timing.
+
+**Response Headers**: `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate`
+
+**Response**:
+```json
+{
+    "success": true,
+    "data": {
+        "server_time": "2026-03-28T15:15:28.919Z",
+        "last_updated": "2026-03-28T15:13:10.000Z",
+        "update_interval_minutes": 15,
+        "ingestion_active": false,
+        "scheduler_running": true,
+        "next_scheduled_update_at": "2026-03-28T15:30:00.000Z"
+    }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `server_time` | ISO 8601 | Current server UTC time |
+| `last_updated` | ISO 8601 or null | Last successful ingestion timestamp |
+| `update_interval_minutes` | number | Configured ingestion interval |
+| `ingestion_active` | boolean | Whether an ingestion cycle is currently running |
+| `scheduler_running` | boolean | Whether the cron scheduler is active |
+| `next_scheduled_update_at` | ISO 8601 | Next scheduler-aligned ingestion time |
+
+---
 
 #### GET `/api/status/offices-impacted`
 
@@ -482,7 +520,7 @@ Returns current scheduler state.
 Current application version from `package.json`.
 
 ```json
-{ "version": "2.0.0", "releasedDate": "2026-03-13" }
+{ "version": "2.1.2", "releasedDate": "2026-03-13" }
 ```
 
 ---
@@ -580,5 +618,5 @@ Error body:
 
 ---
 
-**Last Updated**: March 10, 2026
+**Last Updated**: March 28, 2026
 **API Version**: 2.0.0

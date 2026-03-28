@@ -87,6 +87,7 @@ Set in `backend/.env` (development) or `backend/.env.production` (production).
 | `NOAA_API_USER_AGENT` | *(required)* | Contact string for NOAA API (e.g. `(Storm Scout, ops@example.com)`) |
 | `INGESTION_ENABLED` | `true` | Enable automatic NOAA polling |
 | `INGESTION_INTERVAL_MINUTES` | `15` | Polling interval in minutes |
+| `INGESTION_MAX_DURATION_MS` | `600000` | Max ingestion cycle duration (ms). Default 10 minutes. Cycles exceeding this are aborted. |
 | `CORS_ORIGIN` | *(required)* | Allowed CORS origin (no default) |
 | `TRUST_PROXY` | `false` | Set `true` when behind a reverse proxy |
 | `RATE_LIMIT_API_MAX` | `30000` | General API rate limit (requests per 60 min) |
@@ -110,12 +111,15 @@ curl http://localhost:3000/health | python3 -m json.tool
 
 # Dashboard statistics
 curl http://localhost:3000/api/status/overview | python3 -m json.tool
+
+# Uncached timing metadata (countdown sync)
+curl http://localhost:3000/api/status/timing | python3 -m json.tool
 ```
 
 ### Offices and advisories
 
 ```bash
-# All 300 offices
+# All 302 offices
 curl http://localhost:3000/api/offices | python3 -c \
   "import json,sys; d=json.load(sys.stdin); print(d['count'], 'offices')"
 

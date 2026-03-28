@@ -96,7 +96,7 @@ npm test
 
 Tests are in `backend/tests/`. Unit tests are in `tests/unit/`, integration tests in `tests/integration/`.
 
-The **UI verification script** (`scripts/ui-verify.sh`) validates all 9 frontend pages are served correctly, all 8 API dependencies return valid responses, and key data integrity constraints hold (300 offices loaded, active advisories present, severity values, filter impact levels, specific office lookup). Run it against a live server — it does not start its own.
+The **UI verification script** (`scripts/ui-verify.sh`) validates all 10 frontend pages are served correctly, all 8 API dependencies return valid responses, and key data integrity constraints hold (302 offices loaded, active advisories present, severity values, filter impact levels, specific office lookup). Run it against a live server — it does not start its own.
 
 The CI pipeline runs backend linting, `npm audit --audit-level=high`, backend Jest tests, and Playwright E2E tests on every push and PR via GitHub Actions.
 
@@ -183,7 +183,7 @@ docs: add JSDoc to page-advisories.js (closes #128)
 
 ## Project Context
 
-Storm Scout is a weather advisory dashboard monitoring 300 office locations across all 50 US states. It ingests NOAA weather advisories every 15 minutes, matches them to offices by UGC zone codes, and surfaces operational impact through a browser-based dashboard.
+Storm Scout is a weather advisory dashboard monitoring 302 office locations across all 50 US states. It ingests NOAA weather advisories every 15 minutes, matches them to offices by UGC zone codes, and surfaces operational impact through a browser-based dashboard.
 
 The project is designed as a reference implementation demonstrating:
 - Production-quality Node.js + Express API patterns
