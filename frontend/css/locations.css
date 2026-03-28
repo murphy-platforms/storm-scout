@@ -42,6 +42,25 @@
 .state-section-heading {
     font-size: 1.1rem;
     margin-top: 0.5rem;
+    border-left: 4px solid transparent;
+    padding-left: 0.75rem;
+    transition: border-color var(--transition-slow), color var(--transition-slow);
+}
+
+/* All offices enabled — green left border (matches enabled card pattern) */
+.state-section-heading.state-all-enabled {
+    border-left-color: var(--ss-green);
+}
+
+/* Some offices disabled — neutral left border */
+.state-section-heading.state-partial {
+    border-left-color: #ffc107;
+}
+
+/* All offices disabled — muted text and gray left border */
+.state-section-heading.state-all-disabled {
+    border-left-color: #dee2e6;
+    color: #595f66;
 }
 
 .state-section-heading .badge {

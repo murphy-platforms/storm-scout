@@ -363,6 +363,16 @@ function updateStateCounter(stateCode) {
         counter.innerHTML = `<i class="bi ${icon}"></i> ${enabled}/${total}`;
         counter.className = `badge ${enabled === total ? 'bg-success' : enabled === 0 ? 'bg-secondary' : 'bg-warning text-dark'}`;
     }
+
+    // Update heading visual hierarchy
+    const heading = document.querySelector(`[data-state-heading="${CSS.escape(stateCode)}"]`);
+    if (heading) {
+        const { enabled, total } = LocationFilters.getStateCount(stateCode);
+        heading.classList.remove('state-all-enabled', 'state-partial', 'state-all-disabled');
+        heading.classList.add(
+            enabled === total ? 'state-all-enabled' : enabled === 0 ? 'state-all-disabled' : 'state-partial'
+        );
+    }
 }
 
 /**
@@ -404,11 +414,17 @@ function renderLocations() {
         const badgeClass = enabled === total ? 'bg-success' : enabled === 0 ? 'bg-secondary' : 'bg-warning text-dark';
         const badgeIcon = enabled === total ? 'bi-check-circle-fill' : enabled === 0 ? 'bi-x-circle' : 'bi-dash-circle';
 
+        const stateClass =
+            enabled === total ? 'state-all-enabled' : enabled === 0 ? 'state-all-disabled' : 'state-partial';
+
         // State section heading (flat, always visible — matches filters.html pattern)
         htmlContent += html`
             <div class="row mb-2" id="heading-${safeState}">
                 <div class="col-12">
-                    <h4 class="state-section-heading border-bottom pb-2 ${raw(enabled === 0 ? 'text-muted' : '')}">
+                    <h4
+                        class="state-section-heading border-bottom pb-2 ${raw(stateClass)}"
+                        data-state-heading="${safeState}"
+                    >
                         <span class="badge ${raw(badgeClass)} me-2" id="state-count-${safeState}"
                             >${raw(`<i class="bi ${badgeIcon}"></i>`)}
                             ${raw(String(enabled))}/${raw(String(total))}</span
