@@ -73,6 +73,13 @@
     vertical-align: middle;
 }
 
+/* Station info line — truncate long station names with ellipsis */
+.station-info {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Search input focus state */
 #locationSearch:focus {
     border-color: var(--ss-green);
