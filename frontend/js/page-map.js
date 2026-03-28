@@ -61,9 +61,10 @@ function debugStep(text) {
 
 async function loadMapData() {
     try {
-        debugStep('Starting: AlertFilters.init()');
-        const filtersLoaded = await AlertFilters.init();
-        debugStep('AlertFilters.init() returned: ' + filtersLoaded);
+        debugStep('Starting: LocationFilters.init() + AlertFilters.init()');
+        const [locLoaded, filtersLoaded] = await Promise.all([LocationFilters.init(), AlertFilters.init()]);
+        debugStep('LocationFilters.init() returned: ' + locLoaded + ', AlertFilters.init() returned: ' + filtersLoaded);
+        if (!locLoaded) console.warn('Location filters unavailable — showing all locations');
         if (!filtersLoaded) throw new Error('Alert filter initialization failed');
         updateFilterIndicator();
 
@@ -87,8 +88,9 @@ async function loadMapData() {
             observationsMap[obs.office_code] = obs;
         });
 
-        debugStep('Filtering advisories...');
-        const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
+        debugStep('Filtering advisories (location → alert type)...');
+        const locationFiltered = LocationFilters.filterAdvisoriesByLocation(allAdvisories);
+        const filteredAdvisories = AlertFilters.filterAdvisories(locationFiltered);
         debugStep('filteredAdvisories: ' + filteredAdvisories.length);
 
         // Show filter warning if alerts are hidden

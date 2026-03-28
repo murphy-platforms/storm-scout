@@ -60,7 +60,8 @@ async function loadOffices() {
         const filteredData = applyFiltersToOffices(offices, advisories);
 
         // Show filter warning if alerts are hidden
-        const filteredAdvisories = AlertFilters.filterAdvisories(advisories);
+        const locationFilteredAdvisories = LocationFilters.filterAdvisoriesByLocation(advisories);
+        const filteredAdvisories = AlertFilters.filterAdvisories(locationFilteredAdvisories);
         renderFilterWarning(advisories, filteredAdvisories);
 
         renderOffices(filteredData);
@@ -93,8 +94,9 @@ async function loadOffices() {
  *                         are returned.
  */
 function applyFiltersToOffices(offices, advisories) {
-    // Filter advisories based on user preferences
-    const filteredAdvisories = AlertFilters.filterAdvisories(advisories);
+    // Filter advisories: location filter → alert type filter
+    const locationFiltered = LocationFilters.filterAdvisoriesByLocation(advisories);
+    const filteredAdvisories = AlertFilters.filterAdvisories(locationFiltered);
 
     // Aggregate advisories by office with deduplication
     const aggregatedOffices = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
@@ -357,11 +359,12 @@ function updateFilterIndicator() {
     if (!row || !AlertFilters.alertTypesByLevel) return;
     document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
     document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
-    row.classList.toggle('d-none', !AlertFilters.hasActiveFilters());
+    const hasFilters = AlertFilters.hasActiveFilters() || LocationFilters.hasActiveFilters();
+    row.classList.toggle('d-none', !hasFilters);
 }
 
-// Initialize filters then load offices
-AlertFilters.init().then(async () => {
+// Initialize both filter modules then load offices
+Promise.all([LocationFilters.init(), AlertFilters.init()]).then(async () => {
     updateFilterIndicator();
     await loadOffices();
     // Apply URL parameters after offices are loaded

@@ -1,0 +1,68 @@
+/* Location settings page styles
+ * Reuses the same card pattern as filters.css for visual consistency.
+ */
+
+.location-card {
+    transition: all var(--transition-slow);
+    border: 2px solid transparent;
+    border-left-width: 4px;
+}
+
+.location-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* Enabled state - white background with green border */
+.location-card:not(.disabled) {
+    background-color: #ffffff;
+    border-left-color: var(--ss-green);
+}
+
+/* Disabled state - gray background */
+.location-card.disabled {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Keep text visually dimmed without using opacity (which reduces contrast below WCAG AA) */
+.location-card.disabled .card-body {
+    color: #595f66; /* ~5.2:1 on #f8f9fa — exceeds WCAG AA 4.5:1 */
+}
+.location-card.disabled .form-check-label,
+.location-card.disabled p.text-muted {
+    color: #595f66 !important;
+}
+
+.location-card.disabled .form-check-input {
+    opacity: 1 !important;
+}
+
+/* Accordion header styling */
+.accordion-button:not(.collapsed) {
+    background-color: rgba(27, 40, 69, 0.05);
+    color: var(--ss-navy);
+}
+
+.accordion-button:focus {
+    border-color: var(--ss-green);
+    box-shadow: 0 0 0 0.25rem rgba(122, 182, 72, 0.25);
+}
+
+/* Search input focus state */
+#locationSearch:focus {
+    border-color: var(--ss-green);
+    box-shadow: 0 0 0 0.25rem rgba(122, 182, 72, 0.25);
+}
+
+/* Green toggle when checked (mirrors filters.css — not loaded on this page) */
+.form-check-input:checked {
+    background-color: var(--ss-green);
+    border-color: var(--ss-green);
+}
+
+/* State count badges in accordion headers */
+.accordion-button .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.45rem;
+}

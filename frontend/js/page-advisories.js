@@ -90,7 +90,8 @@ async function loadAdvisories() {
         });
 
         allAdvisoriesUnfiltered = data;
-        allAdvisories = data;
+        // Apply location filter before any other filtering
+        allAdvisories = LocationFilters.filterAdvisoriesByLocation(data);
 
         // Populate state filter
         const states = [...new Set(data.map((a) => a.state))].sort();
@@ -574,11 +575,12 @@ function updateFilterIndicator() {
     if (!row || !AlertFilters.alertTypesByLevel) return;
     document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
     document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
-    row.classList.toggle('d-none', !AlertFilters.hasActiveFilters());
+    const hasFilters = AlertFilters.hasActiveFilters() || LocationFilters.hasActiveFilters();
+    row.classList.toggle('d-none', !hasFilters);
 }
 
-// Initialize: Load filter configs then load advisories
-AlertFilters.init().then(() => {
+// Initialize both filter modules then load advisories
+Promise.all([LocationFilters.init(), AlertFilters.init()]).then(() => {
     updateFilterIndicator();
     loadAdvisories();
     // Apply URL parameters after advisories are loaded
