@@ -64,7 +64,7 @@ function applyTimingMetadata(timingData, fallbackOverviewData = null) {
 
     const hasTimingPayload = Boolean(timingData && typeof timingData === 'object');
     const effectiveLastUpdated = hasTimingPayload
-        ? timingData.last_updated ?? null
+        ? (timingData.last_updated ?? null)
         : fallbackOverviewData?.last_updated || null;
     const effectiveInterval =
         timingData?.update_interval_minutes ||
