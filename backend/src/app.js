@@ -13,7 +13,7 @@ const path = require('path');
 const config = require('./config/config');
 const { getDatabase } = require('./config/database');
 const IngestionEvent = require('./models/ingestionEvent');
-const { apiLimiter, writeLimiter, authLimiter, spaFallbackLimiter } = require('./middleware/rateLimiter');
+const { apiLimiter, writeLimiter, authLimiter, spaFallbackLimiter, healthLimiter } = require('./middleware/rateLimiter');
 const { requireApiKey } = require('./middleware/apiKey');
 const { metricsMiddleware, mountMetricsEndpoint } = require('./middleware/metrics');
 
@@ -205,7 +205,7 @@ mountMetricsEndpoint(app, requireApiKey);
 // Includes basic ingestion status so frontend polling can detect cycle completion.
 const { getIngestionStatus } = require('./ingestion/noaa-ingestor');
 
-app.get('/health', async (req, res) => {
+app.get('/health', healthLimiter, async (req, res) => {
     let status = 'ok';
     try {
         const db = getDatabase();
