@@ -131,11 +131,20 @@ async function loadData() {
  * @returns {void}
  */
 function loadPreferences() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        currentFilters = JSON.parse(saved);
-    } else {
-        // Use default preset
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                currentFilters = parsed;
+            } else {
+                applyPreset(DEFAULT_PRESET, false);
+            }
+        } else {
+            applyPreset(DEFAULT_PRESET, false);
+        }
+    } catch (e) {
+        console.warn('[AlertFilters] localStorage unavailable or corrupt:', e.message);
         applyPreset(DEFAULT_PRESET, false);
     }
 }

@@ -202,10 +202,10 @@ function getActionBadge(action) {
         return '<span class="badge bg-secondary" title="No VTEC action code">-</span>';
     }
     const config = VTEC_ACTION_CONFIG[action] || {
-        label: action,
+        label: escapeHtml(action),
         class: 'bg-secondary',
         icon: '',
-        title: `Action: ${action}`
+        title: `Action: ${escapeHtml(action)}`
     };
     return `<span class="badge ${config.class}" title="${config.title}">${config.icon} ${config.label}</span>`;
 }
@@ -222,10 +222,10 @@ function getActionBadgeWithTime(advisory) {
     }
     const config = {
         ...(VTEC_ACTION_CONFIG[advisory.vtec_action] || {
-            label: advisory.vtec_action,
+            label: escapeHtml(advisory.vtec_action),
             class: 'bg-secondary',
             icon: '',
-            title: `Action: ${advisory.vtec_action}`
+            title: `Action: ${escapeHtml(advisory.vtec_action)}`
         })
     };
     if (advisory.vtec_action === 'NEW') {
