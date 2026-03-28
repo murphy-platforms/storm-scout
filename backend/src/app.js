@@ -13,7 +13,13 @@ const path = require('path');
 const config = require('./config/config');
 const { getDatabase } = require('./config/database');
 const IngestionEvent = require('./models/ingestionEvent');
-const { apiLimiter, writeLimiter, authLimiter, spaFallbackLimiter, healthLimiter } = require('./middleware/rateLimiter');
+const {
+    apiLimiter,
+    writeLimiter,
+    authLimiter,
+    spaFallbackLimiter,
+    healthLimiter
+} = require('./middleware/rateLimiter');
 const { requireApiKey } = require('./middleware/apiKey');
 const { metricsMiddleware, mountMetricsEndpoint } = require('./middleware/metrics');
 
