@@ -3598,5 +3598,29 @@
     "ugc_codes": "[\"NVZ020\",\"NVC003\"]",
     "office_code": "89109",
     "observation_station": "KLAS"
+  },
+  {
+    "name": "Foggy Creek",
+    "city": "Crescent City",
+    "state": "CA",
+    "latitude": 41.908,
+    "longitude": -124.0766,
+    "county": "Del Norte County",
+    "cwa": "EKA",
+    "ugc_codes": "[\"CAZ001\",\"CAC015\"]",
+    "office_code": "95531",
+    "observation_station": "KCEC"
+  },
+  {
+    "name": "Mox Mox",
+    "city": "Columbia Falls",
+    "state": "MT",
+    "latitude": 48.4644,
+    "longitude": -114.7559,
+    "county": "Flathead County",
+    "cwa": "MSO",
+    "ugc_codes": "[\"MTZ002\",\"MTC029\"]",
+    "office_code": "59912",
+    "observation_station": "KGPI"
   }
 ]

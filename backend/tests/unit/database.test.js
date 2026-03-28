@@ -25,8 +25,8 @@ describe('offices.json data integrity', () => {
     }
   });
 
-  test('all 300 offices are present', () => {
-    expect(offices.length).toBe(300);
+  test('all 302 offices are present', () => {
+    expect(offices.length).toBe(302);
   });
 });
 
