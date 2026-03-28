@@ -55,27 +55,39 @@
             </div>
         </div>
 
-        <!-- Quick Actions -->
+        <!-- Quick Presets -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Quick Actions</h5>
-                        <p class="text-muted mb-3">Bulk-enable or disable locations, then fine-tune individual offices below</p>
-                        <div class="d-flex flex-wrap align-items-center gap-2">
-                            <button type="button" class="btn btn-outline-success" id="enableAllBtn">
-                                <i class="bi bi-check-all"></i> Enable All
+                        <h5 class="card-title">Quick Presets</h5>
+                        <p class="text-muted mb-3">Apply a preset region or customize individual offices below</p>
+                        <div class="btn-group flex-wrap" role="group">
+                            <button type="button" class="btn btn-outline-success" data-location-preset="ALL">
+                                <i class="bi bi-globe"></i> All Locations
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" id="disableAllBtn">
-                                <i class="bi bi-x-lg"></i> Disable All
+                            <button type="button" class="btn btn-outline-primary" data-location-preset="CONUS">
+                                <i class="bi bi-map"></i> Continental US
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" id="resetDefaultsBtn">
-                                <i class="bi bi-arrow-clockwise"></i> Reset to Defaults
+                            <button type="button" class="btn btn-outline-primary" data-location-preset="EAST_COAST">
+                                <i class="bi bi-sunrise"></i> East Coast
                             </button>
-                            <button type="button" class="btn btn-success" id="savePrefsBtn">
-                                <i class="bi bi-check-circle"></i> Save Preferences
+                            <button type="button" class="btn btn-outline-primary" data-location-preset="GULF_COAST">
+                                <i class="bi bi-water"></i> Gulf Coast
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-location-preset="TORNADO_ALLEY">
+                                <i class="bi bi-tornado"></i> Tornado Alley
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-location-preset="HURRICANE">
+                                <i class="bi bi-tropical-storm"></i> Hurricane Zone
                             </button>
                         </div>
+                        <button type="button" class="btn btn-outline-secondary ms-3" id="resetDefaultsBtn">
+                            <i class="bi bi-arrow-clockwise"></i> Reset to Defaults
+                        </button>
+                        <button type="button" class="btn btn-success ms-2" id="savePrefsBtn">
+                            <i class="bi bi-check-circle"></i> Save Preferences
+                        </button>
                     </div>
                 </div>
             </div>
@@ -86,7 +98,7 @@
             <div class="col-12">
                 <div class="alert alert-info" role="alert">
                     <i class="bi bi-geo-alt"></i>
-                    <strong>Monitoring:</strong> <span id="activeLocationStatus">Loading...</span> |
+                    <strong>Active Preset:</strong> <span id="activeLocationStatus">Loading...</span> |
                     <strong>Enabled Locations:</strong> <span id="enabledLocationCount">0</span> of <span id="totalLocationCount">0</span>
                 </div>
             </div>

@@ -25,6 +25,44 @@
 let searchTerm = '';
 let dirty = false;
 
+// Non-CONUS state/territory codes (excluded by Continental US preset)
+const NON_CONUS = ['AK', 'HI', 'PR', 'GU', 'VI', 'AS', 'MP'];
+
+// Geographic presets — state-code arrays, no backend needed
+const LOCATION_PRESETS = {
+    ALL: {
+        name: 'All Locations',
+        icon: 'bi-globe',
+        states: null // null = enable all
+    },
+    CONUS: {
+        name: 'Continental US',
+        icon: 'bi-map',
+        states: null, // computed at apply time: all states minus NON_CONUS
+        excludeStates: NON_CONUS
+    },
+    EAST_COAST: {
+        name: 'East Coast',
+        icon: 'bi-sunrise',
+        states: ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA', 'DE', 'MD', 'DC', 'VA', 'WV', 'NC', 'SC', 'GA', 'FL']
+    },
+    GULF_COAST: {
+        name: 'Gulf Coast',
+        icon: 'bi-water',
+        states: ['TX', 'LA', 'MS', 'AL', 'FL']
+    },
+    TORNADO_ALLEY: {
+        name: 'Tornado Alley',
+        icon: 'bi-tornado',
+        states: ['TX', 'OK', 'KS', 'NE', 'SD', 'ND', 'IA', 'MO']
+    },
+    HURRICANE: {
+        name: 'Hurricane Zone',
+        icon: 'bi-tropical-storm',
+        states: ['FL', 'GA', 'SC', 'NC', 'VA', 'TX', 'LA', 'MS', 'AL', 'PR', 'VI', 'GU']
+    }
+};
+
 // US state name lookup for display
 const STATE_NAMES = {
     AL: 'Alabama',
@@ -183,8 +221,73 @@ function disableAllLocations() {
  */
 function resetToDefaults() {
     if (confirm("Reset all locations to enabled? You'll need to save to keep changes.")) {
-        enableAllLocations();
+        applyLocationPreset('ALL');
     }
+}
+
+/**
+ * Apply a geographic preset — enables offices in the preset's states, disables the rest.
+ * @param {string} presetName - Key from LOCATION_PRESETS
+ */
+function applyLocationPreset(presetName) {
+    const preset = LOCATION_PRESETS[presetName];
+    if (!preset) return;
+
+    if (preset.states === null && !preset.excludeStates) {
+        // "All Locations" — enable everything
+        LocationFilters.enableAll();
+    } else {
+        // Start with all disabled, then enable matching states
+        LocationFilters.disableAll();
+        const allStates = LocationFilters.getStates();
+        const targetStates = preset.states
+            ? preset.states
+            : allStates.filter((s) => !preset.excludeStates.includes(s));
+        targetStates.forEach((state) => LocationFilters.enableByState(state));
+    }
+
+    markDirty();
+    renderLocations();
+    updateStatus();
+}
+
+/**
+ * Detect which preset matches the current filter configuration.
+ * @returns {string} Matching preset name or 'Custom'
+ */
+function getActivePresetName() {
+    const allStates = LocationFilters.getStates();
+
+    for (const [key, preset] of Object.entries(LOCATION_PRESETS)) {
+        let targetStates;
+        if (preset.states === null && !preset.excludeStates) {
+            // "All" preset — check if everything is enabled
+            if (LocationFilters.isFullView()) return preset.name;
+            continue;
+        } else if (preset.states === null && preset.excludeStates) {
+            // "CONUS" — all minus excluded
+            targetStates = allStates.filter((s) => !preset.excludeStates.includes(s));
+        } else {
+            targetStates = preset.states;
+        }
+
+        // Check: every target state fully enabled, every non-target state fully disabled
+        const enabledStates = new Set();
+        allStates.forEach((state) => {
+            const { enabled, total } = LocationFilters.getStateCount(state);
+            if (enabled === total && total > 0) enabledStates.add(state);
+        });
+
+        const targetSet = new Set(targetStates);
+        if (
+            targetSet.size === enabledStates.size &&
+            [...targetSet].every((s) => enabledStates.has(s))
+        ) {
+            return preset.name;
+        }
+    }
+
+    return 'Custom';
 }
 
 /**
@@ -381,7 +484,7 @@ function updateStatus() {
 
     document.getElementById('enabledLocationCount').textContent = enabled;
     document.getElementById('totalLocationCount').textContent = total;
-    document.getElementById('activeLocationStatus').textContent = LocationFilters.getFilterStatus();
+    document.getElementById('activeLocationStatus').textContent = getActivePresetName();
 }
 
 /**
@@ -416,6 +519,11 @@ function jumpToState(stateCode) {
 // Event delegation for dynamically generated elements
 // ---------------------------------------------------------------------------
 document.addEventListener('click', function (e) {
+    // Preset buttons
+    if (e.target.closest('[data-location-preset]')) {
+        const preset = e.target.closest('[data-location-preset]').dataset.locationPreset;
+        applyLocationPreset(preset);
+    }
     // State-level toggle buttons
     if (e.target.closest('[data-toggle-state]')) {
         const btn = e.target.closest('[data-toggle-state]');
@@ -433,8 +541,6 @@ document.addEventListener('change', function (e) {
 });
 
 // Static button event listeners
-document.getElementById('enableAllBtn').addEventListener('click', enableAllLocations);
-document.getElementById('disableAllBtn').addEventListener('click', disableAllLocations);
 document.getElementById('resetDefaultsBtn').addEventListener('click', resetToDefaults);
 document.getElementById('savePrefsBtn').addEventListener('click', savePreferences);
 
