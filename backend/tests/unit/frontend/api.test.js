@@ -28,6 +28,22 @@ describe('frontend api.js', () => {
         expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
+    test('getOverview forceRefresh bypasses localStorage cache and fetches fresh data', async () => {
+        localStorage.setItem('cache:overview', JSON.stringify({ data: { total_offices: 1 }, ts: Date.now() }));
+        global.fetch.mockResolvedValue({
+            json: async () => ({ success: true, data: { total_offices: 300 } })
+        });
+
+        const fresh = await API.getOverview({ forceRefresh: true });
+
+        expect(fresh.total_offices).toBe(300);
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+        expect(global.fetch).toHaveBeenCalledWith(
+            'api/status/overview',
+            expect.objectContaining({ cache: 'no-store', signal: expect.any(Object) })
+        );
+    });
+
     test('getActiveAdvisories bypasses corrupt localStorage cache and refetches', async () => {
         localStorage.setItem('cache:advisories', 'not-json');
         global.fetch.mockResolvedValue({
@@ -58,6 +74,29 @@ describe('frontend api.js', () => {
 
         expect(first).toEqual(second);
         expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    test('getTiming fetches uncached timing metadata', async () => {
+        global.fetch.mockResolvedValue({
+            json: async () => ({
+                success: true,
+                data: {
+                    server_time: '2026-03-21T19:00:00.000Z',
+                    last_updated: '2026-03-21T18:45:00.000Z',
+                    update_interval_minutes: 15,
+                    ingestion_active: false,
+                    next_scheduled_update_at: '2026-03-21T19:15:00.000Z'
+                }
+            })
+        });
+
+        const timing = await API.getTiming();
+
+        expect(timing.server_time).toBe('2026-03-21T19:00:00.000Z');
+        expect(global.fetch).toHaveBeenCalledWith(
+            'api/status/timing',
+            expect.objectContaining({ cache: 'no-store', signal: expect.any(Object) })
+        );
     });
 
     test('fetchWithTimeout rejects when request exceeds timeout', async () => {
