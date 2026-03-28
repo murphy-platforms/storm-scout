@@ -74,6 +74,35 @@ async function handleIngestionResult(error) {
     }
 }
 
+let lastTimeoutAt = null;
+
+/**
+ * Run ingestNOAAData with an overall timeout.
+ * Uses AbortController to cancel in-flight observation fetches on timeout.
+ * @param {number} timeoutMs - Maximum duration for the ingestion cycle
+ * @returns {Promise<Object>} Ingestion result or throws on timeout
+ */
+async function runIngestionWithTimeout(timeoutMs) {
+    const controller = new AbortController();
+    const { signal } = controller;
+    let timer;
+
+    const timeoutPromise = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+            controller.abort();
+            reject(new Error(`Ingestion cycle exceeded ${Math.round(timeoutMs / 1000)}s timeout`));
+        }, timeoutMs);
+        if (timer.unref) timer.unref();
+    });
+
+    try {
+        return await Promise.race([ingestNOAAData({ signal }), timeoutPromise]);
+    } finally {
+        clearTimeout(timer);
+        controller.abort();
+    }
+}
+
 /**
  * Start the ingestion scheduler
  */
@@ -101,12 +130,15 @@ function startScheduler() {
         isIngesting = true;
         const stopTimer = ingestionCycleDuration.startTimer();
         try {
-            const result = await ingestNOAAData();
+            const result = await runIngestionWithTimeout(config.ingestion.maxDurationMs);
             if (result && result.advisoriesCreated) {
                 ingestionAdvisoriesTotal.inc(result.advisoriesCreated);
             }
             await handleIngestionResult(null);
         } catch (error) {
+            if (error.message?.includes('timeout')) {
+                lastTimeoutAt = new Date().toISOString();
+            }
             await handleIngestionResult(error);
         } finally {
             stopTimer();
@@ -164,9 +196,14 @@ function startScheduler() {
     // setTimeout(5000) approach).
     console.log('Running initial ingestion...');
     isIngesting = true;
-    ingestNOAAData()
+    runIngestionWithTimeout(config.ingestion.maxDurationMs)
         .then(() => handleIngestionResult(null))
-        .catch((error) => handleIngestionResult(error))
+        .catch((error) => {
+            if (error.message?.includes('timeout')) {
+                lastTimeoutAt = new Date().toISOString();
+            }
+            return handleIngestionResult(error);
+        })
         .finally(async () => {
             isIngesting = false;
 
@@ -214,7 +251,9 @@ function getSchedulerStatus() {
             running: scheduledTask !== null,
             inProgress: isIngesting,
             consecutiveFailures,
-            intervalMinutes: config.ingestion.intervalMinutes
+            intervalMinutes: config.ingestion.intervalMinutes,
+            maxDurationMs: config.ingestion.maxDurationMs,
+            lastTimeoutAt
         },
         snapshot: {
             running: snapshotTask !== null,
@@ -229,5 +268,7 @@ module.exports = {
     startScheduler,
     stopScheduler,
     getSchedulerStatus,
-    waitForIngestionIdle
+    waitForIngestionIdle,
+    // Exposed for testing
+    _testing: { runIngestionWithTimeout }
 };

@@ -36,7 +36,7 @@ jest.mock('../../src/models/officeStatus', () => ({
 jest.mock('../../src/ingestion/noaa-ingestor', () => ({
   ingestNOAAData:       jest.fn(),
   getLastIngestionTime: jest.fn().mockResolvedValue({ lastUpdated: '2026-03-14T12:00:00Z' }),
-  getIngestionStatus:   jest.fn()
+  getIngestionStatus:   jest.fn().mockReturnValue({ active: false, startedAt: null })
 }));
 
 jest.mock('../../src/utils/cache', () => ({
@@ -240,6 +240,8 @@ describe('GET /health', () => {
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ok');
     expect(res.body).toHaveProperty('timestamp');
+    expect(res.body).toHaveProperty('ingestion');
+    expect(res.body.ingestion).toHaveProperty('active');
   });
 
   test('returns 503 degraded when database query fails', async () => {

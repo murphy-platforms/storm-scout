@@ -110,6 +110,15 @@ describe('requestWithRetry', () => {
         await expect(promise).rejects.toEqual(serverError);
         expect(fn).toHaveBeenCalledTimes(3);
     });
+
+    test('should propagate ERR_CANCELED immediately without retrying', async () => {
+        const cancelError = new Error('canceled');
+        cancelError.code = 'ERR_CANCELED';
+        const fn = jest.fn().mockRejectedValue(cancelError);
+
+        await expect(requestWithRetry(fn, 'test')).rejects.toThrow('canceled');
+        expect(fn).toHaveBeenCalledTimes(1);
+    });
 });
 
 describe('Circuit breaker state transitions', () => {
@@ -537,7 +546,7 @@ describe('getLatestObservation', () => {
 
         return apiClient.getLatestObservation('KORD').then((result) => {
             expect(result).toEqual(mockObs);
-            expect(mockClient.get).toHaveBeenCalledWith('/stations/KORD/observations/latest');
+            expect(mockClient.get).toHaveBeenCalledWith('/stations/KORD/observations/latest', { signal: undefined });
         });
     });
 

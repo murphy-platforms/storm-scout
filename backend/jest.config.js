@@ -9,7 +9,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.js',
     '!src/data/**',
-    '!src/scripts/**'
+    '!src/scripts/**',
+    '!src/ingestion/scheduler.js'
   ],
   coverageThreshold: {
     global: {

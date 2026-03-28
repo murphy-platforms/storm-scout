@@ -43,7 +43,8 @@ const config = {
     // Ingestion configuration
     ingestion: {
         enabled: process.env.INGESTION_ENABLED === 'true',
-        intervalMinutes: parseInt(process.env.INGESTION_INTERVAL_MINUTES) || 15
+        intervalMinutes: parseInt(process.env.INGESTION_INTERVAL_MINUTES) || 15,
+        maxDurationMs: parseInt(process.env.INGESTION_MAX_DURATION_MS) || 10 * 60 * 1000 // 10 min default
     },
 
     // NOAA API configuration
