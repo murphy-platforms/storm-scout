@@ -5,14 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <!-- Analytics: add your own tracking implementation with appropriate consent mechanism -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Configure which NOAA alert types Storm Scout monitors. Choose from 96 advisory types across 5 impact levels with built-in filter presets.">
-    <title>Storm Scout - Filter Configuration</title>
+    <meta name="description" content="Configure which monitored locations Storm Scout includes in dashboard views. Enable or disable individual offices by state.">
+    <title>Storm Scout - Location Settings</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css?v=1.11.0">
     <link rel="stylesheet" href="css/tooltips.css?v=1.11.0">
     <link rel="stylesheet" href="css/mobile.css?v=1.11.0">
-    <link rel="stylesheet" href="css/filters.css?v=1.11.0">
+    <link rel="stylesheet" href="css/locations.css?v=1.11.0">
 </head>
 <body>
     <a class="skip-to-content" href="#main-content">Skip to main content</a>
@@ -31,8 +31,8 @@
                     <li class="nav-item"><a class="nav-link" href="offices.html">Offices Impacted</a></li>
                     <li class="nav-item"><a class="nav-link" href="map.html">Map View</a></li>
                     <li class="nav-item"><a class="nav-link" href="notices.html">Government/Local Notices</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="filters.html">Alert Filters</a></li>
-                    <li class="nav-item"><a class="nav-link" href="locations.html">Location Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="filters.html">Alert Filters</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="locations.html">Location Settings</a></li>
                     <li class="nav-item"><a class="nav-link" href="sources.html">Sources</a></li>
                     <li class="nav-item"><a class="nav-link" href="https://github.com/murphy-platforms/storm-scout" target="_blank" rel="noopener noreferrer" title="View on GitHub"><i class="bi bi-github"></i></a></li>
                 </ul>
@@ -43,8 +43,8 @@
     <div id="main-content" class="container-fluid mt-4">
         <div class="row mb-4">
             <div class="col-12">
-                <h1>Alert Filter Configuration</h1>
-                <p class="text-muted">Customize which NOAA weather alert types you want to see</p>
+                <h1><i class="bi bi-geo-alt"></i> Location Settings</h1>
+                <p class="text-muted">Choose which monitored locations appear in your dashboard views</p>
             </div>
         </div>
 
@@ -60,54 +60,62 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Quick Presets</h5>
-                        <p class="text-muted mb-3">Apply a preset filter or customize individual alerts below</p>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-success" data-preset="CUSTOM">
-                                <i class="bi bi-gear"></i> Office Default
+                        <h5 class="card-title">Quick Actions</h5>
+                        <p class="text-muted mb-3">Bulk-enable or disable locations, then fine-tune individual offices below</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <button type="button" class="btn btn-outline-success" id="enableAllBtn">
+                                <i class="bi bi-check-all"></i> Enable All
                             </button>
-                            <button type="button" class="btn btn-outline-primary" data-preset="OPERATIONS">
-                                <i class="bi bi-briefcase"></i> Operations View
+                            <button type="button" class="btn btn-outline-secondary" id="disableAllBtn">
+                                <i class="bi bi-x-lg"></i> Disable All
                             </button>
-                            <button type="button" class="btn btn-outline-primary" data-preset="EXECUTIVE">
-                                <i class="bi bi-star"></i> Executive Summary
+                            <button type="button" class="btn btn-outline-secondary" id="resetDefaultsBtn">
+                                <i class="bi bi-arrow-clockwise"></i> Reset to Defaults
                             </button>
-                            <button type="button" class="btn btn-outline-primary" data-preset="SAFETY">
-                                <i class="bi bi-shield-check"></i> Safety Focus
-                            </button>
-                            <button type="button" class="btn btn-outline-primary" data-preset="FULL">
-                                <i class="bi bi-list"></i> Full View
+                            <button type="button" class="btn btn-success" id="savePrefsBtn">
+                                <i class="bi bi-check-circle"></i> Save Preferences
                             </button>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary ms-3" id="resetDefaultsBtn">
-                            <i class="bi bi-arrow-clockwise"></i> Reset to Defaults
-                        </button>
-                        <button type="button" class="btn btn-success ms-2" id="savePrefsBtn">
-                            <i class="bi bi-check-circle"></i> Save Preferences
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Filter Status -->
+        <!-- Location Status -->
         <div class="row mb-3">
             <div class="col-12">
                 <div class="alert alert-info" role="alert">
-                    <i class="bi bi-info-circle"></i>
-                    <strong>Active Filter:</strong> <span id="activeFilterStatus">Loading...</span> |
-                    <strong>Enabled Alerts:</strong> <span id="enabledCount">0</span> of <span id="totalCount">0</span>
+                    <i class="bi bi-geo-alt"></i>
+                    <strong>Monitoring:</strong> <span id="activeLocationStatus">Loading...</span> |
+                    <strong>Enabled Locations:</strong> <span id="enabledLocationCount">0</span> of <span id="totalLocationCount">0</span>
                 </div>
             </div>
         </div>
 
-        <!-- Alert Types by Impact Level -->
-        <div id="alertTypesContainer">
+        <!-- Search & Jump-to-State -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="locationSearch"
+                           placeholder="Search by name, city, or zip code..."
+                           aria-label="Search locations">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" id="stateJumpFilter" aria-label="Jump to state">
+                    <option value="">Jump to state...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Locations by State (Accordion) -->
+        <div id="locationsContainer">
             <div class="text-center py-4">
                 <span class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </span>
-                <p class="mt-2 text-muted">Loading alert types...</p>
+                <p class="mt-2 text-muted">Loading locations...</p>
             </div>
         </div>
     </div>
@@ -138,6 +146,7 @@
     <script src="js/version.js?v=1.11.0"></script>
     <script src="js/utils.js?v=1.11.0"></script>
     <script src="js/update-banner.js?v=1.11.0"></script>
-    <script src="js/page-filters.js?v=1.11.0"></script>
+    <script src="js/location-filters.js?v=1.11.0"></script>
+    <script src="js/page-locations.js?v=1.11.0"></script>
 </body>
 </html>

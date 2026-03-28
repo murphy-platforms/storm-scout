@@ -119,6 +119,14 @@ else
   fail "Frontend not served (HTTP $FRONTEND_RESPONSE) — check STATIC_FILES_PATH in .env"
 fi
 
+# Test locations page serving
+LOCATIONS_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/locations.html")
+if [ "$LOCATIONS_RESPONSE" = "200" ]; then
+  pass "Location Settings page served at /locations.html"
+else
+  fail "Location Settings page not served (HTTP $LOCATIONS_RESPONSE)"
+fi
+
 # [SEC-3] Automated innerHTML XSS check (excludes archive/ and innerHTML = '' clearing)
 echo ""
 echo "Checking frontend XSS safety..."

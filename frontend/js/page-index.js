@@ -135,8 +135,9 @@ async function loadOverview() {
             countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        // Apply user's filter preferences
-        const filteredAdvisories = AlertFilters.filterAdvisories(allAdvisories);
+        // Apply user's filter preferences (location filter → alert type filter)
+        const locationFiltered = LocationFilters.filterAdvisoriesByLocation(allAdvisories);
+        const filteredAdvisories = AlertFilters.filterAdvisories(locationFiltered);
 
         // Aggregate by office with deduplication
         const aggregatedSites = OfficeAggregator.aggregateByOffice(filteredAdvisories, { deduplicateZones: true });
@@ -485,16 +486,18 @@ function updateFilterIndicator() {
     filterCount.textContent = enabled;
     filterTotal.textContent = total;
 
-    // Show indicator only if filters are active (not showing all)
-    if (AlertFilters.hasActiveFilters()) {
+    // Show indicator if alert filters or location filters are active
+    const hasFilters = AlertFilters.hasActiveFilters() || LocationFilters.hasActiveFilters();
+    if (hasFilters) {
         indicator.classList.remove('d-none');
     } else {
         indicator.classList.add('d-none');
     }
 }
 
-// Initialize filters then load overview
-AlertFilters.init().then(() => {
+// Initialize both filter modules then load overview
+Promise.all([LocationFilters.init(), AlertFilters.init()]).then(([locLoaded]) => {
+    if (!locLoaded) console.warn('Location filters unavailable — showing all locations');
     updateFilterIndicator();
     loadOverview();
 });

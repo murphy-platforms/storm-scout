@@ -263,7 +263,7 @@ function formatDate(dateString) {
 function renderEmptyHtml(icon, title, subtitle) {
     const sub = subtitle ? `<p class="mb-0 small mt-1">${escapeHtml(subtitle)}</p>` : '';
     return `<div class="col-12 text-center py-5 text-muted">
-        <i class="bi bi-${icon} fs-1 d-block mb-2"></i>
+        <i class="bi bi-${escapeHtml(icon)} fs-1 d-block mb-2"></i>
         <strong>${escapeHtml(title)}</strong>${sub}
     </div>`;
 }
