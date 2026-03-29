@@ -22,9 +22,9 @@
             integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk"
             crossorigin="anonymous"
         />
-        <link rel="stylesheet" href="css/style.css?v=1.11.0" />
-        <link rel="stylesheet" href="css/tooltips.css?v=1.11.0" />
-        <link rel="stylesheet" href="css/mobile.css?v=1.11.0" />
+        <link rel="stylesheet" href="css/style.css?v=2.1.2" />
+        <link rel="stylesheet" href="css/tooltips.css?v=2.1.2" />
+        <link rel="stylesheet" href="css/mobile.css?v=2.1.2" />
     </head>
     <body>
         <a class="skip-to-content" href="#main-content">Skip to main content</a>
@@ -69,11 +69,14 @@
                 </div>
             </div>
 
-            <!-- Filter Indicator -->
+            <!-- Filter Indicators -->
             <div class="row mb-2 d-none" id="filterIndicatorRow">
                 <div class="col-12">
-                    <a href="filters.html" class="badge badge-filter-active text-decoration-none" title="Click to manage filters">
+                    <a href="filters.html" id="alertFilterIndicator" class="badge badge-filter-active text-decoration-none" title="Click to manage alert filters">
                         <i class="bi bi-funnel-fill"></i> Filters Active: <span id="filterCount">--</span> of <span id="filterTotal">--</span> alert types
+                    </a>
+                    <a href="locations.html" id="locationFilterIndicator" class="badge badge-filter-active text-decoration-none ms-2 d-none" title="Click to manage location filters">
+                        <i class="bi bi-geo-alt-fill"></i> Locations: <span id="locationFilterCount">--</span> of <span id="locationFilterTotal">--</span>
                     </a>
                 </div>
             </div>
@@ -104,8 +107,9 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-3">
+            <!-- Search -->
+            <div class="row mb-2">
+                <div class="col-12 col-md-6">
                     <label for="searchBox" class="visually-hidden">Search by office code or name</label>
                     <input
                         type="text"
@@ -114,7 +118,11 @@
                         placeholder="Search by office code or name..."
                     />
                 </div>
-                <div class="col-md-3">
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="row mb-3">
+                <div class="col-md-4">
                     <label for="viewFilter" class="visually-hidden">Filter view</label>
                     <select class="form-select" id="viewFilter" title="Filter advisories">
                         <option value="all" selected>All Alerts</option>
@@ -131,13 +139,13 @@
                         </optgroup>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="stateFilter" class="visually-hidden">Filter by state</label>
                     <select class="form-select" id="stateFilter">
                         <option value="">All States</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="sortOrder" class="visually-hidden">Sort order</label>
                     <select class="form-select" id="sortOrder">
                         <option value="severity" selected>Sort by Severity</option>
@@ -214,7 +222,7 @@
                             <i class="bi bi-info-circle"></i> About &amp; Data Sources
                         </a>
                         <a href="filters.html" class="text-muted text-decoration-none me-3">
-                            <i class="bi bi-sliders"></i> Filter Settings
+                            <i class="bi bi-funnel"></i> Alert Filters
                         </a>
                         <a href="https://github.com/murphy-platforms/storm-scout" class="text-muted text-decoration-none" target="_blank" rel="noopener noreferrer">
                             <i class="bi bi-github"></i> GitHub
@@ -229,13 +237,13 @@
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
             crossorigin="anonymous"
         ></script>
-        <script src="js/api.js?v=1.11.0"></script>
-        <script src="js/version.js?v=1.11.0"></script>
-        <script src="js/utils.js?v=1.11.0"></script>
-        <script src="js/location-filters.js?v=1.11.0"></script>
-        <script src="js/alert-filters.js?v=1.11.0"></script>
-        <script src="js/update-banner.js?v=1.11.0"></script>
-        <script src="js/aggregation.js?v=1.11.0"></script>
-        <script src="js/page-advisories.js?v=1.11.0"></script>
+        <script src="js/api.js?v=2.1.2"></script>
+        <script src="js/version.js?v=2.1.2"></script>
+        <script src="js/utils.js?v=2.1.2"></script>
+        <script src="js/location-filters.js?v=2.1.2"></script>
+        <script src="js/alert-filters.js?v=2.1.2"></script>
+        <script src="js/update-banner.js?v=2.1.2"></script>
+        <script src="js/aggregation.js?v=2.1.2"></script>
+        <script src="js/page-advisories.js?v=2.1.2"></script>
     </body>
 </html>

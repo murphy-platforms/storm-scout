@@ -573,10 +573,28 @@ function applyURLParameters() {
 function updateFilterIndicator() {
     const row = document.getElementById('filterIndicatorRow');
     if (!row || !AlertFilters.alertTypesByLevel) return;
-    document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
-    document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
-    const hasFilters = AlertFilters.hasActiveFilters() || LocationFilters.hasActiveFilters();
-    row.classList.toggle('d-none', !hasFilters);
+
+    const hasAlertFilters = AlertFilters.hasActiveFilters();
+    const hasLocationFilters = LocationFilters.hasActiveFilters();
+
+    // Show row if either filter type is active
+    row.classList.toggle('d-none', !hasAlertFilters && !hasLocationFilters);
+
+    // Alert filter badge
+    const alertBadge = document.getElementById('alertFilterIndicator');
+    if (alertBadge) {
+        document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
+        document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
+        alertBadge.classList.toggle('d-none', !hasAlertFilters);
+    }
+
+    // Location filter badge
+    const locBadge = document.getElementById('locationFilterIndicator');
+    if (locBadge && LocationFilters.getTotalCount() > 0) {
+        document.getElementById('locationFilterCount').textContent = LocationFilters.getEnabledCount();
+        document.getElementById('locationFilterTotal').textContent = LocationFilters.getTotalCount();
+        locBadge.classList.toggle('d-none', !hasLocationFilters);
+    }
 }
 
 // Initialize both filter modules then load advisories

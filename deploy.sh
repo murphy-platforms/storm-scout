@@ -211,8 +211,26 @@ deploy_frontend() {
         log_info "Safe frontend sync mode (no --delete). Set FRONTEND_RSYNC_DELETE=true to enable destructive cleanup."
     fi
 
+    # Stamp ?v= cache-busting strings with the current version (from package.json)
+    # Uses a temp copy to avoid mutating the local working tree.
+    local version
+    version=$(node -p "require('./backend/package.json').version" 2>/dev/null || echo "0.0.0")
+    if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$'; then
+        log_error "Invalid version string in package.json: $version"
+        exit 1
+    fi
+
+    local staging_dir
+    staging_dir=$(mktemp -d)
+    trap 'rm -rf "$staging_dir"' RETURN
+    cp -a "$LOCAL_FRONTEND" "$staging_dir/frontend"
+
+    log_info "Stamping cache-buster strings to v=${version}..."
+    find "$staging_dir/frontend" -name "*.html" -exec \
+        sed -i '' "s|?v=[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*|?v=${version}|g" {} +
+
     rsync "${rsync_opts[@]}" \
-        "$LOCAL_FRONTEND" "$SERVER_USER@$SERVER_HOST:$SERVER_FRONTEND_PATH/"
+        "$staging_dir/frontend/" "$SERVER_USER@$SERVER_HOST:$SERVER_FRONTEND_PATH/"
 
     # Warn immediately if Passenger routing file is missing after sync.
     if ! $SSH_CMD "$SERVER_USER@$SERVER_HOST" "[ -f \"$SERVER_FRONTEND_PATH/.htaccess\" ]"; then

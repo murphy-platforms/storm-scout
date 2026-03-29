@@ -305,9 +305,40 @@ document.getElementById('toggleMinor').addEventListener('click', () => toggleFil
 function updateFilterIndicator() {
     const row = document.getElementById('filterIndicatorRow');
     if (!row || !AlertFilters.alertTypesByLevel) return;
-    document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
-    document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
-    row.classList.toggle('d-none', !AlertFilters.hasActiveFilters());
+
+    const hasAlertFilters = AlertFilters.hasActiveFilters();
+    const hasLocationFilters = LocationFilters.hasActiveFilters();
+
+    // Show row if either filter type is active
+    row.classList.toggle('d-none', !hasAlertFilters && !hasLocationFilters);
+
+    // Alert filter badge
+    const alertBadge = document.getElementById('alertFilterIndicator');
+    if (alertBadge) {
+        document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
+        document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
+        alertBadge.classList.toggle('d-none', !hasAlertFilters);
+    }
+
+    // Location filter badge
+    const locBadge = document.getElementById('locationFilterIndicator');
+    if (locBadge && LocationFilters.getTotalCount() > 0) {
+        document.getElementById('locationFilterCount').textContent = LocationFilters.getEnabledCount();
+        document.getElementById('locationFilterTotal').textContent = LocationFilters.getTotalCount();
+        locBadge.classList.toggle('d-none', !hasLocationFilters);
+    }
+
+    // Map location filter banner
+    const locBanner = document.getElementById('locationFilterBanner');
+    if (locBanner) {
+        locBanner.classList.toggle('d-none', !hasLocationFilters);
+        if (hasLocationFilters && LocationFilters.getTotalCount() > 0) {
+            const shownEl = document.getElementById('mapLocationShown');
+            const totalEl = document.getElementById('mapLocationTotal');
+            if (shownEl) shownEl.textContent = LocationFilters.getEnabledCount();
+            if (totalEl) totalEl.textContent = LocationFilters.getTotalCount();
+        }
+    }
 }
 
 // Initialize

@@ -145,7 +145,7 @@ const StormScoutExport = {
      * Generate Incident Report
      */
     generateIncidentReport(data, timestamp) {
-        const { offices, advisories } = data;
+        const { offices, advisories, filterScope } = data;
 
         return `
 <!DOCTYPE html>
@@ -174,7 +174,7 @@ const StormScoutExport = {
     <div class="header-info">
         <strong>Generated:</strong> ${escapeHtml(timestamp)}<br>
         <strong>Report Type:</strong> Incident Report<br>
-        <strong>Offices Affected:</strong> ${offices.length}
+        <strong>Offices Affected:</strong> ${offices.length}${filterScope ? `<br>\n        <strong>Filter Scope:</strong> ${escapeHtml(filterScope)}` : ''}
     </div>
 
     <h2>Impacted Offices Summary</h2>
@@ -249,7 +249,7 @@ const StormScoutExport = {
      * Generate Office Impact Summary
      */
     generateOfficeSummary(data, timestamp) {
-        const { offices } = data;
+        const { offices, filterScope } = data;
 
         // Group by severity
         const bySeverity = {
@@ -284,7 +284,7 @@ const StormScoutExport = {
 </head>
 <body>
     <h1>📊 Storm Scout - Office Impact Summary</h1>
-    <p><strong>Generated:</strong> ${escapeHtml(timestamp)}</p>
+    <p><strong>Generated:</strong> ${escapeHtml(timestamp)}${filterScope ? `<br>\n    <strong>Filter Scope:</strong> ${escapeHtml(filterScope)}` : ''}</p>
 
     <div class="summary-grid">
         <div class="summary-card extreme">
@@ -337,7 +337,7 @@ const StormScoutExport = {
      * Generate Executive Briefing
      */
     generateExecutiveBriefing(data, timestamp) {
-        const { offices, overview } = data;
+        const { offices, overview, filterScope } = data;
 
         const extremeSevereOffices = offices.filter(
             (s) => s.highest_severity === 'Extreme' || s.highest_severity === 'Severe'
@@ -362,7 +362,7 @@ const StormScoutExport = {
 </head>
 <body>
     <h1>📋 Storm Scout - Executive Briefing</h1>
-    <p><strong>Date/Time:</strong> ${escapeHtml(timestamp)}</p>
+    <p><strong>Date/Time:</strong> ${escapeHtml(timestamp)}${filterScope ? `<br>\n    <strong>Filter Scope:</strong> ${escapeHtml(filterScope)}` : ''}</p>
 
     <div class="executive-summary">
         <h2>Executive Summary</h2>
