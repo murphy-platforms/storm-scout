@@ -516,13 +516,15 @@ function renderLocations() {
                                     ? `<p class="text-muted small mb-0 mt-1 station-info"><i class="bi bi-broadcast"></i> ${safeStation}${safeStationName ? ` &mdash; ${safeStationName}` : ''}</p>`
                                     : ''
                             )}
-                            ${raw((() => {
-                                const sev = advisorySeverityMap[String(office.id)];
-                                if (!sev) return '';
-                                const safeSev = escapeHtml(sev);
-                                const cls = escapeHtml(sev.toLowerCase());
-                                return `<p class="mb-0 mt-2"><span class="badge severity-${cls}"><i class="bi bi-cloud-lightning-fill"></i> ${safeSev} Advisory</span></p>`;
-                            })())}
+                            ${raw(
+                                (() => {
+                                    const sev = advisorySeverityMap[String(office.id)];
+                                    if (!sev) return '';
+                                    const safeSev = escapeHtml(sev);
+                                    const cls = escapeHtml(sev.toLowerCase());
+                                    return `<p class="mb-0 mt-2"><span class="badge severity-${cls}"><i class="bi bi-cloud-lightning-fill"></i> ${safeSev} Advisory</span></p>`;
+                                })()
+                            )}
                         </div>
                     </div>
                 </div>

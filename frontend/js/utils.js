@@ -543,7 +543,9 @@ function checkSettingsAppliedToast() {
         localStorage.removeItem('stormScout_settingsApplied');
         const message = TOAST_MAP[signal];
         if (message) showToast(message, 'info');
-    } catch (e) { /* localStorage unavailable */ }
+    } catch (e) {
+        /* localStorage unavailable */
+    }
 }
 
 // Auto-run on DOMContentLoaded so every page picks up the signal

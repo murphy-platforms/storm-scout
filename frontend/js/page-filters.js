@@ -184,7 +184,11 @@ function updateSaveButton() {
  */
 function savePreferences() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(currentFilters));
-    try { localStorage.setItem('stormScout_settingsApplied', 'alert'); } catch (e) { /* ignore */ }
+    try {
+        localStorage.setItem('stormScout_settingsApplied', 'alert');
+    } catch (e) {
+        /* ignore */
+    }
 
     dirty = false;
     updateSaveButton();
