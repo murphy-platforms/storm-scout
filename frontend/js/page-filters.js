@@ -184,6 +184,7 @@ function updateSaveButton() {
  */
 function savePreferences() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(currentFilters));
+    try { localStorage.setItem('stormScout_settingsApplied', 'alert'); } catch (e) { /* ignore */ }
 
     dirty = false;
     updateSaveButton();
@@ -408,15 +409,31 @@ function updateStatus() {
     document.getElementById('totalCount').textContent = totalTypes;
 
     // Determine which preset matches current config (if any)
-    let matchingPreset = 'Custom';
-    for (const [name, preset] of Object.entries(filterPresets)) {
+    let matchingPresetName = 'Custom';
+    let matchingPresetKey = null;
+    for (const [key, preset] of Object.entries(filterPresets)) {
         if (isPresetMatch(preset)) {
-            matchingPreset = preset.name;
+            matchingPresetName = preset.name;
+            matchingPresetKey = key;
             break;
         }
     }
 
-    document.getElementById('activeFilterStatus').textContent = matchingPreset;
+    document.getElementById('activeFilterStatus').textContent = matchingPresetName;
+
+    // Highlight the matching preset button
+    document.querySelectorAll('[data-preset]').forEach((btn) => {
+        const key = btn.dataset.preset;
+        const isActive = key === matchingPresetKey;
+        btn.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-success');
+        if (isActive) {
+            btn.classList.add('btn-success');
+        } else if (key === 'CUSTOM') {
+            btn.classList.add('btn-outline-success');
+        } else {
+            btn.classList.add('btn-outline-primary');
+        }
+    });
 }
 
 /**
@@ -486,3 +503,4 @@ window.addEventListener('beforeunload', function (e) {
 
 // Initialize
 loadData();
+initHelpIconKeyboard();

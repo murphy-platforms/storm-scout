@@ -528,6 +528,27 @@ function formatLocalTime(isoString) {
     });
 }
 
+/**
+ * Check for a pending "settings applied" signal from filters or locations pages.
+ * If present, show a success toast and clear the signal so it only fires once.
+ * Uses a whitelist map to prevent localStorage-injected values from reaching the DOM.
+ */
+function checkSettingsAppliedToast() {
+    const TOAST_MAP = {
+        alert: 'Alert filter preferences applied.',
+        location: 'Location preferences applied.'
+    };
+    try {
+        const signal = localStorage.getItem('stormScout_settingsApplied');
+        localStorage.removeItem('stormScout_settingsApplied');
+        const message = TOAST_MAP[signal];
+        if (message) showToast(message, 'info');
+    } catch (e) { /* localStorage unavailable */ }
+}
+
+// Auto-run on DOMContentLoaded so every page picks up the signal
+document.addEventListener('DOMContentLoaded', checkSettingsAppliedToast);
+
 // Export for Node.js / Jest testing
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {

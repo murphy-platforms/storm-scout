@@ -623,24 +623,25 @@ function renderSiteSummary(site, obs) {
  * @returns {void}
  */
 function updateFilterIndicator() {
-    const indicator = document.getElementById('filterIndicator');
-    const filterCount = document.getElementById('filterCount');
-    const filterTotal = document.getElementById('filterTotal');
+    if (!AlertFilters.alertTypesByLevel) return;
 
-    if (!indicator || !AlertFilters.alertTypesByLevel) return;
+    const hasAlertFilters = AlertFilters.hasActiveFilters();
+    const hasLocationFilters = LocationFilters.hasActiveFilters();
 
-    const enabled = AlertFilters.getEnabledCount();
-    const total = AlertFilters.getTotalAlertTypes();
+    // Alert filter badge
+    const alertIndicator = document.getElementById('filterIndicator');
+    if (alertIndicator) {
+        document.getElementById('filterCount').textContent = AlertFilters.getEnabledCount();
+        document.getElementById('filterTotal').textContent = AlertFilters.getTotalAlertTypes();
+        alertIndicator.classList.toggle('d-none', !hasAlertFilters);
+    }
 
-    filterCount.textContent = enabled;
-    filterTotal.textContent = total;
-
-    // Show indicator if alert filters or location filters are active
-    const hasFilters = AlertFilters.hasActiveFilters() || LocationFilters.hasActiveFilters();
-    if (hasFilters) {
-        indicator.classList.remove('d-none');
-    } else {
-        indicator.classList.add('d-none');
+    // Location filter badge
+    const locIndicator = document.getElementById('locationFilterIndicator');
+    if (locIndicator && LocationFilters.getTotalCount() > 0) {
+        document.getElementById('locationFilterCount').textContent = LocationFilters.getEnabledCount();
+        document.getElementById('locationFilterTotal').textContent = LocationFilters.getTotalCount();
+        locIndicator.classList.toggle('d-none', !hasLocationFilters);
     }
 }
 
@@ -657,35 +658,63 @@ initHelpIconKeyboard();
 // Helper function to export current dashboard data
 window.exportCurrentData = async function (type) {
     try {
+        // Gate on filter initialization
+        if (!LocationFilters.allOffices.length) {
+            showToast('Filters still loading — please try again in a moment.', 'warning');
+            return;
+        }
+
         // Fetch current data
         const overviewResponse = await fetch(`${API_BASE_URL}/status/overview`);
         const officesResponse = await fetch(`${API_BASE_URL}/status/offices-impacted`);
-        const advisoriesResponse = await fetch(`${API_BASE_URL}/advisories/active`);
+        const rawAdvisories = await API.getActiveAdvisories();
 
-        if (!overviewResponse.ok || !officesResponse.ok || !advisoriesResponse.ok) {
+        if (!overviewResponse.ok || !officesResponse.ok) {
             throw new Error('Failed to fetch data for export');
         }
 
         const overview = await overviewResponse.json();
         const officesData = await officesResponse.json();
-        const advisories = await advisoriesResponse.json();
 
-        // Extract offices array from the response
-        const offices = Array.isArray(officesData.data) ? officesData.data : [];
+        // Apply filter pipeline: LocationFilters → AlertFilters (documented order)
+        const advArray = Array.isArray(rawAdvisories) ? rawAdvisories : rawAdvisories?.data || [];
+        const locationFiltered = LocationFilters.filterAdvisoriesByLocation(advArray);
+        const filteredAdvisories = AlertFilters.filterAdvisories(locationFiltered);
+
+        // Filter offices to only those with surviving advisories
+        const allOffices = Array.isArray(officesData.data) ? officesData.data : [];
+        const officeIdsWithAdvisories = new Set(filteredAdvisories.map((a) => a.office_id));
+        const filteredOffices = allOffices.filter((o) => officeIdsWithAdvisories.has(o.id));
+
+        // Build filter scope description for report headers
+        const scopeParts = [];
+        if (AlertFilters.hasActiveFilters()) {
+            scopeParts.push(`${AlertFilters.getEnabledCount()} of ${AlertFilters.getTotalAlertTypes()} alert types`);
+        }
+        if (LocationFilters.hasActiveFilters()) {
+            scopeParts.push(`${LocationFilters.getEnabledCount()} of ${LocationFilters.getTotalCount()} locations`);
+        }
+        const filterScope = scopeParts.length > 0 ? scopeParts.join(', ') : 'All data (no filters active)';
 
         // Export based on type
         switch (type) {
             case 'csv':
-                StormScoutExport.exportOfficesToCSV(offices);
+                StormScoutExport.exportOfficesToCSV(filteredOffices);
                 break;
             case 'executive':
-                StormScoutExport.generateHTMLReport({ offices, advisories, overview }, 'executive');
+                StormScoutExport.generateHTMLReport(
+                    { offices: filteredOffices, advisories: filteredAdvisories, overview, filterScope },
+                    'executive'
+                );
                 break;
             case 'incident':
-                StormScoutExport.generateHTMLReport({ offices, advisories }, 'incident');
+                StormScoutExport.generateHTMLReport(
+                    { offices: filteredOffices, advisories: filteredAdvisories, filterScope },
+                    'incident'
+                );
                 break;
             case 'summary':
-                StormScoutExport.generateHTMLReport({ offices }, 'summary');
+                StormScoutExport.generateHTMLReport({ offices: filteredOffices, filterScope }, 'summary');
                 break;
             default:
                 console.error('Unknown export type:', type);

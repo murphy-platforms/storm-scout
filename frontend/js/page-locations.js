@@ -25,6 +25,11 @@
 let searchTerm = '';
 let dirty = false;
 
+/** @type {Object<string, string>} office_id (string) → highest severity level */
+let advisorySeverityMap = {};
+
+const SEVERITY_RANK = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1 };
+
 // Non-CONUS state/territory codes (excluded by Continental US preset)
 const NON_CONUS = ['AK', 'HI', 'PR', 'GU', 'VI', 'AS', 'MP'];
 
@@ -148,8 +153,22 @@ const STATE_NAMES = {
  */
 async function loadData() {
     try {
-        const success = await LocationFilters.init();
+        const [success, advisories] = await Promise.all([
+            LocationFilters.init(),
+            API.getActiveAdvisories().catch(() => [])
+        ]);
         if (!success) throw new Error('Failed to initialize location filters');
+
+        // Build office → highest severity map (cached fetch, no extra network cost)
+        const advData = Array.isArray(advisories) ? advisories : advisories?.data || [];
+        advData.forEach((adv) => {
+            const key = String(adv.office_id);
+            const severity = typeof adv.severity === 'string' ? adv.severity : '';
+            const rank = SEVERITY_RANK[severity] || 0;
+            if (rank > (SEVERITY_RANK[advisorySeverityMap[key]] || 0)) {
+                advisorySeverityMap[key] = severity;
+            }
+        });
 
         renderLocations();
         updateStatus();
@@ -168,6 +187,7 @@ async function loadData() {
 function savePreferences() {
     try {
         localStorage.setItem(LocationFilters.STORAGE_KEY, JSON.stringify(LocationFilters.userFilters));
+        localStorage.setItem('stormScout_settingsApplied', 'location');
     } catch (e) {
         showToast('Unable to save preferences — localStorage may be full.', 'warning');
         return;
@@ -496,6 +516,13 @@ function renderLocations() {
                                     ? `<p class="text-muted small mb-0 mt-1 station-info"><i class="bi bi-broadcast"></i> ${safeStation}${safeStationName ? ` &mdash; ${safeStationName}` : ''}</p>`
                                     : ''
                             )}
+                            ${raw((() => {
+                                const sev = advisorySeverityMap[String(office.id)];
+                                if (!sev) return '';
+                                const safeSev = escapeHtml(sev);
+                                const cls = escapeHtml(sev.toLowerCase());
+                                return `<p class="mb-0 mt-2"><span class="badge severity-${cls}"><i class="bi bi-cloud-lightning-fill"></i> ${safeSev} Advisory</span></p>`;
+                            })())}
                         </div>
                     </div>
                 </div>
@@ -525,7 +552,24 @@ function updateStatus() {
 
     document.getElementById('enabledLocationCount').textContent = enabled;
     document.getElementById('totalLocationCount').textContent = total;
-    document.getElementById('activeLocationStatus').textContent = getActivePresetName();
+
+    const activeName = getActivePresetName();
+    document.getElementById('activeLocationStatus').textContent = activeName;
+
+    // Highlight the matching location preset button
+    document.querySelectorAll('[data-location-preset]').forEach((btn) => {
+        const key = btn.dataset.locationPreset;
+        const presetName = LOCATION_PRESETS[key]?.name;
+        const isActive = presetName === activeName;
+        btn.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-success');
+        if (isActive) {
+            btn.classList.add('btn-success');
+        } else if (key === 'ALL') {
+            btn.classList.add('btn-outline-success');
+        } else {
+            btn.classList.add('btn-outline-primary');
+        }
+    });
 }
 
 /**
@@ -609,3 +653,4 @@ window.addEventListener('beforeunload', function (e) {
 
 // Initialize
 loadData();
+initHelpIconKeyboard();
