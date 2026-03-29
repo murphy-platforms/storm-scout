@@ -14,35 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
-## [2.2.0] - 2026-03-29
-
-### Added
-
-- **#368 Location filter indicator badge** — Dashboard, advisories, offices, and map pages now show a "Locations: X of Y" badge when location filters are active, linking to Location Settings
-- **#368 Advisory context on Location Settings** — Office cards display severity badges for offices with active weather advisories (fetched via cached API call)
-- **#368 Preset button active state** — Active preset buttons on both Alert Filters and Location Settings pages now highlight with `btn-success`
-- **#368 Map location filter banner** — Info banner appears on the map page when location filters hide offices, showing count and link to settings
-- **#368 Export filter pipeline** — CSV and HTML exports now apply LocationFilters and AlertFilters; reports include a "Filter Scope" header line
-- **#368 Cross-page settings toast** — Toast notification confirms settings were applied when navigating away from Alert Filters or Location Settings
-- **#368 Help tooltips on settings pages** — Alert Filters and Location Settings pages now include help icon tooltips explaining global scope of settings
-
-### Changed
-
-- **#368 Footer label consistency** — "Filter Settings" renamed to "Alert Filters" with `bi-funnel` icon across all page footers
-- **#368 Advisories search layout** — Search input moved to its own full-width row above filter controls for better readability on mid-size screens
-- **#368 Version string normalization** — All `?v=` cache-busting strings unified; `deploy.sh` now auto-stamps from `package.json` with semver validation
-
-### Fixed
-
-- **#368 Map filter indicator bug** — `updateFilterIndicator()` on map page now checks `LocationFilters.hasActiveFilters()` (previously only checked alert filters)
-
-### Security
-
-- **P1** localStorage toast values whitelisted via fixed lookup map to prevent CSS class injection
-- **P2** Type guard on advisory severity data before string operations
-- **P3** Export function gated on filter initialization to prevent unfiltered data leakage
-- **P4** `deploy.sh` validates semver format before sed interpolation
-
 ## [2.1.2] - 2026-03-28
 
 ### Added
