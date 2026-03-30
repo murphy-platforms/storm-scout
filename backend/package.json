@@ -1,6 +1,6 @@
 {
   "name": "storm-scout-backend",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "releasedDate": "2026-03-29",
   "description": "Storm Scout backend API - Weather advisory dashboard for office locations",
   "main": "src/server.js",
