@@ -5,7 +5,7 @@
  * Countdown rendering, ingestion polling, and interval lifecycle.
  */
 
-const UpdateBanner = require('../../../../frontend/js/update-banner');
+const UpdateBanner = require('./update-banner');
 
 describe('frontend update-banner.js', () => {
     beforeEach(() => {
