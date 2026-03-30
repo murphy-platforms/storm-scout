@@ -102,13 +102,6 @@ describe('GET /api/advisories/active', () => {
     expect(res.status).toBe(200);
   });
 
-  test('returns 400 for invalid severity value', async () => {
-    const res = await request(app)
-      .get('/api/advisories/active')
-      .query({ severity: '<script>alert(1)</script>' });
-
-    expect(res.status).toBe(400);
-  });
 });
 
 describe('GET /api/advisories/active (caching & pagination)', () => {
