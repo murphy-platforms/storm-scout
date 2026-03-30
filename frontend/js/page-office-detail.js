@@ -51,11 +51,10 @@ async function loadOfficeDetail() {
         }
 
         // Load all advisories, offices, and observations
-        const [allAdvisories, allOffices, obsData] = await Promise.all([
-            API.getActiveAdvisories(),
-            API.getOffices(),
-            API.getObservations().catch(() => [])
-        ]);
+        const results = await Promise.allSettled([API.getActiveAdvisories(), API.getOffices(), API.getObservations()]);
+        const allAdvisories = settledValue(results, 0, [], 'Advisories');
+        const allOffices = settledValue(results, 1, [], 'Offices');
+        const obsData = settledValue(results, 2, [], 'Weather observations');
 
         // Find the office
         officeData = allOffices.find((s) => s.office_code === officeCode);

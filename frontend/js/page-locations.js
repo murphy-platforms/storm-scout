@@ -153,10 +153,9 @@ const STATE_NAMES = {
  */
 async function loadData() {
     try {
-        const [success, advisories] = await Promise.all([
-            LocationFilters.init(),
-            API.getActiveAdvisories().catch(() => [])
-        ]);
+        const results = await Promise.allSettled([LocationFilters.init(), API.getActiveAdvisories()]);
+        const success = settledValue(results, 0, false);
+        const advisories = settledValue(results, 1, [], 'Advisories');
         if (!success) throw new Error('Failed to initialize location filters');
 
         // Build office → highest severity map (cached fetch, no extra network cost)

@@ -31,20 +31,18 @@ let observationsMap = {};
 /**
  * Fetch all offices, active advisories, and weather observations in parallel,
  * then apply filters and render the initial view.
- * Promise.all is used so all three requests run concurrently — at 300 offices
- * sequential fetching would take 3× as long. Observation failures are caught
- * inline so the page still loads when the observations endpoint is unavailable.
+ * Promise.allSettled is used so all three requests run concurrently and partial
+ * failures show degraded banners instead of a blank page.
  *
  * @returns {Promise<void>}
  */
 async function loadOffices() {
     try {
         // Load all offices, advisories, and observations
-        const [offices, advisories, obsData] = await Promise.all([
-            API.getOffices(),
-            API.getActiveAdvisories(),
-            API.getObservations().catch(() => [])
-        ]);
+        const results = await Promise.allSettled([API.getOffices(), API.getActiveAdvisories(), API.getObservations()]);
+        const offices = settledValue(results, 0, [], 'Offices');
+        const advisories = settledValue(results, 1, [], 'Advisories');
+        const obsData = settledValue(results, 2, [], 'Weather observations');
 
         // Build observations lookup by office_code
         observationsMap = {};

@@ -73,15 +73,16 @@ function shouldIncludeAlertType(alertType, filterName) {
 /**
  * Fetch all active advisories and current weather observations, then
  * build the observations lookup map and trigger the initial render.
- * Advisories and observations are loaded in parallel via Promise.all to
- * minimise total wait time; an observation failure is non-fatal (caught
- * inline) so the page still loads if the observations endpoint is down.
+ * Advisories and observations are loaded in parallel via Promise.allSettled
+ * so partial failures show degraded banners instead of a blank page.
  *
  * @returns {Promise<void>}
  */
 async function loadAdvisories() {
     try {
-        const [data, obsData] = await Promise.all([API.getActiveAdvisories(), API.getObservations().catch(() => [])]);
+        const results = await Promise.allSettled([API.getActiveAdvisories(), API.getObservations()]);
+        const data = settledValue(results, 0, [], 'Advisories');
+        const obsData = settledValue(results, 1, [], 'Weather observations');
 
         // Build observations lookup by office_code
         observationsMap = {};
