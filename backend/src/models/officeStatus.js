@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Office Status Model
  * Data access layer for office_status table
@@ -5,13 +6,17 @@
  * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
+/** @typedef {import('../types').OfficeStatus} OfficeStatus */
+/** @typedef {import('../types').OfficeStatusWithOffice} OfficeStatusWithOffice */
+/** @typedef {import('../types').OfficeStatusData} OfficeStatusData */
+
 const { getDatabase } = require('../config/database');
 
 const OfficeStatusModel = {
     /**
      * Get all office statuses with office information
-     * @param {Object} filters - Optional filters (operational_status)
-     * @returns {Promise<Array>} Array of office status objects with office data
+     * @param {{operational_status?: string, state?: string}} filters - Optional filters
+     * @returns {Promise<OfficeStatusWithOffice[]>} Array of office status objects with office data
      */
     async getAll(filters = {}) {
         const db = getDatabase();
@@ -43,7 +48,7 @@ const OfficeStatusModel = {
     /**
      * Get status for a specific office
      * @param {number} officeId - Office ID
-     * @returns {Promise<Object|null>} Office status object or null
+     * @returns {Promise<OfficeStatusWithOffice|null>} Office status object or null
      */
     async getByOffice(officeId) {
         const db = getDatabase();
@@ -62,7 +67,7 @@ const OfficeStatusModel = {
     /**
      * Get offices by operational status
      * @param {string} status - Operational status
-     * @returns {Array} Array of office status objects
+     * @returns {Promise<OfficeStatusWithOffice[]>} Array of office status objects
      */
     getByStatus(status) {
         return this.getAll({ operational_status: status });
@@ -70,7 +75,7 @@ const OfficeStatusModel = {
 
     /**
      * Get impacted offices (Closed or At Risk)
-     * @returns {Promise<Array>} Array of impacted office objects
+     * @returns {Promise<Array<OfficeStatusWithOffice & {advisory_count: number}>>} Array of impacted office objects
      */
     async getImpacted() {
         const db = getDatabase();
@@ -97,13 +102,8 @@ const OfficeStatusModel = {
     /**
      * Update or create office status
      * @param {number} officeId - Office ID
-     * @param {Object} statusData - Status data object
-     * @param {string} statusData.operational_status - Operational status (open_normal, open_restricted, closed, pending)
-     * @param {string} statusData.weather_impact_level - Weather impact (green, yellow, orange, red)
-     * @param {string} statusData.reason - Legacy reason field
-     * @param {string} statusData.decision_by - Who made the operational decision
-     * @param {string} statusData.decision_reason - Reason for operational decision
-     * @returns {Promise<Object>} Updated office status
+     * @param {OfficeStatusData|string} statusData - Status data object (or legacy string status)
+     * @returns {Promise<OfficeStatusWithOffice|null>} Updated office status
      */
     async upsert(officeId, statusData) {
         const db = getDatabase();
@@ -176,7 +176,7 @@ const OfficeStatusModel = {
      * @param {string} operationalStatus - Operational status (open_normal, open_restricted, closed, pending)
      * @param {string} decisionBy - User who made the decision
      * @param {string} decisionReason - Reason for the decision
-     * @returns {Promise<Object>} Updated office status
+     * @returns {Promise<OfficeStatusWithOffice|null>} Updated office status
      */
     async setOperationalStatus(officeId, operationalStatus, decisionBy, decisionReason) {
         return this.upsert(officeId, {
@@ -188,7 +188,7 @@ const OfficeStatusModel = {
 
     /**
      * Get status count by operational status
-     * @returns {Promise<Array>} Array of {operational_status, count} objects
+     * @returns {Promise<Array<{operational_status: string, count: number}>>} Array of {operational_status, count} objects
      */
     async getCountByStatus() {
         const db = getDatabase();
@@ -213,7 +213,7 @@ const OfficeStatusModel = {
 
     /**
      * Get weather impact level counts
-     * @returns {Promise<Array>} Array of {weather_impact_level, count} objects
+     * @returns {Promise<Array<{weather_impact_level: string, count: number}>>} Array of {weather_impact_level, count} objects
      */
     async getCountByWeatherImpact() {
         const db = getDatabase();
@@ -234,7 +234,7 @@ const OfficeStatusModel = {
 
     /**
      * Bulk update operational status for multiple offices
-     * @param {Array<number>} officeIds - Array of office IDs
+     * @param {number[]} officeIds - Array of office IDs
      * @param {string} operationalStatus - Operational status
      * @param {string} decisionBy - User who made the decision
      * @param {string} decisionReason - Reason for the decision
@@ -261,7 +261,7 @@ const OfficeStatusModel = {
     /**
      * Get recently updated statuses
      * @param {number} limit - Max number of results
-     * @returns {Promise<Array>} Array of recently updated office statuses
+     * @returns {Promise<OfficeStatusWithOffice[]>} Array of recently updated office statuses
      */
     async getRecentlyUpdated(limit = 10) {
         const db = getDatabase();

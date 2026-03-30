@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Storm Scout Aggregation Logic - Phase 1
  * Groups advisories by office, deduplicates multi-zone alerts, calculates urgency
@@ -5,9 +6,18 @@
  * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
+/** @typedef {import('./types').Advisory} Advisory */
+/** @typedef {import('./types').DeduplicatedAdvisory} DeduplicatedAdvisory */
+/** @typedef {import('./types').AggregatedOffice} AggregatedOffice */
+/** @typedef {import('./types').SeverityGroups} SeverityGroups */
+/** @typedef {import('./types').SummaryStats} SummaryStats */
+/** @typedef {import('./types').FilterWarning} FilterWarning */
+
 const OfficeAggregator = {
     /**
      * Get severity rank for sorting (higher = more severe)
+     * @param {string} severity - "Extreme" | "Severe" | "Moderate" | "Minor" | "Unknown"
+     * @returns {number} Rank (0-4)
      */
     getSeverityRank(severity) {
         const ranks = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1, Unknown: 0 };
@@ -16,6 +26,8 @@ const OfficeAggregator = {
 
     /**
      * Calculate urgency score for prioritization
+     * @param {Advisory} advisory
+     * @returns {number} Urgency score (higher = more urgent)
      */
     calculateUrgency(advisory) {
         let score = 0;
@@ -46,6 +58,8 @@ const OfficeAggregator = {
     /**
      * Deduplicate multi-zone alerts
      * Groups alerts with same (office_id, advisory_type, severity, issued time window)
+     * @param {Advisory[]} advisories
+     * @returns {DeduplicatedAdvisory[]}
      */
     deduplicateMultiZone(advisories) {
         const dedupMap = new Map();
@@ -91,6 +105,9 @@ const OfficeAggregator = {
 
     /**
      * Group advisories by office and calculate summaries
+     * @param {Advisory[]} advisories
+     * @param {{deduplicateZones?: boolean}} [options]
+     * @returns {AggregatedOffice[]}
      */
     aggregateByOffice(advisories, options = {}) {
         const { deduplicateZones = true } = options;
@@ -186,6 +203,8 @@ const OfficeAggregator = {
     /**
      * Group offices by severity level for dashboard
      * Each severity maps to its own color matching Weather Impact Assessment
+     * @param {AggregatedOffice[]} offices
+     * @returns {SeverityGroups}
      */
     groupBySeverity(offices) {
         return {
@@ -198,6 +217,9 @@ const OfficeAggregator = {
 
     /**
      * Get summary statistics
+     * @param {Advisory[]} advisories
+     * @param {AggregatedOffice[]} offices
+     * @returns {SummaryStats}
      */
     getSummaryStats(advisories, offices) {
         return {
@@ -215,6 +237,9 @@ const OfficeAggregator = {
 
     /**
      * Check if filters are hiding critical alerts
+     * @param {Advisory[]} allAdvisories
+     * @param {Advisory[]} filteredAdvisories
+     * @returns {FilterWarning|null}
      */
     getFilterWarning(allAdvisories, filteredAdvisories) {
         const hiddenCount = allAdvisories.length - filteredAdvisories.length;

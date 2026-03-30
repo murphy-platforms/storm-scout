@@ -1,9 +1,19 @@
+// @ts-check
 /**
  * Storm Scout API Client
  * Handles all backend API requests
  *
  * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
+
+/** @typedef {import('./types').Advisory} Advisory */
+/** @typedef {import('./types').Office} Office */
+/** @typedef {import('./types').ImpactedOffice} ImpactedOffice */
+/** @typedef {import('./types').Notice} Notice */
+/** @typedef {import('./types').Observation} Observation */
+/** @typedef {import('./types').OverviewData} OverviewData */
+/** @typedef {import('./types').TimingData} TimingData */
+/** @typedef {import('./types').VersionInfo} VersionInfo */
 
 // Use a relative path so API calls work at any deployment subpath
 // (e.g. /stormscout/api/... or /api/... — the browser resolves relative
@@ -37,6 +47,7 @@ const API = {
     /**
      * Get app version and release date
      * Cached after first fetch
+     * @returns {Promise<VersionInfo|null>}
      */
     async getVersion() {
         if (_versionCache) return _versionCache;
@@ -54,6 +65,8 @@ const API = {
      * Cached in localStorage for 5 minutes to reduce redundant fetches on
      * page load and tab switches. Hard-refresh (Ctrl+Shift+R) bypasses cache.
      * Max staleness: 5-min client TTL + 15-min ingestion interval = 20 min.
+     * @param {{forceRefresh?: boolean}} [options]
+     * @returns {Promise<OverviewData>}
      */
     async getOverview(options = {}) {
         const { forceRefresh = false } = options;
@@ -92,6 +105,8 @@ const API = {
      * Cached in localStorage for 5 minutes to reduce redundant full-dataset
      * fetches on page load and tab switches.
      * Max staleness: 5-min client TTL + 15-min ingestion interval = 20 min.
+     * @param {{forceRefresh?: boolean}} [options]
+     * @returns {Promise<Advisory[]>}
      */
     async getActiveAdvisories(options = {}) {
         const { forceRefresh = false } = options;
@@ -127,6 +142,7 @@ const API = {
 
     /**
      * Get impacted offices (Closed or At Risk)
+     * @returns {Promise<ImpactedOffice[]>}
      */
     async getImpactedOffices() {
         const response = await fetchWithTimeout(`${API_BASE_URL}/status/offices-impacted`);
@@ -137,6 +153,7 @@ const API = {
 
     /**
      * Get all active government/local notices
+     * @returns {Promise<Notice[]>}
      */
     async getActiveNotices() {
         const response = await fetchWithTimeout(`${API_BASE_URL}/notices/active`);
@@ -149,6 +166,8 @@ const API = {
      * Get all current weather observations
      * Cached in localStorage for 5 minutes — observation data refreshes on
      * the same ingestion cycle as advisories.
+     * @param {{forceRefresh?: boolean}} [options]
+     * @returns {Promise<Observation[]>}
      */
     async getObservations(options = {}) {
         const { forceRefresh = false } = options;
@@ -184,6 +203,7 @@ const API = {
 
     /**
      * Get all offices
+     * @returns {Promise<Office[]>}
      */
     async getOffices() {
         const response = await fetchWithTimeout(`${API_BASE_URL}/offices`);
@@ -195,6 +215,7 @@ const API = {
     /**
      * Get authoritative timing metadata for update countdown synchronization.
      * Always bypasses browser caches.
+     * @returns {Promise<TimingData>}
      */
     async getTiming() {
         const response = await fetchWithTimeout(`${API_BASE_URL}/status/timing`, { cache: 'no-store' });
@@ -205,6 +226,8 @@ const API = {
 
     /**
      * Get trends for all offices (Phase 3)
+     * @param {number} [days=7]
+     * @returns {Promise<{success?: boolean, data?: Array<{[key: string]: unknown}>, status?: string, message?: string}>}
      */
     async getTrends(days = 7) {
         try {
@@ -221,6 +244,9 @@ const API = {
 
     /**
      * Get trend for a specific office (Phase 3)
+     * @param {number} officeId
+     * @param {number} [days=7]
+     * @returns {Promise<{success?: boolean, data?: {[key: string]: unknown}, status?: string, message?: string}>}
      */
     async getOfficeTrend(officeId, days = 7) {
         try {
@@ -237,6 +263,9 @@ const API = {
 
     /**
      * Get full history for an office (Phase 3)
+     * @param {number} officeId
+     * @param {number} [days=7]
+     * @returns {Promise<{success?: boolean, data?: {[key: string]: unknown}, status?: string, message?: string}>}
      */
     async getOfficeHistory(officeId, days = 7) {
         try {
@@ -257,8 +286,8 @@ const API = {
 
     /**
      * Get system-wide overview trends
-     * @param {number} days - Number of days of history (default 3)
-     * @returns {Promise} Trend data with severity counts, sites impacted, etc.
+     * @param {number} [days=3] - Number of days of history
+     * @returns {Promise<{success?: boolean, data?: {[key: string]: unknown}, status?: string, message?: string}>}
      */
     async getOverviewTrends(days = 3) {
         try {
@@ -272,8 +301,8 @@ const API = {
 
     /**
      * Get severity-specific trends for sparklines
-     * @param {number} days - Number of days of history (default 3)
-     * @returns {Promise} Severity trend data (critical, high, moderate, low)
+     * @param {number} [days=3] - Number of days of history
+     * @returns {Promise<{success?: boolean, data?: {[key: string]: unknown}, status?: string, message?: string}>}
      */
     async getSeverityTrends(days = 3) {
         try {
@@ -288,8 +317,8 @@ const API = {
     /**
      * Get per-office advisory count trends
      * @param {number} officeId - Office ID
-     * @param {number} days - Number of days of history (default 3)
-     * @returns {Promise} Office-specific trend data
+     * @param {number} [days=3] - Number of days of history
+     * @returns {Promise<{success?: boolean, data?: {[key: string]: unknown}, status?: string, message?: string}>}
      */
     async getOfficeTrends(officeId, days = 3) {
         try {
@@ -303,7 +332,7 @@ const API = {
 
     /**
      * Check if historical data is available and ready
-     * @returns {Promise} Data availability status
+     * @returns {Promise<{status: string, message?: string, recommendation?: string, [key: string]: unknown}>}
      */
     async getHistoricalDataAvailability() {
         try {
