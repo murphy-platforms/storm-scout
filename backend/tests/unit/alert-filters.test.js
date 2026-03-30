@@ -131,6 +131,18 @@ describe('CUSTOM (Office Default) Filter', () => {
   });
 });
 
+describe('getFilterConfig', () => {
+  test('returns filter config for a valid preset name', () => {
+    const config = getFilterConfig('OPERATIONS');
+    expect(config).not.toBeNull();
+    expect(config).toHaveProperty('includeCategories');
+  });
+
+  test('returns null for unknown preset name', () => {
+    expect(getFilterConfig('NONEXISTENT')).toBeNull();
+  });
+});
+
 describe('Other Filter Presets', () => {
   test('should have 5 presets', () => {
     const presets = Object.keys(getAllFilters());

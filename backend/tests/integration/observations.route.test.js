@@ -2,7 +2,7 @@
 
 /**
  * Integration tests for /api/observations routes
- * Covers cache-hit path and error handling (misc-routes handles basic happy/empty paths)
+ * Covers cache-hit path, not-found (404), and error handling
  */
 
 jest.mock('../../src/config/database', () => ({
@@ -115,6 +115,15 @@ describe('GET /api/observations/:officeCode (extended)', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.temperature_c).toBe(22.1);
     expect(res.body.data.observed_at).toBe('2026-03-15T15:00:00Z');
+  });
+
+  test('returns 404 when office not found', async () => {
+    Observation.getByOfficeCode.mockResolvedValue(null);
+
+    const res = await request(app).get('/api/observations/ZZZZ');
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
   });
 
   test('returns 500 on model error', async () => {
