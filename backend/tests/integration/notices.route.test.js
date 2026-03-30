@@ -2,7 +2,7 @@
 
 /**
  * Integration tests for /api/notices routes
- * Covers GET /, /stats, /:id (misc-routes.test.js handles /active)
+ * Covers GET /, /active, /stats, /:id
  */
 
 jest.mock('../../src/config/database', () => ({
@@ -154,9 +154,20 @@ describe('GET /api/notices/:id', () => {
   });
 });
 
-// ── GET /api/notices/active (error path) ───────────────────────────────
+// ── GET /api/notices/active ─────────────────────────────────────────────
 
-describe('GET /api/notices/active (error)', () => {
+describe('GET /api/notices/active', () => {
+  test('returns active notices', async () => {
+    Notice.getActive.mockResolvedValue([SAMPLE_NOTICE]);
+
+    const res = await request(app).get('/api/notices/active');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.count).toBe(1);
+  });
+
   test('returns 500 on error', async () => {
     Notice.getActive.mockRejectedValue(new Error('fail'));
 

@@ -31,7 +31,9 @@ module.exports = {
     'src/**/*.js',
     '!src/data/**',
     '!src/scripts/**',
-    '!src/ingestion/scheduler.js'
+    '!src/ingestion/scheduler.js',
+    '!src/middleware/partials.js', // Only active when STATIC_FILES_PATH is configured
+    '!src/types.js'               // JSDoc typedef declarations only — no runtime logic
   ],
   coverageThreshold: {
     global: {
