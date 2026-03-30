@@ -5,7 +5,7 @@
  * Cache behavior, timeout/error paths, and localStorage fallbacks.
  */
 
-const { API, fetchWithTimeout, __resetVersionCache } = require('../../../../frontend/js/api');
+const { API, fetchWithTimeout, __resetVersionCache } = require('./api');
 
 describe('frontend api.js', () => {
     beforeEach(() => {

@@ -9,7 +9,7 @@
 // LocationFilters expects API_BASE_URL as a global
 global.API_BASE_URL = 'api';
 
-const LocationFilters = require('../../../../frontend/js/location-filters');
+const LocationFilters = require('./location-filters');
 
 // ---------------------------------------------------------------------------
 // Mock office data (simulates what /api/offices returns)
@@ -175,7 +175,7 @@ describe('filterOffices', () => {
         LocationFilters.userFilters['4'] = false;
         const result = LocationFilters.filterOffices(MOCK_OFFICES);
         expect(result).toHaveLength(3);
-        expect(result.map(o => o.id)).toEqual([1, 2, 5]);
+        expect(result.map((o) => o.id)).toEqual([1, 2, 5]);
     });
 
     test('returns empty array when all disabled', () => {
@@ -201,7 +201,7 @@ describe('filterAdvisoriesByLocation', () => {
         const result = LocationFilters.filterAdvisoriesByLocation(MOCK_ADVISORIES);
         expect(result).toHaveLength(3);
         // Office 1 had 2 advisories — both removed
-        expect(result.every(a => a.office_id !== 1)).toBe(true);
+        expect(result.every((a) => a.office_id !== 1)).toBe(true);
     });
 
     test('returns empty when all locations disabled', () => {
@@ -348,9 +348,9 @@ describe('_reconcileNewOffices', () => {
         LocationFilters.allOffices = MOCK_OFFICES;
         // Simulate saved prefs with only 3 offices (2 new added)
         LocationFilters.userFilters = {
-            '1': true,
-            '2': false,
-            '3': true
+            1: true,
+            2: false,
+            3: true
         };
         LocationFilters._reconcileNewOffices();
         // Office 4 and 5 are new — should be enabled
@@ -364,9 +364,9 @@ describe('_reconcileNewOffices', () => {
     test('removes stale office IDs', () => {
         LocationFilters.allOffices = MOCK_OFFICES;
         LocationFilters.userFilters = {
-            '1': true,
-            '999': true,  // no longer in dataset
-            '888': false  // no longer in dataset
+            1: true,
+            999: true, // no longer in dataset
+            888: false // no longer in dataset
         };
         LocationFilters._reconcileNewOffices();
         expect(LocationFilters.userFilters['999']).toBeUndefined();
@@ -386,7 +386,7 @@ describe('loadUserPreferences', () => {
     });
 
     test('loads saved preferences from localStorage', () => {
-        const saved = { '1': true, '2': false, '3': true, '4': true, '5': true };
+        const saved = { 1: true, 2: false, 3: true, 4: true, 5: true };
         localStorage.setItem(LocationFilters.STORAGE_KEY, JSON.stringify(saved));
 
         LocationFilters.loadUserPreferences();
@@ -408,7 +408,7 @@ describe('loadUserPreferences', () => {
 
     test('reconciles new offices added since last save', () => {
         // Only 3 of 5 offices in saved prefs
-        const saved = { '1': true, '2': false, '3': true };
+        const saved = { 1: true, 2: false, 3: true };
         localStorage.setItem(LocationFilters.STORAGE_KEY, JSON.stringify(saved));
 
         LocationFilters.loadUserPreferences();
@@ -496,10 +496,7 @@ describe('filterAdvisoriesByLocation edge cases', () => {
     beforeEach(() => setupFilters(true));
 
     test('drops advisories without office_id', () => {
-        const advisories = [
-            ...MOCK_ADVISORIES,
-            { advisory_type: 'Heat Advisory', severity: 'Moderate' }
-        ];
+        const advisories = [...MOCK_ADVISORIES, { advisory_type: 'Heat Advisory', severity: 'Moderate' }];
         const result = LocationFilters.filterAdvisoriesByLocation(advisories);
         // The advisory without office_id should be dropped
         expect(result).toHaveLength(MOCK_ADVISORIES.length);
