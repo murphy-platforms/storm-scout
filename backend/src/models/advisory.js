@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Advisory Model - MySQL/MariaDB
  * Data access layer for advisories table
@@ -5,13 +6,18 @@
  * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
 
+/** @typedef {import('../types').Advisory} Advisory */
+/** @typedef {import('../types').AdvisoryWithOffice} AdvisoryWithOffice */
+/** @typedef {import('../types').AdvisoryFilters} AdvisoryFilters */
+/** @typedef {import('../types').AdvisoryExistingLookup} AdvisoryExistingLookup */
+
 const { getDatabase } = require('../config/database');
 
 const AdvisoryModel = {
     /**
      * Get all advisories with optional filters
-     * @param {Object} filters - Optional filters (status, severity, state, office_id, advisory_type)
-     * @returns {Promise<Array>} Array of advisory objects with office data
+     * @param {AdvisoryFilters} filters - Optional filters (status, severity, state, office_id, advisory_type)
+     * @returns {Promise<AdvisoryWithOffice[]>} Array of advisory objects with office data
      */
     async getAll(filters = {}) {
         const db = getDatabase();
@@ -75,8 +81,8 @@ const AdvisoryModel = {
 
     /**
      * Get active advisories only
-     * @param {Object} filters - Optional filters
-     * @returns {Promise<Array>} Array of active advisory objects
+     * @param {AdvisoryFilters} filters - Optional filters
+     * @returns {Promise<AdvisoryWithOffice[]>} Array of active advisory objects
      */
     async getActive(filters = {}) {
         return this.getAll({ ...filters, status: 'active' });
@@ -85,7 +91,7 @@ const AdvisoryModel = {
     /**
      * Get advisory by ID
      * @param {number} id - Advisory ID
-     * @returns {Promise<Object|null>} Advisory object or null
+     * @returns {Promise<AdvisoryWithOffice|null>} Advisory object or null
      */
     async getById(id) {
         const db = getDatabase();
@@ -110,7 +116,7 @@ const AdvisoryModel = {
      * Get advisories for a specific office
      * @param {number} officeId - Office ID
      * @param {boolean} activeOnly - Get only active advisories
-     * @returns {Promise<Array>} Array of advisory objects
+     * @returns {Promise<Advisory[]>} Array of advisory objects
      */
     async getByOffice(officeId, activeOnly = false) {
         const db = getDatabase();
@@ -138,7 +144,7 @@ const AdvisoryModel = {
      * Primary deduplication strategy - external_id is unique per alert+office
      * @param {string} externalId - External ID from NOAA API
      * @param {number} officeId - Office ID (required for composite unique lookup)
-     * @returns {Promise<Object|null>} Existing advisory or null
+     * @returns {Promise<Advisory|null>} Existing advisory or null
      */
     async findByExternalID(externalId, officeId) {
         if (!externalId) return null;
@@ -171,11 +177,11 @@ const AdvisoryModel = {
     /**
      * Find advisory by VTEC event ID (persistent identifier)
      * Used to check if an alert update already exists before creating a duplicate
-     * Event ID stays the same across NEW→CON→EXT→EXP updates
+     * Event ID stays the same across NEW->CON->EXT->EXP updates
      * @param {string} vtecEventId - VTEC event ID (e.g., "PAJK.HW.W.0006")
      * @param {number} officeId - Office ID
-     * @param {string} advisoryType - Advisory type (optional for additional validation)
-     * @returns {Promise<Object|null>} Existing advisory or null
+     * @param {string|null} [advisoryType] - Advisory type (optional for additional validation)
+     * @returns {Promise<Advisory|null>} Existing advisory or null
      */
     async findByVTECEventID(vtecEventId, officeId, advisoryType = null) {
         if (!vtecEventId) return null;
@@ -209,7 +215,7 @@ const AdvisoryModel = {
      * @param {string} advisoryType
      * @param {string} source
      * @param {string|null} startTime
-     * @returns {Promise<Object|null>}
+     * @returns {Promise<Advisory|null>}
      */
     async findByNaturalKey(officeId, advisoryType, source, startTime) {
         const db = getDatabase();
@@ -270,13 +276,11 @@ const AdvisoryModel = {
      *   1. Check by external_id (always present, always unique)
      *   2. If not found and has VTEC, check by vtec_event_id
      *   3. Create new or update existing
-     * @param {Object} advisory - Advisory data
-     * @param {Object} [existingLookup] - Optional pre-fetched lookup maps to skip SELECT queries.
+     * @param {Partial<Advisory>} advisory - Advisory data
+     * @param {AdvisoryExistingLookup|null} [existingLookup] - Optional pre-fetched lookup maps to skip SELECT queries.
      *   When provided by the ingestor's bulk pre-fetch, eliminates per-row DB round-trips.
      *   The ER_DUP_ENTRY catch block below remains as a safety net for concurrent inserts.
-     * @param {Map} [existingLookup.byExternalId] - key: `${external_id}|${office_id}`
-     * @param {Map} [existingLookup.byVtec]        - key: `${vtec_event_id}|${office_id}|${advisory_type}`
-     * @returns {Promise<Object>} Created/updated advisory with ID
+     * @returns {Promise<AdvisoryWithOffice|null>} Created/updated advisory with ID
      */
     async create(advisory, existingLookup = null) {
         const db = getDatabase();
@@ -393,8 +397,8 @@ const AdvisoryModel = {
     /**
      * Update advisory
      * @param {number} id - Advisory ID
-     * @param {Object} updates - Fields to update
-     * @returns {Promise<Object|null>} Updated advisory or null
+     * @param {Partial<Advisory>} updates - Fields to update
+     * @returns {Promise<AdvisoryWithOffice|null>} Updated advisory or null
      */
     async update(id, updates) {
         const db = getDatabase();
@@ -449,7 +453,7 @@ const AdvisoryModel = {
     /**
      * Get advisory count by severity
      * @param {boolean} activeOnly - Count only active advisories
-     * @returns {Promise<Array>} Array of {severity, count} objects
+     * @returns {Promise<Array<{severity: string, count: number}>>} Array of {severity, count} objects
      */
     async getCountBySeverity(activeOnly = true) {
         const db = getDatabase();
@@ -471,7 +475,7 @@ const AdvisoryModel = {
     /**
      * Get recently updated advisories
      * @param {number} limit - Max number of results
-     * @returns {Promise<Array>} Array of advisory objects
+     * @returns {Promise<AdvisoryWithOffice[]>} Array of advisory objects
      */
     async getRecentlyUpdated(limit = 10) {
         const db = getDatabase();

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": false,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["backend/src/**/*.js", "frontend/js/**/*.js"],
+  "exclude": ["node_modules", "backend/node_modules", "e2e"]
+}

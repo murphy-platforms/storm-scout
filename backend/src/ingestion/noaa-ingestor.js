@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * NOAA Weather Data Ingestor
  * Fetches weather alerts from NOAA and updates database
@@ -5,6 +6,13 @@
  *
  * @generated AI-authored (Claude, Warp) — vanilla JS by design
  */
+
+/** @typedef {import('../types').Advisory} Advisory */
+/** @typedef {import('../types').Office} Office */
+/** @typedef {import('../types').IngestionResult} IngestionResult */
+/** @typedef {import('../types').ObservationIngestionResult} ObservationIngestionResult */
+/** @typedef {import('../types').AlertGeoData} AlertGeoData */
+/** @typedef {import('../types').ObservationData} ObservationData */
 
 const { getNOAAAlerts, getLatestObservation } = require('./utils/api-client');
 const {
@@ -29,7 +37,7 @@ let ingestionStartedAt = null;
 
 /**
  * Return current ingestion status (consumed by /health endpoint)
- * @returns {Object} { active: boolean, startedAt: string|null }
+ * @returns {{active: boolean, startedAt: string|null}}
  */
 function getIngestionStatus() {
     return {
@@ -40,6 +48,8 @@ function getIngestionStatus() {
 
 /**
  * Main ingestion function for NOAA weather data
+ * @param {{signal?: AbortSignal}} [options]
+ * @returns {Promise<IngestionResult>}
  */
 async function ingestNOAAData({ signal } = {}) {
     console.log('\n═══ NOAA Weather Data Ingestion Started ═══');
@@ -531,8 +541,9 @@ async function ingestNOAAData({ signal } = {}) {
 /**
  * Ingest latest weather observations for all offices with mapped observation stations.
  * Deduplicates station fetches (multiple offices may share a station).
- * @param {Array} offices - All office objects from database
- * @returns {Object} { total, updated, failed, uniqueStations }
+ * @param {Office[]} offices - All office objects from database
+ * @param {{signal?: AbortSignal}} [options]
+ * @returns {Promise<ObservationIngestionResult>}
  */
 async function ingestObservations(offices, { signal } = {}) {
     console.log('\n═══ Weather Observations Ingestion ═══');
@@ -627,8 +638,8 @@ async function ingestObservations(offices, { signal } = {}) {
 /**
  * Extract geographic identifiers from NOAA alert properties
  * Returns UGC codes, county names, and state codes
- * @param {Object} properties - NOAA alert properties
- * @returns {Object} { ugcCodes: [], counties: [], states: [] }
+ * @param {{affectedZones?: string[], geocode?: {UGC?: string[], SAME?: string[]}, areaDesc?: string, [key: string]: unknown}} properties - NOAA alert properties
+ * @returns {AlertGeoData}
  */
 function extractGeoFromAlert(properties) {
     const ugcCodes = new Set();
@@ -756,7 +767,7 @@ function stateNameToCode(name) {
 
 /**
  * Get last successful ingestion timestamp from the DB event log.
- * @returns {Promise<Object|null>} {lastUpdated: ISO string} or null if never run
+ * @returns {Promise<{lastUpdated: string}|null>} {lastUpdated: ISO string} or null if never run
  */
 async function getLastIngestionTime() {
     try {
