@@ -14,6 +14,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database backup automation
 - Global alert source implementation (ECCC, MeteoAlarm, SMN adapters)
 
+## [2.3.0] - 2026-03-30
+
+### Added
+
+- **#371 JSDoc type annotations** — `@typedef` blocks for Advisory, Office, OfficeStatus, Notice, Observation, and API response shapes in `backend/src/types.js` and `frontend/js/types.js`; `jsconfig.json` added at project root with `checkJs: true`
+- **#370 Server-side HTML partials** — `frontend/partials/` directory with `head.html`, `nav.html`, and `footer.html`; Express middleware injects partials at request time and sets the active nav link by URL path; dev mode watches for partial changes without restart
+
+### Changed
+
+- **#373 Frontend tests colocated with source** — 7 test files moved from `backend/tests/unit/frontend/` to `frontend/js/` (next to their source files); Jest config updated with matching roots and patterns
+- **#372 Promise.allSettled for resilient data loading** — All 6 page controllers (`page-index.js`, `page-advisories.js`, `page-offices.js`, `page-office-detail.js`, `page-map.js`, `page-locations.js`) now use `Promise.allSettled` instead of `Promise.all`; partial API failures show a degraded banner instead of a blank page; `settledValue()` helper added to `utils.js`
+- **#370 HTML boilerplate eliminated** — ~545 lines of duplicated `<head>`, nav, and footer markup removed from all 10 HTML pages and replaced with `<!-- include:*.html -->` markers
+
+### Removed
+
+- **#374 Redundant cross-layer tests** — Removed tests that duplicated coverage already owned by a lower layer (e.g., model validation re-tested in integration, route behavior re-tested in E2E); test-layer boundary rules documented in `jest.config.js`
+
 ## [2.2.0] - 2026-03-29
 
 ### Added
