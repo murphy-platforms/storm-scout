@@ -156,6 +156,12 @@ if (config.staticFiles.path) {
     const publicPath = path.resolve(config.staticFiles.path);
     console.log(`Serving static files from: ${publicPath}`);
 
+    // HTML partial injection — replaces <!-- include:file.html --> markers with
+    // shared partials (nav, head, footer) so pages don't duplicate boilerplate.
+    // Must run before express.static so it intercepts .html requests first.
+    const { createPartialsMiddleware } = require('./middleware/partials');
+    app.use(createPartialsMiddleware(publicPath, { isDev: config.env === 'development' }));
+
     // Cache-Control: long cache for versioned assets (CSS/JS), no-cache for HTML
     app.use(
         express.static(publicPath, {
