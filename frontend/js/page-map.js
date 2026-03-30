@@ -69,11 +69,14 @@ async function loadMapData() {
         updateFilterIndicator();
 
         debugStep('Fetching advisories, offices, observations...');
-        const [allAdvisories, allOffices, obsData] = await Promise.all([
+        const dataResults = await Promise.allSettled([
             API.getActiveAdvisories(),
             API.getOffices(),
-            API.getObservations().catch(() => [])
+            API.getObservations()
         ]);
+        const allAdvisories = settledValue(dataResults, 0, [], 'Advisories');
+        const allOffices = settledValue(dataResults, 1, [], 'Offices');
+        const obsData = settledValue(dataResults, 2, [], 'Weather observations');
         debugStep(
             'APIs returned — advisories:' +
                 allAdvisories.length +

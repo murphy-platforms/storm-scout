@@ -259,7 +259,7 @@ function updateCountdown() {
 
 /**
  * Fetch all dashboard data in parallel and render the full page.
- * Uses Promise.all for overview, advisories, observations, and timing metadata.
+ * Uses Promise.allSettled for overview, advisories, observations, and timing metadata.
  * Applies AlertFilters before aggregating so filtered counts match
  * the offices and advisories pages.
  * Wrapped so it can be called both on initial load and by countdown recovery.
@@ -272,13 +272,29 @@ async function loadOverview(options = {}) {
     const { forceRefresh = false } = options;
 
     try {
-        // Get all raw data
-        const [overviewData, allAdvisories, obsData, timingData] = await Promise.all([
+        // Get all raw data — allSettled so partial failures show degraded banners
+        const results = await Promise.allSettled([
             API.getOverview({ forceRefresh }),
             API.getActiveAdvisories({ forceRefresh }),
-            API.getObservations({ forceRefresh }).catch(() => []),
-            API.getTiming().catch(() => null)
+            API.getObservations({ forceRefresh }),
+            API.getTiming()
         ]);
+        const overviewData = settledValue(
+            results,
+            0,
+            {
+                total_offices: 0,
+                total_active_advisories: 0,
+                offices_with_advisories: 0,
+                advisories_by_severity: [],
+                operational_status_counts: [],
+                recently_updated: []
+            },
+            'Overview stats'
+        );
+        const allAdvisories = settledValue(results, 1, [], 'Advisories');
+        const obsData = settledValue(results, 2, [], 'Weather observations');
+        const timingData = settledValue(results, 3, null);
 
         // Successful refresh: cancel any pending retry.
         if (refreshTimeout) {

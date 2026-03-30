@@ -552,6 +552,45 @@ function checkSettingsAppliedToast() {
 document.addEventListener('DOMContentLoaded', checkSettingsAppliedToast);
 
 // Export for Node.js / Jest testing
+/**
+ * Show a dismissible warning banner when a non-critical data source fails.
+ * Used with Promise.allSettled to display partial data with degraded notice.
+ * @param {string} sectionName - Human-readable name of the failed data source
+ * @param {Error} [error] - The original error (logged but not shown to users)
+ */
+function showDataWarning(sectionName, error) {
+    if (error) console.warn(`[${sectionName}] data load failed:`, error);
+    const target = document.querySelector('#main-content') || document.querySelector('.container-fluid, .container');
+    if (!target) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'row mt-2';
+    wrapper.innerHTML = `<div class="col-12">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>${escapeHtml(sectionName)}</strong> data is temporarily unavailable. Other sections are still showing current data.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>`;
+    target.prepend(wrapper);
+}
+
+/**
+ * Extract results from a Promise.allSettled outcome array.
+ * Returns the fulfilled value or a fallback for rejected promises.
+ * @param {PromiseSettledResult<T>[]} results - Results from Promise.allSettled
+ * @param {number} index - Index into the results array
+ * @param {T} fallback - Value to use if the promise was rejected
+ * @param {string} [label] - Label for warning banner if rejected
+ * @returns {T}
+ * @template T
+ */
+function settledValue(results, index, fallback, label) {
+    const r = results[index];
+    if (r.status === 'fulfilled') return r.value;
+    if (label) showDataWarning(label, r.reason);
+    return fallback;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         escapeHtml,
@@ -571,6 +610,8 @@ if (typeof module !== 'undefined' && module.exports) {
         debounce,
         renderEmptyHtml,
         renderErrorHtml,
+        showDataWarning,
+        settledValue,
         formatLocalTime
     };
 }
